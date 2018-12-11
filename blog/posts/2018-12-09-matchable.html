@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - matchable解説</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>matchable解説</h1>
+            <article>
+    <section class="header">
+        Posted on December  9, 2018
+        
+    </section>
+    <section>
+        <p>最近、<a href="http://hackage.haskell.org/package/matchable">matchable</a>というライブラリーを Hackageに上げました。この記事では、matchableが何をするライブラリーなのか・なぜ作ったのかに ついて解説します。</p>
+<h2 id="matchableって何">matchableって何？</h2>
+<p>matchableは、その名の通り<code>Matchable</code>という型クラスを提供するライブラリーです。 その<code>Matchable</code>とは何かと言うと、<a href="http://hackage.haskell.org/package/matchable-0.1.1.1/docs/Data-Matchable.html#t:Matchable">ドキュメント</a>をご覧ください。</p>
+<p>では解説記事にならないので、解説します。といっても<code>Matchable</code>は大して複雑な型クラスではありません。 その定義であるソースコードを見たほうが早いでしょう。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">class</span> (<span class="dt">Eq1</span> t, <span class="dt">Functor</span> t) <span class="ot">=&gt;</span> <span class="dt">Matchable</span> t <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ot">  zipMatch ::</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (a,b))</a>
+<a class="sourceLine" id="cb1-3" title="3">  zipMatch <span class="fu">=</span> zipMatchWith (<span class="fu">curry</span> <span class="dt">Just</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="ot">  zipMatchWith ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t c)</a></code></pre></div>
+<p><code>Matchable t</code>における<code>t</code>は<code>Maybe</code>やリスト<code>[]</code>のようなコンテナです。 また、<code>Matchable</code>は、<code>zipMatch</code>と<code>zipMatchWith</code>という2つのメソッドを持つクラスです。それぞれ、次のような関数です。</p>
+<ul>
+<li><p><code>zipMatch</code>は、2つのコンテナ<code>ta :: t a</code> と <code>tb :: t b</code>を取り、<em>もしこれらが全く同じ「かたち」をしていれば</em>、 対応する各要素をペアにした新しいコンテナ<code>tab :: t (a,b)</code>を返します。 ただし、<code>ta</code>と<code>tb</code>が全く同じ「かたち」でなければ、<code>zipMatch</code>は失敗します。</p>
+<p>成功/失敗は<code>Maybe</code>で表されます。成功すれば<code>Just tab</code>が、失敗すれば<code>Nothing</code>が返り値になるということです。</p>
+<p>具体例をあげると、リスト型<code>[]</code>の場合、<code>zipMatch</code>は 次のような動作をします。</p>
+<ul>
+<li>2つの引数<code>ta</code>, <code>tb</code>の長さが同じなら、<code>Just (zip ta tb)</code>を返す</li>
+<li>そうでなければ、<code>Nothing</code>を返す</li>
+</ul>
+<pre><code>&gt;&gt;&gt; zipMatch [1, 2, 3] ['a', 'b', 'c']
+Just [(1,'a'),(2,'b'),(3,'c')]
+&gt;&gt;&gt; zipMatch [1, 2, 3] ['a', 'b']
+Nothing</code></pre>
+<p>さて、『コンテナが全く同じ「かたち」をしていれば』という表現をさっき使いましたが、これでは少しあいまいです。 なので、“Functor則”や“Monoid則”のように、<code>Matchable</code>のインスタンスが満たすべき“Matchable則”があります。</p>
+<p><strong>Matchable則</strong></p>
+<blockquote>
+<p><code>zipMatch ta tb = Just tab</code> が成立する ⇔<br />
+　　ある<code>tab</code>が存在して、<code>ta = fmap fst tab</code> かつ <code>tb = fmap snd tab</code>が成り立つ</p>
+<p>さもなくば、<code>zipMatch ta tb = Nothing</code> である</p>
+</blockquote></li>
+<li><p><code>zipMatch</code>に対する<code>zipMatchWith</code>は、<code>zip</code>に対する<code>zipWith</code>のようなものです。ただし、 <code>zipMatchWith</code>が引数に取る関数は<code>a -&gt; b -&gt; Maybe c</code>です。この関数は、残り2つの引数として 渡されたコンテナ<code>ta</code>, <code>tb</code>の対応する各要素に対して適用されますが、この関数が<code>Nothing</code>を 返すと、<code>zipMatchWith</code>全体が<code>Nothing</code>を返します。</p>
+<p>実際、ドキュメントでは次の等式が成り立つことを要求しました。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">zipMatchWith f ta tb <span class="fu">=</span> zipMatch ta tb <span class="fu">&gt;&gt;=</span> <span class="fu">traverse</span> (<span class="fu">uncurry</span> f)</a></code></pre></div>
+<p>これまた例をリスト型<code>[]</code>で示すなら、次のようになります。</p>
+<pre><code>&gt;&gt;&gt; let f x y = if x &gt;= y then Just (x - y) else Nothing
+&gt;&gt;&gt; zipMatchWith f [1,2,3] [0,1,2]
+Just [1,1,1]
+&gt;&gt;&gt; zipMatchWith f [1,2,3] [2,2,3]
+Nothing</code></pre>
+<p><code>zipMatchWith f [1,2,3] [2,2,3]</code>では、2つのリストは同じ長さですが、最初の要素で <code>f 1 2 = Nothing</code> なので全体としても<code>Nothing</code>になっています。</p>
+<p>省略しますが、<code>zipMatchWith</code>にも<code>zipMatch</code>と同じように満たすべき法則があります。</p></li>
+</ul>
+<h2 id="なぜmatchableが必要なのか">なぜMatchableが必要なのか？</h2>
+<p>私が<code>Matchable</code>が必要だと感じたのは、自分で簡単なプログラミング言語を実装しているときでした。 パターンマッチングの実装を考え始め、次のようなコードを書き始めました。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">data</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">IntVal</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-2" title="2">           <span class="fu">|</span> <span class="dt">NullVal</span></a>
+<a class="sourceLine" id="cb5-3" title="3">           <span class="fu">|</span> <span class="dt">ObjectVal</span> <span class="dt">ClassName</span> [<span class="dt">Value</span>]</a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="kw">data</span> <span class="dt">Pattern</span> <span class="fu">=</span> <span class="dt">IntPat</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-6" title="6">             <span class="fu">|</span> <span class="dt">NullPat</span></a>
+<a class="sourceLine" id="cb5-7" title="7">             <span class="fu">|</span> <span class="dt">ObjectPat</span> <span class="dt">ClassName</span> [<span class="dt">Pattern</span>]</a>
+<a class="sourceLine" id="cb5-8" title="8">             <span class="fu">|</span> <span class="dt">VarPat</span> <span class="dt">VarName</span></a></code></pre></div>
+<p>そしてふと思ったのです。明らかに同じことを繰り返し書いている。どうにか簡潔に書けないかと。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">data</span> <span class="dt">ValueF</span> a <span class="fu">=</span> <span class="dt">IntF</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb6-2" title="2">              <span class="fu">|</span> <span class="dt">NullF</span></a>
+<a class="sourceLine" id="cb6-3" title="3">              <span class="fu">|</span> <span class="dt">ObjectF</span> <span class="dt">ClassName</span> [a]</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="kw">type</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">Fix</span> <span class="dt">ValueF</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="kw">type</span> <span class="dt">Pattern</span> <span class="fu">=</span> <span class="dt">Free</span> <span class="dt">ValueF</span> <span class="dt">VarName</span></a>
+<a class="sourceLine" id="cb6-7" title="7"></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="ot">patternMatch ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(<span class="dt">VarName</span>, <span class="dt">Value</span>)]</a>
+<a class="sourceLine" id="cb6-9" title="9">patternMatch <span class="fu">=</span> <span class="co">{- 省略 -}</span></a></code></pre></div>
+<p>「これでイケルじゃん！」と思いました。次の関数を実装しようと考えるまでは。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">-- | 一般化したパターンマッチ</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ot">patternMatch ::</span> (<span class="fu">???</span>) <span class="ot">=&gt;</span> <span class="dt">Free</span> f a <span class="ot">-&gt;</span> <span class="dt">Fix</span> f <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(a, <span class="dt">Fix</span> f)]</a>
+<a class="sourceLine" id="cb7-3" title="3">patternMatch (<span class="dt">Pure</span> a) value         <span class="fu">=</span> <span class="dt">Just</span> [(a, value)]</a>
+<a class="sourceLine" id="cb7-4" title="4">patternMatch (<span class="dt">Free</span> fPat) (<span class="dt">Fix</span> fVal) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb7-5" title="5">  <span class="kw">if</span> 一番外側がマッチする fPat fVal</a>
+<a class="sourceLine" id="cb7-6" title="6">    <span class="kw">then</span> <span class="fu">fmap</span> fold <span class="fu">.</span> <span class="fu">sequenceA</span> <span class="fu">$</span> zipWithみたいな関数 patternMatch fPat fVal</a>
+<a class="sourceLine" id="cb7-7" title="7">    <span class="kw">else</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb7-8" title="8"></a>
+<a class="sourceLine" id="cb7-9" title="9">一番外側がマッチする<span class="ot"> ::</span> (<span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb7-10" title="10">一番外側がマッチする <span class="fu">=</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>)</a></code></pre></div>
+<p>ここでつまづきました。いろいろなライブラリーを漁ってみても、既存の型クラスに</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">zipWithみたいな関数<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c</a></code></pre></div>
+<p>を適切に実装できそうなものは思い当たりませんでした。 また、この<code>zipWithみたいな関数</code>は、前提条件として<code>一番外側がマッチする</code>が<code>True</code>である引数に対してしか定義できないという問題もありました。</p>
+<p>そこで、「<code>zipMatch :: f a -&gt; f b -&gt; Maybe (f (a,b))</code>があったらいいなー」となったわけです。 その後、<code>zipMatch</code>の満たすべき性質についていろいろ考えた結果、この<code>Matchable</code>ができました。</p>
+<h2 id="さらなる応用ユニフィケーション">さらなる応用：ユニフィケーション</h2>
+<p>また、<code>Matchable</code>が既存のライブラリーに存在しないか調査する過程で、<a href="http://hackage.haskell.org/package/unification-fd">unification-fd</a>というライブラリーを発見しました。そこにあったのは、</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">data</span> <span class="dt">UTerm</span> t v <span class="fu">=</span> <span class="dt">UVar</span> <span class="fu">!</span>v</a>
+<a class="sourceLine" id="cb9-2" title="2">               <span class="fu">|</span> <span class="dt">UTerm</span> <span class="fu">!</span>(t (<span class="dt">UTerm</span> t v))</a>
+<a class="sourceLine" id="cb9-3" title="3"></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="kw">class</span> <span class="dt">Traversable</span> t <span class="ot">=&gt;</span> <span class="dt">Unifiable</span> t <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="ot">    zipMatch ::</span> t a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (<span class="dt">Either</span> a (a, a))) </a>
+<a class="sourceLine" id="cb9-6" title="6"></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="ot">unify ::</span> (<span class="fu">...</span>ちょっと複雑な制約, 一部 <span class="dt">Unifiable</span> t を含む<span class="fu">...</span>)	 </a>
+<a class="sourceLine" id="cb9-8" title="8">      <span class="ot">=&gt;</span> <span class="dt">UTerm</span> t v	 </a>
+<a class="sourceLine" id="cb9-9" title="9">      <span class="ot">-&gt;</span> <span class="dt">UTerm</span> t v	 </a>
+<a class="sourceLine" id="cb9-10" title="10">      <span class="ot">-&gt;</span> em m (<span class="dt">UTerm</span> t v)</a></code></pre></div>
+<p>という非常によく似た型クラス<code>Unifiable</code>でした。これに触発されて、 <code>Matchable</code>を使ったユニフィケーションの例も<a href="https://github.com/viercc/matchable/tree/master/example">書いてみました</a>。</p>
+<h2 id="実はいらない">実はいらない！？</h2>
+<p>実は、<code>zipMatch</code>は既存の型クラスの組み合わせで実装できたのです。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">import</span> <span class="dt">Data.Functor.Classes</span> (<span class="dt">Eq1</span>(..))</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="kw">import</span> <span class="dt">Data.Foldable</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">import</span> <span class="dt">Control.Monad.State</span></a>
+<a class="sourceLine" id="cb10-4" title="4"></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="ot">zipMatch ::</span> (<span class="dt">Traversable</span> f, <span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (a,b))</a>
+<a class="sourceLine" id="cb10-6" title="6">zipMatch fa fb <span class="fu">|</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>) fa fb <span class="fu">=</span> <span class="dt">Just</span> (unsafeZip fa fb)</a>
+<a class="sourceLine" id="cb10-7" title="7">               <span class="fu">|</span> <span class="fu">otherwise</span>                   <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb10-8" title="8"></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="ot">unsafeZip ::</span> (<span class="dt">Traversable</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f (a,b)</a>
+<a class="sourceLine" id="cb10-10" title="10">unsafeZip fa fb <span class="fu">=</span> evalState (<span class="fu">traverse</span> step fa) (toList fb)</a>
+<a class="sourceLine" id="cb10-11" title="11">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="ot">    step ::</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> [b] (a,b)</a>
+<a class="sourceLine" id="cb10-13" title="13">    step a <span class="fu">=</span> state <span class="fu">$</span> \bs <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb10-14" title="14">      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;differently shaped arguments&quot;</span></a>
+<a class="sourceLine" id="cb10-15" title="15">      (b<span class="fu">:</span>bs) <span class="ot">-&gt;</span> ((a,b),bs)</a></code></pre></div>
+<p>しかし、この実装は（難癖に近いかもしれませんが）少しだけ問題があります。</p>
+<ol type="1">
+<li><code>Eq1</code>には法則が無いため、本当に安全に<code>unsafeZip</code>が呼び出せる保証がないこと。 <code>Matchable</code>は新しい型クラスなので、必要なMatchable則を定義できる。</li>
+<li><code>liftEq</code>と<code>traverse</code>と<code>toList</code>で、<code>fa</code>と<code>fb</code>をそれぞれ2回走査しなければいけないこと。 ほとんどの場合<code>zipMatch</code>は1回の走査で実装できる。</li>
+</ol>
+<p>このうち2.はあまり関係ない(<code>Matchable</code>のインスタンスは大抵非再帰的な小さい型)のですが、 1.は<code>Matchable</code>をライブラリーとして公開する理由になると考えています。</p>
+<h2 id="結論">結論</h2>
+<p><code>Matchable</code>という型クラスを提供するmatchableライブラリーを作ったので、紹介しました。 <code>Matchable</code>はパターンマッチやユニフィケーションを実装するのに便利です。</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
