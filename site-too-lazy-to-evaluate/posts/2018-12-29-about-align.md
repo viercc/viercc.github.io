@@ -2,11 +2,15 @@
 title: 型クラスAlignについて
 ---
 
-型クラス`Align`は`Kleisli Maybe`から`->`へのlax monoidal functorだと書いてあるけど、微妙に違うんじゃないかという事についてです。
+型クラス[`Align`](http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html)は`Kleisli Maybe`から`->`へのlax monoidal functorだとドキュメントに書いてあるけど、それは違うんじゃないかという事についてです。
+
+Applicativeによく似た構造をしているAlignですが、その意味をきちんと定義するAlign則はまだ未完成で、
+先日それに関して作者のGitHubにIssueを投げました。
+この記事はその準備として書き始めたものですが、せっかくなのでここで公開することししました。
 
 ## `Align` って何
 
-`Align`は、theseパッケージの[Data.Align](http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html)で定義されている型クラスです。
+`Align`は、theseパッケージのData.Alignで定義されている型クラスです。
 
 ``` haskell
 class Functor f => Align f where
@@ -302,7 +306,7 @@ instance (Ord k) => LaxMonoidalFunctor (Map k) where
 
 ## Align ≠ LaxMonoidalFunctor
 
-実はやってないんです。`[]`はHaskからHaskへの関手でもありますが、`mapMaybe`を考えることで`Kleisli Maybe`から`Hask`への関手と見なすこともできます。
+実はやってないんです。`[]`はHaskからHaskへの関手でもありますが、先程挙げた例に示すとおり`Kleisli Maybe`から`Hask`への関手と見なすこともできます。
 
 しかし、`Align`を使った次の定義は法則を満たしません。
 
@@ -326,4 +330,13 @@ instance LaxMonoidalFunctor [] where
 > ... an `Align` instance is making your functor lax monoidal w.r.t. the cartesian monoidal structure on `Kleisli Maybe` ...
 
 という説明は**現状に合っていない**ということです。
+
+## 結論
+
+`Data.Align`のドキュメンテーションには、「`Align`は`Kleisli Maybe`から`Hask`へのlax monoidal関手を表す」
+という格好いい一文があり、それがもし本当ならAlign則のもっと適切なバージョンを導くといったうれしい点がありました。
+
+しかし、現状`Map k`や`HashMap k`といったインスタンスだけがlax monoidal関手を表しており、
+`[]`や`Seq`などはそうなっていません。つまり、現状を追認する形でAlign則を定義しようとするなら、
+*`Kleisli Maybe`から`Hask`へのlax monoidal関手*というアプローチは取れないということです。
 
