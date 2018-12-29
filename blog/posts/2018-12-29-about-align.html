@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 型クラスAlignについて</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>型クラスAlignについて</h1>
+            <article>
+    <section class="header">
+        Posted on December 29, 2018
+        
+    </section>
+    <section>
+        <p>型クラス<code>Align</code>は<code>Kleisli Maybe</code>から<code>-&gt;</code>へのlax monoidal functorだと書いてあるけど、微妙に違うんじゃないかという事についてです。</p>
+<h2 id="align-って何"><code>Align</code> って何</h2>
+<p><code>Align</code>は、theseパッケージの<a href="http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html">Data.Align</a>で定義されている型クラスです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Align</span> f <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ot">    nil ::</span> f a</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ot">    align ::</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f (<span class="dt">These</span> a b)</a></code></pre></div>
+<p>ドキュメントにはこんな事が書いてあります。（私訳）</p>
+<blockquote>
+<p>… If your functor is actually a functor from <code>Kleisli Maybe</code> to <code>Hask</code> (so it supports <code>maybeMap :: (a -&gt; Maybe b) -&gt; f a -&gt; f b)</code>, then an <code>Align</code> instance is making your functor lax monoidal w.r.t. the cartesian monoidal structure on <code>Kleisli Maybe</code>, because <code>These</code> is the cartesian product in that category (<code>a -&gt; Maybe (These b c) ~ (a -&gt; Maybe b, a -&gt; Maybe c)</code>).</p>
+</blockquote>
+<blockquote>
+<p>もしその関手が現に<code>Kleisli Maybe</code>から<code>Hask</code>への関手であれば（すなわち<code>maybeMap :: (a -&gt; Maybe b) -&gt; f a -&gt; f b</code>を持てば）、[訳補:その関手の]<code>Align</code>のインスタンスは、その関手を<code>Kleisli Maybe</code>上の直積モノイド構造に対してlax monoidalにします。なぜなら、<code>These</code>はその圏における直積だからです(<code>a -&gt; Maybe (These b c) ~ (a -&gt; Maybe b, a -&gt; Maybe c)</code>)。</p>
+</blockquote>
+<p>割と意味不明な圏論用語が多かったので、nlabというサイトを参考になんとなく調べたらなんとなく意味がわかった気がしました。 でも、私の理解した限りではこのドキュメントは間違っています。なので、圏論をHaskellに翻訳しながら「なぜ間違っているのか」説明しようと思います。</p>
+<ul>
+<li>圏、対象、射[category, object, morphism]</li>
+<li>直積[cartesian product]</li>
+<li>モノイド圏[monoidal category]</li>
+<li>関手[functor]</li>
+<li>lax monoidal関手[lax monoidal functor]</li>
+</ul>
+<p>をHaskellに翻訳しながら説明します。（自分がHaskellに翻訳しないと理解できないため）</p>
+<h3 id="圏対象射">圏、対象、射</h3>
+<p>ここでは、圏とは次の型クラス<code>Category</code>のインスタンス<code>cat :: k -&gt; k -&gt; Type</code>を、 対象とはカインド<code>k</code>の型を、射とは<code>cat x y :: Type</code>型の値という意味<em>だとします</em>。 混乱を避けるために繰り返して言うと、対象は<em>型</em>で、射は<em>値</em>です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> <span class="dt">Category</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ot">    id ::</span> cat x x</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ot">    (.) ::</span> cat y z <span class="ot">-&gt;</span> cat x y <span class="ot">-&gt;</span> cat x z</a></code></pre></div>
+<p>また、射の結合演算子 <code>.</code> は結合法則を満たし、<code>id</code>は単位元になっているとします。すなわち</p>
+<pre><code>    (f . g) . h = f . (g . h)
+    f . id = id . f = f</code></pre>
+<p>が成り立っているものとします。</p>
+<p>この記事で使う圏として<code>Hask</code>と<code>Kleisli m</code>を挙げておきます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">type</span> <span class="dt">Hask</span> <span class="fu">=</span> (<span class="ot">-&gt;</span>)</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Hask</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">    id ::</span> x <span class="ot">-&gt;</span> x</a>
+<a class="sourceLine" id="cb4-5" title="5">    <span class="fu">id</span> <span class="fu">=</span> Prelude.id</a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">    (.) ::</span> (y <span class="ot">-&gt;</span> z) <span class="ot">-&gt;</span> (x <span class="ot">-&gt;</span> y) <span class="ot">-&gt;</span> x <span class="ot">-&gt;</span> z</a>
+<a class="sourceLine" id="cb4-8" title="8">    (<span class="fu">.</span>) <span class="fu">=</span> (<span class="fu">Prelude..</span>)</a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="kw">newtype</span> <span class="dt">Kleisli</span> m a b <span class="fu">=</span> <span class="dt">Kl</span> (a <span class="ot">-&gt;</span> m b)</a>
+<a class="sourceLine" id="cb4-11" title="11"></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">instance</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Category</span> (<span class="dt">Kleisli</span> m) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="ot">    id ::</span> <span class="dt">Kleisli</span> m x x     <span class="co">--  ~  x -&gt; m x</span></a>
+<a class="sourceLine" id="cb4-14" title="14">    <span class="fu">id</span> <span class="fu">=</span> <span class="dt">Kl</span> <span class="fu">return</span></a>
+<a class="sourceLine" id="cb4-15" title="15"></a>
+<a class="sourceLine" id="cb4-16" title="16"><span class="ot">    (.) ::</span> <span class="dt">Kleisli</span> m y z <span class="ot">-&gt;</span> <span class="dt">Kleisli</span> m x y <span class="ot">-&gt;</span> <span class="dt">Kleisli</span> m x z</a>
+<a class="sourceLine" id="cb4-17" title="17">              <span class="co">-- ~ (y -&gt; m z) -&gt; (x -&gt; m y) -&gt; x -&gt; m z</span></a>
+<a class="sourceLine" id="cb4-18" title="18">    <span class="dt">Kl</span> f <span class="fu">.</span> <span class="dt">Kl</span> g <span class="fu">=</span> <span class="dt">Kl</span> <span class="fu">$</span> f <span class="fu">&lt;=&lt;</span> g</a></code></pre></div>
+<h3 id="直積">直積</h3>
+<p>圏論での直積は、集合の直積を一般化したような概念です。</p>
+<p>Haskellで言うなら、ある圏(Category)の対象2つをとって別の対象を返す(型レベルの)関数で、 集合の直積みたいな性質を表すいくつかの射を持つものです。 3個、4個、有限のn個の対象の直積は、適当に2個の直積を組み合わせればよいです。 どんな順番でどのように積をとっても、すべて同型になると示すことができます。 また、“0個の対象の直積”として終対象という特別な対象も考えます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">class</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">CartesianProduct</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="kw">type</span> <span class="dt">CP</span><span class="ot"> cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> k</a>
+<a class="sourceLine" id="cb5-3" title="3">    <span class="kw">type</span> <span class="dt">Terminal</span><span class="ot"> cat ::</span> k</a>
+<a class="sourceLine" id="cb5-4" title="4">    </a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">    fst ::</span> cat (<span class="dt">CP</span> cat x y) x</a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="ot">    snd ::</span> cat (<span class="dt">CP</span> cat x y) y</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="ot">    pair ::</span> cat a x <span class="ot">-&gt;</span> cat a y <span class="ot">-&gt;</span> cat a (<span class="dt">CP</span> cat x y)</a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="ot">    term ::</span> cat a (<span class="dt">Terminal</span> cat)</a>
+<a class="sourceLine" id="cb5-9" title="9">    </a>
+<a class="sourceLine" id="cb5-10" title="10">    <span class="co">-- fst . pair f g = f</span></a>
+<a class="sourceLine" id="cb5-11" title="11">    <span class="co">-- snd . pair f g = g</span></a>
+<a class="sourceLine" id="cb5-12" title="12">    <span class="co">-- pair (fst . f) (snd . f) = f</span></a>
+<a class="sourceLine" id="cb5-13" title="13">    <span class="co">-- term . f = term</span></a>
+<a class="sourceLine" id="cb5-14" title="14"></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="ot">(***) ::</span> (<span class="dt">CartesianProduct</span> cat, p <span class="fu">~</span> <span class="dt">CP</span> cat) <span class="ot">=&gt;</span> cat x x' <span class="ot">-&gt;</span> cat y y' <span class="ot">-&gt;</span> cat (p x y) (p x' y')</a>
+<a class="sourceLine" id="cb5-16" title="16">f <span class="fu">***</span> g <span class="fu">=</span> pair (f <span class="fu">.</span> <span class="fu">fst</span>) (g <span class="fu">.</span> <span class="fu">snd</span>)</a>
+<a class="sourceLine" id="cb5-17" title="17"></a>
+<a class="sourceLine" id="cb5-18" title="18"><span class="ot">assoc ::</span> (<span class="dt">CartesianProduct</span> cat, p <span class="fu">~</span> <span class="dt">CP</span> cat)</a>
+<a class="sourceLine" id="cb5-19" title="19">      <span class="ot">=&gt;</span> cat (p x (p y z)) (p (p x y) z)</a>
+<a class="sourceLine" id="cb5-20" title="20">assoc <span class="fu">=</span> (<span class="fu">fst</span> <span class="ot">`pair`</span> (<span class="fu">fst</span> <span class="fu">.</span> <span class="fu">snd</span>)) <span class="ot">`pair`</span> (<span class="fu">snd</span> <span class="fu">.</span> <span class="fu">snd</span>)</a></code></pre></div>
+<p><code>Hask</code>は直積を持ちます。<code>(,)</code>のことです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">instance</span> <span class="dt">CartesianProduct</span> <span class="dt">Hask</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="kw">type</span> <span class="dt">CP</span> <span class="dt">Hask</span> <span class="fu">=</span> (,)</a>
+<a class="sourceLine" id="cb6-3" title="3">    <span class="kw">type</span> <span class="dt">Terminal</span> <span class="dt">Hask</span> <span class="fu">=</span> ()</a>
+<a class="sourceLine" id="cb6-4" title="4">    </a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="ot">    fst ::</span> (x, y) <span class="ot">-&gt;</span> x</a>
+<a class="sourceLine" id="cb6-6" title="6">    <span class="fu">fst</span> <span class="fu">=</span> Prelude.fst</a>
+<a class="sourceLine" id="cb6-7" title="7">    </a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="ot">    snd ::</span> (x, y) <span class="ot">-&gt;</span> y</a>
+<a class="sourceLine" id="cb6-9" title="9">    <span class="fu">snd</span> <span class="fu">=</span> Prelude.snd</a>
+<a class="sourceLine" id="cb6-10" title="10">    </a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="ot">    pair ::</span> (a <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> y) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> (x, y))</a>
+<a class="sourceLine" id="cb6-12" title="12">    pair f g a <span class="fu">=</span> (f a, g a)</a>
+<a class="sourceLine" id="cb6-13" title="13"></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="ot">    term ::</span> a <span class="ot">-&gt;</span> ()</a>
+<a class="sourceLine" id="cb6-15" title="15">    term _ <span class="fu">=</span> ()</a>
+<a class="sourceLine" id="cb6-16" title="16"></a>
+<a class="sourceLine" id="cb6-17" title="17"><span class="co">-- (***) :: (a -&gt; a') -&gt; (b -&gt; b') -&gt; (a,b) -&gt; (a',b')</span></a>
+<a class="sourceLine" id="cb6-18" title="18"><span class="co">-- assoc :: (a, (b, c)) -&gt; ((a, b), c)</span></a></code></pre></div>
+<p><code>Kleisli m</code> は一般の<code>Monad m</code>については直積を持ちません。型を合わせるだけならできますが<code>fst . pair f g = f</code>のような法則を満たしません。ただし、<code>m ~ Maybe</code>のときは<code>These</code>を使えばできます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">instance</span> <span class="dt">CartesianProduct</span> (<span class="dt">Kleisli</span> <span class="dt">Maybe</span>) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="kw">type</span> <span class="dt">CP</span> (<span class="dt">Kleisli</span> <span class="dt">Maybe</span>) <span class="fu">=</span> <span class="dt">These</span></a>
+<a class="sourceLine" id="cb7-3" title="3">    <span class="kw">type</span> <span class="dt">Terminal</span> (<span class="dt">Kleisli</span> <span class="dt">Maybe</span>) <span class="fu">=</span> <span class="dt">Void</span></a>
+<a class="sourceLine" id="cb7-4" title="4">    </a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="ot">    fst ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> (<span class="dt">These</span> x y) x</a>
+<a class="sourceLine" id="cb7-6" title="6">        <span class="co">-- These x y -&gt; Maybe x</span></a>
+<a class="sourceLine" id="cb7-7" title="7">    <span class="fu">fst</span> <span class="fu">=</span> <span class="dt">Kl</span> getThis</a>
+<a class="sourceLine" id="cb7-8" title="8">      <span class="kw">where</span> getThis (<span class="dt">This</span> x) <span class="fu">=</span> <span class="dt">Just</span> x</a>
+<a class="sourceLine" id="cb7-9" title="9">            getThis (<span class="dt">That</span> y) <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb7-10" title="10">            getThis (<span class="dt">These</span> x y) <span class="fu">=</span> <span class="dt">Just</span> x</a>
+<a class="sourceLine" id="cb7-11" title="11">    </a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="ot">    snd ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> (<span class="dt">These</span> x y) y</a>
+<a class="sourceLine" id="cb7-13" title="13">        <span class="co">-- These x y -&gt; Maybe y</span></a>
+<a class="sourceLine" id="cb7-14" title="14">    <span class="fu">snd</span> <span class="fu">=</span> <span class="dt">Kl</span> getThat</a>
+<a class="sourceLine" id="cb7-15" title="15">      <span class="kw">where</span> getThat (<span class="dt">This</span> x) <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb7-16" title="16">            getThat (<span class="dt">That</span> y) <span class="fu">=</span> <span class="dt">Just</span> y</a>
+<a class="sourceLine" id="cb7-17" title="17">            getThat (<span class="dt">These</span> x y) <span class="fu">=</span> <span class="dt">Just</span> y</a>
+<a class="sourceLine" id="cb7-18" title="18"></a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="ot">    pair ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> a x           <span class="co">--    (a -&gt; Maybe x)</span></a>
+<a class="sourceLine" id="cb7-20" title="20">         <span class="ot">-&gt;</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> a y           <span class="co">-- -&gt; (a -&gt; Maybe y)</span></a>
+<a class="sourceLine" id="cb7-21" title="21">         <span class="ot">-&gt;</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> a (<span class="dt">These</span> x y) <span class="co">-- -&gt; (a -&gt; Maybe (These x y))</span></a>
+<a class="sourceLine" id="cb7-22" title="22">    pair (<span class="dt">Kl</span> f) (<span class="dt">Kl</span> g) <span class="fu">=</span> <span class="dt">Kl</span> <span class="fu">$</span> \a <span class="ot">-&gt;</span> pairMaybes (f a) (g a)</a>
+<a class="sourceLine" id="cb7-23" title="23">     </a>
+<a class="sourceLine" id="cb7-24" title="24"><span class="ot">    term ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> a <span class="dt">Void</span></a>
+<a class="sourceLine" id="cb7-25" title="25">    term <span class="fu">=</span> <span class="dt">Kl</span> <span class="fu">$</span> \_ <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb7-26" title="26"></a>
+<a class="sourceLine" id="cb7-27" title="27"><span class="ot">pairMaybes ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">These</span> a b)</a>
+<a class="sourceLine" id="cb7-28" title="28">pairMaybes x y <span class="fu">=</span> <span class="kw">case</span> (x,y) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb7-29" title="29">    (<span class="dt">Nothing</span>, <span class="dt">Nothing</span>) <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb7-30" title="30">    (<span class="dt">Just</span> x,  <span class="dt">Nothing</span>) <span class="ot">-&gt;</span> <span class="dt">Just</span> (<span class="dt">This</span> x)</a>
+<a class="sourceLine" id="cb7-31" title="31">    (<span class="dt">Nothing</span>, <span class="dt">Just</span> y)  <span class="ot">-&gt;</span> <span class="dt">Just</span> (<span class="dt">That</span> y)</a>
+<a class="sourceLine" id="cb7-32" title="32">    (<span class="dt">Just</span> x,  <span class="dt">Just</span> y)  <span class="ot">-&gt;</span> <span class="dt">Just</span> (<span class="dt">These</span> x y)</a>
+<a class="sourceLine" id="cb7-33" title="33"></a>
+<a class="sourceLine" id="cb7-34" title="34"><span class="co">-- (***) :: (a -&gt; Maybe a') -&gt; (b -&gt; Maybe b') -&gt; These a b -&gt; Maybe (These a' b')</span></a>
+<a class="sourceLine" id="cb7-35" title="35"><span class="co">-- assoc :: These a (These b c) -&gt; Maybe (These (These a b) c)</span></a></code></pre></div>
+<p>これが例の<code>a -&gt; Maybe (These b c) ~ (a -&gt; Maybe b, a -&gt; Maybe c)</code>の出番でした。</p>
+<h3 id="モノイド圏">モノイド圏</h3>
+<p>モノイド圏とは、圏<code>cat</code>に、追加で対象<code>1</code>と対象の上の演算子<code>⊗</code>が定義され、いろいろな条件を満たすもののことですが、<code>CartesianProduct</code>な圏にとっては、<a href="https://ncatlab.org/nlab/show/cartesian+monoidal+category">終対象と直積がこの条件を満たすらしい</a>ので、この記事では<code>1 = Terminal cat</code>, <code>⊗ = CP cat</code>と置かれているものとします。</p>
+<h3 id="関手">関手</h3>
+<p>関手[functor]とは、2つの圏のあいだの“準同型”みたいな関係です。圏<code>C</code>から圏<code>D</code>への関手<code>F</code>は、</p>
+<ul>
+<li><code>C</code>の対象を<code>D</code>の対象に写す写像<code>F</code></li>
+<li><code>C</code>の射<code>C x y</code>を<code>D</code>の射<code>D (F x) (F y)</code>に写す写像<code>map</code></li>
+</ul>
+<p>つまり次のような型クラスです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">class</span> (<span class="dt">Category</span> (<span class="dt">Dom</span> f), <span class="dt">Category</span> (<span class="dt">Cod</span> f)) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="ot">f ::</span> j <span class="ot">-&gt;</span> k) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-2" title="2">    <span class="kw">type</span> <span class="dt">Dom</span><span class="ot"> f ::</span> j <span class="ot">-&gt;</span> j <span class="ot">-&gt;</span> <span class="dt">Type</span></a>
+<a class="sourceLine" id="cb8-3" title="3">    <span class="kw">type</span> <span class="dt">Cod</span><span class="ot"> f ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span></a>
+<a class="sourceLine" id="cb8-4" title="4">    </a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="ot">    map ::</span> <span class="dt">Dom</span> f x y <span class="ot">-&gt;</span> <span class="dt">Cod</span> f (f x) (f y)</a>
+<a class="sourceLine" id="cb8-6" title="6">    </a>
+<a class="sourceLine" id="cb8-7" title="7">    <span class="co">-- map id = id</span></a>
+<a class="sourceLine" id="cb8-8" title="8">    <span class="co">-- map (f . g) = map f . map g</span></a></code></pre></div>
+<p>例をあげると、今定義した方ではなくていつも使っている方の<code>Functor</code>は<code>Hask</code>から<code>Hask</code>への関手です。 いつも使っている方の<code>Prelude.Functor</code>を使うというラッパー<code>HaskF</code>を定義しましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">newtype</span> <span class="dt">HaskF</span> f a <span class="fu">=</span> <span class="dt">HaskF</span> (f a)</a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">instance</span> (<span class="dt">Prelude.Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">HaskF</span> f) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-4" title="4">    <span class="kw">type</span> <span class="dt">Dom</span> (<span class="dt">HaskF</span> f) <span class="fu">=</span> <span class="dt">Hask</span></a>
+<a class="sourceLine" id="cb9-5" title="5">    <span class="kw">type</span> <span class="dt">Cod</span> (<span class="dt">HaskF</span> f) <span class="fu">=</span> <span class="dt">Hask</span></a>
+<a class="sourceLine" id="cb9-6" title="6"></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="ot">    map ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">HaskF</span> f a <span class="ot">-&gt;</span> <span class="dt">HaskF</span> f b)</a>
+<a class="sourceLine" id="cb9-8" title="8">    <span class="fu">map</span> f (<span class="dt">HaskF</span> x) <span class="fu">=</span> <span class="dt">HaskF</span> (Prelude.fmap f x)</a></code></pre></div>
+<p>また、<code>[]</code>や<code>Map k</code>は(HaskからHaskへの関手でもありますが)、<code>Kleisli Maybe</code>から<code>Hask</code>への関手なのです！</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">instance</span> <span class="dt">Functor</span> [] <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-2" title="2">    <span class="kw">type</span> <span class="dt">Dom</span> [] <span class="fu">=</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span></a>
+<a class="sourceLine" id="cb10-3" title="3">    <span class="kw">type</span> <span class="dt">Cod</span> [] <span class="fu">=</span> <span class="dt">Hask</span></a>
+<a class="sourceLine" id="cb10-4" title="4">    </a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="ot">    map ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> a b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</a>
+<a class="sourceLine" id="cb10-6" title="6">    <span class="fu">map</span> (<span class="dt">Kl</span> f) <span class="fu">=</span> Data.Maybe.mapMaybe f</a>
+<a class="sourceLine" id="cb10-7" title="7">    </a>
+<a class="sourceLine" id="cb10-8" title="8">    <span class="co">-- map id = Data.Maybe.mapMaybe return = id</span></a>
+<a class="sourceLine" id="cb10-9" title="9">    <span class="co">-- map (f . g) = Data.Maybe.mapMaybe (f &lt;=&lt; g)</span></a>
+<a class="sourceLine" id="cb10-10" title="10">    <span class="co">--             = Data.Maybe.mapMaybe f . Data.Maybe.mapMaybe g</span></a>
+<a class="sourceLine" id="cb10-11" title="11">    <span class="co">--             = map f . map g</span></a>
+<a class="sourceLine" id="cb10-12" title="12"></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="kw">instance</span> (<span class="dt">Ord</span> k) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Map</span> k) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-14" title="14">    <span class="kw">type</span> <span class="dt">Dom</span> (<span class="dt">Map</span> k) <span class="fu">=</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span></a>
+<a class="sourceLine" id="cb10-15" title="15">    <span class="kw">type</span> <span class="dt">Cod</span> (<span class="dt">Map</span> k) <span class="fu">=</span> <span class="dt">Hask</span></a>
+<a class="sourceLine" id="cb10-16" title="16"></a>
+<a class="sourceLine" id="cb10-17" title="17"><span class="ot">    map ::</span> <span class="dt">Kleisli</span> <span class="dt">Maybe</span> x y <span class="ot">-&gt;</span> (<span class="dt">Map</span> k x <span class="ot">-&gt;</span> <span class="dt">Map</span> k y)</a>
+<a class="sourceLine" id="cb10-18" title="18">    <span class="fu">map</span> (<span class="dt">Kl</span> f) mx <span class="fu">=</span> Map.mapMaybe f mx</a>
+<a class="sourceLine" id="cb10-19" title="19"></a>
+<a class="sourceLine" id="cb10-20" title="20">    <span class="co">-- Map.mapMaybe return = Map.mapMaybe Just = id</span></a>
+<a class="sourceLine" id="cb10-21" title="21">    <span class="co">-- Map.mapMaybe (f &lt;=&lt; g) = Map.mapMaybe f . Map.mapMaybe g</span></a></code></pre></div>
+<p>一般的に言って、<a href="http://hackage.haskell.org/package/witherable-0.3/docs/Data-Witherable.html#t:Filterable">Filterable</a> のインスタンスは<code>Kleisli Maybe</code>から<code>Hask</code>への関手です。Filterable則をじっと眺めたら、<code>Kleisli Maybe</code>から<code>Hask</code>への<code>Functor</code>則 だということがわかるでしょう。</p>
+<h3 id="lax-monoidal-関手">lax monoidal 関手</h3>
+<p>(Lax) monoidal 関手は、モノイド圏からモノイド圏への関手で、その構造を保つためのいくつかの条件を満たすものです。今は終対象と直積からなるモノイドだけを考えていたので、それを織り込み済みで書くなら、</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">class</span> (<span class="dt">CartesianProduct</span> (<span class="dt">Dom</span> f), <span class="dt">CartesianProduct</span> (<span class="dt">Cod</span> f), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb11-2" title="2">      <span class="dt">LaxMonoidalFunctor</span> f <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="ot">    unit ::</span> <span class="dt">Cod</span> f (<span class="dt">Terminal</span> (<span class="dt">Cod</span> f)) (f (<span class="dt">Terminal</span> (<span class="dt">Dom</span> f)))</a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="ot">    multiply ::</span> <span class="dt">Cod</span> f (<span class="dt">CP</span> (<span class="dt">Cod</span> f) (f a) (f b)) (f (<span class="dt">CP</span> (<span class="dt">Dom</span> f) a b))</a>
+<a class="sourceLine" id="cb11-5" title="5">    </a>
+<a class="sourceLine" id="cb11-6" title="6">    <span class="co">-- [Naturailty] multiply . (map f *** map g) = map (f *** g) . multiply</span></a>
+<a class="sourceLine" id="cb11-7" title="7">    <span class="co">-- [Left Unit]  map snd . multiply . pair (unit . term) id = id</span></a>
+<a class="sourceLine" id="cb11-8" title="8">    <span class="co">-- [Right Unit] map fst . multiply . pair id (unit . term) = id</span></a>
+<a class="sourceLine" id="cb11-9" title="9">    <span class="co">-- [Associativity] map assoc . multiply . id *** multiply = multiply . multiply *** id . assoc</span></a></code></pre></div>
+<p>ややこしい！！具体例を考えないと頭が爆発しそうなので、<code>Hask</code>から<code>Hask</code>への関手の場合を考えましょう。<code>HaskF</code>を再び登場させます。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">instance</span> (<span class="fu">???</span>) <span class="ot">=&gt;</span> <span class="dt">LaxMonoidalFunctor</span> (<span class="dt">HaskF</span> f) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="ot">    unit ::</span> <span class="co">-- Cod f (Terminal (Cod f)) (HaskF f (Terminal (Dom f))) =</span></a>
+<a class="sourceLine" id="cb12-3" title="3">            <span class="co">-- Hask (Terminal Hask) (HaskF f (Terminal Hask)) =</span></a>
+<a class="sourceLine" id="cb12-4" title="4">            () <span class="ot">-&gt;</span> <span class="dt">HaskF</span> f ()</a>
+<a class="sourceLine" id="cb12-5" title="5">            <span class="co">-- ~ f ()</span></a>
+<a class="sourceLine" id="cb12-6" title="6">    </a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="ot">    multiply ::</span> <span class="co">-- Cod f (CP (Cod f) (HaskF f a) (HaskF f b)) (f (CP (Dom f) a b)) =</span></a>
+<a class="sourceLine" id="cb12-8" title="8">                <span class="co">-- Hask (CP Hask (HaskF f a) (HaskF f b)) (HaskF f (CP Hask a b)) = </span></a>
+<a class="sourceLine" id="cb12-9" title="9">                (<span class="dt">HaskF</span> f a, <span class="dt">HaskF</span> f b) <span class="ot">-&gt;</span> <span class="dt">HaskF</span> f (a, b)</a>
+<a class="sourceLine" id="cb12-10" title="10">                 <span class="co">-- ~ f a -&gt; f b -&gt; f (a,b)</span></a></code></pre></div>
+<p><a href="https://wiki.haskell.org/Typeclassopedia#Alternative_formulation">実はこれって<code>Applicative</code>なんです。</a></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">instance</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="dt">LaxMonoidalFunctor</span> (<span class="dt">HaskF</span> f) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-2" title="2">    unit _ <span class="fu">=</span> <span class="dt">HaskF</span> (<span class="fu">pure</span> ())</a>
+<a class="sourceLine" id="cb13-3" title="3">    </a>
+<a class="sourceLine" id="cb13-4" title="4">    multiply (<span class="dt">HaskF</span> fa, <span class="dt">HaskF</span> fb) <span class="fu">=</span> <span class="dt">HaskF</span> <span class="fu">$</span> (,) <span class="fu">&lt;$&gt;</span> fa <span class="fu">&lt;*&gt;</span> fb</a></code></pre></div>
+<p>そしてなんと、<code>Kleisli Maybe</code>から<code>Hask</code>への関手としての<code>Map k</code>も<code>LaxMonoidalFunctor</code>になって、 そのメソッドは<code>Align</code>クラスを使って定義できるのです！</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">instance</span> (<span class="dt">Ord</span> k) <span class="ot">=&gt;</span> <span class="dt">LaxMonoidalFunctor</span> (<span class="dt">Map</span> k) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="ot">    unit ::</span> <span class="co">--    Cod f (Terminal (Cod f)) (f (Terminal (Dom f)))</span></a>
+<a class="sourceLine" id="cb14-3" title="3">            <span class="co">--  = Terminal Hask -&gt; Map k (Terminal (Kleisli Maybe)) =</span></a>
+<a class="sourceLine" id="cb14-4" title="4">            () <span class="ot">-&gt;</span> <span class="dt">Map</span> k <span class="dt">Void</span></a>
+<a class="sourceLine" id="cb14-5" title="5">    unit _ <span class="fu">=</span> Data.Align.nil</a>
+<a class="sourceLine" id="cb14-6" title="6">    </a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="ot">    multiply ::</span> <span class="co">-- Cod f (CP (Cod f) (f a) (f b)) (f (CP (Dom f) a b))</span></a>
+<a class="sourceLine" id="cb14-8" title="8">                <span class="co">-- = Hask (CP Hask (Map k a) (Map k b)) (Map k (CP (Kleisli Maybe) a b)) =</span></a>
+<a class="sourceLine" id="cb14-9" title="9">                (<span class="dt">Map</span> k a, <span class="dt">Map</span> k b) <span class="ot">-&gt;</span> <span class="dt">Map</span> k (<span class="dt">These</span> a b)</a>
+<a class="sourceLine" id="cb14-10" title="10">    multiply (ma, mb) <span class="fu">=</span> Data.Align.align ma mb</a></code></pre></div>
+<p>やったか！？</p>
+<h2 id="align-laxmonoidalfunctor">Align ≠ LaxMonoidalFunctor</h2>
+<p>実はやってないんです。<code>[]</code>はHaskからHaskへの関手でもありますが、<code>mapMaybe</code>を考えることで<code>Kleisli Maybe</code>から<code>Hask</code>への関手と見なすこともできます。</p>
+<p>しかし、<code>Align</code>を使った次の定義は法則を満たしません。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">instance</span> <span class="dt">LaxMonoidalFunctor</span> [] <span class="kw">where</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="ot">    unit ::</span> () <span class="ot">-&gt;</span> [<span class="dt">Void</span>]</a>
+<a class="sourceLine" id="cb15-3" title="3">    unit _ <span class="fu">=</span> Data.Align.nil</a>
+<a class="sourceLine" id="cb15-4" title="4">    </a>
+<a class="sourceLine" id="cb15-5" title="5"><span class="ot">    multiply ::</span> ([a], [b]) <span class="ot">-&gt;</span> [<span class="dt">These</span> a b]</a>
+<a class="sourceLine" id="cb15-6" title="6">    multiply (as, bs) <span class="fu">=</span> Data.Align.align as bs</a></code></pre></div>
+<p><code>LaxMonoidalFunctor</code>則の</p>
+<pre><code>    multiply . (map f *** map g) = map (f *** g) . multiply</code></pre>
+<p>を満たさないのです！つまり、</p>
+<blockquote>
+<p>… an <code>Align</code> instance is making your functor lax monoidal w.r.t. the cartesian monoidal structure on <code>Kleisli Maybe</code> …</p>
+</blockquote>
+<p>という説明は<strong>現状に合っていない</strong>ということです。</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
