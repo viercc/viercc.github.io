@@ -29,9 +29,10 @@
         
     </section>
     <section>
-        <p>型クラス<code>Align</code>は<code>Kleisli Maybe</code>から<code>-&gt;</code>へのlax monoidal functorだと書いてあるけど、微妙に違うんじゃないかという事についてです。</p>
+        <p>型クラス<a href="http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html"><code>Align</code></a>は<code>Kleisli Maybe</code>から<code>-&gt;</code>へのlax monoidal functorだとドキュメントに書いてあるけど、それは違うんじゃないかという事についてです。</p>
+<p>Applicativeによく似た構造をしているAlignですが、その意味をきちんと定義するAlign則はまだ未完成で、 先日それに関して作者のGitHubにIssueを投げました。 この記事はその準備として書き始めたものですが、せっかくなのでここで公開することししました。</p>
 <h2 id="align-って何"><code>Align</code> って何</h2>
-<p><code>Align</code>は、theseパッケージの<a href="http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html">Data.Align</a>で定義されている型クラスです。</p>
+<p><code>Align</code>は、theseパッケージのData.Alignで定義されている型クラスです。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Align</span> f <span class="kw">where</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="ot">    nil ::</span> f a</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="ot">    align ::</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f (<span class="dt">These</span> a b)</a></code></pre></div>
@@ -247,7 +248,7 @@
 <a class="sourceLine" id="cb14-10" title="10">    multiply (ma, mb) <span class="fu">=</span> Data.Align.align ma mb</a></code></pre></div>
 <p>やったか！？</p>
 <h2 id="align-laxmonoidalfunctor">Align ≠ LaxMonoidalFunctor</h2>
-<p>実はやってないんです。<code>[]</code>はHaskからHaskへの関手でもありますが、<code>mapMaybe</code>を考えることで<code>Kleisli Maybe</code>から<code>Hask</code>への関手と見なすこともできます。</p>
+<p>実はやってないんです。<code>[]</code>はHaskからHaskへの関手でもありますが、先程挙げた例に示すとおり<code>Kleisli Maybe</code>から<code>Hask</code>への関手と見なすこともできます。</p>
 <p>しかし、<code>Align</code>を使った次の定義は法則を満たしません。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">instance</span> <span class="dt">LaxMonoidalFunctor</span> [] <span class="kw">where</span></a>
 <a class="sourceLine" id="cb15-2" title="2"><span class="ot">    unit ::</span> () <span class="ot">-&gt;</span> [<span class="dt">Void</span>]</a>
@@ -262,6 +263,9 @@
 <p>… an <code>Align</code> instance is making your functor lax monoidal w.r.t. the cartesian monoidal structure on <code>Kleisli Maybe</code> …</p>
 </blockquote>
 <p>という説明は<strong>現状に合っていない</strong>ということです。</p>
+<h2 id="結論">結論</h2>
+<p><code>Data.Align</code>のドキュメンテーションには、「<code>Align</code>は<code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手を表す」 という格好いい一文があり、それがもし本当ならAlign則のもっと適切なバージョンを導くといったうれしい点がありました。</p>
+<p>しかし、現状<code>Map k</code>や<code>HashMap k</code>といったインスタンスだけがlax monoidal関手を表しており、 <code>[]</code>や<code>Seq</code>などはそうなっていません。つまり、現状を追認する形でAlign則を定義しようとするなら、 <em><code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手</em>というアプローチは取れないということです。</p>
     </section>
 </article>
 
