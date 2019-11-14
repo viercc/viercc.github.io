@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - モナドになれないFunctor</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>モナドになれないFunctor</h1>
+            <article>
+    <section class="header">
+        Posted on November 15, 2019
+        
+    </section>
+    <section>
+        <h2 id="モナドになれないfunctor-a-functor-which-cant-be-a-monad">モナドになれないFunctor (A Functor which can’t be a Monad)</h2>
+<p>このFunctorをMonadにする方法があるだろうか？</p>
+<pre><code>data F2 x = Z | P x x
+  deriving (Functor)
+
+pure :: forall x. x -&gt; F2 x
+join :: forall x. F2 (F2 x) -&gt; F2 x</code></pre>
+<p>It’s easy to prove <code>pure x ≠ Z</code>, because <code>join . pure = id</code>. So it must be:</p>
+<pre><code>pure x = P x x   -- (1)</code></pre>
+<p>What about join?　Trivially, when called with an argument which have no <code>x</code> value, it have to return <code>Z</code>.</p>
+<pre><code>join Z = Z           -- (2)
+join (P Z Z) = Z     -- (3)</code></pre>
+<p>From the Monad law,</p>
+<pre><code>-- join . pure = id
+join (P mx mx) = mx
+join (P (P x y) (P x y)) = P x y      -- (4)
+
+-- join . fmap pure = id
+join $ fmap pure (P x y)
+  = join (P (P x x) (P y y)) = P x y  -- (5)</code></pre>
+<p>To satisfy (4) and (5) simultaneously, it must be:</p>
+<pre><code>join (P (P x y) (P z w)) = P x w      -- (6)</code></pre>
+<p>To satisfy another Monad law, associativity, the following must hold.</p>
+<pre><code>join . join = join (fmap join)</code></pre>
+<p>What <code>join</code> should return in the following case?</p>
+<pre><code>join (P (P x y) Z) = ???</code></pre>
+<p>(Case-Z) If <code>??? = Z</code>, then</p>
+<pre><code>bad1 = P (P (P x y) Z      )
+         (P Z       (P z w))
+
+(join . join)      bad1 = join (P (P x y) (P z w)) = P x w
+(join . fmap join) bad1 = join (P Z (join (P Z (P z w)))) ≠ P x w</code></pre>
+<p>(Case-P) If <code>??? = P (s x y) (t x y)</code> for some functions <code>s, t :: forall x. x -&gt; x -&gt; x</code>, Then</p>
+<pre><code>bad2 = P (P (P x y) Z)
+         (P (P z w) Z)
+
+(join . join) bad2
+  = join $ P (P x y) Z
+  = P (s x y) (t x y)
+(join . fmap join) bad2
+  = join $ P (P (s x y) (t x y))
+             (P (s z w) (t z w))
+  = P (s x y) (t z w)
+  ≠ P (s x y) (t x y)</code></pre>
+<p>Thus there can be no lawful Monad instance!</p>
+<h2 id="一般化しよう">一般化しよう</h2>
+<pre><code>data F k x = Zero | Pow (k -&gt; x)
+    deriving (Functor)</code></pre>
+<p>From the same arguent to above <code>F2</code>,</p>
+<pre><code>pure :: forall x. x -&gt; F k 
+pure x = Pow (const x)</code></pre>
+<p>And</p>
+<pre><code>join Zero = Zero
+join (Pow $ \_ -&gt; Zero) = Zero
+join $ Pow (\i -&gt; Pow (\j -&gt; f i j)) = Pow (\i -&gt; f i i)  -- (join-Pow-Pow)
+  -- join $ Pow (\_ -&gt; Pow f)           = Pow f
+  -- join $ Pow (\i -&gt; Pow (\_ -&gt; f i)) = Pow f</code></pre>
+<p>Assume <code>k</code> has two or more distinct values and there is a way to discriminate them, i.e.</p>
+<pre><code>-- p truthy = True
+-- p falsy = False
+p :: k -&gt; Bool
+truthy, falsy :: k
+
+ifP, unlessP :: forall x. (k -&gt; x) -&gt; F k (F k x)
+ifP f = Pow (\i -&gt; if p i then Pow f else Zero)
+unlessP f = Pow (\i -&gt; if p i then Zero else Pow f)</code></pre>
+<p>What <code>join</code> should return in this case?</p>
+<pre><code>join (ifP f) = ???</code></pre>
+<p>Suppose <code>join (ifP f) = Zero</code>, then</p>
+<pre><code>-- free parameters
+type A :: *
+f, g :: k -&gt; A
+
+bad1 :: F k (F k (F k A))
+bad1 = Pow (\i -&gt; if p i then ifP f else unlessP g)
+       -- Notice that both `ifP` and `unlessP` returns `Pow _`
+     = Pow $ \i -&gt; Pow $ \j -&gt;
+         if p i
+           then if p j then Pow f else Zero
+           else if p j then Zero  else Pow g
+
+(join . join) bad1
+     -- Use (join-Pow-Pow)
+   = join $ Pow $ \i -&gt;
+       if p i
+         then if p i then Pow f else Zero
+         else if p i then Zero  else Pow g
+   = join $ Pow \i -&gt; if p i then Pow f else Pow g
+   = join $ Pow \i -&gt; Pow $ if p i then f else g
+   = Pow $ \i -&gt; if p i then f i else g i
+
+(join . fmap join) bad1
+     -- Use definition of fmap
+   = join $ Pow $ \i -&gt; if p i then join (ifP f) else join (unlessP g)
+     -- Use the assumption: join (ifP f) = Zero
+   = join $ Pow $ \i -&gt; if p i then Zero else join (unlessP g)</code></pre>
+<p>Since <code>(join . join) bad1</code> depends on <code>f</code> but <code>(join . fmap join) bad1</code> doesn’t, <code>join . join ≠ join . fmap join</code>.</p>
+<p>Suppose <code>join (ifP f) = Pow (s f)</code> for some function (<code>s :: forall x. (k -&gt; x) -&gt; k -&gt; x</code>), then</p>
+<pre><code>bad2 :: F k (F k (F k A))
+bad2 = Pow (\i -&gt; if p i then ifP f else ifP g)
+     = Pow $ \i -&gt; Pow $ \j -&gt;
+       if p i
+          then if p j then Pow f else Zero
+          then if p j then Pow g else Zero
+
+(join . join) bad2
+       -- Use (join-Pow-Pow)
+   = join $ Pow $ \i -&gt;
+       if p i
+         then if p i then Pow f else Zero
+         else if p i then Pow g else Zero
+   = join $ Pow $ \i -&gt;
+       if p i then Pow f else Zero
+   = join (ifP f)
+       -- Use assumption
+   = Pow (s f)
+
+(join . fmap join) bad2
+       -- Use definition of fmap
+   = join $ Pow $ \i -&gt; if p i then join (ifP f) else join (ifP g)
+       -- Use assumption
+   = join $ Pow $ \i -&gt; if p i then Pow (s f) else Pow (s g)
+   = join $ Pow $ \i -&gt; Pow $ if p i then s f else s g
+   = Pow $ \i -&gt; if p i then s f i else s g i</code></pre>
+<p>Since <code>(join . join) bad2</code> doesn’t depend on <code>g</code> but <code>(join . fmap join) bad2</code> does, <code>join . join ≠ join . fmap join</code>.</p>
+<p>Thus, no return values satisfy the Monad law for <code>join (ifP f)</code>.</p>
+<p>Conclusion: for any type <code>k</code> with two or more (discriminatable) values, <code>F k</code> can’t be a Monad.</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
