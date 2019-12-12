@@ -100,14 +100,28 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
 一方で、非常に広い範囲の多項式Functorに対してMonadのインスタンスが定義できることもわかっています。
 これらを組み合わせて、任意の多項式Functorに対してMonadのインスタンスが定義できるかどうかを判定する方法を示します。
 
+* 主張0: ある多項式Functor`F`が `F(x) ~ c` と書けるならば、`|c| = 1`のとき、またそのときに限り`F`のMonadのインスタンスが存在する。
 * 主張1: ある多項式Functor`F`が `F(x) ~ x * G(x)` と書けるならば、`F`のMonadのインスタンスが存在する。
 * 主張2: ある多項式Functor`F`が `F(x) ~ 1 + x + G(x)` と書けるならば、`F`のMonadのインスタンスが存在する。
-* 主張3: ある多項式Functor`F`が `F(x) ~ c + x^2 * G(x)`(`|c| >= 1`)と書けるならば、`F`のMonadのインスタンスが存在しない。
-* 結論: `F(x) ~ c + b * x + A(x) * x^2` に対してMonadのインスタンスが存在する ⇔ 以下のいずれかが成り立つ
+* 主張3: ある多項式Functor`F`が `F(x) ~ c + x^2 * G(x)`(`|c| >= 1, G(x) ~/~ 0`)と書けるならば、`F`のMonadのインスタンスが存在しない。
+* 結論: `F(x) ~ c + x * b + x^2 * A(x)` に対してMonadのインスタンスが存在する ⇔ 以下のいずれかが成り立つ
 
   * `c = 1, b = 0, A(x) ~ 0`
   * `c = 0, b = 0, A(x) ~/~ 0`
   * `b >= 1`
+
+## 主張0
+
+> ある多項式Functor`F`が `F(x) ~ c` と書けるならば、`|c| = 1`のとき、またそのときに限り`F`のMonadのインスタンスが存在する。
+
+### 証明
+
+（証明部分は常体で書きます）
+
+(⇒)は(Proxy)[http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy]と同じようにMonadのインスタンスが定義できることからわかる。
+
+(⇐)を示す。`pure :: x -> F x` はある定数関数 `const c0` である。このとき、`c0 :: F x ~ c` である。
+任意の`c1 :: F x ~ c`について、`join (pure c1) = join (const c0 c1) = join c0`となるが、Monad則より`join . pure = id`なので`join (pure c1) = c1`でもある。したがって、任意の`c`型の値は`join c0`に等しい。これはすなわち、`|c| = 1`を意味する。
 
 ## 主張1
 
@@ -121,8 +135,6 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
 のように、「定数項」のないFunctorはMonadにできます。
 
 ### 証明
-
-（証明部分は常体で書きます）
 
 `F(x)`の項の数`k`および多項式の次数に関する帰納法を用いる。`k=1`のとき、すなわち`F(x) = x^a`のとき、`F`のMonadのインスタンスがあるのは明らか。
 
@@ -147,10 +159,8 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
 
 ### 証明
 
-（証明部分は常体で書きます）
-
 どの多項式FunctorもTraversableにできるのであった。`G(x)`も`Traversable`であると仮定してよい。
-次のように `F x ~ U g x ~ 1 + x + g x` とそのMonadのインスタンスを定義する。
+次のように `F x ~ U g x = 1 + x + g x` とそのMonadのインスタンスを定義する。
 
 ```haskell
 data U g x = Nothing' | Just' x | Wrap (g x)
@@ -263,7 +273,7 @@ Maybeを任意のMonadに置き換えることはできない。)
 
 ## 主張3
 
-> ある多項式Functor`F`が `F(x) ~ c + x^2 * G(x)`(`|c| >= 1`)と書けるならば、`F`のMonadのインスタンスは存在しない。
+> ある多項式Functor`F`が `F(x) ~ c + x^2 * G(x)`(`|c| >= 1, G(x) ~/~ 0`)と書けるならば、`F`のMonadのインスタンスは存在しない。
 
 例:
 
@@ -272,5 +282,272 @@ Maybeを任意のMonadに置き換えることはできない。)
 
 ### 証明
 
-TODO: まだ
+まず、どんな多項式Functorに対しても、`forall x. x -> F x`という型を持つ関数があれば、それは`F(x)`の特定の項
+`F(x) ~ ... + x^n + ...`に対応するコンストラクタに、`n`個の`x`のコピーを渡した値を返す。このコンストラクタは、当然、`x`に依存せずに決まる。
+
+いま問題としている`F(x) ~ c + x^2 * G(x)`において、Monadの定義における`return :: forall x. x -> F x`に対応する項が`x^n`であるとしたら、`n == 0`であるか、または`n >= 2`である。
+
+仮に`n == 0`であったとする。これはすなわち`return`は定数関数であり、`return x`の値は`x`に依存しないことを意味している。しかし、Monad則より`join (return fx) = fx`でなければならず、また空でない型`X`において`fx :: F X`は2つ以上の異なる値を持つので、`return`は定数関数であってはならない。したがって、`n >= 2`でなければならない。
+
+`return`の返り値に対応する項`x^n`を明示して、`F(x)`が以下のように定義されているとする。
+
+```haskell
+type N = ...
+type C = ...
+type G x = ...
+
+data F x = U (N -> x) | L C | R x x (G x)
+
+return :: forall x. x -> F x
+return x = U (const x)
+```
+
+また、前提条件として与えられている、`C`に1つ以上の値があること及び`N`に2つ以上の異なる値があるという事実が、
+次のように表されているとする。
+
+```haskell
+-- |C| >= 1
+c0 :: C
+
+-- |N| >= 2
+-- p is surjective (f . p = g . p -> f = g)
+p :: N -> Bool
+```
+
+Monad則から、`join :: F (F x) -> F x`の満たすべき等式として次のものが得られる。
+
+```haskell
+-- ∀a :: N -> N -> x
+join $ U (\i -> U (\j -> a i j)) = U $ \i -> a i i
+-- この式は以降(joinUU)という名前で参照する。
+```
+
+これは次のように証明できる。
+
+```haskell
+coord :: F (F (N, N))
+coord = U $ \i -> U $ \j -> (i,j)
+
+fmap fst (join coord)
+ = join (fmap (fmap fst) coord)
+ = join (U $ \i -> U $ \j -> i)
+ = join (U $ \i -> return i)
+ = join (fmap return (U $ \i -> i))
+   -- Monad則(join . fmap return = id)
+ = U $ \i -> i
+
+fmap snd (join coord)
+ = join (fmap (fmap snd) coord)
+ = join (U $ \i -> U $ \j -> j)
+ = join (return $ U $ \j -> j)
+   -- Monad則(join . return = id)
+ = U $ \j -> j
+
+join coord = U $ \i -> (i,i)
+
+join $ U (\i -> U (\j -> a i j))
+ = join $ fmap (fmap (uncurry a)) coord
+ = fmap (uncurry a) $ join coord
+ = fmap (uncurry a) $ U $ \i -> (i,i)
+ = U $ \i -> a i i
+```
+
+これらの条件を用いて、`join`が結合則を満たすことがないことを示す。
+
+まず、次の補助関数を定義する。
+
+```haskell
+fbool :: x -> x -> F x
+fbool x y = U $ \i -> if p i then x else y
+
+zero :: F x
+zero = L c0
+
+ifP :: x -> F (F x)
+ifP x = fbool (return x) zero
+
+unlessP :: x -> F (F x)
+unlessP x = fbool zero (return x)
+```
+
+これらを用いて、`join`の結合則を満たさないような反例をあげることができる。その準備として、次の等式を確認する。
+
+```
+fbool x x
+ = U $ \i -> if p i then x else x
+ = U $ \i -> x
+ = return x
+
+join $ fbool (fbool x y) (fbool z w)
+ = join $ U $ \i ->
+     if p i then U $ \j -> if p j then x else y
+            else U $ \j -> if p j then z else w
+ = join $ U $ \i -> U $ \j -> 
+     if p i then (if p j then x else y)
+            else (if p j then z else w)
+ = U $ \i ->
+     if p i then (if p i then x else y)
+            else (if p i then z else w)
+ = U $ \i -> if p i then x else w
+ = fbool x w
+```
+
+`join (ifP x)`が`x`に依存しないとき：
+
+```haskell
+bad1 :: x -> x -> F (F (F x))
+bad1 x y = fbool (ifP x) (unlessP y)
+
+(join . join) (bad1 x y)
+ = join . join $ fbool (ifP x) (unlessP y)
+ = join . join $ fbool (fbool (return x) zero) (fbool zero (return y))
+ = join $ fbool (return x) (return y)
+ = join $ fmap return (fbool x y)
+ = fbool x y
+   -- x に依存する
+
+(join . fmap join) (bad1 x y)
+ = join . fmap join $ fbool (ifP x) (unlessP y)
+ = join $ fbool (join (ifP x)) (join (unlessP y))
+   -- x に依存しない
+```
+
+同様に、`join (unlessP x)`が`x`に依存しないならば、`bad1 x y`が反例となる。
+
+`join (ifP x)`と`join (unlessP x)`の両方が`x`に依存するとき：
+
+```haskell
+fboolT, fboolF :: x -> x -> F x
+fboolT x y = join $ fbool (fbool x y) zero
+fboolF x y = join $ fbool zero        (fbool x y)
+
+join $ fbool (fboolT x y) (fboolT z w)
+ = join $ fbool (join $ fbool (fbool x y) zero) (join $ fbool (fbool z w) zero)
+ = join . fmap join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)
+   -- 結合則を用いる
+ = join . join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)
+ = join $ fbool (fbool x y) zero
+ = fboolT x y
+
+-- 同様の計算により：
+
+join $ fbool (fboolT x y) (fboolT z w) = fboolT x y
+join $ fbool (fboolT x y) (fboolF z w) = fbool x w
+join $ fbool (fboolF x y) (fboolT z w) = zero
+join $ fbool (fboolF x y) (fboolF z w) = fboolF z w
+
+join $ fbool (fboolT x y) (fbool z w)
+ = join $ fbool (join $ fbool (fbool x y) zero) (join . return $ fbool z w)
+ = join . fmap join $ fbool (fbool (fbool x y) zero) (return $ fbool z w)
+ = join . join $ fbool (fbool (fbool x y) zero) (return $ fbool z w)
+ = join $ fbool (fbool x y) (fbool z w)
+ = fbool x w
+
+-- 同様の計算により：
+
+join $ fbool (fboolF x y) (fbool z w) = fboolF z w
+join $ fbool (fbool x y)  (fboolT z w) = fboolT x y
+join $ fbool (fbool x y)  (fboolF z w) = fbool x w
+
+
+join $ fboolT (fbool x y) (fbool z w)
+ = join . join $ fbool (fbool (fbool x y) (fbool z w)) zero
+ = join . fmap join $ fbool (fbool (fbool x y) (fbool z w)) zero
+ = join $ fbool (join $ fbool (fbool x y) (fbool z w)) zero
+ = join $ fbool (fbool x w) zero
+ = fboolT x w
+
+join $ fboolF (fbool x y) (fbool z w) = fboolF x w
+
+join $ fboolT (fboolT x y) (fboolT z w)
+ = join $ fboolT (join $ fbool (fbool x y) zero) (join $ fbool (fbool z w) zero)
+ = join . fmap join $ fboolT (fbool (fbool x y) zero) (fbool (fbool z w) zero)
+ = join . fmap join . join $ fbool (fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
+ = join . join . fmap join $ fbool (fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
+ = join . join $ fbool (join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
+ = join . join $ fbool (fbool (fbool x y) zero) zero
+ = join . fmap join $ fbool (fbool (fbool x y) zero) zero
+ = join $ fbool (join $ fbool (fbool x y) zero) zero
+ = join $ fbool (fboolT x y) zero
+
+   let fboolTT x y = join $ fbool (fboolT x y) zero
+
+   join $ fbool (fboolTT x y) (fboolT z w)
+    = join . join $ fbool (fbool (fboolT x y) zero) (fbool (fbool z w) zero)
+    = join $ fbool (fboolT x y) zero
+    = fboolTT x y
+    ---- (*1)
+
+   join $ fbool (fboolTT x y) (fboolT z w)
+    = join $ fbool (join $ fbool (fboolT x y) zero) (join . return $ fboolT z w)
+    = join . join $ fbool (fbool (fboolT x y) zero) (return $ fboolT z w)
+    = join $ fbool (fboolT x y) (fboolT z w)
+    = fboolT x y
+    ---- (*2)
+
+   (*1), (*2) を比較すると、
+
+   fboolTT x y = fboolT x y
+
+ = fboolT x y
+
+join $ fboolT (fboolT x y) (fboolF z w)
+ = join $ fboolT (join $ fbool (fbool x y) zero) (join $ fbool zero (fbool z w))
+ = join . join $ fboolT (fbool (fbool x y) zero) (fbool zero (fbool z w))
+ = join . join . join $ fbool (fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
+ = join . join . fmap join $ fbool (fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
+ = join . join $ fbool (join $ fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
+ = join . join $ fbool (fbool (fbool x y) (fbool z w)) zero
+ = fboolT x w
+
+-- 同様に:
+join $ fboolT (fboolT x y) (fbool z w) = fboolT x w
+
+join $ fboolT (fboolF x y) (fboolT z w)
+ = join $ fboolT (join $ fbool zero (fbool x y)) (join $ fbool (fbool z w) zero)
+ = join . join $ fboolT (fbool zero (fbool x y)) (fbool (fbool z w) zero)
+ = join . join . join $ fbool (fbool (fbool zero (fbool x y)) (fbool (fbool z w) zero)) zero
+ = join . join $ fbool (fbool zero zero) zero
+ = join $ fbool zero zero
+ = zero
+
+join $ fboolT (fboolF x y) (fboolF z w)
+ = join $ fboolT (join $ fbool zero (fbool x y)) (join $ fbool zero (fbool z w))
+ = join . join $ fboolT (fbool zero (fbool x y)) (fbool zero (fbool z w))
+ = join . join . join $ fbool (fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
+ = join . join . fmap join $ fbool (fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
+ = join . join $ fbool (join $ fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
+ = join . join $ fbool (fbool zero (fbool z w)) zero
+ = join $ fbool (fboolF z w) zero
+ 
+   let fboolTF x y = join $ fbool (fboolF z w) zero
+
+   join $ fbool (fboolTF x y) (fboolT z w)
+    = fboolTF x y
+   
+   join $ fbool (fboolTF x y) (fboolT z w)
+    = join $ fbool (join $ fbool (fboolF x y) zero) (join . return $ fboolT z w)
+    = join . join $ fbool (fbool (fboolF x y) zero) (return $ fboolT z w)
+    = join $ fbool (fboolF x y) (fboolT z w)
+    = zero
+   
+   したがって
+   fboolTF x y = zero
+ = zero
+
+(省略)
+
+bad1 = fbool (fbool (fbool x y) (fbool z w)) (return zero)
+
+join . join $ bad1
+ = join $ fbool (fbool x y) zero
+ = fboolT x y
+
+join . fmap join $ bad1
+ = join $ fbool (fbool x w) zero
+ = fboolT x w
+
+  =>  fboolT x y = fboolT x w
+
+```
 
