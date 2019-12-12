@@ -357,28 +357,30 @@ join $ U (\i -> U (\j -> a i j))
 まず、次の補助関数を定義する。
 
 ```haskell
-fbool :: x -> x -> F x
-fbool x y = U $ \i -> if p i then x else y
+(?) :: x -> x -> F x
+(?) x y = U $ \i -> if p i then x else y
+
+infix 5 ?
 
 zero :: F x
 zero = L c0
 
 ifP :: x -> F (F x)
-ifP x = fbool (return x) zero
+ifP x = return x ? zero
 
 unlessP :: x -> F (F x)
-unlessP x = fbool zero (return x)
+unlessP x = zero ? return x
 ```
 
 これらを用いて、`join`の結合則を満たさないような反例をあげることができる。その準備として、次の等式を確認する。
 
 ```
-fbool x x
+x ? x
  = U $ \i -> if p i then x else x
  = U $ \i -> x
  = return x
 
-join $ fbool (fbool x y) (fbool z w)
+join $ (x ? y) ? (z ? w)
  = join $ U $ \i ->
      if p i then U $ \j -> if p j then x else y
             else U $ \j -> if p j then z else w
@@ -389,165 +391,117 @@ join $ fbool (fbool x y) (fbool z w)
      if p i then (if p i then x else y)
             else (if p i then z else w)
  = U $ \i -> if p i then x else w
- = fbool x w
+ = x ? w
 ```
 
-`join (ifP x)`が`x`に依存しないとき：
+次の`bad1`において結合則を確認する。
 
 ```haskell
 bad1 :: x -> x -> F (F (F x))
-bad1 x y = fbool (ifP x) (unlessP y)
+bad1 x y = ifP x ? unlessP y
 
 (join . join) (bad1 x y)
- = join . join $ fbool (ifP x) (unlessP y)
- = join . join $ fbool (fbool (return x) zero) (fbool zero (return y))
- = join $ fbool (return x) (return y)
- = join $ fmap return (fbool x y)
- = fbool x y
-   -- x に依存する
+ = join . join $ ifP x ? unlessP y
+ = join . join $ (return x ? zero) ? (zero ? return y)
+ = join $ return x ? return y
+ = join $ (x ? x) ? (y ? y)
+ = x ? y
+   -- x, yの両方に依存する
 
 (join . fmap join) (bad1 x y)
- = join . fmap join $ fbool (ifP x) (unlessP y)
- = join $ fbool (join (ifP x)) (join (unlessP y))
-   -- x に依存しない
+ = join . fmap join $ ifP x ? unlessP y
+ = join $ join (ifP x) ? join (unlessP y)
 ```
 
-同様に、`join (unlessP x)`が`x`に依存しないならば、`bad1 x y`が反例となる。
-
-`join (ifP x)`と`join (unlessP x)`の両方が`x`に依存するとき：
+前者が`x`に依存する値を返すので、後者もそうでなければならない。そのためには、`join (ifP x)`は`x`に依存しなければならない。同様に、`join (unlessP y)`も`y`に依存しなければならない。
 
 ```haskell
 fboolT, fboolF :: x -> x -> F x
-fboolT x y = join $ fbool (fbool x y) zero
-fboolF x y = join $ fbool zero        (fbool x y)
+fboolT x y = join $ (x ? y) ? zero
+fboolF x y = join $ zero    ? (x ? y)
 
-join $ fbool (fboolT x y) (fboolT z w)
- = join $ fbool (join $ fbool (fbool x y) zero) (join $ fbool (fbool z w) zero)
- = join . fmap join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)
+join . join $ ((x ? y) ? (z ? w)) ? (zero ? zero)
+ = join $ (x ? y) ? zero
+ = fboolT x y
+join . fmap join $ ((x ? y) ? (z ? w)) ? (zero ? zero)
+ = join $ (join $ (x ? y) ? (z ? w)) (join $ zero ? zero)
+ = join $ (x ? w) ? zero
+ = fboolT x w
+```
+
+したがって、任意のy,wに関して `fboolT x y = fboolT x w` が成り立つ。これは、`fboolT x y`は`y`に依存せずに決まる関数`t x`に等しいことを意味する。同様に、`fboolF x y`も`x`に依存せずに決まる関数`f y`に等しい。
+
+```haskell
+t, f :: x -> F x
+t x = join $ (x ? _) ? zero
+f y = join $ zero ? (_ ? y)
+```
+
+また、`ifP x = return x ? zero = (x ? x) ? zero` であるから、`join . ifP = t`が成り立つ。
+同様に`join . unlessP = f`である。このため、`t, f`ともにその引数に依存した結果を返す関数である。
+
+```
+join $ fbool (t x) (t y)
+ = join $ fbool (join $ (x ? _) ? zero) (join $ (y ? _) ? zero)
+ = join . fmap join $ ((x ? _) ? zero) ? ((y ? _) ? zero)
    -- 結合則を用いる
- = join . join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)
- = join $ fbool (fbool x y) zero
- = fboolT x y
+ = join . join $ ((x ? _) ? zero) ? ((y ? _) ? zero)
+ = join $ (x ? _) ? zero
+ = t x
 
 -- 同様の計算により：
 
-join $ fbool (fboolT x y) (fboolT z w) = fboolT x y
-join $ fbool (fboolT x y) (fboolF z w) = fbool x w
-join $ fbool (fboolF x y) (fboolT z w) = zero
-join $ fbool (fboolF x y) (fboolF z w) = fboolF z w
+join $ fbool (t x) (t y) = t x
+join $ fbool (t x) (f y) = x ? y
+join $ fbool (f x) (t y) = zero
+join $ fbool (f x) (f y) = f y
 
-join $ fbool (fboolT x y) (fbool z w)
- = join $ fbool (join $ fbool (fbool x y) zero) (join . return $ fbool z w)
- = join . fmap join $ fbool (fbool (fbool x y) zero) (return $ fbool z w)
- = join . join $ fbool (fbool (fbool x y) zero) (return $ fbool z w)
- = join $ fbool (fbool x y) (fbool z w)
- = fbool x w
+join $ t x ? (z ? w)
+ = join $ fbool (join $ (x ? _) ? zero) (join . return $ z ? w)
+ = join . fmap join $ ((x ? _) ? zero) ? (return $ z ? w)
+ = join . join $ ((x ? _) ? zero) ? (return $ z ? w)
+ = join $ (x ? _) ? (z ? w)
+ = x ? w
 
 -- 同様の計算により：
 
-join $ fbool (fboolF x y) (fbool z w) = fboolF z w
-join $ fbool (fbool x y)  (fboolT z w) = fboolT x y
-join $ fbool (fbool x y)  (fboolF z w) = fbool x w
+join $ f y ? (z ? w) = f w
+join $ (x ? y) ? t z = t x
+join $ (x ? y) ? f w = x ? w
 
 
-join $ fboolT (fbool x y) (fbool z w)
- = join . join $ fbool (fbool (fbool x y) (fbool z w)) zero
- = join . fmap join $ fbool (fbool (fbool x y) (fbool z w)) zero
- = join $ fbool (join $ fbool (fbool x y) (fbool z w)) zero
- = join $ fbool (fbool x w) zero
- = fboolT x w
+join $ t (x ? y)
+ = join . join $ ((x ? y) ? _) ? zero
+ = join . fmap join $ ((x ? y) ? _) ? zero
+ = join $ (join $ (x ? y) ? _) ? join zero
+ -- _ = (_ ? _)
+ = join $ (x ? _) ? zero
+ = t x
 
-join $ fboolF (fbool x y) (fbool z w) = fboolF x w
+join $ f (z ? w) = f w
 
-join $ fboolT (fboolT x y) (fboolT z w)
- = join $ fboolT (join $ fbool (fbool x y) zero) (join $ fbool (fbool z w) zero)
- = join . fmap join $ fboolT (fbool (fbool x y) zero) (fbool (fbool z w) zero)
- = join . fmap join . join $ fbool (fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
- = join . join . fmap join $ fbool (fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
- = join . join $ fbool (join $ fbool (fbool (fbool x y) zero) (fbool (fbool z w) zero)) zero
- = join . join $ fbool (fbool (fbool x y) zero) zero
- = join . fmap join $ fbool (fbool (fbool x y) zero) zero
- = join $ fbool (join $ fbool (fbool x y) zero) zero
- = join $ fbool (fboolT x y) zero
+join $ t (t x)
+ = join $ t (join $ (x ? _) ? zero)
+ = join . fmap join $ t ((x ? _) ? zero)
+ = join . fmap join . join $ (((x ? _) ? zero) ? _) ? zero
+ = join . join . fmap join $ (((x ? _) ? zero) ? _) ? zero
+ = join . join $ (join $ ((x ? _) ? zero) ? _) ? join zero
+ = join . join $ ((x ? _) ? _) ? zero
+ = join . fmap join $ ((x ? _) ? _) ? zero
+ = join $ (join $ (x ? _) ? _) ? zero
+ = join $ (x ? _) ? zero
+ = t x
 
-   let fboolTT x y = join $ fbool (fboolT x y) zero
+join $ f (f x) = f x
 
-   join $ fbool (fboolTT x y) (fboolT z w)
-    = join . join $ fbool (fbool (fboolT x y) zero) (fbool (fbool z w) zero)
-    = join $ fbool (fboolT x y) zero
-    = fboolTT x y
-    ---- (*1)
-
-   join $ fbool (fboolTT x y) (fboolT z w)
-    = join $ fbool (join $ fbool (fboolT x y) zero) (join . return $ fboolT z w)
-    = join . join $ fbool (fbool (fboolT x y) zero) (return $ fboolT z w)
-    = join $ fbool (fboolT x y) (fboolT z w)
-    = fboolT x y
-    ---- (*2)
-
-   (*1), (*2) を比較すると、
-
-   fboolTT x y = fboolT x y
-
- = fboolT x y
-
-join $ fboolT (fboolT x y) (fboolF z w)
- = join $ fboolT (join $ fbool (fbool x y) zero) (join $ fbool zero (fbool z w))
- = join . join $ fboolT (fbool (fbool x y) zero) (fbool zero (fbool z w))
- = join . join . join $ fbool (fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
- = join . join . fmap join $ fbool (fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
- = join . join $ fbool (join $ fbool (fbool (fbool x y) zero) (fbool zero (fbool z w))) zero
- = join . join $ fbool (fbool (fbool x y) (fbool z w)) zero
- = fboolT x w
-
--- 同様に:
-join $ fboolT (fboolT x y) (fbool z w) = fboolT x w
-
-join $ fboolT (fboolF x y) (fboolT z w)
- = join $ fboolT (join $ fbool zero (fbool x y)) (join $ fbool (fbool z w) zero)
- = join . join $ fboolT (fbool zero (fbool x y)) (fbool (fbool z w) zero)
- = join . join . join $ fbool (fbool (fbool zero (fbool x y)) (fbool (fbool z w) zero)) zero
- = join . join $ fbool (fbool zero zero) zero
- = join $ fbool zero zero
+join $ t (f x)
+ = join $ t (join $ zero ? (_ ? x))
+ = join . join $ t (zero ? (_ ? x))
+ = join . join . join $ ((zero ? (_ ? x)) ? _) ? zero
+ = join . join $ (join $ (zero ? (_ ? x)) ? _) ? zero
+ = join . join $ (zero ? _) ? zero
  = zero
 
-join $ fboolT (fboolF x y) (fboolF z w)
- = join $ fboolT (join $ fbool zero (fbool x y)) (join $ fbool zero (fbool z w))
- = join . join $ fboolT (fbool zero (fbool x y)) (fbool zero (fbool z w))
- = join . join . join $ fbool (fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
- = join . join . fmap join $ fbool (fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
- = join . join $ fbool (join $ fbool (fbool zero (fbool x y)) (fbool zero (fbool z w))) zero
- = join . join $ fbool (fbool zero (fbool z w)) zero
- = join $ fbool (fboolF z w) zero
- 
-   let fboolTF x y = join $ fbool (fboolF z w) zero
-
-   join $ fbool (fboolTF x y) (fboolT z w)
-    = fboolTF x y
-   
-   join $ fbool (fboolTF x y) (fboolT z w)
-    = join $ fbool (join $ fbool (fboolF x y) zero) (join . return $ fboolT z w)
-    = join . join $ fbool (fbool (fboolF x y) zero) (return $ fboolT z w)
-    = join $ fbool (fboolF x y) (fboolT z w)
-    = zero
-   
-   したがって
-   fboolTF x y = zero
- = zero
-
-(省略)
-
-bad1 = fbool (fbool (fbool x y) (fbool z w)) (return zero)
-
-join . join $ bad1
- = join $ fbool (fbool x y) zero
- = fboolT x y
-
-join . fmap join $ bad1
- = join $ fbool (fbool x w) zero
- = fboolT x w
-
-  =>  fboolT x y = fboolT x w
-
+join $ f (t x) = zero
 ```
 
