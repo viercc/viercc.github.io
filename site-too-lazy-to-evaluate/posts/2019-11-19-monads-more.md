@@ -110,6 +110,8 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
   * `c = 0, b = 0, A(x) ~/~ 0`
   * `b >= 1`
 
+主張0 ~ 主張3から結論が出ることは簡単に確かめられる。
+
 ## 主張0
 
 > ある多項式Functor`F`が `F(x) ~ c` と書けるならば、`|c| = 1`のとき、またそのときに限り`F`のMonadのインスタンスが存在する。
@@ -302,16 +304,24 @@ return :: forall x. x -> F x
 return x = U (const x)
 ```
 
-また、前提条件として与えられている、`C`に1つ以上の値があること及び`N`に2つ以上の異なる値があるという事実が、
-次のように表されているとする。
+また、前提条件として与えられている、`C`に1つ以上の値があることが、次のように表されているとする。
 
 ```haskell
 -- |C| >= 1
 c0 :: C
+zero :: forall x. F x
+zero = L c0
+```
 
--- |N| >= 2
--- p is surjective (f . p = g . p -> f = g)
-p :: N -> Bool
+簡単にわかることとして、`join zero = zero`がある。
+
+```haskell
+join (L c0)
+ -- fmap f (L c) = L c
+ = join (fmap return $ L c0)
+ = join . fmap return $ L c0
+ -- join . fmap return = id
+ = L c0
 ```
 
 Monad則から、`join :: F (F x) -> F x`の満たすべき等式として次のものが得られる。
@@ -321,7 +331,7 @@ Monad則から、`join :: F (F x) -> F x`の満たすべき等式として次の
 join $ U (\i -> U (\j -> a i j)) = U $ \i -> a i i
 ```
 
-これは次のように証明できる。
+以降、この等式は`joinUU`という名前で呼ぶ。また、これは次のように証明できる。
 
 ```haskell
 coord :: F (F (N, N))
@@ -351,255 +361,200 @@ join $ U (\i -> U (\j -> a i j))
  = U $ \i -> a i i
 ```
 
-これらの条件を用いて、`join`が結合則を満たすことがないことを示す。
-
-まず、次の補助関数を定義する。
+ここで、次の関数を考える。
 
 ```haskell
-(?) :: x -> x -> F x
-(?) x y = U $ \i -> if p i then x else y
-
-infix 5 ?
-
-zero :: F x
-zero = L c0
-
-ifP :: x -> F (F x)
-ifP x = return x ? zero
-
-unlessP :: x -> F (F x)
-unlessP x = zero ? return x
+at :: forall x. N -> x -> F x
+at i x = join $ U (\j -> if i == j then return x else zero)
 ```
 
-これらを用いて、`join`の結合則を満たさないような反例をあげることができる。その準備として、次の等式を確認する。
-
-```
-x ? x
- = U $ \i -> if p i then x else x
- = U $ \i -> x
- = return x
-
-join $ (x ? y) ? (z ? w)
- = join $ U $ \i ->
-     if p i then U $ \j -> if p j then x else y
-            else U $ \j -> if p j then z else w
- = join $ U $ \i -> U $ \j -> 
-     if p i then (if p j then x else y)
-            else (if p j then z else w)
- = U $ \i ->
-     if p i then (if p i then x else y)
-            else (if p i then z else w)
- = U $ \i -> if p i then x else w
- = x ? w
-```
-
-次の`bad1`において結合則を確認する。
+いま、ある`i :: N`において`at i x`が`x`に依存しないと仮定する。
+このとき、次の`sweep f`は`f i`の値に依存しないはずである。
 
 ```haskell
-bad1 :: x -> x -> F (F (F x))
-bad1 x y = ifP x ? unlessP y
-
-(join . join) (bad1 x y)
- = join . join $ ifP x ? unlessP y
- = join . join $ (return x ? zero) ? (zero ? return y)
- = join $ return x ? return y
- = join $ (x ? x) ? (y ? y)
- = x ? y
-   -- x, yの両方に依存する
-
-(join . fmap join) (bad1 x y)
- = join . fmap join $ ifP x ? unlessP y
- = join $ join (ifP x) ? join (unlessP y)
+sweep :: forall x. (N -> x) -> F (F x)
+sweep f = U $ \j -> at j (f j)
 ```
 
-前者が`x`に依存する値を返すので、後者もそうでなければならない。そのためには、`join (ifP x)`は`x`に依存しなければならない。同様に、`join (unlessP y)`も`y`に依存しなければならない。
+一方、`join $ sweep f`を`join`の結合則を用いて計算すると、以下のようになる。
 
 ```haskell
-fboolT, fboolF :: x -> x -> F x
-fboolT x y = join $ (x ? y) ? zero
-fboolF x y = join $ zero    ? (x ? y)
-
-join . join $ ((x ? y) ? (z ? w)) ? (zero ? zero)
- = join $ (x ? y) ? zero
- = fboolT x y
-join . fmap join $ ((x ? y) ? (z ? w)) ? (zero ? zero)
- = join $ (join $ (x ? y) ? (z ? w)) (join $ zero ? zero)
- = join $ (x ? w) ? zero
- = fboolT x w
+join $ sweep f
+ = join $ U (\j -> at j (f j))
+ = join $ U (\j -> join $ U (\k -> if j == k then return (f j) else zero))
+ = join . fmap join $ U (\j -> U (\k -> if j == k then return (f j) else zero))
+ -- 結合則
+ = join . join $ U (\j -> U (\k -> if j == k then return (f j) else zero))
+ -- joinUU
+ = join $ U (\j -> if j == j then return (f j) else zero)
+ = join $ U (\j -> return (f j))
+ = join . fmap return $ U (\j -> f j)
+ -- 単位則
+ = U f
 ```
 
-したがって、任意のy,wに関して `fboolT x y = fboolT x w` が成り立つ。これは、`fboolT x y`は`y`に依存せずに決まる関数`t x`に等しいことを意味する。同様に、`fboolF x y`も`x`に依存せずに決まる関数`f y`に等しい。
+これは明らかに`f`の任意の点`i :: N`での値に依存する。これは矛盾である。
+
+* **事実1**: 任意の`i`に対して`at i x`は`x`に依存する。
+
+次に、`at i /= return`を示す。
 
 ```haskell
-t, f :: x -> F x
-t x = join $ (x ? _) ? zero
-f y = join $ zero ? (_ ? y)
+U f >>= return
+ = U f
+U f >>= at i
+ = join $ U (\j -> at i (f j))
+ = join $ U (\j -> join $ U (\k -> if i == k then return (f j) else zero))
+ = join . fmap join $ U (\j -> U (\k -> if i == k then return (f j) else zero))
+ = join . join $ U (\j -> U (\k -> if i == k then return (f j) else zero))
+ = join $ U (\j -> if i == j then return (f j) else zero)
+ = join $ U (\j -> if i == j then return (f i) else zero)
+ = at i (f i)
 ```
 
-また、`ifP x = return x ? zero = (x ? x) ? zero` であるから、`join . ifP = t`が成り立つ。
-同様に`join . unlessP = f`である。このため、`t, f`ともにその引数に依存した結果を返す関数である。
+いま、`N`には2つ以上の異なる値があるので、`i' /= i`なる`i' :: N`が存在して、`U f`は`f i`にも`f i'`にも依存する。
+しかし、`at i (f i)`は`f i`にしか依存しないので、`at i = return` ではありえない。
 
+* **事実2**: 任意の`i`に対して`at i /= return`
+
+加えて、
+
+```haskell
+hole :: (N -> x) -> N -> (x -> F x) -> F x
+hole f i u = join $ \j -> if i == j then u (f j) else return (f j)
+
+hole f i (at k)
+ = join $ U $ \j -> if i == j then at k (f j) else return (f j)
+ = join $ U $ \j -> if i == j
+     then join $ U (\l -> if k == l then return (f j) else zero)
+     else join . return . return $ f j
+ = join . fmap join $ U $ \j -> if i == j
+     then U (\l -> if k == l then return (f j) else zero)
+     else U (\_ -> return (f j))
+ -- 結合則 + joinUU
+ = join $ U $ \j ->
+     if i == j
+       then if k == j then return (f j) else zero
+       else return (f j)
+
+-- i == k のとき
+hole f i (at k) | i == k
+ = join $ U $ \j -> if (i == j) then return (f j) else return (f j)
+ = join $ U $ \j -> return (f j)
+ = U f
+
+-- i /= k のとき
+hole f i (at k) | i /= k
+ = join $ U $ \j ->
+     if i == j then zero else return (f j)
 ```
-join $ fbool (t x) (t y)
- = join $ fbool (join $ (x ? _) ? zero) (join $ (y ? _) ? zero)
- = join . fmap join $ ((x ? _) ? zero) ? ((y ? _) ? zero)
-   -- 結合則を用いる
- = join . join $ ((x ? _) ? zero) ? ((y ? _) ? zero)
- = join $ (x ? _) ? zero
- = t x
 
--- 同様の計算により：
+より、`hole f i (at k)`が`f i`に依存するかどうかは、`i == k`かどうかによって決まる。したがって、`i /= k`のとき、`at i /= at k`である。
 
-join $ fbool (t x) (t y) = t x
-join $ fbool (t x) (f y) = x ? y
-join $ fbool (f x) (t y) = zero
-join $ fbool (f x) (f y) = f y
+* **事実3**: 任意の`i, k :: N`に対して、`i /= k`ならば`at i /= at k` 
 
-join $ t x ? (z ? w)
- = join $ fbool (join $ (x ? _) ? zero) (join . return $ z ? w)
- = join . fmap join $ ((x ? _) ? zero) ? (return $ z ? w)
- = join . join $ ((x ? _) ? zero) ? (return $ z ? w)
- = join $ (x ? _) ? (z ? w)
- = x ? w
+いま、`at i x`は`x`に依存するのであった。`return`のときと同様の議論によって、`at i x`が返すコンストラクタは2つ以上の`x`の値に依存することができるので、関数`con :: N -> x -> x -> F x`が存在して、`con i x y`は`x`と`y`の両方に依存し、
+`con i x x = at i x`となるようにできる。
 
--- 同様の計算により：
+`con i`に関する等式をいくつか示す。
 
-join $ f y ? (z ? w) = f w
-join $ (x ? y) ? t z = t x
-join $ (x ? y) ? f w = x ? w
-
-
-join $ t (x ? y)
- = join . join $ ((x ? y) ? _) ? zero
- = join . fmap join $ ((x ? y) ? _) ? zero
- = join $ (join $ (x ? y) ? _) ? join zero
- -- _ = (_ ? _)
- = join $ (x ? _) ? zero
- = t x
-
-join $ f (z ? w) = f w
-
-join $ t x ? zero
- = join $ (join $ (x ? _) ? zero) ? (join zero)
- = join . fmap join $ ((x ? _) ? zero) ? zero
- = join . join $ ((x ? _) ? zero) ? zero
- = join $ t (x ? _)
- = t x
-
-join $ zero ? t x
- = join $ zero ? (join $ (x ? _) ? zero)
- = join . fmap join $ zero ? ((x ? _) ? zero)
- = join . join $ zero ? ((x ? _) ? zero)
- = join $ f zero
+```haskell
+join $ U (\j -> if i == j then zero else at i x)
+ = join $ U (\j -> if i == j then join (return zero) else join $ U (\k -> if i == k then return x else zero))
+ = join . fmap join $ U $ \j ->
+     if i == j then return zero else U (\k -> if i == k then return x else zero)
+ = join . join $ U $ \j -> U $ \k ->
+     if i == j then zero else (if i == k then return x else zero)
+ = join $ U $ \j ->
+     if i == j then zero else (if i == j then return x else zero)
+ = join $ U $ \j -> if i == j then zero else zero
+ = join $ return zero
  = zero
 
-join $ zero ? f y = f y
-
-join $ t (t x)
- = join $ t (join $ (x ? _) ? zero)
- = join . fmap join $ t ((x ? _) ? zero)
- = join . fmap join . join $ (((x ? _) ? zero) ? _) ? zero
- = join . join . fmap join $ (((x ? _) ? zero) ? _) ? zero
- = join . join $ (join $ ((x ? _) ? zero) ? _) ? join zero
- = join . join $ ((x ? _) ? _) ? zero
- = join . fmap join $ ((x ? _) ? _) ? zero
- = join $ (join $ (x ? _) ? _) ? zero
- = join $ (x ? _) ? zero
- = t x
-
-join $ f (f x) = f x
-
-join $ t (f x)
- = join $ t (join $ zero ? (_ ? x))
- = join . join $ t (zero ? (_ ? x))
- = join . join . join $ ((zero ? (_ ? x)) ? _) ? zero
- = join . join $ (join $ (zero ? (_ ? x)) ? _) ? zero
- = join . join $ (zero ? _) ? zero
+-- Because `join` can't discriminate between `at i x = con i x x` and `con i x y`:
+join $ U (\j -> if i == j then zero else con i x y)
  = zero
 
-join $ f (t x) = zero
-
+join $ at i (con i x y)
+ = join . join $ U (\j -> if i == j then return (con i x y) else zero)
+ = join $ U (\j -> if i == j then join (return (con i x y)) else join zero)
+ = join $ U (\j -> if i == j then con i x y else zero)
+  -- Use above equation in reversed direction
+ = join $ U $ \j ->
+     if i == j
+       then con i x y
+       else join $ U (\k -> if i == k then zero else con i x y)
+ = join $ U $ \j ->
+     if i == j
+       then join $ return (con i x y)
+       else join $ U (\k -> if i == k then zero else con i x y)
+ = join . fmap join $ U $ \j -> U $ \k ->
+     if i == j
+       then con i x y
+       else (if i == k then zero else con i x y)
+ = join $ U $ \j ->
+     if i == j
+       then con i x y
+       else (if i == j then zero else con i x y)
+ = join $ U $ \j -> con i x y
+ = join . return $ con i x y
+ = con i x y
 ```
 
-いま、`t :: forall x. x -> F x` はその引数に依存するので、`t x = L _` ではありえない。`F x`のコンストラクタが用いる`x`型の値の数は0か2以上なので、次の関数`t2`が存在して、`t2 x y`は`x`,`y`の両方に依存する。
+いま、次の関数`extra`を考える。
 
 ```haskell
-t2 :: forall x. x -> x -> F x
-t2 x x = t x
+extra :: forall x. N -> x -> x -> (N -> x) -> F x
+extra i x y f = join $ U (\j -> if i == j then con i x y else return (f j))
 ```
 
-ここで、`join`が`t2`に対してどう振る舞うか検討する。次の2つの等式がすぐにわかる。
+次の計算によって、2つのことがわかる。
 
 ```haskell
-join $ t2 x y ? t2 x y
- = join $ return (t2 x y)
- = t2 x y
-
-join $ t2 x x ? t2 y y
- = join $ t x ? t y
- = t x
+extra i (f i) (f i) f
+ = join $ U (\j -> if i == j then con i (f i) (f i) else return (f j))
+ = join $ U (\j -> if i == j then at i (f i) else return (f j))
+ = hole f i (at i)
+ = U f
 ```
 
-したがって、次式が成り立つ。
+まず、`extra`は`x`に関して自然なので、任意の`x, y, f`に関して`extra i x y f = U _`とならなければならない。
+また、`extra i x y f`は任意の`j /= i`における`f j`と、`x`, `y`のいずれか片方に依存する。
+
+さらに、
 
 ```haskell
-join $ t2 x y ? t2 z w
- = t2 x y
+join $ at i (extra i x y f)
+ = join . join $ U $ \j -> if i == j then extra i x y f else zero
+ = join . join $ U $ \j ->
+     if i == j
+       then join $ U (\k -> if i == k then con i x y else return (f k))
+       else join (return zero)
+ = join . join . fmap join $ U $ \j ->
+     if i == j
+       then U (\k -> if i == k then con i x y else return (f k))
+       else return zero
+ = join . join . join $ U $ \j -> U $ \k ->
+     if i == j
+       then if i == k then con i x y else return (f k)
+       else zero
+ = join . join $ U $ \j ->
+     if i == j
+       then if i == j then con i x y else return (f j)
+       else zero
+ = join . join $ U $ \j -> if i == j then con i x y else zero
+ = join $ at i (con i x y)
+ = con i x y
 ```
 
-これを用いて、
+である。したがって、`extra i x y f`は`x`と`y`の両方に依存する。
 
-```haskell
-join . join $ (t2 x y ? zero) ? (zero ? t2 z w)
- = join $ t2 x y ? t2 z w
- = t2 x y
+さて、`extra i x y f = U g`と書くことができ、`g :: N -> x`なのであった。`g`は任意の`j /= i`における`f j`、`x`、そして`y`のいずれにも依存する。しかし、`N`が有限であればこれは`N+1`個の独立な変数なので、これは不可能である。
 
-join . fmap join $ (t2 x y ? zero) ? (zero ? t2 z w)
- = join $ (join $ t2 x y ? zero) ? zero
- = join $ (join $ t2 x y ? zero) ? join zero
- = join . fmap join $ (t2 x y ? zero) ? zero
- = join . join $ (t2 x y ? zero) ? zero
- = join $ t (t2 x y)
+* **事実4**: `N`は無限個の異なる値をとる。
 
-join $ t (t2 x y) = t2 x y
-```
+さらに、`at i`は各`i`について異なる必要があるので、
 
-```haskell
-join $ t2 (t2 x y) (t2 x y)
- = join $ t (t2 x y)
- = t2 x y
+* **事実5**: `F(x)`は無限個の項の和である。
 
-join $ t2 (t2 x x) (t2 y y)
- = join $ t2 (t x) (t y)
- = join $ t2 (join $ (x ? _) ? zero) (join $ (y ? _) ? zero)
- = join . fmap join $ t2 ((x ? _) ? zero) ((y ? _) ? zero)
- = join . join $ t2 ((x ? _) ? zero) ((y ? _) ? zero)
- = join $ t2 (x ? _) (y ? _)
- = t2 x y
-
-join $ t2 (x ? y) (x ? y)
- = join $ t (x ? y)
- = t x
- = t2 x x
-
-join $ t2 (x ? x) (y ? y)
- = join . fmap return $ t2 x y
- = t2 x y
-
-join $ t2 (x ? y) (z ? w)
- = t2 x z
-
--------------------------
-
-join . join $ (t2 x y ? (z ? w)) ? zero
- = t (t2 x y)
- = t2 x y
-
-join . fmap join $ (t2 x y ? (z ? w)) ? zero
- = join $ (join $ t2 x y ? (z ? w)) ? zero
- -- join $ t x ? (z ? w) = x ? w
- --   => join $ t2 x y ? (z ? w) = (x ? w) OR (y ? w)
- = 
-
-```
-
+いま、多項式Functorは、有限な型`a_i`について`x^(a_i)`の有限個の直和型として定義したのであった。よって、ここで定義した`F(x)`は`Monad`になることはない。
