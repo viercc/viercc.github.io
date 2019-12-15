@@ -319,7 +319,6 @@ Monad則から、`join :: F (F x) -> F x`の満たすべき等式として次の
 ```haskell
 -- ∀a :: N -> N -> x
 join $ U (\i -> U (\j -> a i j)) = U $ \i -> a i i
--- この式は以降(joinUU)という名前で参照する。
 ```
 
 これは次のように証明できる。
@@ -480,6 +479,22 @@ join $ t (x ? y)
 
 join $ f (z ? w) = f w
 
+join $ t x ? zero
+ = join $ (join $ (x ? _) ? zero) ? (join zero)
+ = join . fmap join $ ((x ? _) ? zero) ? zero
+ = join . join $ ((x ? _) ? zero) ? zero
+ = join $ t (x ? _)
+ = t x
+
+join $ zero ? t x
+ = join $ zero ? (join $ (x ? _) ? zero)
+ = join . fmap join $ zero ? ((x ? _) ? zero)
+ = join . join $ zero ? ((x ? _) ? zero)
+ = join $ f zero
+ = zero
+
+join $ zero ? f y = f y
+
 join $ t (t x)
  = join $ t (join $ (x ? _) ? zero)
  = join . fmap join $ t ((x ? _) ? zero)
@@ -503,5 +518,88 @@ join $ t (f x)
  = zero
 
 join $ f (t x) = zero
+
+```
+
+いま、`t :: forall x. x -> F x` はその引数に依存するので、`t x = L _` ではありえない。`F x`のコンストラクタが用いる`x`型の値の数は0か2以上なので、次の関数`t2`が存在して、`t2 x y`は`x`,`y`の両方に依存する。
+
+```haskell
+t2 :: forall x. x -> x -> F x
+t2 x x = t x
+```
+
+ここで、`join`が`t2`に対してどう振る舞うか検討する。次の2つの等式がすぐにわかる。
+
+```haskell
+join $ t2 x y ? t2 x y
+ = join $ return (t2 x y)
+ = t2 x y
+
+join $ t2 x x ? t2 y y
+ = join $ t x ? t y
+ = t x
+```
+
+したがって、次式が成り立つ。
+
+```haskell
+join $ t2 x y ? t2 z w
+ = t2 x y
+```
+
+これを用いて、
+
+```haskell
+join . join $ (t2 x y ? zero) ? (zero ? t2 z w)
+ = join $ t2 x y ? t2 z w
+ = t2 x y
+
+join . fmap join $ (t2 x y ? zero) ? (zero ? t2 z w)
+ = join $ (join $ t2 x y ? zero) ? zero
+ = join $ (join $ t2 x y ? zero) ? join zero
+ = join . fmap join $ (t2 x y ? zero) ? zero
+ = join . join $ (t2 x y ? zero) ? zero
+ = join $ t (t2 x y)
+
+join $ t (t2 x y) = t2 x y
+```
+
+```haskell
+join $ t2 (t2 x y) (t2 x y)
+ = join $ t (t2 x y)
+ = t2 x y
+
+join $ t2 (t2 x x) (t2 y y)
+ = join $ t2 (t x) (t y)
+ = join $ t2 (join $ (x ? _) ? zero) (join $ (y ? _) ? zero)
+ = join . fmap join $ t2 ((x ? _) ? zero) ((y ? _) ? zero)
+ = join . join $ t2 ((x ? _) ? zero) ((y ? _) ? zero)
+ = join $ t2 (x ? _) (y ? _)
+ = t2 x y
+
+join $ t2 (x ? y) (x ? y)
+ = join $ t (x ? y)
+ = t x
+ = t2 x x
+
+join $ t2 (x ? x) (y ? y)
+ = join . fmap return $ t2 x y
+ = t2 x y
+
+join $ t2 (x ? y) (z ? w)
+ = t2 x z
+
+-------------------------
+
+join . join $ (t2 x y ? (z ? w)) ? zero
+ = t (t2 x y)
+ = t2 x y
+
+join . fmap join $ (t2 x y ? (z ? w)) ? zero
+ = join $ (join $ t2 x y ? (z ? w)) ? zero
+ -- join $ t x ? (z ? w) = x ? w
+ --   => join $ t2 x y ? (z ? w) = (x ? w) OR (y ? w)
+ = 
+
 ```
 
