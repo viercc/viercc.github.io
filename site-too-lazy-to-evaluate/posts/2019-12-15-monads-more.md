@@ -110,7 +110,7 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
   * `c = 0, b = 0, A(x) ~/~ 0`
   * `b >= 1`
 
-主張0 ~ 主張3から結論が出ることは簡単に確かめられる。
+主張0 ~ 主張3から結論が出ることは簡単に確かめられます。
 
 ## 主張0
 
@@ -118,9 +118,9 @@ F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)
 
 ### 証明
 
-（証明部分は常体で書きます）
+（以下、証明部分は常体で書きます）
 
-(⇒)は(Proxy)[http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy]と同じようにMonadのインスタンスが定義できることからわかる。
+(⇒)は[Proxy](http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy)と同じようにMonadのインスタンスが定義できることからわかる。
 
 (⇐)を示す。`pure :: x -> F x` はある定数関数 `const c0` である。このとき、`c0 :: F x ~ c` である。
 任意の`c1 :: F x ~ c`について、`join (pure c1) = join (const c0 c1) = join c0`となるが、Monad則より`join . pure = id`なので`join (pure c1) = c1`でもある。したがって、任意の`c`型の値は`join c0`に等しい。これはすなわち、`|c| = 1`を意味する。
@@ -274,6 +274,8 @@ Maybeを任意のMonadに置き換えることはできない。)
 ```
 
 ## 主張3
+
+**2019.12.16 追記** ― 証明を読みやすく、あと有限性に依存しないようにできたので[修正版を投稿しました](./2019-12-16-fixed-proof-for-monads-more.html)
 
 > ある多項式Functor`F`が `F(x) ~ c + x^2 * G(x)`(`|c| >= 1, G(x) ~/~ 0`)と書けるならば、`F`のMonadのインスタンスは存在しない。
 
