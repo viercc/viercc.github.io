@@ -115,14 +115,14 @@
 <li><code>b &gt;= 1</code></li>
 </ul></li>
 </ul>
-<p>主張0 ~ 主張3から結論が出ることは簡単に確かめられる。</p>
+<p>主張0 ~ 主張3から結論が出ることは簡単に確かめられます。</p>
 <h2 id="主張0">主張0</h2>
 <blockquote>
 <p>ある多項式Functor<code>F</code>が <code>F(x) ~ c</code> と書けるならば、<code>|c| = 1</code>のとき、またそのときに限り<code>F</code>のMonadのインスタンスが存在する。</p>
 </blockquote>
 <h3 id="証明">証明</h3>
-<p>（証明部分は常体で書きます）</p>
-<p>(⇒)は(Proxy)[http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy]と同じようにMonadのインスタンスが定義できることからわかる。</p>
+<p>（以下、証明部分は常体で書きます）</p>
+<p>(⇒)は<a href="http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy">Proxy</a>と同じようにMonadのインスタンスが定義できることからわかる。</p>
 <p>(⇐)を示す。<code>pure :: x -&gt; F x</code> はある定数関数 <code>const c0</code> である。このとき、<code>c0 :: F x ~ c</code> である。 任意の<code>c1 :: F x ~ c</code>について、<code>join (pure c1) = join (const c0 c1) = join c0</code>となるが、Monad則より<code>join . pure = id</code>なので<code>join (pure c1) = c1</code>でもある。したがって、任意の<code>c</code>型の値は<code>join c0</code>に等しい。これはすなわち、<code>|c| = 1</code>を意味する。</p>
 <h2 id="主張1">主張1</h2>
 <blockquote>
@@ -256,6 +256,7 @@
 <a class="sourceLine" id="cb7-89" title="89">(注<span class="fu">:</span>一般の<span class="dt">Monad</span>に対してjoin'は<span class="dt">Applicative</span> transformationにならないので、</a>
 <a class="sourceLine" id="cb7-90" title="90"><span class="dt">Maybe</span>を任意の<span class="dt">Monad</span>に置き換えることはできない。)</a></code></pre></div>
 <h2 id="主張3">主張3</h2>
+<p><strong>2019.12.16 追記</strong> ― 証明を読みやすく、あと有限性に依存しないようにできたので<a href="./2019-12-16-fixed-proof-for-monads-more.html">修正版を投稿しました</a></p>
 <blockquote>
 <p>ある多項式Functor<code>F</code>が <code>F(x) ~ c + x^2 * G(x)</code>(<code>|c| &gt;= 1, G(x) ~/~ 0</code>)と書けるならば、<code>F</code>のMonadのインスタンスは存在しない。</p>
 </blockquote>
