@@ -295,7 +295,60 @@
 <a class="sourceLine" id="cb18-5" title="5"></a>
 <a class="sourceLine" id="cb18-6" title="6"><span class="ot">surj ::</span> <span class="dt">BitStream</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
 <a class="sourceLine" id="cb18-7" title="7">surj (<span class="dt">BitStream</span> (x, _)) <span class="fu">=</span> x</a></code></pre></div>
-<p>ただ、<code>N = BitStream</code>のとき、<code>join</code>は全域関数にできないだろう。一般に、<code>N</code>が<code>(==)</code>が定義できない(or 条件を満たす<code>p</code>が無い)ような型ならば、<code>join</code>は全域関数にできないと言えるか？</p>
+<p><del>ただ、<code>N = BitStream</code>のとき、<code>join</code>は全域関数にできないだろう。一般に、<code>N</code>が<code>(==)</code>が定義できない(or 条件を満たす<code>p</code>が無い)ような型ならば、<code>join</code>は全域関数にできないと言えるか？</del></p>
+<p><strong>2019.12.17 追記</strong> なんか一晩寝たら解決した！</p>
+<p><code>BitStream</code>には、次の関数<code>search</code>が定義できる。<code>search</code>は、 ある全域関数<code>p :: BitStream -&gt; Bool</code>をとり、 <code>p bs = True</code>となる<code>bs</code>があればそのような<code>bs</code>を返す。 さもなくば、適当な<code>bs :: BitStream</code>を返す。 <code>p</code>が全域関数ならば<code>search p</code>も常にbottom以外の値を返す。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="ot">cons ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">BitStream</span> <span class="ot">-&gt;</span> <span class="dt">BitStream</span></a>
+<a class="sourceLine" id="cb19-2" title="2">cons b bs <span class="fu">=</span> <span class="dt">BitStream</span> (b, bs)</a>
+<a class="sourceLine" id="cb19-3" title="3"></a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="ot">search ::</span> (<span class="dt">BitStream</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">BitStream</span></a>
+<a class="sourceLine" id="cb19-5" title="5">search p <span class="fu">=</span> <span class="kw">let</span> candidate <span class="fu">=</span> search (p <span class="fu">.</span> cons <span class="dt">False</span>)</a>
+<a class="sourceLine" id="cb19-6" title="6">           <span class="kw">in</span> <span class="kw">if</span> p (cons <span class="dt">False</span> candidate)</a>
+<a class="sourceLine" id="cb19-7" title="7">                <span class="kw">then</span> cons <span class="dt">False</span> candidate</a>
+<a class="sourceLine" id="cb19-8" title="8">                <span class="kw">else</span> cons <span class="dt">True</span>  (search (p <span class="fu">.</span> cons <span class="dt">True</span>))</a>
+<a class="sourceLine" id="cb19-9" title="9"></a>
+<a class="sourceLine" id="cb19-10" title="10"><span class="ot">forSome ::</span> (<span class="dt">BitStream</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb19-11" title="11">forSome p <span class="fu">=</span> p (search p)</a></code></pre></div>
+<p><code>F = ReaderT BitStream Maybe</code>は、当然に<code>Monad</code>である。一方、</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">type</span> <span class="dt">F</span> x <span class="fu">=</span> <span class="dt">BitStream</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> x</a>
+<a class="sourceLine" id="cb20-2" title="2"></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="ot">zero ::</span> <span class="kw">forall</span> x<span class="fu">.</span> <span class="dt">F</span> x</a>
+<a class="sourceLine" id="cb20-4" title="4">zero <span class="fu">=</span> <span class="fu">const</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb20-5" title="5"></a>
+<a class="sourceLine" id="cb20-6" title="6"><span class="ot">isZero ::</span> <span class="kw">forall</span> x<span class="fu">.</span> <span class="dt">F</span> x <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb20-7" title="7">isZero <span class="fu">=</span> <span class="fu">not</span> <span class="fu">.</span> forSome (isJust <span class="fu">.</span> mx) </a></code></pre></div>
+<p>と定義すると、<code>isZero mx = True</code> ⇔ <code>mx = zero</code>なので、<code>F x</code>は少なくとも一つの“定数項”と、それ以外の直和である。</p>
+<p><code>isZero mx = False</code>となるような<code>mx :: F X</code>のうち、“自由度”(<code>x^n</code> の <code>n</code>)が1のものがあったとする。このとき、以下のようになるはずである。</p>
+<ul>
+<li><code>x :: X</code>が存在して、<code>x &lt;$ mx = mx</code></li>
+<li>任意の<code>my :: F Y</code>について、<code>x &lt;$ my = mx</code>なら、<code>y :: Y</code>が存在して<code>y &lt;$ my = my</code></li>
+</ul>
+<p>しかし、次のように定義される<code>mi</code>を考えよう。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="ot">mi ::</span> <span class="dt">F</span> <span class="dt">BitStream</span></a>
+<a class="sourceLine" id="cb21-2" title="2">mi <span class="fu">=</span> join <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> (bs <span class="fu">&lt;$</span> mx)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" title="1">x <span class="fu">&lt;$</span> mi</a>
+<a class="sourceLine" id="cb22-2" title="2"> <span class="fu">=</span> x <span class="fu">&lt;$</span> (join <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> (bs <span class="fu">&lt;$</span> mx))</a>
+<a class="sourceLine" id="cb22-3" title="3"> <span class="fu">=</span> join <span class="fu">.</span> <span class="fu">fmap</span> (x <span class="fu">&lt;$</span>) <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> (bs <span class="fu">&lt;$</span> mx)</a>
+<a class="sourceLine" id="cb22-4" title="4"> <span class="fu">=</span> join <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> (x <span class="fu">&lt;$</span> (bs <span class="fu">&lt;$</span> mx))</a>
+<a class="sourceLine" id="cb22-5" title="5"> <span class="fu">=</span> join <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> (x <span class="fu">&lt;$</span> mx)</a>
+<a class="sourceLine" id="cb22-6" title="6"> <span class="fu">=</span> join <span class="fu">$</span> \bs <span class="ot">-&gt;</span> <span class="dt">Just</span> mx</a>
+<a class="sourceLine" id="cb22-7" title="7"> <span class="fu">=</span> mx</a></code></pre></div>
+<p>なので、<code>i :: ByteStream</code>が存在して、<code>i &lt;$ mi = mi</code>である。</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" title="1"><span class="ot">p ::</span> <span class="dt">ByteStream</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb23-2" title="2">p <span class="fu">=</span> isJust <span class="fu">.</span> mi</a></code></pre></div>
+<p>を考えると、</p>
+<ol type="1">
+<li><code>p j = True</code>となるような<code>j</code>が存在する。</li>
+<li><code>p j = True</code>ならば、<code>mi j = Just j</code>である。</li>
+<li><code>p j = True</code>ならば、<code>mi j = (i &lt;$ mi) j = Just i</code>である。</li>
+<li><code>p j = True</code>ならば<code>i = j</code>である。</li>
+</ol>
+<p>となるが、このような性質を持つ（全域関数）<code>p</code>は存在しないのだった。したがって、<code>F X</code>に“自由度”が1の項は存在しない。 よって、<code>F = ReaderT BitStream Maybe</code>は</p>
+<ul>
+<li>“定数項”とそれ以外との直和に書かれる</li>
+<li>“自由度”が1の項は存在しない</li>
+</ul>
+<p>ので、多項式Functorの定義として無限次数と無限個の項を許したならば、<code>F</code>は(主張)の<strong>反例になる</strong>。</p>
     </section>
 </article>
 
