@@ -354,4 +354,84 @@ surj :: BitStream -> Bool
 surj (BitStream (x, _)) = x
 ```
 
-ただ、`N = BitStream`のとき、`join`は全域関数にできないだろう。一般に、`N`が`(==)`が定義できない(or 条件を満たす`p`が無い)ような型ならば、`join`は全域関数にできないと言えるか？
+~~ただ、`N = BitStream`のとき、`join`は全域関数にできないだろう。一般に、`N`が`(==)`が定義できない(or 条件を満たす`p`が無い)ような型ならば、`join`は全域関数にできないと言えるか？~~
+
+**2019.12.17 追記** なんか一晩寝たら解決した！
+
+`BitStream`には、次の関数`search`が定義できる。`search`は、
+ある全域関数`p :: BitStream -> Bool`をとり、
+`p bs = True`となる`bs`があればそのような`bs`を返す。
+さもなくば、適当な`bs :: BitStream`を返す。
+`p`が全域関数ならば`search p`も常にbottom以外の値を返す。
+
+```haskell
+cons :: Bool -> BitStream -> BitStream
+cons b bs = BitStream (b, bs)
+
+search :: (BitStream -> Bool) -> BitStream
+search p = let candidate = search (p . cons False)
+           in if p (cons False candidate)
+                then cons False candidate
+                else cons True  (search (p . cons True))
+
+forSome :: (BitStream -> Bool) -> Bool
+forSome p = p (search p)
+```
+
+`F = ReaderT BitStream Maybe`は、当然に`Monad`である。一方、
+
+```haskell
+type F x = BitStream -> Maybe x
+
+zero :: forall x. F x
+zero = const Nothing
+
+isZero :: forall x. F x -> Bool
+isZero = not . forSome (isJust . mx) 
+```
+
+と定義すると、`isZero mx = True` ⇔ `mx = zero`なので、`F x`は少なくとも一つの"定数項"と、それ以外の直和である。
+
+`isZero mx = False`となるような`mx :: F X`のうち、"自由度"(`x^n` の `n`)が1のものがあったとする。このとき、以下のようになるはずである。
+
+* `x :: X`が存在して、`x <$ mx = mx`
+* 任意の`my :: F Y`について、`x <$ my = mx`なら、`y :: Y`が存在して`y <$ my = my`
+
+しかし、次のように定義される`mi`を考えよう。
+
+```haskell
+mi :: F BitStream
+mi = join $ \bs -> Just (bs <$ mx)
+```
+
+```haskell
+x <$ mi
+ = x <$ (join $ \bs -> Just (bs <$ mx))
+ = join . fmap (x <$) $ \bs -> Just (bs <$ mx)
+ = join $ \bs -> Just (x <$ (bs <$ mx))
+ = join $ \bs -> Just (x <$ mx)
+ = join $ \bs -> Just mx
+ = mx
+```
+
+なので、`i :: ByteStream`が存在して、`i <$ mi = mi`である。
+
+```haskell
+p :: ByteStream -> Bool
+p = isJust . mi
+```
+
+を考えると、
+
+1. `p j = True`となるような`j`が存在する。
+2. `p j = True`ならば、`mi j = Just j`である。
+3. `p j = True`ならば、`mi j = (i <$ mi) j = Just i`である。
+4. `p j = True`ならば`i = j`である。
+
+となるが、このような性質を持つ（全域関数）`p`は存在しないのだった。したがって、`F X`に"自由度"が1の項は存在しない。
+よって、`F = ReaderT BitStream Maybe`は
+
+* "定数項"とそれ以外との直和に書かれる
+* "自由度"が1の項は存在しない
+
+ので、多項式Functorの定義として無限次数と無限個の項を許したならば、`F`は(主張)の**反例になる**。
