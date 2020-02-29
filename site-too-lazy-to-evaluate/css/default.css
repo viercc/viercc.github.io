@@ -72,14 +72,20 @@ main p{
     font-size: 15px;
 }
 
+main blockquote {
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: solid 2pt #00bb99;
+}
+
 main a:link{
   color: #428bca;
   text-decoration: underline;
 }
 
 main code {
-  color: #c33;
-  background-color: #fee;
+  font-family: "Courier New", "Ubuntu Monospace", Consolas, monospace;
+  background-color: #fff8dd;
   margin-left: 0.2em;
   margin-right: 0.2em;
 }
@@ -89,6 +95,7 @@ main pre {
 }
 
 main pre code {
+  font-family: "Courier New", "Ubuntu Monospace", Consolas, monospace;
   color: #000;
   background-color: transparent;
   margin-left: 0;

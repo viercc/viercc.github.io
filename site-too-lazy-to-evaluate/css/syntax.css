@@ -6,6 +6,9 @@ code span.kw {
     color: #900;
 }
 code span.dt {
-    color: #090;
+    color: #060;
+}
+code span.co {
+    color: #68a;
 }
 
