@@ -13,9 +13,7 @@ E :: Type
 data F a = F M (E -> a)
 ```
 
-特に、このような`Monad`を定めるような`M, E`上の代数的構造を明らかにしたかった。
-
-したかった（過去形）。
+特に、このような`Monad F`を定めるような`M, E`上の代数的構造を明らかにしたかった。
 
 例えば、`Writer m a ~ (m, a)`の`Monad`のインスタンスには
 `m`上のモノイドが1対1に対応するし、
@@ -68,7 +66,7 @@ d x y = case prod (F x id) (F y id) of
 `Applicative`則を満たすために`mPure`, `<>`, `d`に必要な制約を書き出せば、`(mPure, <>) :: (M, M -> M -> M)`が`M`上のモノイドを定めることがわかり、さらに`d`についても条件を得られる。
 
 ```haskell
--- 左単位
+-- 右単位
 -- 正確なHaskellではないが mPure = 1 と略記する
 prod (F (x,f)) (pure b) = (,b) <$> F (x, f)
 prod (F (x,f)) (pure b)
@@ -80,7 +78,7 @@ fst . d x 1 = id
 d x 1 = id &&& dl x   -- (d-unitR)
   -- ここで dl :: M -> E -> E はある関数
 
--- 同様に右単位から
+-- 同様に左単位
 1 <> x = x            -- (M-unitL)
 snd . d 1 x = id
 d 1 x = dr x &&& id   -- (d-unitL)
