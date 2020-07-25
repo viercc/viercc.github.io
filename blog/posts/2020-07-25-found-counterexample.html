@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 続・Applicativeと対応する代数 反例発見</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>続・Applicativeと対応する代数 反例発見</h1>
+            <article>
+    <section class="header">
+        Posted on July 25, 2020
+        
+    </section>
+    <section>
+        <p>※<a href="2020-05-30-applicatives.html">前回の記事</a>の続きです</p>
+<h1 id="反例発見">反例発見</h1>
+<p>前回の記事にこんなことを書きました。</p>
+<blockquote>
+<p>関手<code>F x ~ (M, E -&gt; x)</code>に対するすべての可能なApplicativeのインスタンスは、両側モノイド作用によるものか？</p>
+</blockquote>
+<p>反例があったので違います。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">-- モノイドMは(Bool, True, (&amp;&amp;))</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">type</span> <span class="dt">M</span> <span class="fu">=</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-3" title="3">(<span class="fu">&lt;&gt;</span>) <span class="fu">=</span> (<span class="fu">&amp;&amp;</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="co">-- Eへの作用は以下の通り。一つのモノイド作用だけで書けないが、</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="co">-- 法則はすべて満たしている。</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">type</span> <span class="dt">E</span> <span class="fu">=</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="ot">d ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> (<span class="dt">E</span>,<span class="dt">E</span>)</a>
+<a class="sourceLine" id="cb1-10" title="10">d x y i  <span class="fu">=</span> (y <span class="fu">&amp;&amp;</span> i, i <span class="fu">&amp;&amp;</span> (x <span class="fu">||</span> <span class="fu">not</span> x <span class="fu">&amp;&amp;</span> <span class="fu">not</span> y))</a></code></pre></div>
+<h1 id="どうやって見つけたのか">どうやって見つけたのか</h1>
+<p>前回から1月以上もたっていますが、別にその間たくさん試行錯誤したわけではなく（ゲームばっかりしていた）、<a href="http://alloytools.org/">Alloy Analyzer</a>というモデル探索ツールを使いました。</p>
+<p>このツールは、Alloyという仕様記述言語で書かれたモデルに対して、モデルを満たすような具体的な“もの”を見つけてくれるというものです。このAlloyという言語で作るモデルは、オブジェクトとそのあいだの関係がベースになっています。</p>
+<p>モデルの例はこんな感じになります：</p>
+<pre><code>// 床屋オブジェクト
+sig Barber {
+	// たかだか一人の師匠がいる
+	sensei : lone Barber,
+	// たかだか一人の客の髪を切っている
+	cuts : lone Customer
+}
+// 客オブジェクト
+sig Customer {}
+
+// 師弟関係は木になっている
+fact OneFounder { one b : Barber | no b.sensei }
+fact NoTimeParadox { no b : Barber | b in b.^sensei } // ^e でeの推移閉包が取れる
+
+// どの客もちょうど一人の床屋に切ってもらっている
+fact NoWaitingCustomer { all c : Customer | one c.~cuts } // ~e でeの逆関係が取れる
+
+// 床屋bは仕事している？
+pred working[b : Barber] { some b.cuts }
+
+// 師匠が仕事をしているなら弟子は休めない
+fact Hardship { all b : Barber | working[b.sensei] implies working[b] }
+
+// Customerが2人, Barberが4人のモデルを探索
+run {} for exactly 2 Customer, exactly 4 Barber</code></pre>
+<p>この仕様に対して、次の画像のようなモデルを作ってくれます：</p>
+<figure>
+<img src="../images/alloy_example1.png" alt="Alloy Analyzerの出力例" /><figcaption>Alloy Analyzerの出力例</figcaption>
+</figure>
+<p>Alloy Analyzerは、裏でSATソルバーなどを使って、制約を満たすモデルを見つけてくれます。しかし、重要なことは、「モデルが見つからなかった」ことと「モデルが存在しない」ことが違うということです。サイズの大きいモデルしか無ければ、探している範囲にモデルが無いこともありますし、単に探索に失敗することもあります。その代わり、このソフトは定理自動証明よりはるかに手軽です。</p>
+<p>今回考えていた疑問は、「すべての……という制約を満たす集合と演算は、……という性質を自動的に持つか？」という形でした。もし簡単な反例があるなら、Alloy Analyzerに「……という制約を満たす集合と演算で、……という性質を<strong>持たない</strong>」のモデルを探させて、見つかればそれでよいと考えたわけです。</p>
+<p>ここで、「……という制約を満たす集合と演算で、……という性質を<strong>持つ</strong>」のモデルを探させることに特に意味がないことには注意してください。</p>
+<p>最終的に、こんな仕様を書くと反例が見つかりました。</p>
+<pre><code>sig M {
+	op : M -&gt; one M
+}
+one sig e in M {}
+
+fact { all x:M | op[e,x] = x }
+fact { all x:M | op[x,e] = x }
+fact { all x,y,z:M | op[op[x,y],z] = op[x,op[y,z]] }
+
+pred group { all x : M | { one y : M | op[x,y] = e } }
+
+sig E {
+	act1 : M -&gt; M -&gt; one E,
+	act2 : M -&gt; M -&gt; one E
+}
+fact { all x:M, i:E | act2[i][e,x] = i }
+fact { all x:M, i:E | act1[i][x,e] = i }
+fact { all x,y,z:M, i:E |
+	i.act1[op[x,y],z].act1[x,y] = i.act1[x,op[y,z]]
+}
+fact { all x,y,z:M, i:E |
+	i.act2[op[x,y],z] = i.act2[x,op[y,z]].act2[y,z]
+}
+fact { all x,y,z:M, i:E |
+	i.act1[op[x,y],z].act2[x,y] = i.act2[x,op[y,z]].act1[y,z]
+}
+
+pred tangled {
+	let untangle1 = all x:M, i:E | one i.act1[M,x],
+		untangle2 = all x:M, i:E | one i.act2[x,M]
+	{ not (untangle1 and untangle2) }
+}
+
+run tangled for 2 M, 2 E</code></pre>
+<p>見つかったものは・・・</p>
+<figure>
+<img src="../images/alloy_found_counterexample.png" alt="見つかったモデルのグラフによる描写" /><figcaption>見つかったモデルのグラフによる描写</figcaption>
+</figure>
+<p>はい、わかりません。幸い、見やすい表で出すこともできたので大丈夫でした。</p>
+<figure>
+<img src="../images/alloy_found_counterexample_tab.png" alt="表を出したところ" /><figcaption>表を出したところ</figcaption>
+</figure>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
