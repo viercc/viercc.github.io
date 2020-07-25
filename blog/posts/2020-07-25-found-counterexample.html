@@ -48,8 +48,8 @@
 <a class="sourceLine" id="cb1-10" title="10">d x y i  <span class="fu">=</span> (y <span class="fu">&amp;&amp;</span> i, i <span class="fu">&amp;&amp;</span> (x <span class="fu">||</span> <span class="fu">not</span> x <span class="fu">&amp;&amp;</span> <span class="fu">not</span> y))</a></code></pre></div>
 <h1 id="どうやって見つけたのか">どうやって見つけたのか</h1>
 <p>前回から1月以上もたっていますが、別にその間たくさん試行錯誤したわけではなく（ゲームばっかりしていた）、<a href="http://alloytools.org/">Alloy Analyzer</a>というモデル探索ツールを使いました。</p>
-<p>このツールは、Alloyという仕様記述言語で書かれたモデルに対して、モデルを満たすような具体的な“もの”を見つけてくれるというものです。このAlloyという言語で作るモデルは、オブジェクトとそのあいだの関係がベースになっています。</p>
-<p>モデルの例はこんな感じになります：</p>
+<p>このツールは、Alloyという言語で書かれた仕様に対して、その仕様を満たすような具体的なモデルを見つけてくれるというものです。このAlloyという言語で作るモデルは、オブジェクトとそのあいだの関係を基本的な要素として組み立てられます。</p>
+<p>仕様の例はこんな感じになります：</p>
 <pre><code>// 床屋オブジェクト
 sig Barber {
 	// たかだか一人の師匠がいる
