@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Day convolutionいろいろ</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Day convolutionいろいろ</h1>
+            <article>
+    <section class="header">
+        Posted on August  7, 2020
+        
+    </section>
+    <section>
+        <p><a href="https://twitter.com/kmett/status/1290570997439971329"> <img src="../images/ss-twitter.png" alt="Edward Kmett (@kmett) August 4, 2020" /> </a></p>
+<h2 id="applicativeも単なる自己関手の圏での略何か問題でも">Applicativeも単なる自己関手の圏での（略）何か問題でも？</h2>
+<p>Day convolutionという言葉は、 Haskellに圏論を持ち込む勢をフォローしていないとあんまり耳にしないかと思います。</p>
+<p>何かというと、既にお約束の内輪ネタみたいになってしまったフレーズ</p>
+<blockquote>
+<p>モナドは単なる自己関手の圏におけるモノイド対象だよ。何か問題でも？</p>
+</blockquote>
+<p>的な物言いを、「<a href="https://www.fceia.unr.edu.ar/~mauro/pubs/Notions_of_Computation_as_Monoids.pdf">Applicativeに対してもArrowに対してもできるよ</a>」 という論文で道具として使っている、圏論由来のナニモノかです。これによると、</p>
+<blockquote>
+<p>Applicativeは単なる自己関手の圏――にDay convolutionを入れてモノイド圏にしたもの――におけるモノイド対象だよ。何か問題でも？</p>
+</blockquote>
+<p>です。</p>
+<p>ちょっとここで断らせてほしいのですが、以下、「モナドは単なる……何か問題でも？」 が意味するところは既に知っている方を想定読者にさせてください。でないと、延々と圏論の解説が必要になってしまうので。</p>
+<p>その論文でApplicativeのために使ったDay convolutionは、 Haskell的には次のように定義されます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">Day</span> f g c <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" title="2">    <span class="dt">MkDay</span><span class="ot"> ::</span> ((a,b) <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> <span class="dt">Day</span> f g c</a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">Day</span> f g) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="ot">    fmap ::</span> (c <span class="ot">-&gt;</span> c') <span class="ot">-&gt;</span> <span class="dt">Day</span> f g c <span class="ot">-&gt;</span> <span class="dt">Day</span> f g c'</a>
+<a class="sourceLine" id="cb1-6" title="6">    <span class="fu">fmap</span> f (<span class="dt">MkDay</span> abc fa gb) <span class="fu">=</span> <span class="dt">MkDay</span> (f <span class="fu">.</span> abc) fa gb</a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">type</span> <span class="dt">I</span> a <span class="fu">=</span> () <span class="ot">-&gt;</span> a</a></code></pre></div>
+<p>ここで、<code>f</code>と<code>g</code>は<code>Functor</code>だと思ってください。そうするとき、 型コンストラクタ<code>Day</code>は<code>Functor</code>ふたつをとって<code>Functor</code>を作り出す、 <code>Functor</code>上の二項演算と見ることができます。これはちょうど、 <code>(,)</code>が型ふたつをとって型を作り出す二項演算と見ることができるようなものです。</p>
+<p>そして、<code>(,)</code>のように、<code>Day</code>は<code>Functor</code>のなす圏でのモノイド積としての性質を持ちます。（証明は省きます。） “モノイド積”というからには単位対象があり、<code>type I a = () -&gt; a</code>（すなわち<code>()</code>を引数にとる関数を<code>Functor</code>とみなしたもの） がそうです。</p>
+<p>この<code>I</code>は <a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor-Identity.html">Identity</a> と同型なので、特に<code>() -&gt; a</code>とする必要がないように思うかもしれません。 後から一般化するための布石ですので、今は気にしないでください。</p>
+<p>さて、ある<code>f :: Type -&gt; Type</code>が<code>Applicative</code>であるなら、 <code>f</code>は関手圏に<code>Day</code>と<code>I</code>でモノイド積をいれたモノイド圏におけるモノイド対象です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">type</span> (<span class="fu">~~&gt;</span>) f g <span class="fu">=</span> <span class="kw">forall</span> x<span class="fu">.</span> f x <span class="ot">-&gt;</span> g x</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ot">mult ::</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="dt">Day</span> f f <span class="fu">~~&gt;</span> f</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="ot">mult ::</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="kw">forall</span> c<span class="fu">.</span> <span class="dt">Day</span> f f c <span class="ot">-&gt;</span> f c</a>
+<a class="sourceLine" id="cb2-5" title="5">mult (<span class="dt">MkDay</span> abc fa gb) <span class="fu">=</span> liftA2 (<span class="fu">curry</span> abc) fa gb</a>
+<a class="sourceLine" id="cb2-6" title="6"></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="ot">unit ::</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="dt">I</span> <span class="fu">~~&gt;</span> f</a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="ot">unit ::</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="kw">forall</span> c<span class="fu">.</span> (() <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f c</a>
+<a class="sourceLine" id="cb2-9" title="9">unit i <span class="fu">=</span> <span class="fu">pure</span> (i ())</a></code></pre></div>
+<p>逆に、<code>mult</code> と <code>unit</code>が先に与えられても<code>liftA2</code>と<code>pure</code>がそこから定義でき、 <code>mult</code>と<code>unit</code>がモノイドになる（結合則、単位則）ならば<code>Applicative</code>則を満たします。</p>
+<p>モナドも自己関手の圏に<em>関手の合成でモノイド積を入れたもの</em>におけるモノイド対象だったので、 モナドも<code>Applicative</code>も“適切に選んだモノイド圏でのモノイド対象”という書き方ができます。 うれしいね、というのがこの論文で<code>Day</code>が持ち出された理由でした。</p>
+<h2 id="alternativeも略何か問題でも">Alternativeも（略）何か問題でも？</h2>
+<p>Day convolutionというのはなにも上に挙げた形のものだけでなく、</p>
+<ul>
+<li>ある圏<em>C</em>からHaskへの関手 <em>C</em>-&gt;Hask のなす圏で</li>
+<li><em>C</em>上の任意のモノイド積に対して</li>
+</ul>
+<p>構成できる、関手圏 <em>C</em>-&gt;Hask 上のモノイド積でもあります。</p>
+<p>（当然、数学するときはHask以外の関手の行き先になれる圏(Setsとか)を考えるのですが、 今はおいときます。）</p>
+<p><code>Applicative</code>に使ったものは、関手圏　Hask-&gt;Hask（<code>Functor</code>の自然変換たちの圏）で、 Hask上のモノイド積<code>(,)</code>とその単位<code>()</code>から作ったDay convolutionでした。</p>
+<p>もはやHaskellではない疑似コードですが、 一般に、あるモノイド圏(<em>C</em>, ⊗, 1)からHaskへの関手圏で考えたDay convolutionは</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">data</span> <span class="dt">Day</span>(<span class="dt">C</span>,⊗) f g c <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="co">-- C(-,-)は圏CのHom</span></a>
+<a class="sourceLine" id="cb3-3" title="3">    <span class="co">-- 言ってなかったけれども、HomはHaskellの型だと思っているので</span></a>
+<a class="sourceLine" id="cb3-4" title="4">    <span class="co">--   C(-,-) :: Type</span></a>
+<a class="sourceLine" id="cb3-5" title="5">    <span class="dt">MkDay</span><span class="ot"> ::</span> <span class="dt">C</span>(a ⊗ b, c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> <span class="dt">Day</span>(<span class="dt">C</span>,⊗) f g c</a>
+<a class="sourceLine" id="cb3-6" title="6"></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="kw">type</span> <span class="dt">I</span> a <span class="fu">=</span> <span class="dt">C</span>(<span class="dv">1</span>, a)</a></code></pre></div>
+<p>です。</p>
+<p>今度はHask上の別のモノイド積<code>Either</code>とその単位<code>Void</code>からDay convolutionを作ってみます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">Day_E</span> f g c <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">MkDay</span><span class="ot"> ::</span> (<span class="dt">Either</span> a b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> <span class="dt">Day</span> f g c</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">type</span> <span class="dt">I</span> a <span class="fu">=</span> <span class="dt">Void</span> <span class="ot">-&gt;</span> a</a></code></pre></div>
+<p><code>(,)</code>と<code>()</code>から作ったときのように、モノイド単位<code>I</code>はもっと単純な<a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Proxy.html">Proxy</a>と同型です。 今回はさらに、<code>Day_E f g</code>のほうももっと単純なものに同型です。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="dt">Day_E</span> f g c</a>
+<a class="sourceLine" id="cb5-2" title="2">  <span class="fu">~</span> <span class="ot">∃</span>a b<span class="fu">.</span> (<span class="dt">Either</span> a b <span class="ot">-&gt;</span> c, f a, g b)</a>
+<a class="sourceLine" id="cb5-3" title="3">  <span class="fu">~</span> <span class="ot">∃</span>a b<span class="fu">.</span> (a <span class="ot">-&gt;</span> c, b <span class="ot">-&gt;</span> c, f a, g b)</a>
+<a class="sourceLine" id="cb5-4" title="4">  <span class="fu">~</span> (<span class="ot">∃</span>a<span class="fu">.</span> (a <span class="ot">-&gt;</span> c, f a),  <span class="ot">∃</span>b<span class="fu">.</span> (b <span class="ot">-&gt;</span> c, g b))</a>
+<a class="sourceLine" id="cb5-5" title="5">  <span class="fu">~</span> (f c, g c)   <span class="co">-- CoYoneda</span></a></code></pre></div>
+<p><code>Applicative</code>のときと同じように、モノイド対象が何なのか考えると、</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="co">-- mult :: Day_E f f ~~&gt; f</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">-- mult :: forall c. (f c, f c) -&gt; f c</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="ot">mult ::</span> f c <span class="ot">-&gt;</span> f c <span class="ot">-&gt;</span> f c</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">-- unit :: I ~~&gt; f</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">-- unit :: forall c. (Void -&gt; c) -&gt; f c</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">-- unit :: Proxy c -&gt; f c</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="ot">unit ::</span> f c</a></code></pre></div>
+<p>これは単なる<code>Alternative</code>ですね……といっても、 <code>Alternative</code>は<code>Applicative</code>のサブクラスで、 <code>Applicative</code>との関係をきめる法則が要求されることもあるので、 <code>Alternative</code>は単にモノイド対象だよ、とは言いがたいですけどね。</p>
+<div class="sidenote">
+<p>（余談）誰もが納得する、共通認識としての<code>Alternative</code>則なるものは<em>ない</em>です。 私は初めて知ったときはビビりました。 一応、<code>(&lt;|&gt;)</code>と<code>empty</code>がモノイドになることぐらいはほぼ前提と思っていいですが、 <code>Applicative</code>との関係は<a href="https://wiki.haskell.org/Typeclassopedia#Failure_and_choice:_Alternative.2C_MonadPlus.2C_ArrowPlus">すごく微妙です</a>。</p>
+<p>個人的には、 <code>Alternative</code>のサブクラスを2つか3つ定義して、それぞれ目的にあった法則を与えたほうがよいと考えています。 例えば、パーサとして期待する法則をもつ<code>Parsing</code>クラスを定義して、<code>many</code>なんかはそっちに移管するなど。 大本の<code>Alternative</code>直接使用をdeprecatedにまでできれば心が安らぎます。 ApplicativeをMonadの上に差し込むときを考えても、3年ぐらいかければ可能だと思います。</p>
+</div>
+<h2 id="contravariantでも考えるぞ">Contravariantでも考えるぞ</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor-Contravariant.html">Contravariant</a>は、 HaskからHaskへの反変関手です。言い換えれば、Hask<sup>op</sup>からHaskへの関手です。</p>
+<p>反対圏をとっても、モノイド積は変わりません。 それらを使ったDay convolutionも考えていきます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">-- Hask^opの射</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">-- 本当は &lt;- っていう識別子は使えないけど許して</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">type</span> a <span class="ot">&lt;-</span> b <span class="fu">=</span> b <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb7-4" title="4"></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="kw">data</span> <span class="dt">DayOp</span> f g c <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-6" title="6">    <span class="dt">MkDay</span><span class="ot"> ::</span> ((a,b) <span class="ot">&lt;-</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> <span class="dt">DayOp</span> f g c</a>
+<a class="sourceLine" id="cb7-7" title="7"></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="kw">instance</span> <span class="dt">Contravariant</span> (<span class="dt">DayOp</span> f g) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="ot">    contramap ::</span> (c <span class="ot">&lt;-</span> c') <span class="ot">-&gt;</span> <span class="dt">DayOp</span> f g c <span class="ot">-&gt;</span> <span class="dt">DayOp</span> f g c'</a>
+<a class="sourceLine" id="cb7-10" title="10">    contramap f (<span class="dt">MkDay</span> abc fa gb) <span class="fu">=</span> <span class="dt">MkDay</span> (abc <span class="fu">.</span> f) fa gb</a>
+<a class="sourceLine" id="cb7-11" title="11"></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="kw">type</span> <span class="dt">I</span> a <span class="fu">=</span> () <span class="ot">&lt;-</span> a</a></code></pre></div>
+<p><code>f</code>, <code>g</code>, <code>DayOp f g</code>がどれも<code>Contravariant</code>である場合を考えているのに注意です。</p>
+<p>モノイド対象はどんな演算を持つでしょうか？</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">-- mult :: DayOp f f ~~&gt; f</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">-- mult :: forall a b c. ((a,b) &lt;- c) -&gt; f a -&gt; f b -&gt; f c</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="ot">mult ::</span> <span class="kw">forall</span> a b c<span class="fu">.</span> (c <span class="ot">-&gt;</span> (a,b)) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c</a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">-- unit :: I ~~&gt; f</span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="co">-- unit :: forall c. (() &lt;- c) -&gt; f c</span></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="co">-- unit :: forall c. Proxy c -&gt; f c</span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="ot">unit ::</span> f c</a></code></pre></div>
+<p>これも実はすでに存在する型クラス<a href="https://hackage.haskell.org/package/contravariant-1.5.2/docs/Data-Functor-Contravariant-Divisible.html#t:Divisible">Divisible</a>に相当します。 ekmett氏のライブラリなだけあって、このページで説明しているような理論的背景もざっくりとドキュメントに書いてあります。</p>
+<p>Hask<sup>op</sup> で <code>Either</code>と<code>Void</code>のモノイドを考えた場合にあたる<a href="https://hackage.haskell.org/package/contravariant-1.5.2/docs/Data-Functor-Contravariant-Divisible.html#t:Decidable">Decidable</a>も同じライブラリにありますね。</p>
+<p>もっとバリエーションがあるかもしれません。Bifunctorなら？Profunctorなら？Higher-Kinded Data ((Hask-&gt;Hask)-&gt;Hask) なら？</p>
+<p>まだ見ぬ有用なクラスが眠っているかもしれないとちょっと思っています。</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
