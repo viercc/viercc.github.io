@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 幅優先探索</title>
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>幅優先探索</h1>
+            <article>
+    <section class="header">
+        Posted on August 21, 2020
+        
+    </section>
+    <section>
+        <h1 id="haskellで幅優先探索">Haskellで幅優先探索</h1>
+<p>Haskellで<a href="https://ja.wikipedia.org/wiki/%E5%B9%85%E5%84%AA%E5%85%88%E6%8E%A2%E7%B4%A2">幅優先探索</a>をしようとして、 キューをどうするか困ったことはないでしょうか？</p>
+<p>まず思いつくだろうことは、<a href="https://hackage.haskell.org/package/containers-0.6.3.1/docs/Data-Sequence.html#t:Seq">Data.Sequence.Seq</a>をキューとして使って、キュー<code>Seq node</code>を状態として持ち回れば、手続き型言語で普段書いていたような幅優先探索が書ける、ということでしょう。</p>
+<p>もちろん、Mutableな配列をキューにしてもできます。<code>IO</code>や<code>ST</code>を探索以外に使わなければならない事情があればいい選択肢です。</p>
+<p>しかし、キューを明示的に使わなくてもできる方法がいくつかあります。それぞれ面白みがあるので紹介していきます。</p>
+<h1 id="例題コインで支払い">例題：コインで支払い</h1>
+<p>次の例題を考えます。</p>
+<blockquote>
+<p>この国では、金貨1枚は銀貨3枚に、プラチナ貨1枚は銀貨7枚に、ダイヤモンド貨1枚は銀貨19枚に相当します。銀貨100枚の価値がある商品を、なるべく少ない枚数の<em>銀貨以外の</em>コインで買う方法を見つけなさい。</p>
+</blockquote>
+<p>（DPのほうが簡単というのは置いておいて、）この問題は、合計金額をノード、コイン1枚追加を辺とした有向非巡回グラフを考えて、合計金額100のノードまでのパスを幅優先探索で見つければいいですね。</p>
+<p>この問題はHaskellで次のように書けます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">type</span> <span class="dt">Coin</span>  <span class="fu">=</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">type</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">type</span> <span class="dt">Graph</span> label node <span class="fu">=</span> node <span class="ot">-&gt;</span> [(label, node)]</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="ot">addCoin ::</span> <span class="dt">Graph</span> <span class="dt">Coin</span> <span class="dt">Value</span></a>
+<a class="sourceLine" id="cb1-7" title="7">addCoin <span class="fu">!</span>n <span class="fu">=</span> [ (c,n<span class="fu">+</span>c) <span class="fu">|</span> c <span class="ot">&lt;-</span> [<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">19</span>], n<span class="fu">+</span>c <span class="fu">&lt;=</span> <span class="dv">100</span> ]</a></code></pre></div>
+<h2 id="キューここではseqを使う">キュー(ここでは<code>Seq</code>)を使う</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Data.Foldable</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">import</span> <span class="dt">Data.Monoid</span> (<span class="dt">First</span>(..))</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Sequence</span> <span class="kw">as</span> <span class="dt">S</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="kw">import</span> <span class="dt">Data.Sequence</span> (<span class="dt">Seq</span>(<span class="dt">Empty</span>, (:&lt;|), (:|&gt;)))</a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="kw">type</span> <span class="dt">Tree</span> node <span class="fu">=</span> node <span class="ot">-&gt;</span> [node]</a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="ot">bfSeq ::</span> <span class="dt">Tree</span> node <span class="ot">-&gt;</span> node <span class="ot">-&gt;</span> [node]</a>
+<a class="sourceLine" id="cb2-9" title="9">bfSeq step root <span class="fu">=</span> loop (S.singleton root)</a>
+<a class="sourceLine" id="cb2-10" title="10">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-11" title="11">    loop <span class="dt">Empty</span>     <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb2-12" title="12">    loop (n <span class="fu">:&lt;|</span> q) <span class="fu">=</span> n <span class="fu">:</span> loop (foldl' (<span class="fu">:|&gt;</span>) q (step n))</a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="ot">graphToPaths ::</span> <span class="dt">Graph</span> label node <span class="ot">-&gt;</span> <span class="dt">Tree</span> ([label], node)</a>
+<a class="sourceLine" id="cb2-15" title="15">graphToPaths graph (path, node)</a>
+<a class="sourceLine" id="cb2-16" title="16">  <span class="fu">=</span> [ (l <span class="fu">:</span> path, node') <span class="fu">|</span> (l, node') <span class="ot">&lt;-</span> graph node ]</a>
+<a class="sourceLine" id="cb2-17" title="17"></a>
+<a class="sourceLine" id="cb2-18" title="18"><span class="ot">addCoin' ::</span> <span class="dt">Tree</span> ([<span class="dt">Coin</span>], <span class="dt">Value</span>)</a>
+<a class="sourceLine" id="cb2-19" title="19">addCoin' <span class="fu">=</span> graphToPaths addCoin</a>
+<a class="sourceLine" id="cb2-20" title="20"></a>
+<a class="sourceLine" id="cb2-21" title="21"><span class="ot">firstJust ::</span> <span class="dt">Foldable</span> t <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b</a>
+<a class="sourceLine" id="cb2-22" title="22">firstJust f <span class="fu">=</span> getFirst <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">First</span> <span class="fu">.</span> f)</a>
+<a class="sourceLine" id="cb2-23" title="23"></a>
+<a class="sourceLine" id="cb2-24" title="24"><span class="ot">addCoin' ::</span> <span class="dt">Tree</span> ([<span class="dt">Coin</span>], <span class="dt">Value</span>)</a>
+<a class="sourceLine" id="cb2-25" title="25">addCoin' <span class="fu">=</span> graphToPaths addCoin</a>
+<a class="sourceLine" id="cb2-26" title="26"></a>
+<a class="sourceLine" id="cb2-27" title="27"><span class="ot">solvePuzzleSeq ::</span> <span class="dt">Maybe</span> [<span class="dt">Coin</span>]</a>
+<a class="sourceLine" id="cb2-28" title="28">solvePuzzleSeq <span class="fu">=</span> firstJust f <span class="fu">$</span> bfSeq addCoin' ([], <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb2-29" title="29">  <span class="kw">where</span> f (path, <span class="dv">100</span>) <span class="fu">=</span> <span class="dt">Just</span> (<span class="fu">reverse</span> path)</a>
+<a class="sourceLine" id="cb2-30" title="30">        f _           <span class="fu">=</span> <span class="dt">Nothing</span></a></code></pre></div>
+<h2 id="余再帰を使う">余再帰を使う</h2>
+<p><a href="https://kazu-yamamoto.hatenablog.jp/entry/20121107/1352259739">元ネタ</a></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">bfList ::</span> <span class="dt">Tree</span> node <span class="ot">-&gt;</span> node <span class="ot">-&gt;</span> [node]</a>
+<a class="sourceLine" id="cb3-2" title="2">bfList step root <span class="fu">=</span></a>
+<a class="sourceLine" id="cb3-3" title="3">    <span class="kw">let</span> ans <span class="fu">=</span> root <span class="fu">:</span> go <span class="dv">1</span> ans</a>
+<a class="sourceLine" id="cb3-4" title="4">     <span class="kw">in</span> ans</a>
+<a class="sourceLine" id="cb3-5" title="5">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-6" title="6">    go n _ <span class="fu">|</span> n <span class="fu">&lt;=</span> <span class="dv">0</span> <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb3-7" title="7">    go n (x<span class="fu">:</span>xs) <span class="fu">=</span> </a>
+<a class="sourceLine" id="cb3-8" title="8">      <span class="kw">let</span> children <span class="fu">=</span> step x</a>
+<a class="sourceLine" id="cb3-9" title="9">      <span class="kw">in</span> children <span class="fu">++</span> go (n <span class="fu">-</span> <span class="dv">1</span> <span class="fu">+</span> <span class="fu">length</span> children) xs</a>
+<a class="sourceLine" id="cb3-10" title="10">    go _ [] <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;Never reach here&quot;</span></a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="ot">solvePuzzleList ::</span> <span class="dt">Maybe</span> [<span class="dt">Coin</span>]</a>
+<a class="sourceLine" id="cb3-13" title="13">solvePuzzleList <span class="fu">=</span> firstJust f <span class="fu">$</span> bfList addCoin' ([], <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb3-14" title="14">  <span class="kw">where</span> f (path, <span class="dv">100</span>) <span class="fu">=</span> <span class="dt">Just</span> (<span class="fu">reverse</span> path)</a>
+<a class="sourceLine" id="cb3-15" title="15">        f _           <span class="fu">=</span> <span class="dt">Nothing</span></a></code></pre></div>
+<p><code>ans = root : go 1 ans</code>のように再帰的に構築されたリストが、 まるでキューのように扱えます。</p>
+<h2 id="遅延データ構造を使う">遅延データ構造を使う</h2>
+<p>次の<code>Lazy</code>型を考えます。<code>Lazy a</code>は、<code>a</code>型の値が</p>
+<ul>
+<li>計算できなかった … <code>Fail</code></li>
+<li>計算終了した … <code>Ok a</code></li>
+<li>計算中である … <code>Next x</code></li>
+</ul>
+<p>という3つの状態を表します。<code>forceLazy</code>は、 これを単なる失敗または成功として<code>Maybe a</code>に単純化します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">Lazy</span> a <span class="fu">=</span> <span class="dt">Fail</span> <span class="fu">|</span> <span class="dt">Ok</span> a <span class="fu">|</span> <span class="dt">Next</span> (<span class="dt">Lazy</span> a)</a>
+<a class="sourceLine" id="cb4-2" title="2">  <span class="kw">deriving</span> (<span class="dt">Functor</span>, <span class="dt">Foldable</span>, <span class="dt">Traversable</span>)</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">forceLazy ::</span> <span class="dt">Lazy</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb4-5" title="5">forceLazy <span class="dt">Fail</span>     <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb4-6" title="6">forceLazy (<span class="dt">Ok</span> a)   <span class="fu">=</span> <span class="dt">Just</span> a</a>
+<a class="sourceLine" id="cb4-7" title="7">forceLazy (<span class="dt">Next</span> x) <span class="fu">=</span> forceLazy x</a></code></pre></div>
+<p><code>Applicative</code>と<code>Monad</code>のインスタンスが次のように定義できます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Lazy</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2">  <span class="fu">pure</span> <span class="fu">=</span> <span class="dt">Ok</span></a>
+<a class="sourceLine" id="cb5-3" title="3">  (<span class="fu">&lt;*&gt;</span>) <span class="fu">=</span> ap</a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Lazy</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-6" title="6">  <span class="fu">return</span> <span class="fu">=</span> <span class="fu">pure</span></a>
+<a class="sourceLine" id="cb5-7" title="7">  <span class="dt">Fail</span>   <span class="fu">&gt;&gt;=</span> _ <span class="fu">=</span> <span class="dt">Fail</span></a>
+<a class="sourceLine" id="cb5-8" title="8">  <span class="dt">Ok</span> a   <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> k a</a>
+<a class="sourceLine" id="cb5-9" title="9">  <span class="dt">Next</span> x <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> <span class="dt">Next</span> (x <span class="fu">&gt;&gt;=</span> k)</a></code></pre></div>
+<p>さらに、“2つの<code>Lazy a</code>のうち先に完了したほうを返す”を<code>(&lt;|&gt;)</code>として、 <code>Alternative</code>にもなります。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">instance</span> <span class="dt">Alternative</span> <span class="dt">Lazy</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb6-2" title="2">  empty <span class="fu">=</span> <span class="dt">Fail</span></a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="dt">Fail</span>   <span class="fu">&lt;|&gt;</span> y      <span class="fu">=</span> y</a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="dt">Ok</span> a   <span class="fu">&lt;|&gt;</span> _      <span class="fu">=</span> <span class="dt">Ok</span> a</a>
+<a class="sourceLine" id="cb6-5" title="5">  x      <span class="fu">&lt;|&gt;</span> <span class="dt">Fail</span>   <span class="fu">=</span> x</a>
+<a class="sourceLine" id="cb6-6" title="6">  _      <span class="fu">&lt;|&gt;</span> <span class="dt">Ok</span> a   <span class="fu">=</span> <span class="dt">Ok</span> a</a>
+<a class="sourceLine" id="cb6-7" title="7">  <span class="dt">Next</span> x <span class="fu">&lt;|&gt;</span> <span class="dt">Next</span> y <span class="fu">=</span> <span class="dt">Next</span> (x <span class="fu">&lt;|&gt;</span> y)</a></code></pre></div>
+<p>これを使って、BFSのようなものが実装できます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">bfSearchLazy ::</span> <span class="dt">Tree</span> node <span class="ot">-&gt;</span> node <span class="ot">-&gt;</span> (node <span class="ot">-&gt;</span> <span class="dt">Lazy</span> a) <span class="ot">-&gt;</span> <span class="dt">Lazy</span> a</a>
+<a class="sourceLine" id="cb7-2" title="2">bfSearchLazy step root goal <span class="fu">=</span> go root</a>
+<a class="sourceLine" id="cb7-3" title="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-4" title="4">    go x <span class="fu">=</span> goal x <span class="fu">&lt;|&gt;</span> <span class="dt">Next</span> (asum <span class="fu">$</span> <span class="fu">fmap</span> go (step x))</a>
+<a class="sourceLine" id="cb7-5" title="5"></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="ot">solvePuzzleLazy ::</span> <span class="dt">Maybe</span> [<span class="dt">Coin</span>]</a>
+<a class="sourceLine" id="cb7-7" title="7">solvePuzzleLazy <span class="fu">=</span> forceLazy <span class="fu">$</span> bfSearchLazy addCoin' ([], <span class="dv">0</span>) f</a>
+<a class="sourceLine" id="cb7-8" title="8">  <span class="kw">where</span> f (path, <span class="dv">100</span>) <span class="fu">=</span> <span class="dt">Ok</span> (<span class="fu">reverse</span> path)</a>
+<a class="sourceLine" id="cb7-9" title="9">        f _           <span class="fu">=</span> <span class="dt">Fail</span></a></code></pre></div>
+<p><code>bfSearchLazy</code>は、「木の全ノード<code>x</code>に対して、ルートからの距離に応じたステップ数後に<code>goal x</code>を評価する計算をさせ、一番先に完了した計算を採用する」と解釈できます。遅延評価のおかげで、これは幅優先探索と同じ深さまでしか木をたどりませんし、木が無限の深さであっても大丈夫です。</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
