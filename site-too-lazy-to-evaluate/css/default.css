@@ -54,7 +54,7 @@ main {
   margin-right: 50px;
   margin-bottom: 5.5rem; /* footer-height + 1.5rem */
 
-  max-width: 70em;
+  max-width: 80%;
 }
 
 main h1{
@@ -93,6 +93,8 @@ main pre {
    background-color: #eeeeee;
    padding: 0.6em;
    border-radius: 0.6em;
+   max-width: 100%;
+   min-width: 60em;
 }
 
 main pre code {
@@ -108,6 +110,21 @@ main .sidenote {
     margin-left: 6%;
     border-style: none none none dotted;
     padding: 1em 0.5em;
+}
+
+main table {
+    border-collapse: collapse;
+    border-style: solid none;
+    border-color: black;
+    border-width: 2px;
+}
+main th, main td {
+    border-style: solid none;
+    border-color: lightgray;
+    border-width: 1px;
+}
+main table th {
+    padding: 0 1em;
 }
 
 footer {
