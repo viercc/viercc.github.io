@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 多項式Applicative Functorの一般論（補遺）</title>
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>多項式Applicative Functorの一般論（補遺）</h1>
+            <article>
+    <section class="header">
+        Posted on January  1, 2021
+        
+    </section>
+    <section>
+        <p>書いていたら年が明けました。</p>
+<p><a href="2020-11-25-faccat.html">前回の記事</a>の補足など。</p>
+<h2 id="群っぽい多項式functor">群っぽい多項式Functor</h2>
+<p>前回の記事のまとめ部分で次のようなことを書きました。</p>
+<blockquote>
+<p>まとめると、モノイド<code>Ap F ()</code>が群<code>G</code>になるような多項式 Applicative <code>F</code> は、</p>
+<ul>
+<li>Functorとして<code>(G, E -&gt; a)</code> に自然同型</li>
+<li>どれも曖昧なく以下のデータで表現できる
+<ul>
+<li><code>tr, tr' :: G -&gt; E -&gt; E</code>, <code>tr x</code>は全単射で<code>tr' x</code>がその逆写像。</li>
+<li>G-作用<code>act :: G -&gt; E -&gt; E</code></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ot">phi ::</span> (<span class="dt">G</span>, <span class="dt">G</span>, <span class="dt">G</span>) <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">E</span></a>
+<a class="sourceLine" id="cb1-4" title="4">phi (x,t,y) <span class="fu">=</span> tr' t <span class="fu">.</span> act y <span class="fu">.</span> tr (x <span class="fu">&lt;&gt;</span> t <span class="fu">&lt;&gt;</span> y)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</a>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="dt">F</span> x x_f <span class="fu">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="fu">=</span> <span class="dt">F</span> xy (\i <span class="ot">-&gt;</span> xy_f i (xy_a i))</a>
+<a class="sourceLine" id="cb1-9" title="9">    <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-10" title="10">      xy <span class="fu">=</span> x <span class="fu">&lt;&gt;</span> y</a>
+<a class="sourceLine" id="cb1-11" title="11">      xy_f <span class="fu">=</span> x_f <span class="fu">.</span> tr' x <span class="fu">.</span> act y <span class="fu">.</span> tr xy</a>
+<a class="sourceLine" id="cb1-12" title="12">      xy_a <span class="fu">=</span> y_a <span class="fu">.</span> tr' y <span class="fu">.</span> tr xy</a></code></pre></div>
+</blockquote>
+<p>改めてこの部分を読んでみると、Functorとしての<code>(G, E -&gt; a)</code>への自然同型のとりかたを工夫すれば、 <code>tr x = tr' x = id</code>となるようにできますね。なので、次のようにしたほうが簡潔でした。</p>
+<blockquote>
+<p>モノイド<code>Ap F ()</code>が群<code>G</code>になるような多項式 Applicative <code>F</code> は、</p>
+<ul>
+<li><code>Functor</code>として<code>(G, E -&gt; a)</code>に自然同型</li>
+<li><em>自然同型のとりかたをうまく選べば、</em> どの<code>F</code>もある <em>左</em> <code>G</code>-作用<code>act :: G -&gt; E -&gt; E</code>によって以下のように定義される：</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-4" title="4">  <span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</a>
+<a class="sourceLine" id="cb2-5" title="5">  <span class="dt">F</span> x x_f <span class="fu">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> y) (\i <span class="ot">-&gt;</span> x_f (act y i) (y_a i))</a></code></pre></div>
+</blockquote>
+<p>また、任意の群<code>H</code>に対して、<code>Ap F H</code>も再び群になります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">(&lt;&lt;&gt;&gt;) ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Semigroup</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</a>
+<a class="sourceLine" id="cb3-2" title="2">(<span class="fu">&lt;&lt;&gt;&gt;</span>) <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="co">-- (&lt;&lt;&gt;&gt;) = coerce ((&lt;&gt;) @(Ap F h))</span></a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">mempty1 ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Monoid</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h</a>
+<a class="sourceLine" id="cb3-6" title="6">mempty1 <span class="fu">=</span> <span class="fu">pure</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">-- mempty1 = coerce (mempty @(Ap F h))</span></a>
+<a class="sourceLine" id="cb3-8" title="8"></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="ot">inv1 ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Group</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</a>
+<a class="sourceLine" id="cb3-10" title="10">inv1 (<span class="dt">F</span> x x_a) <span class="fu">=</span> <span class="dt">F</span> x' (inv <span class="fu">@</span>h <span class="fu">.</span> x_a <span class="fu">.</span> act x')</a>
+<a class="sourceLine" id="cb3-11" title="11">  <span class="kw">where</span> x' <span class="fu">=</span> inv <span class="fu">@</span><span class="dt">G</span> x </a></code></pre></div>
+<p>これが本当に群であることは、<code>act</code>が群作用であることから出ます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">x,<span class="ot"> x' ::</span> <span class="dt">G</span></a>
+<a class="sourceLine" id="cb4-2" title="2">x' <span class="fu">=</span> inv x</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">x_a ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">H</span></a>
+<a class="sourceLine" id="cb4-5" title="5"></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">w ::</span> <span class="dt">F</span> <span class="dt">H</span></a>
+<a class="sourceLine" id="cb4-7" title="7">w <span class="fu">=</span> <span class="dt">F</span> x x_a</a>
+<a class="sourceLine" id="cb4-8" title="8">inv1 w <span class="fu">=</span> <span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x')</a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10">w <span class="fu">&lt;&lt;&gt;&gt;</span> inv1 w</a>
+<a class="sourceLine" id="cb4-11" title="11"> <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>) (<span class="dt">F</span> x x_a) (<span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x'))</a>
+<a class="sourceLine" id="cb4-12" title="12"> <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> x_a (act x' i) <span class="fu">&lt;&gt;</span> inv (x_a (act x' i)))</a>
+<a class="sourceLine" id="cb4-13" title="13"> <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> <span class="kw">let</span> b <span class="fu">=</span> x_a (act x' i) <span class="kw">in</span> b <span class="fu">&lt;&gt;</span> inv b)</a>
+<a class="sourceLine" id="cb4-14" title="14"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</a>
+<a class="sourceLine" id="cb4-15" title="15"> <span class="fu">=</span> mempty1</a>
+<a class="sourceLine" id="cb4-16" title="16"></a>
+<a class="sourceLine" id="cb4-17" title="17">inv1 w <span class="fu">&lt;&lt;&gt;&gt;</span> w</a>
+<a class="sourceLine" id="cb4-18" title="18"> <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>) (<span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x')) (<span class="dt">F</span> x x_a)</a>
+<a class="sourceLine" id="cb4-19" title="19"> <span class="fu">=</span> <span class="dt">F</span> (x' <span class="fu">&lt;&gt;</span> x) (\i <span class="ot">-&gt;</span> (inv <span class="fu">.</span> x_a <span class="fu">.</span> act x' <span class="fu">.</span> act x <span class="fu">$</span> i) <span class="fu">&lt;&gt;</span> x_a i)</a>
+<a class="sourceLine" id="cb4-20" title="20">   <span class="co">-- act x' . act x = act (x' &lt;&gt; x) = act mempty = id</span></a>
+<a class="sourceLine" id="cb4-21" title="21"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> inv (x_a i) <span class="fu">&lt;&gt;</span> x_a i)</a>
+<a class="sourceLine" id="cb4-22" title="22"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</a>
+<a class="sourceLine" id="cb4-23" title="23"> <span class="fu">=</span> mempty1</a></code></pre></div>
+<p>2つの群<code>G,H</code>と群作用<code>G -&gt; E -&gt; E</code>から新たな群を作るこの構成は、 群論の中ではズバリそのものがよく知られていて、<a href="https://ja.wikipedia.org/wiki/%E8%BC%AA%E7%A9%8D">輪積</a> という名前が付いています。（とえらそうに言いますが、私自身この補遺を書くまで気づいていませんでしたが。）</p>
+<p>まとめると、</p>
+<ul>
+<li><p>多項式Applicative Functorである<code>F</code>について、次は同値</p>
+<ol type="1">
+<li><code>Ap F ()</code>が群である</li>
+<li><code>F</code>に同型なApplicative<code>F'</code>として <code>F' a = (G, E -&gt; a)</code>が存在し、 <code>G</code>は群で、左<code>G</code>-作用<code>act :: G -&gt; E -&gt; E</code>から定まる<code>Applicative</code>演算を持つ</li>
+<li>任意の群<code>H</code>について、<code>Ap F H</code>は群である。特に、<code>G</code>-作用を持つ集合<code>E</code>上の<code>H</code>の輪積になる。</li>
+</ol></li>
+</ul>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
