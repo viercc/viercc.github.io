@@ -2,9 +2,26 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
 import           Hakyll
-
+import           Hakyll.Web.Pandoc
+import           Text.Pandoc.Options
 
 --------------------------------------------------------------------------------
+
+pandocCompiler' :: Compiler (Item String)
+pandocCompiler' = pandocCompilerWith
+  defaultHakyllReaderOptions
+    { readerExtensions = extensions' }
+  defaultHakyllWriterOptions
+    { writerExtensions = extensions'
+    , writerHTMLMathMethod = htmlMath }
+  where
+    extensions' = enableExtension Ext_footnotes $
+      (readerExtensions defaultHakyllReaderOptions)
+
+htmlMath :: HTMLMathMethod
+htmlMath = MathML
+-- htmlMath = KaTeX defaultKaTeXURL
+
 main :: IO ()
 main = hakyll $ do
     match "images/*" $ do
@@ -21,13 +38,13 @@ main = hakyll $ do
 
     match (fromList ["about.rst", "contact.markdown"]) $ do
         route   $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocCompiler'
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
     match "posts/*" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocCompiler'
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
