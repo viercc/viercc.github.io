@@ -15,12 +15,15 @@ pandocCompiler' = pandocCompilerWith
     { writerExtensions = extensions'
     , writerHTMLMathMethod = htmlMath }
   where
-    extensions' = enableExtension Ext_footnotes $
-      (readerExtensions defaultHakyllReaderOptions)
+    extensions' =
+      enableExtension Ext_footnotes $
+      enableExtension Ext_tex_math_double_backslash $
+      disableExtension Ext_tex_math_dollars $
+      readerExtensions defaultHakyllReaderOptions
 
 htmlMath :: HTMLMathMethod
-htmlMath = MathML
--- htmlMath = KaTeX defaultKaTeXURL
+-- htmlMath = MathML
+htmlMath = KaTeX defaultKaTeXURL
 
 main :: IO ()
 main = hakyll $ do
@@ -36,6 +39,11 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
+    -- TODO: run any minifier
+    match "js/*" $ do
+        route   idRoute
+        compile copyFileCompiler
+    
     match (fromList ["about.rst", "contact.markdown"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler'
