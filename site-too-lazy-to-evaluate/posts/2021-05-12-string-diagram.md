@@ -2,7 +2,7 @@
 title: ストリング図でMonad再入門
 ---
 
-## いまさらモナドの解説を
+## いまさらモナド
 
 この記事はHaskellにおけるモナドの解説です。
 そして、「またかよ」「もう知ってる」と思われた方が想定読者です。
@@ -21,14 +21,16 @@ title: ストリング図でMonad再入門
 以下の文献・Webページを参考にしました。
 
 * [String diagram - Wikipedia](https://en.wikipedia.org/wiki/String_diagram)
-  * 簡潔にまとまった定義など
+  * ざっくりした概要
   * Wikipedia日本語版にはなかった（残念）
 * [絵算の威力をお見せしよう - 檜山正幸のキマイラ飼育記 (はてなBlog)](https://m-hiyama.hatenablog.com/entry/20180302/1519974841)
   * 日本語、すごく勉強になるブログ
-* [Composing Monads, Mark P. Jones and Luc Duponcheel, Research Report YALEU/DCS/RR-1004, 2013](http://web.cecs.pdx.edu/~mpj/pubs/composing.html)
+  * リンク先記事が最もまとまっていると感じましたが、それ以外にもたくさん参考にしました。
+* [Composing Monads, Mark P. Jones and Luc Duponcheel, Research Report YALEU/DCS/RR-1004, 1993](http://web.cecs.pdx.edu/~mpj/pubs/composing.html)
   * Monad transformersの原点的なもの
+* 他たくさんあると思いますが、覚えてなくてリストアップできませんごめんなさい・・・
 
-### ストリング図
+## ストリング図
 
 [ストリング図](https://en.wikipedia.org/wiki/String_diagram)は、
 圏論で使われる表記法です。圏論から道具を拝借するときによくあることですが、
@@ -68,7 +70,7 @@ title: ストリング図でMonad再入門
 つまり、`pure :: ∀a. a -> f a`も`Identity`から`f`への自然変換とみなして、次の図のように書くことにします。このとき、図でうすく描いたような、`Identity`を表す線は引かないことにします。
 （これによって後で困ることはありません！）
 
-![ストリング図(Identityの省略)](/images/string/pure.png)
+![ストリング図(Identityの省略)](/images/string/pure-and-extract.png)
 
 自然変換どうしは垂直合成する（"縦につなげる"）こともできました。上図の`nt`と`foo`は、
 合成して自然変換`nt >>> foo :: ∀a. f (g (h a)) -> p a`を作ることができるます。
@@ -111,3 +113,215 @@ maybeToList :: Maybe a -> [a]
 `Maybe`と`[]`の合成順（左から右、Haskellでの記述と*逆順*）に気をつけてください。
 
 ![ストリング図の例(catMaybes)](/images/string/catmaybes.png)
+
+## ストリング図でMonad
+
+`Monad`の定義を決めておきます。
+ここでは、現実にHaskellで使われている定義ではないですが、
+同値な定義として次のクラスを`Monad`だとします。
+
+```haskell
+-- | Monadのインスタンスは以下のモナド則を満たさなければならない。
+--
+-- [単位法則]
+--
+--     > pure >>> join = fmap pure >>> join = id
+--     普段どおり(.)を使って書くならば、
+--     > join . pure   = join . fmap pure   = id
+--
+-- [結合法則]
+--
+--     > join >>> join = fmap join >>> join
+--     普段どおり(.)を使って書くならば、
+--     > join . join = join . fmap join
+class (Functor m) => Monad m where
+  pure :: a -> m a
+  join :: m (m a) -> m a
+
+return :: Monad m => a -> m a
+return = pure
+
+(>>=) :: Monad m => m a -> (a -> m b) -> m b
+ma >>= f = join (fmap f ma)
+```
+
+`pure`、`join`ともに自然変換であり、モナド則も含めて
+ストリング図で描くことができます。
+これにより、文字で書かれた「`Functor`である`m`が`Monad`である」という条件が、
+次のように図で描けてしまいます。
+
+* 以下の自然変換`pure`と`join`があること：
+
+  ![pure](/images/string/monad-pure.png)
+
+  ![join](/images/string/monad-join.png)
+
+* 加えて、以下のストリング図の等式が成り立つこと：
+
+  ![単位法則](/images/string/monad-law-unit.png)
+
+  ![結合法則](/images/string/monad-law-assoc.png)
+
+## ストリング図で`State`モナド
+
+次の`State`モナドがモナド則を満たしていることを証明してみましょう。
+
+```haskell
+newtype State s a = State { runState :: s -> (s, a) }
+
+instance Functor (State s) where {- 省略 -}
+
+instance Monad (State s) where
+  pure a = State (\s -> (s, a))
+  join mma = State $ \s ->
+    let (s', ma) = runState mma s
+    in runState ma s
+```
+
+ここで、`State`が二つの`Functor`の合成からなっていることに注目して、
+次のように書き換えてみます。
+
+```haskell
+type G s = (->) s -- (s ->) と書きたいが、Haskellはこの書き方は不可
+type F s = (,) s  -- (s, )  〃
+
+-- G s = (s ->)も、 F s = (s, )も、Functorのインスタンス
+
+newtype State s a = State { runState :: G s (F s a) }
+  -- State s a ~ Compose (G s) (F s) a
+
+instance Monad (State s) where
+  pure = open >>> State
+  join =   runState              -- :: State s (State s a) -> G s (F s (State s a))
+       >>> fmap (fmap runState)  -- :: G s (F s (State s a)) -> G s (F s (G s (F s a)))
+       >>> fmap close            -- :: G s (F s (G s (F s a))) -> G s (F s a)
+       >>> State                 -- :: G s (F s a) -> State s a
+
+open :: a -> G s (F s a)   -- a -> (s -> (s, a))
+open a = \s -> (s, a)
+
+close :: F s (G s a) -> a  -- (s, s -> a) -> a
+close (s, f) = f s
+```
+
+`open`と`close`という命名は、これらが対になっているところからきています。
+
+```haskell
+open >>> fmap close = id :: G s a -> G s a
+(open >>> fmap close) (f :: G s a)   -- G s a = (s -> a)
+  = fmap close $ \s -> (s, f)
+  = \s -> close (s, f)
+  = \s -> f
+  = f
+
+fmap open >>> close = id :: F s a -> F s a
+(fmap open >>> close) ((s, a) :: F s a)  -- F s a = (s, a)
+  = close $ (s, open a)
+  = close $ (s, \s -> (s, a))
+  = (\s -> (s, a)) s
+  = (s, a)
+```
+
+`open, close`と、`State`の`newtype`をつけたり外したりする`State, runState`はいずれも自然変換
+になっており、以下の通りストリング図に描けます。
+
+![Stateモナドの構成要素](/images/string/state-elements.png)
+
+そして、`open`と`close`の間に成り立つ関係は次の図のように描けます。
+
+![openとcloseの関係](/images/string/state-openclose.png)
+
+"曲がった線"をまっすぐに伸ばすことができるという、見た目にわかりやすい関係になっているところがポイントです。
+
+<div class='sidenote'>
+より一般的な話としては、`open, close`のペアは`F s`が`G s`の[左随伴](https://ja.wikipedia.org/wiki/随伴関手)であるという
+ことを表します。`open, close`は私が勝手に使った用語法で、普通は単位(unit)、余単位(counit)と呼び、
+ギリシャ文字`η, ε`で表します。
+
+`open`と`close`の関係は、上図にあるストリング図の見た目から、ジグザグ関係式などと呼ばれています。
+</div>
+
+ここまでの道具を使えば、`State`のモナド則は図を描いていくだけで証明できます。
+
+![Stateのモナド則]()
+
+## ストリング図で`WriterT`
+
+練習として、`WriterT`がモナド則を満たしていることを証明してみましょう。
+
+もう少し明確にするなら、任意のモノイド`w`とモナド`m`とに対して、
+次の`WriterT w m`がモナド則を満たすことを、ストリング図を使って証明してみます。
+
+```haskell
+-- transformers パッケージのものとは少し違います
+newtype WriterT w m a = WriterT { runWriterT :: m (w, a) }
+
+instance Functor m => Functor (WriterT w m) where {- 省略 -}
+
+instance (Monoid w, Monad m) => Monad (WriterT w m) where
+  pure = pureT >>> WriterT
+    where
+      -- ScopedTypeVariables
+      pureT :: ∀a. a -> m (w, a)
+      pureT a = pure (mempty, a)
+  join = runWriterT >>> fmap runWriterT >>> joinT >>> WriterT
+    where
+      -- ScopedTypeVariables
+      joinT :: ∀a. m (w, m (w, a)) -> m (w, a)
+      joinT mwmw =
+        do (w, mw) <- mwmw
+           (w', a) <- mw
+           return (w <> w', a)
+```
+
+ストリング図をつかった計算に入るために、自然変換の組み合わせで`pureT`と`joinT`を書いてみます。
+そのためにまず、`(,) w`がモナドになることを利用します。
+
+```haskell
+instance Functor ((,) w) where {- 省略 -}
+
+instance (Monoid w) => Monad ((,) w) where
+  pure :: a -> (w, a)
+  pure a = (mempty, a)
+
+  join :: (w, (w, a)) -> (w, a)
+  join (w, (w', a)) = (w <> w', a)
+
+-- この定義でたしかにモナド則を満たしているが、証明は省略する。
+```
+
+このモナドを使って`pureT, joinT`を書き換えてみます。
+
+```haskell
+pureT :: ∀a. a -> m (w, a)
+pureT a = pure (mempty, a)
+pureT = pure >>> pure
+--      ^        ^
+--      |        \-- ∀a. a -> m a
+--      \-- ∀a. a -> (w, a)
+
+joinT :: ∀a. a -> m (w, m (w, a)) -> m (w, a)
+joinT mwmw =
+  do (w, mw) <- mwmw
+     (w', a) <- mw
+     return (w <> w', a)
+= do (w, mw) <- mwmw
+     (w', a) <- mw
+     return (join (w, (w', a))) -- ((,) w) の join
+= do (w, mw) <- mwmw
+     fmap (\w'a -> join (w, w'a)) mw
+= do (w, mw) <- mwmw
+     fmap ((,) w >>> join) mw
+= join $ fmap (\(w, mw) -> fmap ((,) w >>> join) mw) mwmw
+-- ^ m の join
+
+joinT
+ = fmap (\(w, mw) -> fmap ((,) w >>> join) mw) >>> join
+ = fmap (\(w, mw) -> fmap ((,) w) mw) >>> fmap (fmap join) >>> join
+--      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--      | この関数に名前をつける
+ = fmap swap_wm >>> fmap (fmap join) >>> join
+ where
+   swap_wm :: ∀b. (w, m b) -> m (w, b)
+   swap_wm (w, mb) = fmap ((,) w) mb
+```
