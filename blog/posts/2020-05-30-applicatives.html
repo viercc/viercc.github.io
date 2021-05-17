@@ -7,6 +7,11 @@
         <title>Too lazy to evaluate - Applicativeと対応する代数</title>
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+        <script defer src="../js/katex-render-hook.js"></script>
     </head>
     <body>
         <header>
@@ -31,76 +36,76 @@
     <section>
         <h1 id="動機">動機</h1>
 <p>次の<code>F</code>の形をした<code>Monad</code>について考えたかった。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="dt">E</span><span class="ot"> ::</span> <span class="dt">Type</span></a>
-<a class="sourceLine" id="cb1-3" title="3"></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">M</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">E</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="dt">M</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</span></code></pre></div>
 <p>特に、このような<code>Monad F</code>を定めるような<code>M, E</code>上の代数的構造を明らかにしたかった。</p>
 <p>例えば、<code>Writer m a ~ (m, a)</code>の<code>Monad</code>のインスタンスには <code>m</code>上のモノイドが1対1に対応するし、 <code>Reader e a ~ (e -&gt; a)</code>は一意な方法で<code>Monad</code>になるが、これには <code>e</code>上の唯一の“余モノイド”<code>(const () :: e -&gt; (), join (,) :: e -&gt; (e,e))</code>が対応する。</p>
 <p>こんな感じで、<code>Monad F</code>に対応する代数は何かを考えていた。</p>
 <p>が、何日かトライしたもののこれは相当難しい感じがするので、 まずは<code>Applicative F</code>に何が対応するのかから考えてみた。</p>
 <h2 id="applicative-f-の構造">Applicative F の構造</h2>
 <p>ここから、以下の変数が唐突に出てきたら、暗に“任意の<code>x</code>について…”等が挿入されていると思ってほしい。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">x, y,<span class="ot"> z ::</span> <span class="dt">M</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="ot">f ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="ot">g ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="ot">h ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> c</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x, y,<span class="ot"> z ::</span> <span class="dt">M</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">f ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">g ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> b</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">h ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> c</span></code></pre></div>
 <p>まず、<code>pure :: a -&gt; F a</code>は、次の形しかありえないことを確認しておく。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">mPure ::</span> <span class="dt">M</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> mPure (<span class="fu">const</span> a)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mPure ::</span> <span class="dt">M</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> mPure (<span class="fu">const</span> a)</span></code></pre></div>
 <p>また、<code>Applicative</code>のインスタンスは、次の<code>prod</code>を与えても決まる。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">prod ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b <span class="ot">-&gt;</span> <span class="dt">F</span> (a,b)</a>
-<a class="sourceLine" id="cb4-2" title="2">prod <span class="fu">=</span> liftA2 (,)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prod ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b <span class="ot">-&gt;</span> <span class="dt">F</span> (a,b)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prod <span class="ot">=</span> liftA2 (,)</span></code></pre></div>
 <p><code>M</code>と<code>E</code>に関する関数<code>(&lt;&gt;) :: M -&gt; M -&gt; M</code>と<code>d :: M -&gt; M -&gt; E -&gt; (E, E)</code>が、 <code>prod</code>の実装と1対1に対応する。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">prod (<span class="dt">F</span> x f) (<span class="dt">F</span> y g) <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> y) ((f <span class="fu">***</span> g) <span class="fu">.</span> d x y)</a>
-<a class="sourceLine" id="cb5-2" title="2"></a>
-<a class="sourceLine" id="cb5-3" title="3">x <span class="fu">&lt;&gt;</span> y <span class="fu">=</span> <span class="kw">case</span> prod (<span class="dt">F</span> x <span class="fu">id</span>) (<span class="dt">F</span> y <span class="fu">id</span>) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb5-4" title="4">  <span class="dt">F</span> z _ <span class="ot">-&gt;</span> z</a>
-<a class="sourceLine" id="cb5-5" title="5"></a>
-<a class="sourceLine" id="cb5-6" title="6">d x y <span class="fu">=</span> <span class="kw">case</span> prod (<span class="dt">F</span> x <span class="fu">id</span>) (<span class="dt">F</span> y <span class="fu">id</span>) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb5-7" title="7">  <span class="dt">F</span> _ k <span class="ot">-&gt;</span> k</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prod (<span class="dt">F</span> x f) (<span class="dt">F</span> y g) <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> y) ((f <span class="op">***</span> g) <span class="op">.</span> d x y)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;&gt;</span> y <span class="ot">=</span> <span class="kw">case</span> prod (<span class="dt">F</span> x <span class="fu">id</span>) (<span class="dt">F</span> y <span class="fu">id</span>) <span class="kw">of</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">F</span> z _ <span class="ot">-&gt;</span> z</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>d x y <span class="ot">=</span> <span class="kw">case</span> prod (<span class="dt">F</span> x <span class="fu">id</span>) (<span class="dt">F</span> y <span class="fu">id</span>) <span class="kw">of</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">F</span> _ k <span class="ot">-&gt;</span> k</span></code></pre></div>
 <p><code>Applicative</code>則を満たすために<code>mPure</code>, <code>&lt;&gt;</code>, <code>d</code>に必要な制約を書き出せば、<code>(mPure, &lt;&gt;) :: (M, M -&gt; M -&gt; M)</code>が<code>M</code>上のモノイドを定めることがわかり、さらに<code>d</code>についても条件を得られる。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="co">-- 右単位</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="co">-- 正確なHaskellではないが mPure = 1 と略記する</span></a>
-<a class="sourceLine" id="cb6-3" title="3">prod (<span class="dt">F</span> (x,f)) (<span class="fu">pure</span> b) <span class="fu">=</span> (,b) <span class="fu">&lt;$&gt;</span> <span class="dt">F</span> (x, f)</a>
-<a class="sourceLine" id="cb6-4" title="4">prod (<span class="dt">F</span> (x,f)) (<span class="fu">pure</span> b)</a>
-<a class="sourceLine" id="cb6-5" title="5"> <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> <span class="dv">1</span>, (f <span class="fu">***</span> <span class="fu">const</span> b) <span class="fu">.</span> d x <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-6" title="6"> <span class="fu">=</span> (,b) <span class="fu">.</span> <span class="dt">F</span> (x,f)</a>
-<a class="sourceLine" id="cb6-7" title="7"></a>
-<a class="sourceLine" id="cb6-8" title="8">x <span class="fu">&lt;&gt;</span> <span class="dv">1</span> <span class="fu">=</span> x            <span class="co">-- (M-unitR)</span></a>
-<a class="sourceLine" id="cb6-9" title="9"><span class="fu">fst</span> <span class="fu">.</span> d x <span class="dv">1</span> <span class="fu">=</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb6-10" title="10">d x <span class="dv">1</span> <span class="fu">=</span> <span class="fu">id</span> <span class="fu">&amp;&amp;&amp;</span> dl x   <span class="co">-- (d-unitR)</span></a>
-<a class="sourceLine" id="cb6-11" title="11">  <span class="co">-- ここで dl :: M -&gt; E -&gt; E はある関数</span></a>
-<a class="sourceLine" id="cb6-12" title="12"></a>
-<a class="sourceLine" id="cb6-13" title="13"><span class="co">-- 同様に左単位</span></a>
-<a class="sourceLine" id="cb6-14" title="14"><span class="dv">1</span> <span class="fu">&lt;&gt;</span> x <span class="fu">=</span> x            <span class="co">-- (M-unitL)</span></a>
-<a class="sourceLine" id="cb6-15" title="15"><span class="fu">snd</span> <span class="fu">.</span> d <span class="dv">1</span> x <span class="fu">=</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb6-16" title="16">d <span class="dv">1</span> x <span class="fu">=</span> dr x <span class="fu">&amp;&amp;&amp;</span> <span class="fu">id</span>   <span class="co">-- (d-unitL)</span></a>
-<a class="sourceLine" id="cb6-17" title="17">  <span class="co">-- ここで dr :: M -&gt; E -&gt; E はある関数</span></a>
-<a class="sourceLine" id="cb6-18" title="18"></a>
-<a class="sourceLine" id="cb6-19" title="19"><span class="co">-- Applicativeの結合法則</span></a>
-<a class="sourceLine" id="cb6-20" title="20"></a>
-<a class="sourceLine" id="cb6-21" title="21"><span class="co">-- 結合法則:</span></a>
-<a class="sourceLine" id="cb6-22" title="22">(t <span class="ot">`prod`</span> u) <span class="ot">`prod`</span> v</a>
-<a class="sourceLine" id="cb6-23" title="23"> <span class="fu">=</span> assoc <span class="fu">$</span> t <span class="ot">`prod`</span> (u <span class="ot">`prod`</span> v)</a>
-<a class="sourceLine" id="cb6-24" title="24"></a>
-<a class="sourceLine" id="cb6-25" title="25">(<span class="dt">LHS</span>)</a>
-<a class="sourceLine" id="cb6-26" title="26">  <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> y, f <span class="fu">***</span> g <span class="fu">.</span> d x y) <span class="ot">`prod`</span> v</a>
-<a class="sourceLine" id="cb6-27" title="27">  <span class="fu">=</span> <span class="dt">F</span> ((x <span class="fu">&lt;&gt;</span> y) <span class="fu">&lt;&gt;</span> z, (f <span class="fu">***</span> g <span class="fu">.</span> d x y) <span class="fu">***</span> h <span class="fu">.</span> d (x <span class="fu">&lt;&gt;</span> y) z)</a>
-<a class="sourceLine" id="cb6-28" title="28">  <span class="fu">=</span> <span class="dt">F</span> ((x <span class="fu">&lt;&gt;</span> y) <span class="fu">&lt;&gt;</span> z,</a>
-<a class="sourceLine" id="cb6-29" title="29">       first (f <span class="fu">***</span> g) <span class="fu">.</span> second h <span class="fu">.</span> first (d x y) <span class="fu">.</span> d (x <span class="fu">&lt;&gt;</span> y) z)</a>
-<a class="sourceLine" id="cb6-30" title="30">  <span class="fu">=</span> <span class="dt">F</span> ((x <span class="fu">&lt;&gt;</span> y) <span class="fu">&lt;&gt;</span> z,</a>
-<a class="sourceLine" id="cb6-31" title="31">       (f <span class="fu">***</span> g) <span class="fu">***</span> h <span class="fu">.</span> first (d x y) <span class="fu">.</span> d (x <span class="fu">&lt;&gt;</span> y) z)</a>
-<a class="sourceLine" id="cb6-32" title="32">(<span class="dt">RHS</span>)</a>
-<a class="sourceLine" id="cb6-33" title="33">  <span class="fu">=</span> <span class="fu">...</span>(omit)<span class="fu">...</span></a>
-<a class="sourceLine" id="cb6-34" title="34">  <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> (y <span class="fu">&lt;&gt;</span> z),</a>
-<a class="sourceLine" id="cb6-35" title="35">       assoc <span class="fu">.</span> f <span class="fu">***</span> (g <span class="fu">***</span> h) <span class="fu">.</span> second (d y z) <span class="fu">.</span> d x (y <span class="fu">&lt;&gt;</span> z))</a>
-<a class="sourceLine" id="cb6-36" title="36">  <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> (y <span class="fu">&lt;&gt;</span> z),</a>
-<a class="sourceLine" id="cb6-37" title="37">       (f <span class="fu">***</span> g) <span class="fu">***</span> h <span class="fu">.</span> assoc <span class="fu">.</span> second (d y z) <span class="fu">.</span> d x (y <span class="fu">&lt;&gt;</span> z))</a>
-<a class="sourceLine" id="cb6-38" title="38"></a>
-<a class="sourceLine" id="cb6-39" title="39">(x <span class="fu">&lt;&gt;</span> y) <span class="fu">&lt;&gt;</span> z <span class="fu">=</span> x <span class="fu">&lt;&gt;</span> (y <span class="fu">&lt;&gt;</span> z) <span class="co">-- (M-assoc)</span></a>
-<a class="sourceLine" id="cb6-40" title="40">first (d x y) <span class="fu">.</span> d (x <span class="fu">&lt;&gt;</span> y) z</a>
-<a class="sourceLine" id="cb6-41" title="41"> <span class="fu">=</span> assoc <span class="fu">.</span> second (d y z) <span class="fu">.</span> d x (y <span class="fu">&lt;&gt;</span> z)  <span class="co">-- (d-assoc)</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 右単位</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- 正確なHaskellではないが mPure = 1 と略記する</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>prod (<span class="dt">F</span> (x,f)) (<span class="fu">pure</span> b) <span class="ot">=</span> (,b) <span class="op">&lt;$&gt;</span> <span class="dt">F</span> (x, f)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>prod (<span class="dt">F</span> (x,f)) (<span class="fu">pure</span> b)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> <span class="dv">1</span>, (f <span class="op">***</span> <span class="fu">const</span> b) <span class="op">.</span> d x <span class="dv">1</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> (,b) <span class="op">.</span> <span class="dt">F</span> (x,f)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;&gt;</span> <span class="dv">1</span> <span class="ot">=</span> x            <span class="co">-- (M-unitR)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">fst</span> <span class="op">.</span> d x <span class="dv">1</span> <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>d x <span class="dv">1</span> <span class="ot">=</span> <span class="fu">id</span> <span class="op">&amp;&amp;&amp;</span> dl x   <span class="co">-- (d-unitR)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- ここで dl :: M -&gt; E -&gt; E はある関数</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- 同様に左単位</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">&lt;&gt;</span> x <span class="ot">=</span> x            <span class="co">-- (M-unitL)</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">snd</span> <span class="op">.</span> d <span class="dv">1</span> x <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>d <span class="dv">1</span> x <span class="ot">=</span> dr x <span class="op">&amp;&amp;&amp;</span> <span class="fu">id</span>   <span class="co">-- (d-unitL)</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- ここで dr :: M -&gt; E -&gt; E はある関数</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- Applicativeの結合法則</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- 結合法則:</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>(t <span class="ot">`prod`</span> u) <span class="ot">`prod`</span> v</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> assoc <span class="op">$</span> t <span class="ot">`prod`</span> (u <span class="ot">`prod`</span> v)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>(<span class="dt">LHS</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> y, f <span class="op">***</span> g <span class="op">.</span> d x y) <span class="ot">`prod`</span> v</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> ((x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z, (f <span class="op">***</span> g <span class="op">.</span> d x y) <span class="op">***</span> h <span class="op">.</span> d (x <span class="op">&lt;&gt;</span> y) z)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> ((x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z,</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>       first (f <span class="op">***</span> g) <span class="op">.</span> second h <span class="op">.</span> first (d x y) <span class="op">.</span> d (x <span class="op">&lt;&gt;</span> y) z)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> ((x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>       (f <span class="op">***</span> g) <span class="op">***</span> h <span class="op">.</span> first (d x y) <span class="op">.</span> d (x <span class="op">&lt;&gt;</span> y) z)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>(<span class="dt">RHS</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="op">...</span>(omit)<span class="op">...</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> (y <span class="op">&lt;&gt;</span> z),</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>       assoc <span class="op">.</span> f <span class="op">***</span> (g <span class="op">***</span> h) <span class="op">.</span> second (d y z) <span class="op">.</span> d x (y <span class="op">&lt;&gt;</span> z))</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> (y <span class="op">&lt;&gt;</span> z),</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>       (f <span class="op">***</span> g) <span class="op">***</span> h <span class="op">.</span> assoc <span class="op">.</span> second (d y z) <span class="op">.</span> d x (y <span class="op">&lt;&gt;</span> z))</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>(x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z <span class="ot">=</span> x <span class="op">&lt;&gt;</span> (y <span class="op">&lt;&gt;</span> z) <span class="co">-- (M-assoc)</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>first (d x y) <span class="op">.</span> d (x <span class="op">&lt;&gt;</span> y) z</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> assoc <span class="op">.</span> second (d y z) <span class="op">.</span> d x (y <span class="op">&lt;&gt;</span> z)  <span class="co">-- (d-assoc)</span></span></code></pre></div>
 <p>(M-unitR), (M-unitL), (M-assoc)はモノイド則そのものである。 一方で<code>d</code>に関する法則はあまり明らかでない。</p>
 <p>これらの法則はむしろ図に書いたほうがわかりやすい。</p>
 <pre><code>    |                 |
@@ -136,7 +141,7 @@
 <h2 id="具体例を調べる">具体例を調べる</h2>
 <p>Applicativeの具体例を挙げて、ここまで述べた法則が満たされていることを確認していく。</p>
 <p>もっとも単純には、<code>Compose (Writer M) (Reader E)</code>と同じ <code>Applicative</code>のインスタンスが考えられる。これは、</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">d _ _ <span class="fu">=</span> \i <span class="ot">-&gt;</span> (i,i)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>d _ _ <span class="ot">=</span> \i <span class="ot">-&gt;</span> (i,i)</span></code></pre></div>
 <p>とした場合に相当する。この定義において<code>d</code>に関する各法則が成り立つことを確認するのは、 式(d-unitL),etc. を使っても簡単だが、 <code>d _ _</code> が「入力をただコピーする」ことを図で表した</p>
 <pre><code>   |           |
 ---+---        |
@@ -149,10 +154,10 @@
 <p>である。このとき、<code>M</code>上のモノイド演算としては、<code>mempty = id</code>および <code>x &lt;&gt; y = x &gt;&gt;&gt; y = y . x</code>が使われている。</p>
 <h2 id="モノイド作用によるapplicative">モノイド作用によるApplicative</h2>
 <p><code>State E</code>と同型になるケースとの中間例として、 <code>M</code>が<code>E</code>上にモノイド作用を持つ場合というものを考えることができる。 モノイド<code>M</code>の<code>E</code>上への(右)モノイド作用<code>(◁) :: E -&gt; M -&gt; E</code>は</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1">i ◁ <span class="dv">1</span> <span class="fu">=</span> i</a>
-<a class="sourceLine" id="cb11-2" title="2">(i ◁ x) ◁ y <span class="fu">=</span> i ◁ (x <span class="fu">&lt;&gt;</span> y)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>i ◁ <span class="dv">1</span> <span class="ot">=</span> i</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>(i ◁ x) ◁ y <span class="ot">=</span> i ◁ (x <span class="op">&lt;&gt;</span> y)</span></code></pre></div>
 <p>を満たす関数である。モノイド作用<code>◁</code>を用いて、</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">d x _ <span class="fu">=</span> \i <span class="ot">-&gt;</span> (i, i ◁ x)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>d x _ <span class="ot">=</span> \i <span class="ot">-&gt;</span> (i, i ◁ x)</span></code></pre></div>
 <p>と書ける場合、これは<code>Applicative</code>則を満たす。上記の定義を図に書くと、</p>
 <pre><code>    |                |
     |             +--*---+
@@ -215,15 +220,15 @@
 
  (モノイド作用の結合法則から両辺は等しい)</code></pre>
 <p>今考えたものは<em>右</em>モノイド作用であるが、<em>左</em>モノイド作用を考えることもできて、 左モノイド作用 <code>(▷) :: M -&gt; E -&gt; E</code> は次式を満たす。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="dv">1</span> ▷ i <span class="fu">=</span> i</a>
-<a class="sourceLine" id="cb15-2" title="2">x ▷ (y ▷ i) <span class="fu">=</span> (x <span class="fu">&lt;&gt;</span> y) ▷ i</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> ▷ i <span class="ot">=</span> i</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>x ▷ (y ▷ i) <span class="ot">=</span> (x <span class="op">&lt;&gt;</span> y) ▷ i</span></code></pre></div>
 <p>これを用いて、</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1">d _ y <span class="fu">=</span> \i <span class="ot">-&gt;</span> (y ▷ i, i)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>d _ y <span class="ot">=</span> \i <span class="ot">-&gt;</span> (y ▷ i, i)</span></code></pre></div>
 <p>と書ける場合も<code>Applicative</code>則を満たす。右作用と同じように図を描くことでこれも確認できる。</p>
 <p>さて、右モノイド作用と左モノイド作用の両方が定義されているとき、次の<code>d</code>を考える。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1">d x y <span class="fu">=</span> \i <span class="ot">-&gt;</span> (y ▷ i, i ◁ x)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>d x y <span class="ot">=</span> \i <span class="ot">-&gt;</span> (y ▷ i, i ◁ x)</span></code></pre></div>
 <p>これは各法則を満たすだろうか？図を書いていくと（AAめっちゃ面倒だったので省略）</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1">(z ▷ i) ◁ x <span class="fu">=</span> z ▷ (i ◁ x)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(z ▷ i) ◁ x <span class="ot">=</span> z ▷ (i ◁ x)</span></code></pre></div>
 <p>が任意の<code>z,x :: M, i :: E</code>に対して成り立っているとき、そのときに限り成り立つことがわかる。 これは左右のモノイド作用が可換であることを言っている。 加群の例に倣うなら“E上の(M,M)-両側モノイド作用”とでも呼べばいいだろうか。</p>
 <p>具体例を出してみよう。<code>M = E = Int</code>とし、<code>M</code>のモノイドは<code>Int</code>の加法とする。</p>
 <pre><code>x ▷ y = x ◁ y = x + y</code></pre>

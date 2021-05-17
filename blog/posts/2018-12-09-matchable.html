@@ -7,6 +7,11 @@
         <title>Too lazy to evaluate - matchable解説</title>
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+        <script defer src="../js/katex-render-hook.js"></script>
     </head>
     <body>
         <header>
@@ -33,11 +38,11 @@
 <h2 id="matchableって何">matchableって何？</h2>
 <p>matchableは、その名の通り<code>Matchable</code>という型クラスを提供するライブラリーです。 その<code>Matchable</code>とは何かと言うと、<a href="http://hackage.haskell.org/package/matchable-0.1.1.1/docs/Data-Matchable.html#t:Matchable">ドキュメント</a>をご覧ください。</p>
 <p>では解説記事にならないので、解説します。といっても<code>Matchable</code>は大して複雑な型クラスではありません。 その定義であるソースコードを見たほうが早いでしょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">class</span> (<span class="dt">Eq1</span> t, <span class="dt">Functor</span> t) <span class="ot">=&gt;</span> <span class="dt">Matchable</span> t <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="ot">  zipMatch ::</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (a,b))</a>
-<a class="sourceLine" id="cb1-3" title="3">  zipMatch <span class="fu">=</span> zipMatchWith (<span class="fu">curry</span> <span class="dt">Just</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4"></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="ot">  zipMatchWith ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t c)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Eq1</span> t, <span class="dt">Functor</span> t) <span class="ot">=&gt;</span> <span class="dt">Matchable</span> t <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  zipMatch ::</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (a,b))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  zipMatch <span class="ot">=</span> zipMatchWith (<span class="fu">curry</span> <span class="dt">Just</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  zipMatchWith ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t c)</span></code></pre></div>
 <p><code>Matchable t</code>における<code>t</code>は<code>Maybe</code>やリスト<code>[]</code>のようなコンテナです。 また、<code>Matchable</code>は、<code>zipMatch</code>と<code>zipMatchWith</code>という2つのメソッドを持つクラスです。それぞれ、次のような関数です。</p>
 <ul>
 <li><p><code>zipMatch</code>は、2つのコンテナ<code>ta :: t a</code> と <code>tb :: t b</code>を取り、<em>もしこれらが全く同じ「かたち」をしていれば</em>、 対応する各要素をペアにした新しいコンテナ<code>tab :: t (a,b)</code>を返します。 ただし、<code>ta</code>と<code>tb</code>が全く同じ「かたち」でなければ、<code>zipMatch</code>は失敗します。</p>
@@ -60,7 +65,7 @@ Nothing</code></pre>
 </blockquote></li>
 <li><p><code>zipMatch</code>に対する<code>zipMatchWith</code>は、<code>zip</code>に対する<code>zipWith</code>のようなものです。ただし、 <code>zipMatchWith</code>が引数に取る関数は<code>a -&gt; b -&gt; Maybe c</code>です。この関数は、残り2つの引数として 渡されたコンテナ<code>ta</code>, <code>tb</code>の対応する各要素に対して適用されますが、この関数が<code>Nothing</code>を 返すと、<code>zipMatchWith</code>全体が<code>Nothing</code>を返します。</p>
 <p>実際、ドキュメントでは次の等式が成り立つことを要求しました。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">zipMatchWith f ta tb <span class="fu">=</span> zipMatch ta tb <span class="fu">&gt;&gt;=</span> <span class="fu">traverse</span> (<span class="fu">uncurry</span> f)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>zipMatchWith f ta tb <span class="ot">=</span> zipMatch ta tb <span class="op">&gt;&gt;=</span> <span class="fu">traverse</span> (<span class="fu">uncurry</span> f)</span></code></pre></div>
 <p>これまた例をリスト型<code>[]</code>で示すなら、次のようになります。</p>
 <pre><code>&gt;&gt;&gt; let f x y = if x &gt;= y then Just (x - y) else Nothing
 &gt;&gt;&gt; zipMatchWith f [1,2,3] [0,1,2]
@@ -72,69 +77,69 @@ Nothing</code></pre>
 </ul>
 <h2 id="なぜmatchableが必要なのか">なぜMatchableが必要なのか？</h2>
 <p>私が<code>Matchable</code>が必要だと感じたのは、自分で簡単なプログラミング言語を実装しているときでした。 パターンマッチングの実装を考え始め、次のようなコードを書き始めました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">data</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">IntVal</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb5-2" title="2">           <span class="fu">|</span> <span class="dt">NullVal</span></a>
-<a class="sourceLine" id="cb5-3" title="3">           <span class="fu">|</span> <span class="dt">ObjectVal</span> <span class="dt">ClassName</span> [<span class="dt">Value</span>]</a>
-<a class="sourceLine" id="cb5-4" title="4"></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="kw">data</span> <span class="dt">Pattern</span> <span class="fu">=</span> <span class="dt">IntPat</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb5-6" title="6">             <span class="fu">|</span> <span class="dt">NullPat</span></a>
-<a class="sourceLine" id="cb5-7" title="7">             <span class="fu">|</span> <span class="dt">ObjectPat</span> <span class="dt">ClassName</span> [<span class="dt">Pattern</span>]</a>
-<a class="sourceLine" id="cb5-8" title="8">             <span class="fu">|</span> <span class="dt">VarPat</span> <span class="dt">VarName</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Value</span> <span class="ot">=</span> <span class="dt">IntVal</span> <span class="dt">Int</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">NullVal</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">ObjectVal</span> <span class="dt">ClassName</span> [<span class="dt">Value</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Pattern</span> <span class="ot">=</span> <span class="dt">IntPat</span> <span class="dt">Int</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>             <span class="op">|</span> <span class="dt">NullPat</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>             <span class="op">|</span> <span class="dt">ObjectPat</span> <span class="dt">ClassName</span> [<span class="dt">Pattern</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>             <span class="op">|</span> <span class="dt">VarPat</span> <span class="dt">VarName</span></span></code></pre></div>
 <p>そしてふと思ったのです。明らかに同じことを繰り返し書いている。どうにか簡潔に書けないかと。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">data</span> <span class="dt">ValueF</span> a <span class="fu">=</span> <span class="dt">IntF</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb6-2" title="2">              <span class="fu">|</span> <span class="dt">NullF</span></a>
-<a class="sourceLine" id="cb6-3" title="3">              <span class="fu">|</span> <span class="dt">ObjectF</span> <span class="dt">ClassName</span> [a]</a>
-<a class="sourceLine" id="cb6-4" title="4"></a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="kw">type</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">Fix</span> <span class="dt">ValueF</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="kw">type</span> <span class="dt">Pattern</span> <span class="fu">=</span> <span class="dt">Free</span> <span class="dt">ValueF</span> <span class="dt">VarName</span></a>
-<a class="sourceLine" id="cb6-7" title="7"></a>
-<a class="sourceLine" id="cb6-8" title="8"><span class="ot">patternMatch ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(<span class="dt">VarName</span>, <span class="dt">Value</span>)]</a>
-<a class="sourceLine" id="cb6-9" title="9">patternMatch <span class="fu">=</span> <span class="co">{- 省略 -}</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">ValueF</span> a <span class="ot">=</span> <span class="dt">IntF</span> <span class="dt">Int</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>              <span class="op">|</span> <span class="dt">NullF</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>              <span class="op">|</span> <span class="dt">ObjectF</span> <span class="dt">ClassName</span> [a]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Value</span> <span class="ot">=</span> <span class="dt">Fix</span> <span class="dt">ValueF</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Pattern</span> <span class="ot">=</span> <span class="dt">Free</span> <span class="dt">ValueF</span> <span class="dt">VarName</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ot">patternMatch ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(<span class="dt">VarName</span>, <span class="dt">Value</span>)]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>patternMatch <span class="ot">=</span> <span class="co">{- 省略 -}</span></span></code></pre></div>
 <p>「これでイケルじゃん！」と思いました。次の関数を実装しようと考えるまでは。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">-- | 一般化したパターンマッチ</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="ot">patternMatch ::</span> (<span class="fu">???</span>) <span class="ot">=&gt;</span> <span class="dt">Free</span> f a <span class="ot">-&gt;</span> <span class="dt">Fix</span> f <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(a, <span class="dt">Fix</span> f)]</a>
-<a class="sourceLine" id="cb7-3" title="3">patternMatch (<span class="dt">Pure</span> a) value         <span class="fu">=</span> <span class="dt">Just</span> [(a, value)]</a>
-<a class="sourceLine" id="cb7-4" title="4">patternMatch (<span class="dt">Free</span> fPat) (<span class="dt">Fix</span> fVal) <span class="fu">=</span></a>
-<a class="sourceLine" id="cb7-5" title="5">  <span class="kw">if</span> 一番外側がマッチする fPat fVal</a>
-<a class="sourceLine" id="cb7-6" title="6">    <span class="kw">then</span> <span class="fu">fmap</span> fold <span class="fu">.</span> <span class="fu">sequenceA</span> <span class="fu">$</span> zipWithみたいな関数 patternMatch fPat fVal</a>
-<a class="sourceLine" id="cb7-7" title="7">    <span class="kw">else</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb7-8" title="8"></a>
-<a class="sourceLine" id="cb7-9" title="9">一番外側がマッチする<span class="ot"> ::</span> (<span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb7-10" title="10">一番外側がマッチする <span class="fu">=</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | 一般化したパターンマッチ</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">patternMatch ::</span> (<span class="op">???</span>) <span class="ot">=&gt;</span> <span class="dt">Free</span> f a <span class="ot">-&gt;</span> <span class="dt">Fix</span> f <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [(a, <span class="dt">Fix</span> f)]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>patternMatch (<span class="dt">Pure</span> a) value         <span class="ot">=</span> <span class="dt">Just</span> [(a, value)]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>patternMatch (<span class="dt">Free</span> fPat) (<span class="dt">Fix</span> fVal) <span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> 一番外側がマッチする fPat fVal</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">then</span> <span class="fu">fmap</span> fold <span class="op">.</span> <span class="fu">sequenceA</span> <span class="op">$</span> zipWithみたいな関数 patternMatch fPat fVal</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>一番外側がマッチする<span class="ot"> ::</span> (<span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>一番外側がマッチする <span class="ot">=</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>)</span></code></pre></div>
 <p>ここでつまづきました。いろいろなライブラリーを漁ってみても、既存の型クラスに</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">zipWithみたいな関数<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>zipWithみたいな関数<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c</span></code></pre></div>
 <p>を適切に実装できそうなものは思い当たりませんでした。 また、この<code>zipWithみたいな関数</code>は、前提条件として<code>一番外側がマッチする</code>が<code>True</code>である引数に対してしか定義できないという問題もありました。</p>
 <p>そこで、「<code>zipMatch :: f a -&gt; f b -&gt; Maybe (f (a,b))</code>があったらいいなー」となったわけです。 その後、<code>zipMatch</code>の満たすべき性質についていろいろ考えた結果、この<code>Matchable</code>ができました。</p>
 <h2 id="さらなる応用ユニフィケーション">さらなる応用：ユニフィケーション</h2>
 <p>また、<code>Matchable</code>が既存のライブラリーに存在しないか調査する過程で、<a href="http://hackage.haskell.org/package/unification-fd">unification-fd</a>というライブラリーを発見しました。そこにあったのは、</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">data</span> <span class="dt">UTerm</span> t v <span class="fu">=</span> <span class="dt">UVar</span> <span class="fu">!</span>v</a>
-<a class="sourceLine" id="cb9-2" title="2">               <span class="fu">|</span> <span class="dt">UTerm</span> <span class="fu">!</span>(t (<span class="dt">UTerm</span> t v))</a>
-<a class="sourceLine" id="cb9-3" title="3"></a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="kw">class</span> <span class="dt">Traversable</span> t <span class="ot">=&gt;</span> <span class="dt">Unifiable</span> t <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="ot">    zipMatch ::</span> t a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (<span class="dt">Either</span> a (a, a))) </a>
-<a class="sourceLine" id="cb9-6" title="6"></a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="ot">unify ::</span> (<span class="fu">...</span>ちょっと複雑な制約, 一部 <span class="dt">Unifiable</span> t を含む<span class="fu">...</span>)	 </a>
-<a class="sourceLine" id="cb9-8" title="8">      <span class="ot">=&gt;</span> <span class="dt">UTerm</span> t v	 </a>
-<a class="sourceLine" id="cb9-9" title="9">      <span class="ot">-&gt;</span> <span class="dt">UTerm</span> t v	 </a>
-<a class="sourceLine" id="cb9-10" title="10">      <span class="ot">-&gt;</span> em m (<span class="dt">UTerm</span> t v)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">UTerm</span> t v <span class="ot">=</span> <span class="dt">UVar</span> <span class="op">!</span>v</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>               <span class="op">|</span> <span class="dt">UTerm</span> <span class="op">!</span>(t (<span class="dt">UTerm</span> t v))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Traversable</span> t <span class="ot">=&gt;</span> <span class="dt">Unifiable</span> t <span class="kw">where</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    zipMatch ::</span> t a <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (<span class="dt">Either</span> a (a, a))) </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ot">unify ::</span> (<span class="op">...</span>ちょっと複雑な制約, 一部 <span class="dt">Unifiable</span> t を含む<span class="op">...</span>)	 </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="ot">=&gt;</span> <span class="dt">UTerm</span> t v	 </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="ot">-&gt;</span> <span class="dt">UTerm</span> t v	 </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      <span class="ot">-&gt;</span> em m (<span class="dt">UTerm</span> t v)</span></code></pre></div>
 <p>という非常によく似た型クラス<code>Unifiable</code>でした。これに触発されて、 <code>Matchable</code>を使ったユニフィケーションの例も<a href="https://github.com/viercc/matchable/tree/master/example">書いてみました</a>。</p>
 <h2 id="実はいらない">実はいらない！？</h2>
 <p>実は、<code>zipMatch</code>は既存の型クラスの組み合わせで実装できたのです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">import</span> <span class="dt">Data.Functor.Classes</span> (<span class="dt">Eq1</span>(..))</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="kw">import</span> <span class="dt">Data.Foldable</span></a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="kw">import</span> <span class="dt">Control.Monad.State</span></a>
-<a class="sourceLine" id="cb10-4" title="4"></a>
-<a class="sourceLine" id="cb10-5" title="5"><span class="ot">zipMatch ::</span> (<span class="dt">Traversable</span> f, <span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (a,b))</a>
-<a class="sourceLine" id="cb10-6" title="6">zipMatch fa fb <span class="fu">|</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>) fa fb <span class="fu">=</span> <span class="dt">Just</span> (unsafeZip fa fb)</a>
-<a class="sourceLine" id="cb10-7" title="7">               <span class="fu">|</span> <span class="fu">otherwise</span>                   <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb10-8" title="8"></a>
-<a class="sourceLine" id="cb10-9" title="9"><span class="ot">unsafeZip ::</span> (<span class="dt">Traversable</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f (a,b)</a>
-<a class="sourceLine" id="cb10-10" title="10">unsafeZip fa fb <span class="fu">=</span> evalState (<span class="fu">traverse</span> step fa) (toList fb)</a>
-<a class="sourceLine" id="cb10-11" title="11">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb10-12" title="12"><span class="ot">    step ::</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> [b] (a,b)</a>
-<a class="sourceLine" id="cb10-13" title="13">    step a <span class="fu">=</span> state <span class="fu">$</span> \bs <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb10-14" title="14">      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;differently shaped arguments&quot;</span></a>
-<a class="sourceLine" id="cb10-15" title="15">      (b<span class="fu">:</span>bs) <span class="ot">-&gt;</span> ((a,b),bs)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Functor.Classes</span> (<span class="dt">Eq1</span>(..))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.State</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ot">zipMatch ::</span> (<span class="dt">Traversable</span> f, <span class="dt">Eq1</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (f (a,b))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>zipMatch fa fb <span class="op">|</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>) fa fb <span class="ot">=</span> <span class="dt">Just</span> (unsafeZip fa fb)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>               <span class="op">|</span> <span class="fu">otherwise</span>                   <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="ot">unsafeZip ::</span> (<span class="dt">Traversable</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f (a,b)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>unsafeZip fa fb <span class="ot">=</span> evalState (<span class="fu">traverse</span> step fa) (toList fb)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    step ::</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> [b] (a,b)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    step a <span class="ot">=</span> state <span class="op">$</span> \bs <span class="ot">-&gt;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;differently shaped arguments&quot;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      (b<span class="op">:</span>bs) <span class="ot">-&gt;</span> ((a,b),bs)</span></code></pre></div>
 <p>しかし、この実装は（難癖に近いかもしれませんが）少しだけ問題があります。</p>
 <ol type="1">
 <li><code>Eq1</code>には法則が無いため、本当に安全に<code>unsafeZip</code>が呼び出せる保証がないこと。 <code>Matchable</code>は新しい型クラスなので、必要なMatchable則を定義できる。</li>

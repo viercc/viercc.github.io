@@ -7,6 +7,11 @@
         <title>Too lazy to evaluate - LambdaBox</title>
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+        <script defer src="../js/katex-render-hook.js"></script>
     </head>
     <body>
         <header>
@@ -33,7 +38,7 @@
 <h2 id="lambdaboxの概要">LambdaBoxの概要</h2>
 <p>まずはHello worldをご覧ください。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/samples/hello.png" alt="LambdaBoxでのHello Worldプログラム" /><figcaption>LambdaBoxでのHello Worldプログラム</figcaption>
+<img src="https://gitlab.com/viercc/LambdaBox/raw/master/samples/hello.png" alt="LambdaBoxでのHello Worldプログラム" /><figcaption aria-hidden="true">LambdaBoxでのHello Worldプログラム</figcaption>
 </figure>
 <p>見ての通り、LambdaBoxのプログラムは<strong>画像</strong>です。この画像には白(#FFFFFF)・黒(#000000)・緑の3色が使われていますが、プログラムとして意味を持つのは「黒(#000000)か、そうでないか」だけです。 それ以外の色の違いは無視されます。（緑色は、これを利用して「コメント」を書き込むために使っています。）</p>
 <p>どのようにLambdaBoxのプログラムを書く（描く？）のかは、<a href="https://gitlab.com/viercc/LambdaBox/blob/master/LanguageGuide.md">LanguageGuide.md</a>にまとめまてありますが、つたない英語で書いてありますし、 ここでも説明していこうと思います。</p>
@@ -54,7 +59,7 @@
 <p>意味論を細かく定義するのは面倒なので適当に言うなら、ラムダ計算＋letrecで、全部遅延評価します。</p>
 <p>また、入出力は<a href="https://tromp.github.io/cl/lazy-k.html">LazyK</a><del>をパクった</del>と同じ規約を使って行います。 すなわち、次のように定めます。</p>
 <ul>
-<li>プログラムは入力を引数にとって出力を返す関数である。</li>
+<li><p>プログラムは入力を引数にとって出力を返す関数である。</p></li>
 <li><p>入力、出力ともにチャーチエンコーディングされた自然数の、スコットエンコーディングされた無限リストで表す。すなわち次の<code>stream</code>と同じ形式の関数を用いる。</p>
 <pre><code>stream = \f0 -&gt; f0 e0 (\f1 -&gt; f1 e1 (\f2 -&gt; f2 e2 (\f3 -&gt; ... )))
     where e0, e1, e2, ... はチャーチエンコーディングされた自然数</code></pre></li>
@@ -62,7 +67,7 @@
 </ul>
 <p>例をあげると、</p>
 <ol type="1">
-<li>入力をそのまま返す恒等関数 <code>\x -&gt; x</code> は、入力をそのまま出力するプログラムです。</li>
+<li><p>入力をそのまま返す恒等関数 <code>\x -&gt; x</code> は、入力をそのまま出力するプログラムです。</p></li>
 <li><p>入力を無視して常に256の無限リストを返す次の関数は、何も出力せずに終了するプログラムです。</p>
 <pre><code>letrec { r = \f -&gt; f 256 r } in \x -&gt; r</code></pre></li>
 <li><p>次の関数は、入力の各バイトを2回づつ順に出力するプログラムです。例えば、入力 “abc” に対して “aabbcc” と出力します。</p>
@@ -96,7 +101,7 @@
 　　　　←→</code></pre>
 <p>次の画像は5本の線の集合で表されます。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-lines.png" alt="画像を線の集合に変換する例" /><figcaption>画像を線の集合に変換する例</figcaption>
+<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-lines.png" alt="画像を線の集合に変換する例" /><figcaption aria-hidden="true">画像を線の集合に変換する例</figcaption>
 </figure>
 <h3 id="線lineの集合を箱boxとワイヤwireの集合に分割">線(Line)の集合を箱(Box)とワイヤ(Wire)の集合に分割</h3>
 <p>2つの線がどちらかの端点で接している場合、それらの線を接続されているとみなします。2つの線が交差している場合は、接続されていないものとします。</p>
@@ -104,11 +109,11 @@
 <p>箱に使われなかった線の間の接続関係をグラフとして見たうえで、このグラフの連結成分に分割します。 その各連結成分がワイヤ(Wire)になります。ただし、3本以上の線からなるループを含むワイヤがあってはいけません。</p>
 <p>次の画像は2本のワイヤから構成されています。交差している線は接続されていないことに注意です。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire.png" alt="ワイヤ2本の例" /><figcaption>ワイヤ2本の例</figcaption>
+<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire.png" alt="ワイヤ2本の例" /><figcaption aria-hidden="true">ワイヤ2本の例</figcaption>
 </figure>
 <p>また、次の画像は2本のワイヤと2個の箱から構成されています。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire2.png" alt="ワイヤと箱の例" /><figcaption>ワイヤと箱の例</figcaption>
+<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire2.png" alt="ワイヤと箱の例" /><figcaption aria-hidden="true">ワイヤと箱の例</figcaption>
 </figure>
 <h3 id="箱とワイヤの集合を中間言語へ変換する">箱とワイヤの集合を中間言語へ変換する</h3>
 <p>まず、各箱と各ワイヤに、一意な識別子を割り振ります。</p>
@@ -156,7 +161,7 @@ x_r2 = t_boxid;
 </ul>
 <p>例えば、次の画像は2つの箱と2つのワイヤからなります。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/const.png" alt="const関数" /><figcaption>const関数</figcaption>
+<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/const.png" alt="const関数" /><figcaption aria-hidden="true">const関数</figcaption>
 </figure>
 <p>それぞれ</p>
 <ul>

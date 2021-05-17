@@ -7,6 +7,11 @@
         <title>Too lazy to evaluate - 多項式Applicative Functorの一般論</title>
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+        <script defer src="../js/katex-render-hook.js"></script>
     </head>
     <body>
         <header>
@@ -37,86 +42,86 @@
 </ul>
 <p>最近この問題が自分の中で再燃し、いろいろ考えたところ、 <em>一般の多項式Functorを考えたほうが自然である</em>という結論に達しました。</p>
 <p>一般の多項式Functor <code>F</code> を、ここでは次のように定義します：</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">type</span> <span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>  <span class="co">-- Dependent Type!</span></a>
-<a class="sourceLine" id="cb1-3" title="3"></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="kw">type</span>    <span class="dt">F</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="kw">newtype</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> (Σ(<span class="ot">x ::</span> <span class="dt">M</span>)<span class="fu">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</a>
-<a class="sourceLine" id="cb1-6" title="6"></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-8" title="8">    <span class="fu">fmap</span> f (<span class="dt">F</span> (x, g)) <span class="fu">=</span> <span class="dt">F</span> (x, f <span class="fu">.</span> g)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>  <span class="co">-- Dependent Type!</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span>    <span class="dt">F</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> (Σ(<span class="ot">x ::</span> <span class="dt">M</span>)<span class="op">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">F</span> (x, g)) <span class="ot">=</span> <span class="dt">F</span> (x, f <span class="op">.</span> g)</span></code></pre></div>
 <p>ここで <code>Σ(x :: M). E x -&gt; a</code> は<a href="https://en.wikipedia.org/wiki/Dependent_type#%7F'%22%60UNIQ--postMath-00000016-QINU%60%22'%7F_type">Dependent sum type</a>です。 この型をもつ値は、対<code>(x, f)</code>であって、<code>x :: M</code> かつ <code>f :: E x -&gt; a</code>となるようなものです。</p>
 <p><code>f</code>の型が<em>値</em>である<code>x</code>に依存するので、このような型はHaskellでは(自然には)書くことができませんが、 拡張を駆使していろいろ工夫すると不可能ではないです。</p>
 <p>このような型は、多項式Functorを表現します。</p>
 <p>例を挙げるなら、<code>M</code>がちょうど2つの値<code>M0, M1</code>をもち、 <code>E M0 = Void, E M1 = ()</code>とすれば、<code>F</code>は<code>Maybe</code>と同型になります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">M</span> <span class="fu">=</span> <span class="dt">M0</span> <span class="fu">|</span> <span class="dt">M1</span></a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="kw">type</span> <span class="kw">family</span> <span class="dt">E</span> x <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-5" title="5">  <span class="dt">E</span> <span class="dt">M0</span> <span class="fu">=</span> <span class="dt">Void</span></a>
-<a class="sourceLine" id="cb2-6" title="6">  <span class="dt">E</span> <span class="dt">M1</span> <span class="fu">=</span> ()</a>
-<a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="ot">toF ::</span> <span class="kw">forall</span> a<span class="fu">.</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</a>
-<a class="sourceLine" id="cb2-9" title="9">toF <span class="dt">Nothing</span>  <span class="fu">=</span> <span class="dt">F</span> (<span class="dt">M0</span>, absurd)    <span class="co">-- absurd  :: Void -&gt; a  ~  E M0 -&gt; a</span></a>
-<a class="sourceLine" id="cb2-10" title="10">toF (<span class="dt">Just</span> x) <span class="fu">=</span> <span class="dt">F</span> (<span class="dt">M1</span>, <span class="fu">const</span> a)   <span class="co">-- const a :: () -&gt; a    ~  E M1 -&gt; a</span></a>
-<a class="sourceLine" id="cb2-11" title="11"></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="ot">fromF ::</span> <span class="kw">forall</span> a<span class="fu">.</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
-<a class="sourceLine" id="cb2-13" title="13">fromF (<span class="dt">F</span> (<span class="dt">M0</span>, _)) <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-14" title="14">fromF (<span class="dt">F</span> (<span class="dt">M1</span>, f)) <span class="fu">=</span> <span class="dt">Just</span> (f ())</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">M</span> <span class="ot">=</span> <span class="dt">M0</span> <span class="op">|</span> <span class="dt">M1</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="kw">family</span> <span class="dt">E</span> x <span class="kw">where</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">E</span> <span class="dt">M0</span> <span class="ot">=</span> <span class="dt">Void</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">E</span> <span class="dt">M1</span> <span class="ot">=</span> ()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ot">toF ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>toF <span class="dt">Nothing</span>  <span class="ot">=</span> <span class="dt">F</span> (<span class="dt">M0</span>, absurd)    <span class="co">-- absurd  :: Void -&gt; a  ~  E M0 -&gt; a</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>toF (<span class="dt">Just</span> x) <span class="ot">=</span> <span class="dt">F</span> (<span class="dt">M1</span>, <span class="fu">const</span> a)   <span class="co">-- const a :: () -&gt; a    ~  E M1 -&gt; a</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ot">fromF ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>fromF (<span class="dt">F</span> (<span class="dt">M0</span>, _)) <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>fromF (<span class="dt">F</span> (<span class="dt">M1</span>, f)) <span class="ot">=</span> <span class="dt">Just</span> (f ())</span></code></pre></div>
 <p>また、<code>M</code>が自然数で、<code>E m</code>が『<code>m</code>より小さい自然数』の型であるようにすると、 <code>E m</code>はちょうど<code>m</code>個の異なる値をとる型で、<code>F</code>は（有限）リスト関手です。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">[]      <span class="ot">&lt;-</span><span class="fu">&gt;</span> <span class="dt">F</span>(<span class="dv">0</span>, absurd)   <span class="co">-- E 0 ~ Void</span></a>
-<a class="sourceLine" id="cb3-2" title="2">[a]     <span class="ot">&lt;-</span><span class="fu">&gt;</span> <span class="dt">F</span>(<span class="dv">1</span>, \<span class="dv">0</span> <span class="ot">-&gt;</span> a)</a>
-<a class="sourceLine" id="cb3-3" title="3">[a,b]   <span class="ot">&lt;-</span><span class="fu">&gt;</span> <span class="dt">F</span>(<span class="dv">2</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b})</a>
-<a class="sourceLine" id="cb3-4" title="4">[a,b,c] <span class="ot">&lt;-</span><span class="fu">&gt;</span> <span class="dt">F</span>(<span class="dv">3</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b, <span class="dv">2</span> <span class="ot">-&gt;</span> c})</a>
-<a class="sourceLine" id="cb3-5" title="5">  <span class="fu">:</span></a>
-<a class="sourceLine" id="cb3-6" title="6">  <span class="fu">:</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>[]      <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">0</span>, absurd)   <span class="co">-- E 0 ~ Void</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>[a]     <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">1</span>, \<span class="dv">0</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>[a,b]   <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">2</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b})</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>[a,b,c] <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">3</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b, <span class="dv">2</span> <span class="ot">-&gt;</span> c})</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span></span></code></pre></div>
 <p>このように定義された<code>F</code>が<code>Applicative</code>になるためには、 <code>M</code>と<code>E x</code>上にどのような代数構造が必要か？を次節から考えます。</p>
 <h2 id="多項式applicative-functorの特徴づけ">多項式Applicative Functorの特徴づけ</h2>
-<p>どんなApplicativeに対しても、モノイド<code>Ap f () ~ f ()</code>を考えられます。 (cf. <a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Monoid.html#t:Ap">Data.Monoid.Ap</a>)</p>
+<p>どんなApplicativeに対しても、モノイド<code>Ap f () ~ f ()</code>を考えられます。 (cf. <a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Monoid.html#t:Ap">Data.Monoid.Ap</a>)</p>
 <p>Applicativeである<code>F</code>が多項式Functorでもあって、上のような表現がされていれば、<code>Ap F ()</code>と<code>M</code>の間に全単射</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">prj ::</span> <span class="dt">F</span> () <span class="ot">-&gt;</span> <span class="dt">M</span></a>
-<a class="sourceLine" id="cb4-2" title="2">prj (<span class="dt">F</span> (x, _)) <span class="fu">=</span> x</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="ot">inj ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">F</span> ()</a>
-<a class="sourceLine" id="cb4-5" title="5">inj x <span class="fu">=</span> <span class="dt">F</span> (x, <span class="fu">const</span> ())</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prj ::</span> <span class="dt">F</span> () <span class="ot">-&gt;</span> <span class="dt">M</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prj (<span class="dt">F</span> (x, _)) <span class="ot">=</span> x</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">inj ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">F</span> ()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>inj x <span class="ot">=</span> <span class="dt">F</span> (x, <span class="fu">const</span> ())</span></code></pre></div>
 <p>があります。この全単射で<code>Ap F ()</code>上のモノイド演算を<code>M</code>上に写せば、 <code>M</code>はモノイド演算<code>(mempty, &lt;&gt;)</code>を持ちます。このモノイド演算を前提として、 <code>Applicative F</code>の実装がどうなっているか考えれば、 parametricityから</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">pure</span><span class="ot"> ::</span> <span class="kw">forall</span> a<span class="fu">.</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">M</span>, <span class="fu">const</span> a)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span><span class="ot"> ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">M</span>, <span class="fu">const</span> a)</span></code></pre></div>
 <p>および</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">liftA2 ::</span> <span class="kw">forall</span> a b c<span class="fu">.</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b <span class="ot">-&gt;</span> <span class="dt">F</span> c</a>
-<a class="sourceLine" id="cb6-2" title="2">liftA2 abc (<span class="dt">F</span> (x, x_a)) (<span class="dt">F</span> (y, y_b)) <span class="fu">=</span> <span class="dt">F</span> (z, z_c)</a>
-<a class="sourceLine" id="cb6-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb6-4" title="4">     z <span class="fu">=</span> x <span class="fu">&lt;&gt;</span> y</a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="ot">     z_c ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> c</a>
-<a class="sourceLine" id="cb6-6" title="6">     z_c i <span class="fu">=</span> abc (x_a (_left i)) (y_b (_right i))</a>
-<a class="sourceLine" id="cb6-7" title="7">     </a>
-<a class="sourceLine" id="cb6-8" title="8"><span class="ot">     _left  ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> x</a>
-<a class="sourceLine" id="cb6-9" title="9"><span class="ot">     _right ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> y</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">liftA2 ::</span> <span class="kw">forall</span> a b c<span class="op">.</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b <span class="ot">-&gt;</span> <span class="dt">F</span> c</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>liftA2 abc (<span class="dt">F</span> (x, x_a)) (<span class="dt">F</span> (y, y_b)) <span class="ot">=</span> <span class="dt">F</span> (z, z_c)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     z <span class="ot">=</span> x <span class="op">&lt;&gt;</span> y</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ot">     z_c ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> c</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>     z_c i <span class="ot">=</span> abc (x_a (_left i)) (y_b (_right i))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ot">     _left  ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> x</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ot">     _right ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> y</span></code></pre></div>
 <p>である必要があります。ただし、<code>_left</code>と<code>_right</code>は、まだ正体のわかっていない関数です。</p>
 <p>天下り的ですが、次の型をもつ関数<code>phi</code>を考えます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">phi ::</span> Π((x,y,z)<span class="ot"> ::</span> (<span class="dt">M</span>,<span class="dt">M</span>,<span class="dt">M</span>))<span class="fu">.</span> <span class="dt">E</span> (x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">phi ::</span> Π((x,y,z)<span class="ot"> ::</span> (<span class="dt">M</span>,<span class="dt">M</span>,<span class="dt">M</span>))<span class="op">.</span> <span class="dt">E</span> (x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</span></code></pre></div>
 <p>ここで<code>Π</code>は<a href="https://en.wikipedia.org/wiki/Dependent_type#%7F'%22%60UNIQ--postMath-00000003-QINU%60%22'%7F_type">Dependent product</a>です。</p>
 <p><code>_left, _right</code>が<code>phi</code>を使って次のように定義されているとします。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">-- 以下に注意:</span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="co">--   mempty &lt;&gt; x &lt;&gt; y = x &lt;&gt; y = z</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="co">--   x &lt;&gt; y &lt;&gt; mempty = x &lt;&gt; y = z</span></a>
-<a class="sourceLine" id="cb8-4" title="4"></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="ot">_left ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> x</a>
-<a class="sourceLine" id="cb8-6" title="6">_left <span class="fu">=</span> phi (<span class="fu">mempty</span>, x, y)</a>
-<a class="sourceLine" id="cb8-7" title="7"></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="ot">_right ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> y</a>
-<a class="sourceLine" id="cb8-9" title="9">_right <span class="fu">=</span> phi (x, y, <span class="fu">mempty</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 以下に注意:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">--   mempty &lt;&gt; x &lt;&gt; y = x &lt;&gt; y = z</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">--   x &lt;&gt; y &lt;&gt; mempty = x &lt;&gt; y = z</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">_left ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> x</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>_left <span class="ot">=</span> phi (<span class="fu">mempty</span>, x, y)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ot">_right ::</span> <span class="dt">E</span> z <span class="ot">-&gt;</span> <span class="dt">E</span> y</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>_right <span class="ot">=</span> phi (x, y, <span class="fu">mempty</span>)</span></code></pre></div>
 <p>このとき、<code>phi</code>が次の等式を満たすならば、<code>F</code>のApplicative則が従います。<strong>(証明略)</strong></p>
 <ol type="1">
 <li><code>phi (mempty, y, mempty) = id</code></li>
 <li><code>phi (x, y, z) . phi (x', x &lt;&gt; y &lt;&gt; z, z') = phi (x' &lt;&gt; x, y, z &lt;&gt; z')</code></li>
 </ol>
 <p>逆に、各<code>x, y :: M</code>の組み合わせにおける<code>_left, _right</code>を、次の関数<code>leftFactor, rightFactor</code>にまとめたとします。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">leftFactor ::</span> Πx<span class="fu">.</span> Πy<span class="fu">.</span> <span class="dt">E</span> (x <span class="fu">&lt;&gt;</span> y) <span class="ot">-&gt;</span> <span class="dt">E</span> x</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="ot">rightFactor ::</span> Πx<span class="fu">.</span> Πy<span class="fu">.</span> <span class="dt">E</span> (x <span class="fu">&lt;&gt;</span> y) <span class="ot">-&gt;</span> <span class="dt">E</span> y</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">leftFactor ::</span> Πx<span class="op">.</span> Πy<span class="op">.</span> <span class="dt">E</span> (x <span class="op">&lt;&gt;</span> y) <span class="ot">-&gt;</span> <span class="dt">E</span> x</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ot">rightFactor ::</span> Πx<span class="op">.</span> Πy<span class="op">.</span> <span class="dt">E</span> (x <span class="op">&lt;&gt;</span> y) <span class="ot">-&gt;</span> <span class="dt">E</span> y</span></code></pre></div>
 <p>このとき、関数<code>phi</code>を以下のように定義できて、</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">phi ::</span> Π(x,y,z)<span class="fu">.</span> <span class="dt">E</span> (x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</a>
-<a class="sourceLine" id="cb10-2" title="2">phi (x, y, z) <span class="fu">=</span> rightFactor x y <span class="fu">.</span> leftFactor (x <span class="fu">&lt;&gt;</span> y) z</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">phi ::</span> Π(x,y,z)<span class="op">.</span> <span class="dt">E</span> (x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>phi (x, y, z) <span class="ot">=</span> rightFactor x y <span class="op">.</span> leftFactor (x <span class="op">&lt;&gt;</span> y) z</span></code></pre></div>
 <p><code>F</code>のApplicative則から<code>phi</code>が上記の等式1,2を満たすことが従います。</p>
 <h3 id="証明">証明</h3>
 <p><code>F</code>のApplicative則から</p>
@@ -173,34 +178,34 @@ fabc'
 (4a) rightFactor x y . leftFactor (x &lt;&gt; y) z = leftFactor y z . rightFactor x (y &lt;&gt; z)
 (5a) rightFactor (x &lt;&gt; y) z = rightFactor y z . rightFactor x (y &lt;&gt; z)</code></pre>
 <p>が得られる。これらを用いると、</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">phi (<span class="fu">mempty</span>, y, <span class="fu">mempty</span>)</a>
-<a class="sourceLine" id="cb13-2" title="2">   <span class="co">-- 定義</span></a>
-<a class="sourceLine" id="cb13-3" title="3"> <span class="fu">=</span> rightFactor <span class="fu">mempty</span> y <span class="fu">.</span> leftFactor (<span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> y) <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb13-4" title="4"> <span class="fu">=</span> rightFactor <span class="fu">mempty</span> y <span class="fu">.</span> leftFactor y <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb13-5" title="5">   <span class="co">-- 等式(1a)および(2a)</span></a>
-<a class="sourceLine" id="cb13-6" title="6"> <span class="fu">=</span> <span class="fu">id</span> <span class="fu">.</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb13-7" title="7"> <span class="fu">=</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb13-8" title="8"></a>
-<a class="sourceLine" id="cb13-9" title="9"></a>
-<a class="sourceLine" id="cb13-10" title="10">phi (x, y, z) <span class="fu">.</span> phi (x', x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z, z')</a>
-<a class="sourceLine" id="cb13-11" title="11">   <span class="co">-- 定義</span></a>
-<a class="sourceLine" id="cb13-12" title="12"> <span class="fu">=</span> rightFactor x y <span class="fu">.</span> leftFactor (x <span class="fu">&lt;&gt;</span> y) z <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-13" title="13">   rightFactor x' (x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) <span class="fu">.</span> leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) z'</a>
-<a class="sourceLine" id="cb13-14" title="14">   <span class="co">-- 内側の2項に注目</span></a>
-<a class="sourceLine" id="cb13-15" title="15"> <span class="fu">=</span> rightFactor x y <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-16" title="16">   (leftFactor (x <span class="fu">&lt;&gt;</span> y) z <span class="fu">.</span> rightFactor x' ((x <span class="fu">&lt;&gt;</span> y) <span class="fu">&lt;&gt;</span> z)) <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-17" title="17">   leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) z'</a>
-<a class="sourceLine" id="cb13-18" title="18">   <span class="co">-- 等式(4a)で()内を変形</span></a>
-<a class="sourceLine" id="cb13-19" title="19"> <span class="fu">=</span> rightFactor x y <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-20" title="20">   (rightFactor x' (x <span class="fu">&lt;&gt;</span> y) <span class="fu">.</span> leftFactor (x' <span class="fu">&lt;&gt;</span> (x <span class="fu">&lt;&gt;</span> y)) z) <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-21" title="21">   leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) z'</a>
-<a class="sourceLine" id="cb13-22" title="22">   <span class="co">-- ()のくくりを変更</span></a>
-<a class="sourceLine" id="cb13-23" title="23"> <span class="fu">=</span> (rightFactor x y <span class="fu">.</span> rightFactor x' (x <span class="fu">&lt;&gt;</span> y)) <span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-24" title="24">   (leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y) z <span class="fu">.</span> leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y <span class="fu">&lt;&gt;</span> z) z')</a>
-<a class="sourceLine" id="cb13-25" title="25">   <span class="co">-- 等式(5a) をはじめの()に、等式(3a)をうしろの()に適用</span></a>
-<a class="sourceLine" id="cb13-26" title="26"> <span class="fu">=</span> rightFactor (x' <span class="fu">&lt;&gt;</span> x) y <span class="fu">.</span> leftFactor (x' <span class="fu">&lt;&gt;</span> x <span class="fu">&lt;&gt;</span> y) (z <span class="fu">&lt;&gt;</span> z')</a>
-<a class="sourceLine" id="cb13-27" title="27">   <span class="co">-- 定義</span></a>
-<a class="sourceLine" id="cb13-28" title="28"> <span class="fu">=</span> phi (x' <span class="fu">&lt;&gt;</span> x, y, z <span class="fu">&lt;&gt;</span> z')</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>phi (<span class="fu">mempty</span>, y, <span class="fu">mempty</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 定義</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor <span class="fu">mempty</span> y <span class="op">.</span> leftFactor (<span class="fu">mempty</span> <span class="op">&lt;&gt;</span> y) <span class="fu">mempty</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor <span class="fu">mempty</span> y <span class="op">.</span> leftFactor y <span class="fu">mempty</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 等式(1a)および(2a)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">id</span> <span class="op">.</span> <span class="fu">id</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>phi (x, y, z) <span class="op">.</span> phi (x', x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z, z')</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 定義</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor x y <span class="op">.</span> leftFactor (x <span class="op">&lt;&gt;</span> y) z <span class="op">.</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>   rightFactor x' (x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) <span class="op">.</span> leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) z'</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 内側の2項に注目</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor x y <span class="op">.</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>   (leftFactor (x <span class="op">&lt;&gt;</span> y) z <span class="op">.</span> rightFactor x' ((x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z)) <span class="op">.</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>   leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) z'</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 等式(4a)で()内を変形</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor x y <span class="op">.</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>   (rightFactor x' (x <span class="op">&lt;&gt;</span> y) <span class="op">.</span> leftFactor (x' <span class="op">&lt;&gt;</span> (x <span class="op">&lt;&gt;</span> y)) z) <span class="op">.</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>   leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) z'</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- ()のくくりを変更</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> (rightFactor x y <span class="op">.</span> rightFactor x' (x <span class="op">&lt;&gt;</span> y)) <span class="op">.</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>   (leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y) z <span class="op">.</span> leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y <span class="op">&lt;&gt;</span> z) z')</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 等式(5a) をはじめの()に、等式(3a)をうしろの()に適用</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rightFactor (x' <span class="op">&lt;&gt;</span> x) y <span class="op">.</span> leftFactor (x' <span class="op">&lt;&gt;</span> x <span class="op">&lt;&gt;</span> y) (z <span class="op">&lt;&gt;</span> z')</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 定義</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> phi (x' <span class="op">&lt;&gt;</span> x, y, z <span class="op">&lt;&gt;</span> z')</span></code></pre></div>
 <p>よって、<code>phi</code>の満たすべき等式1., 2.が示された。</p>
 <h2 id="phiを関手として見る"><code>phi</code>を関手として見る</h2>
 <p>前節の<code>phi</code>の満たすべき法則、</p>
@@ -211,10 +216,10 @@ fabc'
 <p>とても<code>Functor</code>則に似ていますね？</p>
 <p>モノイド M が適当に与えられているとき、圏 MFac を次のように定義します。 （Mの単位元は1で、Mの乗法は単に並べて書くことにします。）</p>
 <ul>
-<li>MFacの対象はモノイドMの各要素</li>
+<li><p>MFacの対象はモノイドMの各要素</p></li>
 <li><p>MFacの対象（モノイドMの要素）s, t に対して、射はMの要素の三つ組 (x, t, z) であって、s = xtz を満たすもの</p>
 <p>MFac(s,t) = { (x, t, z) | s = xtz }</p></li>
-<li>各対象 s に対して、 (1, s, 1) ∈ MFac(s,s) がidentity</li>
+<li><p>各対象 s に対して、 (1, s, 1) ∈ MFac(s,s) がidentity</p></li>
 <li><p>(x, u, z) ∈ MFac(t,u) および (x’, t, z’) ∈ MFac(s,t) に対して、射の合成 ∘ が</p>
 <p>(x, u, z)∘(x’, t, z’) = (x, u, z)∘(x’, xuz, z’) = (x’x, u, zz’) ∈ MFac(s,u)</p></li>
 </ul>
@@ -222,7 +227,7 @@ fabc'
 <p>※ちなみに、モノイド（対象が１つの圏と見ることもできる）の代わりに任意の圏で同じようなことをしたものが、<a href="https://ncatlab.org/nlab/show/twisted+arrow+category">Category of factorizationsやtwisted arrow categoryなどと呼ばれている</a>らしいことまでは調べきれたのですが、以降力尽きました・・・</p>
 <h2 id="まとめ">まとめ</h2>
 <p>多項式Functorである<code>F</code>が<code>M, E</code>によって次のように表示されているとき、</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">newtype</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> (Σ(<span class="ot">x ::</span> <span class="dt">M</span>)<span class="fu">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> (Σ(<span class="ot">x ::</span> <span class="dt">M</span>)<span class="op">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</span></code></pre></div>
 <p>F上のApplicativeのインスタンスは、<code>M, E</code>に関する次のデータで必ず表されます。</p>
 <ul>
 <li><code>M</code>上のモノイド演算</li>
@@ -231,16 +236,16 @@ fabc'
 <h2 id="例">例</h2>
 <h3 id="maybe">Maybe</h3>
 <p><code>Maybe</code>の表示</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">data</span> <span class="dt">M</span> <span class="fu">=</span> <span class="dt">M0</span> <span class="fu">|</span> <span class="dt">M1</span></a>
-<a class="sourceLine" id="cb15-2" title="2"></a>
-<a class="sourceLine" id="cb15-3" title="3"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">M</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb15-4" title="4">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">M1</span></a>
-<a class="sourceLine" id="cb15-5" title="5">  <span class="dt">M0</span> <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> <span class="dt">M0</span></a>
-<a class="sourceLine" id="cb15-6" title="6">  <span class="dt">M1</span> <span class="fu">&lt;&gt;</span> y <span class="fu">=</span> y</a>
-<a class="sourceLine" id="cb15-7" title="7"></a>
-<a class="sourceLine" id="cb15-8" title="8"><span class="kw">type</span> <span class="kw">family</span> <span class="dt">E</span> (<span class="ot">x ::</span> <span class="dt">M</span>) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb15-9" title="9">  <span class="dt">E</span> <span class="dt">M0</span> <span class="fu">=</span> <span class="dt">Void</span></a>
-<a class="sourceLine" id="cb15-10" title="10">  <span class="dt">E</span> <span class="dt">M1</span> <span class="fu">=</span> ()</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">M</span> <span class="ot">=</span> <span class="dt">M0</span> <span class="op">|</span> <span class="dt">M1</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">M</span> <span class="kw">where</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">M1</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">M0</span> <span class="op">&lt;&gt;</span> _ <span class="ot">=</span> <span class="dt">M0</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">M1</span> <span class="op">&lt;&gt;</span> y <span class="ot">=</span> y</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="kw">family</span> <span class="dt">E</span> (<span class="ot">x ::</span> <span class="dt">M</span>) <span class="kw">where</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">E</span> <span class="dt">M0</span> <span class="ot">=</span> <span class="dt">Void</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">E</span> <span class="dt">M1</span> <span class="ot">=</span> ()</span></code></pre></div>
 <p>に対して、圏MFacは</p>
 <pre><code>MFac(M1, M1) = { (M1, M1, M1) }
 MFac(M1, M0) = {}
@@ -254,13 +259,13 @@ phi (_,  _,  M0) = absurd</code></pre>
 <p>となります。</p>
 <h3 id="list">List</h3>
 <p>有限リストの表示</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Z</span> <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Nat</span></a>
-<a class="sourceLine" id="cb18-2" title="2"></a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="kw">data</span> <span class="dt">E</span> (<span class="ot">x ::</span> <span class="dt">Nat</span>) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb18-4" title="4">  <span class="dt">EZ</span><span class="ot"> ::</span> <span class="dt">E</span> (<span class="dt">S</span> x)</a>
-<a class="sourceLine" id="cb18-5" title="5">  <span class="dt">ES</span><span class="ot"> ::</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> <span class="dt">E</span> (<span class="dt">S</span> x)</a>
-<a class="sourceLine" id="cb18-6" title="6"></a>
-<a class="sourceLine" id="cb18-7" title="7"><span class="kw">newtype</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">List</span> (Σ(<span class="ot">x ::</span> <span class="dt">Nat</span>)<span class="fu">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Nat</span> <span class="ot">=</span> <span class="dt">Z</span> <span class="op">|</span> <span class="dt">S</span> <span class="dt">Nat</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">E</span> (<span class="ot">x ::</span> <span class="dt">Nat</span>) <span class="kw">where</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">EZ</span><span class="ot"> ::</span> <span class="dt">E</span> (<span class="dt">S</span> x)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ES</span><span class="ot"> ::</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> <span class="dt">E</span> (<span class="dt">S</span> x)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">List</span> (Σ(<span class="ot">x ::</span> <span class="dt">Nat</span>)<span class="op">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</span></code></pre></div>
 <p>に対して、<code>[]</code>と同じApplicativeを考えると、 <code>Nat</code>に入るモノイド演算は、自然数としての乗算によるものです。</p>
 <pre><code>instance Num Nat where
   fromInteger = ...
@@ -276,12 +281,12 @@ instance Monoid Nat where
 <p>圏MFacは</p>
 <pre><code>MFac(s,t) = { (x,t,y) | x :: Nat, y :: Nat, s == x * t * y }</code></pre>
 <p><code>phi</code>は次のようになります：</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="ot">phi ::</span> Π(x,y,z)<span class="fu">.</span> <span class="dt">E</span> (x<span class="fu">*</span>y<span class="fu">*</span>z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</a>
-<a class="sourceLine" id="cb21-2" title="2">phi (x,y,z) i <span class="fu">|</span> x<span class="fu">*</span>y<span class="fu">*</span>z <span class="fu">==</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb21-3" title="3">  <span class="fu">=</span> <span class="kw">case</span> i <span class="kw">of</span> { }</a>
-<a class="sourceLine" id="cb21-4" title="4">      <span class="co">-- E (x*y*z) = E 0 is an empty type</span></a>
-<a class="sourceLine" id="cb21-5" title="5">phi (x,y,z) i <span class="fu">|</span> x<span class="fu">*</span>y<span class="fu">*</span>z <span class="fu">&gt;</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb21-6" title="6">  <span class="fu">=</span> (i <span class="ot">`div`</span> z) <span class="ot">`mod`</span> y</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ot">phi ::</span> Π(x,y,z)<span class="op">.</span> <span class="dt">E</span> (x<span class="op">*</span>y<span class="op">*</span>z) <span class="ot">-&gt;</span> <span class="dt">E</span> y</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>phi (x,y,z) i <span class="op">|</span> x<span class="op">*</span>y<span class="op">*</span>z <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="kw">case</span> i <span class="kw">of</span> { }</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- E (x*y*z) = E 0 is an empty type</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>phi (x,y,z) i <span class="op">|</span> x<span class="op">*</span>y<span class="op">*</span>z <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (i <span class="ot">`div`</span> z) <span class="ot">`mod`</span> y</span></code></pre></div>
 <h2 id="モノイドより強い条件">モノイドより強い条件</h2>
 <p><code>M</code>がモノイドであるだけでなくより強い条件を満たす、例えば群でもあるような場合はどうなるでしょうか？</p>
 <p>群<code>G</code>に対する圏GFacは、任意の射に対して逆射がある圏、groupoidになります。 さらに、任意の2対象（= 群Gの任意の2元）の間に射があります。<code>E</code>がこれからの関手であるため、 どの<code>E x, E y</code>の間にも全単射があることがわかります。 これはつまり、<code>E x</code>たちが有限個の値をとる型ならば、 それらは全て同じ個数でなければならないということです。</p>
@@ -304,18 +309,18 @@ getPerm (x,t,y) {- xty == s -}
 <li>G-作用<code>act :: G -&gt; E -&gt; E</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a>
-<a class="sourceLine" id="cb24-2" title="2"></a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="ot">phi ::</span> (<span class="dt">G</span>, <span class="dt">G</span>, <span class="dt">G</span>) <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">E</span></a>
-<a class="sourceLine" id="cb24-4" title="4">phi (x,t,y) <span class="fu">=</span> tr' t <span class="fu">.</span> act y <span class="fu">.</span> tr (x <span class="fu">&lt;&gt;</span> t <span class="fu">&lt;&gt;</span> y)</a>
-<a class="sourceLine" id="cb24-5" title="5"></a>
-<a class="sourceLine" id="cb24-6" title="6"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb24-7" title="7">  <span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</a>
-<a class="sourceLine" id="cb24-8" title="8">  <span class="dt">F</span> x x_f <span class="fu">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="fu">=</span> <span class="dt">F</span> xy (\i <span class="ot">-&gt;</span> xy_f i (xy_a i))</a>
-<a class="sourceLine" id="cb24-9" title="9">    <span class="kw">where</span></a>
-<a class="sourceLine" id="cb24-10" title="10">      xy <span class="fu">=</span> x <span class="fu">&lt;&gt;</span> y</a>
-<a class="sourceLine" id="cb24-11" title="11">      xy_f <span class="fu">=</span> x_f <span class="fu">.</span> tr' x <span class="fu">.</span> act y <span class="fu">.</span> tr xy</a>
-<a class="sourceLine" id="cb24-12" title="12">      xy_a <span class="fu">=</span> y_a <span class="fu">.</span> tr' y <span class="fu">.</span> tr xy</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="ot">phi ::</span> (<span class="dt">G</span>, <span class="dt">G</span>, <span class="dt">G</span>) <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">E</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>phi (x,t,y) <span class="ot">=</span> tr' t <span class="op">.</span> act y <span class="op">.</span> tr (x <span class="op">&lt;&gt;</span> t <span class="op">&lt;&gt;</span> y)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">F</span> x x_f <span class="op">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="ot">=</span> <span class="dt">F</span> xy (\i <span class="ot">-&gt;</span> xy_f i (xy_a i))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>      xy <span class="ot">=</span> x <span class="op">&lt;&gt;</span> y</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>      xy_f <span class="ot">=</span> x_f <span class="op">.</span> tr' x <span class="op">.</span> act y <span class="op">.</span> tr xy</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>      xy_a <span class="ot">=</span> y_a <span class="op">.</span> tr' y <span class="op">.</span> tr xy</span></code></pre></div>
     </section>
 </article>
 

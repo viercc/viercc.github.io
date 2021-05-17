@@ -7,6 +7,11 @@
         <title>Too lazy to evaluate - 多項式Applicative Functorの一般論（補遺）</title>
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
+        <!-- KaTeX -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+        <script defer src="../js/katex-render-hook.js"></script>
     </head>
     <body>
         <header>
@@ -43,18 +48,18 @@
 <li>G-作用<code>act :: G -&gt; E -&gt; E</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">phi ::</span> (<span class="dt">G</span>, <span class="dt">G</span>, <span class="dt">G</span>) <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">E</span></a>
-<a class="sourceLine" id="cb1-4" title="4">phi (x,t,y) <span class="fu">=</span> tr' t <span class="fu">.</span> act y <span class="fu">.</span> tr (x <span class="fu">&lt;&gt;</span> t <span class="fu">&lt;&gt;</span> y)</a>
-<a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</a>
-<a class="sourceLine" id="cb1-8" title="8">  <span class="dt">F</span> x x_f <span class="fu">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="fu">=</span> <span class="dt">F</span> xy (\i <span class="ot">-&gt;</span> xy_f i (xy_a i))</a>
-<a class="sourceLine" id="cb1-9" title="9">    <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-10" title="10">      xy <span class="fu">=</span> x <span class="fu">&lt;&gt;</span> y</a>
-<a class="sourceLine" id="cb1-11" title="11">      xy_f <span class="fu">=</span> x_f <span class="fu">.</span> tr' x <span class="fu">.</span> act y <span class="fu">.</span> tr xy</a>
-<a class="sourceLine" id="cb1-12" title="12">      xy_a <span class="fu">=</span> y_a <span class="fu">.</span> tr' y <span class="fu">.</span> tr xy</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">phi ::</span> (<span class="dt">G</span>, <span class="dt">G</span>, <span class="dt">G</span>) <span class="ot">-&gt;</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">E</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>phi (x,t,y) <span class="ot">=</span> tr' t <span class="op">.</span> act y <span class="op">.</span> tr (x <span class="op">&lt;&gt;</span> t <span class="op">&lt;&gt;</span> y)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">F</span> x x_f <span class="op">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="ot">=</span> <span class="dt">F</span> xy (\i <span class="ot">-&gt;</span> xy_f i (xy_a i))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      xy <span class="ot">=</span> x <span class="op">&lt;&gt;</span> y</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      xy_f <span class="ot">=</span> x_f <span class="op">.</span> tr' x <span class="op">.</span> act y <span class="op">.</span> tr xy</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      xy_a <span class="ot">=</span> y_a <span class="op">.</span> tr' y <span class="op">.</span> tr xy</span></code></pre></div>
 </blockquote>
 <p>改めてこの部分を読んでみると、Functorとしての<code>(G, E -&gt; a)</code>への自然同型のとりかたを工夫すれば、 <code>tr x = tr' x = id</code>となるようにできますね。なので、次のようにしたほうが簡潔でした。</p>
 <blockquote>
@@ -63,48 +68,48 @@
 <li><code>Functor</code>として<code>(G, E -&gt; a)</code>に自然同型</li>
 <li><em>自然同型のとりかたをうまく選べば、</em> どの<code>F</code>もある <em>左</em> <code>G</code>-作用<code>act :: G -&gt; E -&gt; E</code>によって以下のように定義される：</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">F</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-4" title="4">  <span class="fu">pure</span> a <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</a>
-<a class="sourceLine" id="cb2-5" title="5">  <span class="dt">F</span> x x_f <span class="fu">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> y) (\i <span class="ot">-&gt;</span> x_f (act y i) (y_a i))</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="dt">G</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (<span class="fu">const</span> a)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">F</span> x x_f <span class="op">&lt;*&gt;</span> <span class="dt">F</span> y y_a <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> y) (\i <span class="ot">-&gt;</span> x_f (act y i) (y_a i))</span></code></pre></div>
 </blockquote>
 <p>また、任意の群<code>H</code>に対して、<code>Ap F H</code>も再び群になります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">(&lt;&lt;&gt;&gt;) ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Semigroup</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</a>
-<a class="sourceLine" id="cb3-2" title="2">(<span class="fu">&lt;&lt;&gt;&gt;</span>) <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="co">-- (&lt;&lt;&gt;&gt;) = coerce ((&lt;&gt;) @(Ap F h))</span></a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="ot">mempty1 ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Monoid</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h</a>
-<a class="sourceLine" id="cb3-6" title="6">mempty1 <span class="fu">=</span> <span class="fu">pure</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">-- mempty1 = coerce (mempty @(Ap F h))</span></a>
-<a class="sourceLine" id="cb3-8" title="8"></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="ot">inv1 ::</span> <span class="kw">forall</span> h<span class="fu">.</span> <span class="dt">Group</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</a>
-<a class="sourceLine" id="cb3-10" title="10">inv1 (<span class="dt">F</span> x x_a) <span class="fu">=</span> <span class="dt">F</span> x' (inv <span class="fu">@</span>h <span class="fu">.</span> x_a <span class="fu">.</span> act x')</a>
-<a class="sourceLine" id="cb3-11" title="11">  <span class="kw">where</span> x' <span class="fu">=</span> inv <span class="fu">@</span><span class="dt">G</span> x </a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(&lt;&lt;&gt;&gt;) ::</span> <span class="kw">forall</span> h<span class="op">.</span> <span class="dt">Semigroup</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(<span class="op">&lt;&lt;&gt;&gt;</span>) <span class="ot">=</span> liftA2 (<span class="op">&lt;&gt;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- (&lt;&lt;&gt;&gt;) = coerce ((&lt;&gt;) @(Ap F h))</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">mempty1 ::</span> <span class="kw">forall</span> h<span class="op">.</span> <span class="dt">Monoid</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>mempty1 <span class="ot">=</span> <span class="fu">pure</span> <span class="fu">mempty</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- mempty1 = coerce (mempty @(Ap F h))</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ot">inv1 ::</span> <span class="kw">forall</span> h<span class="op">.</span> <span class="dt">Group</span> h <span class="ot">=&gt;</span> <span class="dt">F</span> h <span class="ot">-&gt;</span> <span class="dt">F</span> h</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>inv1 (<span class="dt">F</span> x x_a) <span class="ot">=</span> <span class="dt">F</span> x' (inv <span class="op">@</span>h <span class="op">.</span> x_a <span class="op">.</span> act x')</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> x' <span class="ot">=</span> inv <span class="op">@</span><span class="dt">G</span> x </span></code></pre></div>
 <p>これが本当に群であることは、<code>act</code>が群作用であることから出ます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">x,<span class="ot"> x' ::</span> <span class="dt">G</span></a>
-<a class="sourceLine" id="cb4-2" title="2">x' <span class="fu">=</span> inv x</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="ot">x_a ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">H</span></a>
-<a class="sourceLine" id="cb4-5" title="5"></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="ot">w ::</span> <span class="dt">F</span> <span class="dt">H</span></a>
-<a class="sourceLine" id="cb4-7" title="7">w <span class="fu">=</span> <span class="dt">F</span> x x_a</a>
-<a class="sourceLine" id="cb4-8" title="8">inv1 w <span class="fu">=</span> <span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x')</a>
-<a class="sourceLine" id="cb4-9" title="9"></a>
-<a class="sourceLine" id="cb4-10" title="10">w <span class="fu">&lt;&lt;&gt;&gt;</span> inv1 w</a>
-<a class="sourceLine" id="cb4-11" title="11"> <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>) (<span class="dt">F</span> x x_a) (<span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x'))</a>
-<a class="sourceLine" id="cb4-12" title="12"> <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> x_a (act x' i) <span class="fu">&lt;&gt;</span> inv (x_a (act x' i)))</a>
-<a class="sourceLine" id="cb4-13" title="13"> <span class="fu">=</span> <span class="dt">F</span> (x <span class="fu">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> <span class="kw">let</span> b <span class="fu">=</span> x_a (act x' i) <span class="kw">in</span> b <span class="fu">&lt;&gt;</span> inv b)</a>
-<a class="sourceLine" id="cb4-14" title="14"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</a>
-<a class="sourceLine" id="cb4-15" title="15"> <span class="fu">=</span> mempty1</a>
-<a class="sourceLine" id="cb4-16" title="16"></a>
-<a class="sourceLine" id="cb4-17" title="17">inv1 w <span class="fu">&lt;&lt;&gt;&gt;</span> w</a>
-<a class="sourceLine" id="cb4-18" title="18"> <span class="fu">=</span> liftA2 (<span class="fu">&lt;&gt;</span>) (<span class="dt">F</span> x' (inv <span class="fu">@</span><span class="dt">H</span> <span class="fu">.</span> x_a <span class="fu">.</span> act x')) (<span class="dt">F</span> x x_a)</a>
-<a class="sourceLine" id="cb4-19" title="19"> <span class="fu">=</span> <span class="dt">F</span> (x' <span class="fu">&lt;&gt;</span> x) (\i <span class="ot">-&gt;</span> (inv <span class="fu">.</span> x_a <span class="fu">.</span> act x' <span class="fu">.</span> act x <span class="fu">$</span> i) <span class="fu">&lt;&gt;</span> x_a i)</a>
-<a class="sourceLine" id="cb4-20" title="20">   <span class="co">-- act x' . act x = act (x' &lt;&gt; x) = act mempty = id</span></a>
-<a class="sourceLine" id="cb4-21" title="21"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> inv (x_a i) <span class="fu">&lt;&gt;</span> x_a i)</a>
-<a class="sourceLine" id="cb4-22" title="22"> <span class="fu">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</a>
-<a class="sourceLine" id="cb4-23" title="23"> <span class="fu">=</span> mempty1</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x,<span class="ot"> x' ::</span> <span class="dt">G</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x' <span class="ot">=</span> inv x</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">x_a ::</span> <span class="dt">E</span> <span class="ot">-&gt;</span> <span class="dt">H</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ot">w ::</span> <span class="dt">F</span> <span class="dt">H</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>w <span class="ot">=</span> <span class="dt">F</span> x x_a</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>inv1 w <span class="ot">=</span> <span class="dt">F</span> x' (inv <span class="op">@</span><span class="dt">H</span> <span class="op">.</span> x_a <span class="op">.</span> act x')</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>w <span class="op">&lt;&lt;&gt;&gt;</span> inv1 w</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> liftA2 (<span class="op">&lt;&gt;</span>) (<span class="dt">F</span> x x_a) (<span class="dt">F</span> x' (inv <span class="op">@</span><span class="dt">H</span> <span class="op">.</span> x_a <span class="op">.</span> act x'))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> x_a (act x' i) <span class="op">&lt;&gt;</span> inv (x_a (act x' i)))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> x') (\i <span class="ot">-&gt;</span> <span class="kw">let</span> b <span class="ot">=</span> x_a (act x' i) <span class="kw">in</span> b <span class="op">&lt;&gt;</span> inv b)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mempty1</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>inv1 w <span class="op">&lt;&lt;&gt;&gt;</span> w</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> liftA2 (<span class="op">&lt;&gt;</span>) (<span class="dt">F</span> x' (inv <span class="op">@</span><span class="dt">H</span> <span class="op">.</span> x_a <span class="op">.</span> act x')) (<span class="dt">F</span> x x_a)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> (x' <span class="op">&lt;&gt;</span> x) (\i <span class="ot">-&gt;</span> (inv <span class="op">.</span> x_a <span class="op">.</span> act x' <span class="op">.</span> act x <span class="op">$</span> i) <span class="op">&lt;&gt;</span> x_a i)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- act x' . act x = act (x' &lt;&gt; x) = act mempty = id</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> inv (x_a i) <span class="op">&lt;&gt;</span> x_a i)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mempty1</span></code></pre></div>
 <p>2つの群<code>G,H</code>と群作用<code>G -&gt; E -&gt; E</code>から新たな群を作るこの構成は、 群論の中ではズバリそのものがよく知られていて、<a href="https://ja.wikipedia.org/wiki/%E8%BC%AA%E7%A9%8D">輪積</a> という名前が付いています。（とえらそうに言いますが、私自身この補遺を書くまで気づいていませんでしたが。）</p>
 <p>まとめると、</p>
 <ul>
