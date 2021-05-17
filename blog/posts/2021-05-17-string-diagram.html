@@ -81,7 +81,7 @@
 <figure>
 <img src="../images/string/pure-and-extract.png" alt="ストリング図(Identityの省略)" /><figcaption aria-hidden="true">ストリング図(Identityの省略)</figcaption>
 </figure>
-<p>自然変換どうしは垂直合成する（“縦につなげる”）こともできました。上図の<code>nt</code>と<code>foo</code>は、 合成して自然変換<code>nt &gt;&gt;&gt; foo :: ∀a. f (g (h a)) -&gt; p a</code>を作ることができるます。 このように合成した自然変換は、 図を縦につなげて以下のように表します。 （ここでは、<code>foo . nt</code>のように<code>.</code>を使わず、代わりに<code>&gt;&gt;&gt;</code>で関数の合成を表記することにします。）</p>
+<p>自然変換どうしは垂直合成する（“縦につなげる”）こともできました。上図の<code>nt</code>と<code>foo</code>は、 合成して自然変換<code>nt &gt;&gt;&gt; foo :: ∀a. f (g (h a)) -&gt; p a</code>を作ることができます。 このように合成した自然変換は、 図を縦につなげて以下のように表します。 （ここでは、<code>foo . nt</code>のように<code>.</code>を使わず、代わりに<code>&gt;&gt;&gt;</code>で関数の合成を表記することにします。）</p>
 <figure>
 <img src="../images/string/vcomp.png" alt="ストリング図の垂直合成" /><figcaption aria-hidden="true">ストリング図の垂直合成</figcaption>
 </figure>
@@ -182,7 +182,7 @@
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>(open <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> close) (<span class="ot">f ::</span> <span class="dt">G</span> s a)   <span class="co">-- G s a = (s -&gt; a)</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> close <span class="op">$</span> \s <span class="ot">-&gt;</span> (s, f)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> \s <span class="ot">-&gt;</span> close (s, f)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> \s <span class="ot">-&gt;</span> f</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> \s <span class="ot">-&gt;</span> f s</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> f</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> open <span class="op">&gt;&gt;&gt;</span> close <span class="ot">= id ::</span> <span class="dt">F</span> s a <span class="ot">-&gt;</span> <span class="dt">F</span> s a</span>
