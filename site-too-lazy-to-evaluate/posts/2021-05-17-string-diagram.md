@@ -73,7 +73,7 @@ title: ストリング図でMonad再入門(1)
 ![ストリング図(Identityの省略)](/images/string/pure-and-extract.png)
 
 自然変換どうしは垂直合成する（"縦につなげる"）こともできました。上図の`nt`と`foo`は、
-合成して自然変換`nt >>> foo :: ∀a. f (g (h a)) -> p a`を作ることができるます。
+合成して自然変換`nt >>> foo :: ∀a. f (g (h a)) -> p a`を作ることができます。
 このように合成した自然変換は、
 図を縦につなげて以下のように表します。
 （ここでは、`foo . nt`のように`.`を使わず、代わりに`>>>`で関数の合成を表記することにします。）
@@ -209,7 +209,7 @@ open >>> fmap close = id :: G s a -> G s a
 (open >>> fmap close) (f :: G s a)   -- G s a = (s -> a)
   = fmap close $ \s -> (s, f)
   = \s -> close (s, f)
-  = \s -> f
+  = \s -> f s
   = f
 
 fmap open >>> close = id :: F s a -> F s a
