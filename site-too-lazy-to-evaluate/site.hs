@@ -107,7 +107,7 @@ mainRule mode = do
             postsAll <- recentFirst' =<< loadAll posts
             let archiveCtx =
                      listField "posts" postCtx (return postsAll)
-                  <> constField "title" ""
+                  <> constField "title" "Archive"
                   <> defaultContext
 
             makeItem ""
