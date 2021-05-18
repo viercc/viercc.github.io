@@ -9,8 +9,7 @@ fi
 git checkout develop
 
 # Build new files
-stack exec site clean
-stack exec site build
+stack exec site rebuild
 
 # Get previous files
 git fetch --all
