@@ -2,4 +2,5 @@ _cache/
 _site/
 .stack-work/
 
-images_edit/
+# images_edit (SVG file) should be included too! 
+#images_edit/
