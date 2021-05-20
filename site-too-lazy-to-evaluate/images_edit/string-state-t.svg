@@ -1,0 +1,2234 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="420mm"
+   height="594mm"
+   viewBox="0 0 420 594"
+   version="1.1"
+   id="svg2423"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="string-state-t.svg"
+   inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-assoc.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs2417" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="606.75711"
+     inkscape:cy="1647.8964"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="948"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     showguides="false" />
+  <metadata
+     id="metadata2420">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="レイヤー 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g16048">
+      <g
+         id="g2240"
+         transform="translate(-1.8690743,-167.19376)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-newtype.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <rect
+           style="fill:#f2e4cd;fill-opacity:1;stroke:none;stroke-width:0.352012;stroke-linejoin:round;stroke-opacity:1"
+           id="rect1556-5-2-2-6-4-2"
+           width="64.036819"
+           height="13.885895"
+           x="21.689417"
+           y="169.51822"
+           ry="1.3093108" />
+        <text
+           xml:space="preserve"
+           style="font-size:4.69831px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';fill:#000000;stroke-width:0.220234"
+           x="23.252222"
+           y="174.89513"
+           id="text1554-4-1-8-3-90-9"><tspan
+             sodipodi:role="line"
+             x="23.252222"
+             y="174.89513"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.220234"
+             id="tspan4730-7">newtype StateT s m a =</tspan><tspan
+             sodipodi:role="line"
+             x="23.252222"
+             y="180.76802"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.220234"
+             id="tspan5960">  StateT (G s (m (F s a)))</tspan></text>
+      </g>
+      <g
+         id="g3260-9"
+         transform="translate(-132.57056,-139.28078)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-newtype.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 157.06941,204.66191 v 15.21502"
+           id="path171-7-0-7-5-0-80-9-2"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="146.54636"
+           y="223.29019"
+           id="text2656-0-2-0-7-0-6-0-7-1-6"><tspan
+             sodipodi:role="line"
+             x="146.54636"
+             y="223.29019"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41-2-64">StateT s m</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="136.27225"
+           y="170.79721"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-70-9"><tspan
+             sodipodi:role="line"
+             x="136.27225"
+             y="170.79721"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-9-5">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="172.19511"
+           y="170.79721"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-7-3-0"><tspan
+             sodipodi:role="line"
+             x="172.19511"
+             y="170.79721"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-5-6-48">G s</tspan></text>
+        <path
+           id="rect2255-0-7"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 139.04208,171.76197 v 9.2117 c 0,10.16913 8.04019,18.35547 18.02733,18.35547 9.98713,0 18.02732,-8.18634 18.02732,-18.35547 v -9.31431"
+           sodipodi:nodetypes="csssc" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 157.06941,199.52566 V 171.33985"
+           id="path3088-6-1" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+           x="155.9725"
+           y="170.85225"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-3-2-7"><tspan
+             sodipodi:role="line"
+             x="155.9725"
+             y="170.85225"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-56-6-2">m</tspan></text>
+        <g
+           id="g2731-9-2-8-3-9-6-3-0-2-7"
+           transform="matrix(1,0,0,-1,19.37635,419.33404)">
+          <path
+             id="rect2652-5-7-3-6-90-1-4-0-6-0-2"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,214.37292 -1.50275,6.94378 h 19.06757 l -1.50275,-6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.15472"
+             y="-216.52443"
+             id="text2656-0-2-0-0-83-0-8-7-8-2-2"
+             transform="scale(1,-1)"><tspan
+               sodipodi:role="line"
+               x="130.15472"
+               y="-216.52443"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-3-5-8-9-3-61">newtype</tspan></text>
+        </g>
+      </g>
+      <g
+         id="g4294"
+         transform="matrix(1,0,0,-1,-84.416253,251.69935)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-newtype.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 157.06941,204.66191 v 15.21502"
+           id="path4264"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="146.54636"
+           y="-220.18292"
+           id="text4268"
+           transform="scale(1,-1)"><tspan
+             sodipodi:role="line"
+             x="146.54636"
+             y="-220.18292"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4266">StateT s m</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="136.27225"
+           y="-167.68994"
+           id="text4272"
+           transform="scale(1,-1)"><tspan
+             sodipodi:role="line"
+             x="136.27225"
+             y="-167.68994"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4270">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="172.19511"
+           y="-167.68994"
+           id="text4276"
+           transform="scale(1,-1)"><tspan
+             sodipodi:role="line"
+             x="172.19511"
+             y="-167.68994"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4274">G s</tspan></text>
+        <path
+           id="path4278"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 139.04208,171.76197 v 9.2117 c 0,10.16913 8.04019,18.35547 18.02733,18.35547 9.98713,0 18.02732,-8.18634 18.02732,-18.35547 v -9.31431"
+           sodipodi:nodetypes="csssc" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 157.06941,199.52566 V 171.33985"
+           id="path4280" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+           x="155.9725"
+           y="-167.6349"
+           id="text4284"
+           transform="scale(1,-1)"><tspan
+             sodipodi:role="line"
+             x="155.9725"
+             y="-167.6349"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+             id="tspan4282">m</tspan></text>
+        <g
+           id="g4292"
+           transform="matrix(1,0,0,-1,19.37635,419.33404)">
+          <path
+             id="path4286"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,214.37292 -1.50275,6.94378 h 19.06757 l -1.50275,-6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.15472"
+             y="219.09406"
+             id="text4290"><tspan
+               sodipodi:role="line"
+               x="130.15472"
+               y="219.09406"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan4288">newtype</tspan></text>
+        </g>
+      </g>
+    </g>
+    <g
+       id="g16009"
+       transform="translate(-111.64349,71.400638)">
+      <g
+         id="g1083-1-1-1-7-9"
+         transform="matrix(1,0,0,1.1195131,180.91553,-110.16035)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 103.05462,134.91277 h 9.19489"
+           id="path252-2-0-3-0-4"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 103.05462,136.68926 h 9.25229"
+           id="path256-2-94-8-9-7"
+           sodipodi:nodetypes="cc" />
+      </g>
+      <g
+         id="g4999"
+         transform="translate(-41.953164,-264.60631)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g1083-1-1-1-7-9-1"
+           transform="matrix(1,0,0,1.1195131,205.25243,148.60769)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path252-2-0-3-0-4-1"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path256-2-94-8-9-7-5"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <g
+           id="g4488"
+           transform="translate(-22.641652,44.644009)">
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 319.89657,249.55457 v 2.8079"
+             id="path4436"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 319.89658,259.37815 v 2.8079"
+             id="path4434"
+             sodipodi:nodetypes="cc" />
+          <path
+             id="rect3620-5-4-9"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 327.72143,262.0393 c -2.08563,-1.93134 -4.82026,-3.10162 -7.82484,-3.10162 -3.00458,0 -5.73921,1.17028 -7.82487,3.10162"
+             sodipodi:nodetypes="cccsc" />
+          <g
+             id="g4292-0"
+             transform="translate(182.20352,38.149895)">
+            <path
+               id="path4286-6"
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 129.66202,214.37292 -1.50275,6.94378 h 19.06757 l -1.50275,-6.94378 z" />
+            <text
+               xml:space="preserve"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               x="130.15472"
+               y="219.09406"
+               id="text4290-1"><tspan
+                 sodipodi:role="line"
+                 x="130.15472"
+                 y="219.09406"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+                 id="tspan4288-5">newtype</tspan></text>
+          </g>
+        </g>
+        <g
+           id="g4479"
+           transform="translate(-22.641661,44.644009)">
+          <g
+             id="g1676"
+             transform="translate(0.40492177,-1.2007388)">
+            <path
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 349.53009,251.63361 v 10.55244"
+               id="path4467"
+               sodipodi:nodetypes="cc" />
+            <path
+               id="path4469"
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+               d="m 357.35494,262.0393 c -2.08563,-1.93134 -4.82025,-3.10162 -7.82484,-3.10162 -3.00458,0 -5.7392,1.17028 -7.82486,3.10162"
+               sodipodi:nodetypes="cccsc" />
+            <path
+               id="path4286-6-4"
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 345.90332,255.31958 -1.82875,3.92706 h 10.95592 l -1.85691,-3.92706 z"
+               sodipodi:nodetypes="ccccc" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g5017"
+         transform="translate(-41.385441,-257.44387)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g4398"
+           transform="matrix(1,0,0,1.1195131,205.37261,166.44012)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path4394"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path4396"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <g
+           id="g4531"
+           transform="translate(-22.641672,44.609049)">
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 320.13695,270.35425 v -2.8079"
+             id="path4490-7"
+             sodipodi:nodetypes="cc" />
+          <path
+             id="path4492-7"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 327.9618,267.6931 c -2.08563,1.93134 -4.82025,3.10162 -7.82484,3.10162 -3.00458,0 -5.7392,-1.17028 -7.82486,-3.10162"
+             sodipodi:nodetypes="cccsc" />
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 320.13695,280.17783 v -2.8079"
+             id="path4494-6"
+             sodipodi:nodetypes="cc" />
+          <g
+             id="g2731-9-2-8-3-92-4-9"
+             transform="translate(182.4439,55.887585)">
+            <path
+               id="rect2652-5-7-3-6-90-3-9-1"
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 129.66202,221.3167 -1.50275,-6.94378 h 19.06757 l -1.50275,6.94378 z" />
+            <text
+               xml:space="preserve"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               x="130.68388"
+               y="219.09406"
+               id="text2656-0-2-0-0-83-1-2-7"><tspan
+                 sodipodi:role="line"
+                 x="130.68388"
+                 y="219.09406"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+                 id="tspan2658-6-2-7-3-8-8-0-7">newtype</tspan></text>
+          </g>
+        </g>
+        <g
+           id="g4479-2"
+           transform="translate(-23.584679,62.762047)">
+          <g
+             id="g1676-6"
+             transform="translate(0.40492177,-1.2007388)">
+            <path
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 349.53009,251.63361 v 10.55244"
+               id="path4467-1"
+               sodipodi:nodetypes="cc" />
+            <path
+               id="path4469-0"
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+               d="m 357.35494,262.0393 c -2.08563,-1.93134 -4.82025,-3.10162 -7.82484,-3.10162 -3.00458,0 -5.7392,1.17028 -7.82486,3.10162"
+               sodipodi:nodetypes="cccsc" />
+            <path
+               id="path4286-6-4-6"
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 345.90332,255.31958 -1.82875,3.92706 h 10.95592 l -1.85691,-3.92706 z"
+               sodipodi:nodetypes="ccccc" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g4981"
+         transform="translate(-164.04653,-218.42858)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g4664"
+           transform="translate(2.6370983,-10.505989)">
+          <g
+             id="g2731-9-2-3"
+             transform="translate(158.1491,45.220924)">
+            <rect
+               style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect2652-5-7-3-9"
+               width="13.516354"
+               height="6.9829626"
+               x="130.92995"
+               y="214.25481"
+               ry="3.2024612" />
+            <text
+               xml:space="preserve"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+               x="133.45471"
+               y="218.97581"
+               id="text2656-0-2-0-4"><tspan
+                 sodipodi:role="line"
+                 x="133.45471"
+                 y="218.97581"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+                 id="tspan2658-6-2-7-8">pure</tspan></text>
+          </g>
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 295.82977,266.7042 v 3.70523"
+             id="path4657" />
+        </g>
+        <g
+           id="g4676"
+           transform="translate(30.069722,-10.505989)">
+          <g
+             id="g4687">
+            <rect
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect4666"
+               width="6.7507229"
+               height="7.2284694"
+               x="292.30142"
+               y="259.59161"
+               ry="3.3753614" />
+            <path
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 295.67678,266.7042 v 3.70523"
+               id="path4674" />
+          </g>
+        </g>
+        <g
+           id="g4682"
+           transform="matrix(1,0,0,1.1195131,206.08224,100.98239)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path4678"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path4680"
+             sodipodi:nodetypes="cc" />
+        </g>
+      </g>
+      <g
+         id="g4966"
+         transform="translate(-163.23847,-211.30346)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g4704"
+           transform="translate(0.71498036,-6.0981883)">
+          <path
+             id="path4689"
+             style="fill:none;stroke:#000000;stroke-width:1.51181;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 1094.5703,1026.3398 c 7.1111,9.9501 18.5884,15.855 30.8184,15.8555 12.2306,10e-5 23.7089,-5.9048 30.8203,-15.8555"
+             transform="scale(0.26458333)"
+             sodipodi:nodetypes="ccc" />
+          <g
+             id="g2731-9-2-2-9"
+             transform="translate(160.07122,60.763796)"
+             style="stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none">
+            <rect
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect2652-5-7-3-1-08"
+               width="13.516354"
+               height="6.9829626"
+               x="130.92995"
+               y="214.25481"
+               ry="3.2024612" />
+            <text
+               xml:space="preserve"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+               x="133.45471"
+               y="218.97581"
+               id="text2656-0-2-0-7-8"><tspan
+                 sodipodi:role="line"
+                 x="133.45471"
+                 y="218.97581"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+                 id="tspan2658-6-2-7-7-5">join</tspan></text>
+          </g>
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 297.75934,282.24265 v 3.24898"
+             id="path4696" />
+        </g>
+        <g
+           id="g4718"
+           transform="translate(26.967331,-6.8136022)">
+          <g
+             id="g4724">
+            <path
+               id="path4706"
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+               d="m 290.07486,272.98323 c 1.88148,2.63263 4.91819,4.19497 8.15404,4.1951 3.23601,3e-5 6.27298,-1.56231 8.15454,-4.1951"
+               sodipodi:nodetypes="ccc" />
+            <rect
+               style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect4708"
+               width="6.6828876"
+               height="6.9829559"
+               x="294.8877"
+               y="275.21536"
+               ry="3.3414438" />
+            <path
+               style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="m 298.22915,282.24265 v 3.24898"
+               id="path4716" />
+          </g>
+        </g>
+        <g
+           id="g4730"
+           transform="matrix(1,0,0,1.1195131,206.08224,120.33465)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path4726"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path4728"
+             sodipodi:nodetypes="cc" />
+        </g>
+      </g>
+      <g
+         id="g4949"
+         transform="translate(-158.87787,-215.65491)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g4820"
+           transform="translate(-2.3874512,-0.08415876)">
+          <circle
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="circle4781"
+             cx="351.56024"
+             cy="251.65712"
+             r="1.8239057" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="347.35019"
+             y="247.46054"
+             id="text4787"><tspan
+               sodipodi:role="line"
+               x="347.35019"
+               y="247.46054"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan4785">open</tspan></text>
+          <path
+             id="rect4801"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 356.94828,258.18688 v -1.21806 c 0,-2.98495 -2.40282,-5.38778 -5.38777,-5.38778 -2.98497,0 -5.38832,2.40283 -5.38832,5.38778 v 1.21854"
+             sodipodi:nodetypes="csssc" />
+        </g>
+        <g
+           id="g4730-8"
+           transform="matrix(1,0,0,1.1195131,258.78357,101.2459)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path4726-4"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path4728-8"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <g
+           id="g4867"
+           transform="translate(29.891717,-0.08415876)">
+          <circle
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="circle4859"
+             cx="351.56024"
+             cy="251.65712"
+             r="1.8239057" />
+          <path
+             id="path4865"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 356.94828,258.18688 v -1.21806 c 0,-2.98495 -2.40282,-5.38778 -5.38777,-5.38778 -2.98497,0 -5.38832,2.40283 -5.38832,5.38778 v 1.21854"
+             sodipodi:nodetypes="csssc" />
+        </g>
+      </g>
+      <g
+         id="g4936"
+         transform="translate(-158.0698,-212.70612)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/terse-notation.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g4826"
+           transform="translate(-2.3874512,-2.2008255)">
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="346.2453"
+             y="282.0542"
+             id="text2656-0-2-0-0-83-0-8-6-7-4-1"><tspan
+               sodipodi:role="line"
+               x="346.2453"
+               y="282.0542"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-3-5-9-3-4-5">close</tspan></text>
+          <circle
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="circle4812"
+             cx="351.56024"
+             cy="-276.35947"
+             r="1.8239057"
+             transform="scale(1,-1)" />
+          <path
+             id="path4814"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 356.94828,269.82958 v 1.21806 c 0,2.98495 -2.40282,5.38779 -5.38777,5.38779 -2.98497,0 -5.38832,-2.40284 -5.38832,-5.38779 v -1.21854"
+             sodipodi:nodetypes="csssc" />
+        </g>
+        <g
+           id="g4730-1"
+           transform="matrix(1,0,0,1.1195131,257.9875,120.38021)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path4726-0"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path4728-3"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <g
+           id="g4877"
+           transform="translate(29.891717,-2.2008255)">
+          <circle
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="circle4873"
+             cx="351.56024"
+             cy="-276.35947"
+             r="1.8239057"
+             transform="scale(1,-1)" />
+          <path
+             id="path4875"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+             d="m 356.94828,269.82958 v 1.21806 c 0,2.98495 -2.40282,5.38779 -5.38777,5.38779 -2.98497,0 -5.38832,-2.40284 -5.38832,-5.38779 v -1.21854"
+             sodipodi:nodetypes="csssc" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g16087"
+       transform="translate(103.86345,-84.86434)">
+      <g
+         id="g5663-3"
+         transform="translate(-20.317984,-248.32)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 31.194579,385.87701 v 15.21502"
+           id="path171-7-0-7-5-9-9-6"
+           sodipodi:nodetypes="cc" />
+        <g
+           id="g2731-9-2-8-4-3-7"
+           transform="translate(-106.49354,164.36665)"
+           style="fill:none;stroke:#800000">
+          <rect
+             style="fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="rect2652-5-7-3-6-9-2-5"
+             width="13.516354"
+             height="6.9829626"
+             x="130.92995"
+             y="214.25481"
+             ry="3.2024612" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#0000ff;stroke:none;stroke-width:0.264583"
+             x="133.45471"
+             y="218.97581"
+             id="text2656-0-2-0-0-8-9-3"><tspan
+               sodipodi:role="line"
+               x="133.45471"
+               y="218.97581"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#0000ff;stroke:none;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-1-5-5">pure</tspan></text>
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="20.681538"
+           y="404.72537"
+           id="text2656-0-2-0-7-0-6-0-0-6"><tspan
+             sodipodi:role="line"
+             x="20.681538"
+             y="404.72537"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2">StateT s m</tspan></text>
+      </g>
+      <g
+         id="g3539"
+         transform="translate(-13.628552,-159.93561)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 59.91996,314.83786 v 8.1036"
+           id="path171-7-0-7-5-0-80"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="49.355869"
+           y="326.82419"
+           id="text2656-0-2-0-7-0-6-0-7"><tspan
+             sodipodi:role="line"
+             x="49.355869"
+             y="326.82419"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41">StateT s m</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 59.91996,295.50916 v 15.21502"
+           id="path171-7-0-7-5-9-9-6-7"
+           sodipodi:nodetypes="cc" />
+        <g
+           id="g2731-9-2-8-4-3-7-5"
+           transform="translate(-77.768162,73.998783)"
+           style="fill:none;stroke:#d45500">
+          <rect
+             style="fill:none;fill-opacity:1;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="rect2652-5-7-3-6-9-2-5-9"
+             width="13.516354"
+             height="6.9829626"
+             x="130.92995"
+             y="214.25481"
+             ry="3.2024612" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#d45500;stroke:none;stroke-width:0.264583"
+             x="133.45471"
+             y="218.97581"
+             id="text2656-0-2-0-0-8-9-3-22"><tspan
+               sodipodi:role="line"
+               x="133.45471"
+               y="218.97581"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#d45500;stroke:none;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-1-5-5-8">pure</tspan></text>
+        </g>
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="path6024-6-0-0-4-9"
+           cx="59.91996"
+           cy="-270.46158"
+           r="1.8239057"
+           transform="scale(1,-1)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+           x="62.348854"
+           y="268.44699"
+           id="text2656-0-2-0-0-83-0-8-6-7"><tspan
+             sodipodi:role="line"
+             x="62.348854"
+             y="268.44699"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             id="tspan2658-6-2-7-3-8-3-5-9-3">open</tspan></text>
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="rect3416"
+           width="23.360306"
+           height="38.7798"
+           x="48.239807"
+           y="270.21124"
+           ry="11.535033" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+           x="60.465942"
+           y="301.61862"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-3-2-6"><tspan
+             sodipodi:role="line"
+             x="60.465942"
+             y="301.61862"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-56-6-1">m</tspan></text>
+        <g
+           id="g2731-9-2-8-3-92"
+           transform="translate(-77.773094,93.559801)">
+          <path
+             id="rect2652-5-7-3-6-90-3"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,221.3167 -1.50275,-6.94378 h 19.06757 l -1.50275,6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.68388"
+             y="219.09406"
+             id="text2656-0-2-0-0-83-1"><tspan
+               sodipodi:role="line"
+               x="130.68388"
+               y="219.09406"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-8">newtype</tspan></text>
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="41.165585"
+           y="284.15665"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-70-3"><tspan
+             sodipodi:role="line"
+             x="41.165585"
+             y="284.15665"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-9-1">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="73.099442"
+           y="284.20746"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-7-3-9"><tspan
+             sodipodi:role="line"
+             x="73.099442"
+             y="284.20746"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-5-6-4">G s</tspan></text>
+      </g>
+      <g
+         id="g5028"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"
+         transform="translate(-12.721261,-160.36231)">
+        <g
+           id="g1083-1-1-1-7"
+           transform="matrix(1,0,0,1.1195131,-69.915622,151.89673)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path252-2-0-3-0"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path256-2-94-8-9"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:5.64444px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';stroke-width:0.264583"
+           x="33.068977"
+           y="301.94778"
+           id="text5021"><tspan
+             sodipodi:role="line"
+             id="tspan5019"
+             x="33.068977"
+             y="301.94778"
+             style="stroke-width:0.264583">def</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g16153"
+       transform="translate(113.39373,-80.973348)">
+      <g
+         id="g3637"
+         transform="translate(79.691247,-221.49567)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 25.943985,371.02231 v 15.21502"
+           id="path171-7-0-7-5-9-9-6-3"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="15.32048"
+           y="390.96533"
+           id="text2656-0-2-0-7-0-6-0-7-7"><tspan
+             sodipodi:role="line"
+             x="15.32048"
+             y="390.96533"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41-8">StateT s m</tspan></text>
+        <use
+           x="0"
+           y="0"
+           xlink:href="#text2656-0-2-0-7-0-6-0-7-7"
+           id="use3616"
+           transform="translate(13.677679,-50.382546)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#use3616"
+           id="use3618"
+           transform="translate(-26.307322)"
+           width="100%"
+           height="100%" />
+        <path
+           id="rect3620"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 14.083211,341.54454 v 10.55748 c 0,6.9392 5.289855,12.52585 11.860775,12.52585 6.57092,0 11.860774,-5.58665 11.860774,-12.52585 v -10.55748"
+           sodipodi:nodetypes="csssc" />
+        <g
+           id="g2731-9-2-8-4-3-7-6"
+           transform="translate(-111.74414,149.51195)"
+           style="fill:none;stroke:#800000">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#0000ff;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="rect2652-5-7-3-6-9-2-5-1"
+             width="13.516354"
+             height="6.9829626"
+             x="130.92995"
+             y="214.25481"
+             ry="3.2024612" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#0000ff;stroke:none;stroke-width:0.264583"
+             x="133.45471"
+             y="218.97581"
+             id="text2656-0-2-0-0-8-9-3-2"><tspan
+               sodipodi:role="line"
+               x="133.45471"
+               y="218.97581"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#0000ff;stroke:none;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-1-5-5-9">join</tspan></text>
+        </g>
+      </g>
+      <g
+         id="g4094"
+         transform="translate(82.600935,-264.06969)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 93.195966,364.1215 v -8.48943"
+           id="path171-7-0-7-5-0-80-9-0"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="86.017883"
+           y="354.74292"
+           id="text2656-0-2-0-7-0-6-0-7-1-3"><tspan
+             sodipodi:role="line"
+             x="86.017883"
+             y="354.74292"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41-2-6">State s</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 92.989626,369.78692 v 24.25716"
+           id="path3088-6-0"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="rect3620-5"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="M 81.408461,408.95656 V 382.9613 c 0,-6.9392 5.289859,-12.52585 11.860781,-12.52585 6.570918,0 11.860768,5.58665 11.860768,12.52585 v 4.13753"
+           sodipodi:nodetypes="csssc" />
+        <g
+           id="g2731-9-2-8-3-9-6-3-0-2-5"
+           transform="matrix(1,0,0,-1,-44.423264,585.50674)">
+          <path
+             id="rect2652-5-7-3-6-90-1-4-0-6-0-4"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,221.3167 -1.50275,-6.94378 h 19.06757 l -1.50275,6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.15472"
+             y="-216.52443"
+             id="text2656-0-2-0-0-83-0-8-7-8-2-7"
+             transform="scale(1,-1)"><tspan
+               sodipodi:role="line"
+               x="130.15472"
+               y="-216.52443"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-3-5-8-9-3-6">newtype</tspan></text>
+        </g>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 133.54234,364.24748 v -8.48943"
+           id="path171-7-0-7-5-0-80-9-0-6"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="126.36427"
+           y="354.8689"
+           id="text2656-0-2-0-7-0-6-0-7-1-3-9"><tspan
+             sodipodi:role="line"
+             x="126.36427"
+             y="354.8689"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41-2-6-3">State s</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 133.336,369.9129 v 24.25716"
+           id="path3088-6-0-7"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="rect3620-5-4"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 121.75483,387.09883 v -4.01155 c 0,-6.9392 5.28986,-12.52585 11.86078,-12.52585 6.57092,0 11.86077,5.58665 11.86077,12.52585 v 29.52109"
+           sodipodi:nodetypes="csssc" />
+        <g
+           id="g2731-9-2-8-3-9-6-3-0-2-5-5"
+           transform="matrix(1,0,0,-1,-4.0768964,585.63272)">
+          <path
+             id="rect2652-5-7-3-6-90-1-4-0-6-0-4-2"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,221.3167 -1.50275,-6.94378 h 19.06757 l -1.50275,6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.15472"
+             y="-216.52443"
+             id="text2656-0-2-0-0-83-0-8-7-8-2-7-5"
+             transform="scale(1,-1)"><tspan
+               sodipodi:role="line"
+               x="130.15472"
+               y="-216.52443"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-3-5-8-9-3-6-4">newtype</tspan></text>
+        </g>
+        <path
+           id="rect3840"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 105.13001,387.09883 v 9.99164 c 0,4.60513 3.70755,8.31215 8.31267,8.31215 4.60513,0 8.31215,-3.70702 8.31215,-8.31215 v -9.99164"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="path6024-6-0-0-4-9-7"
+           cx="113.44242"
+           cy="-405.61667"
+           r="1.8239057"
+           transform="scale(1,-1)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+           x="108.12749"
+           y="402.30896"
+           id="text2656-0-2-0-0-83-0-8-6-7-4"><tspan
+             sodipodi:role="line"
+             x="108.12749"
+             y="402.30896"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             id="tspan2658-6-2-7-3-8-3-5-9-3-4">close</tspan></text>
+        <path
+           id="rect3868"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 92.989626,394.04408 -0.01598,4.28589 c -0.04153,11.14071 9.327744,19.83364 20.468524,19.83364 11.14077,0 19.29774,-7.26031 19.69436,-18.39404 l 0.19947,-5.59951"
+           sodipodi:nodetypes="csssc" />
+        <g
+           id="g2731-9-2-8-4-3-7-6-3"
+           transform="translate(-24.245699,202.46727)"
+           style="fill:none;stroke:#800000">
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="rect2652-5-7-3-6-9-2-5-1-0"
+             width="13.516354"
+             height="6.9829626"
+             x="130.92995"
+             y="214.25481"
+             ry="3.2024612" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#d45500;stroke:none;stroke-width:0.264583"
+             x="133.45471"
+             y="218.97581"
+             id="text2656-0-2-0-0-8-9-3-2-7"><tspan
+               sodipodi:role="line"
+               x="133.45471"
+               y="218.97581"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#d45500;stroke:none;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-1-5-5-9-86">join</tspan></text>
+        </g>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 113.44232,449.96683 v 8.1036"
+           id="path171-7-0-7-5-0-80-8"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="102.87822"
+           y="461.95322"
+           id="text2656-0-2-0-7-0-6-0-7-4"><tspan
+             sodipodi:role="line"
+             x="102.87822"
+             y="461.95322"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-41-3">StateT s m</tspan></text>
+        <path
+           id="rect3416-1"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 101.76226,432.58502 c 0,6.39041 5.14429,11.5347 11.5347,11.5347 h 0.29042 c 6.39041,0 11.53521,-5.14429 11.53521,-11.5347"
+           sodipodi:nodetypes="cssc" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 113.47418,423.79881 v 20.18245"
+           id="path171-7-0-7-5-0-80-8-6"
+           sodipodi:nodetypes="cc" />
+        <g
+           id="g2731-9-2-8-3-92-4"
+           transform="translate(-24.250733,228.68876)">
+          <path
+             id="rect2652-5-7-3-6-90-3-9"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 129.66202,221.3167 -1.50275,-6.94378 h 19.06757 l -1.50275,6.94378 z" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+             x="130.68388"
+             y="219.09406"
+             id="text2656-0-2-0-0-83-1-2"><tspan
+               sodipodi:role="line"
+               x="130.68388"
+               y="219.09406"
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.264583"
+               id="tspan2658-6-2-7-3-8-8-0">newtype</tspan></text>
+        </g>
+        <path
+           id="rect4008"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 81.408463,408.95657 v 3.77291 c 0,5.63801 4.538638,10.17664 10.176639,10.17664"
+           sodipodi:nodetypes="csc" />
+        <path
+           id="path4024"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 135.26877,423.73614 c 5.638,0 10.17715,-4.53864 10.17715,-10.17664 v -3.77291"
+           sodipodi:nodetypes="csc" />
+        <path
+           id="path4013"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 135.26877,423.73614 c -5.638,0 -10.17664,4.53917 -10.17664,10.17714"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="path4021"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 101.76226,433.08326 c 0,-5.63797 -4.539157,-10.17714 -10.177158,-10.17714"
+           sodipodi:nodetypes="cc" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-3-2-6"
+           id="use4165"
+           transform="translate(29.495186,84.51401)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-70-3"
+           id="use4167"
+           transform="translate(33.332639,101.92095)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-7-3-9"
+           id="use4169"
+           transform="translate(24.919913,101.87014)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#use4165"
+           id="use4198"
+           transform="translate(40.21667)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#use4167"
+           id="use4200"
+           transform="translate(40.21667)"
+           width="100%"
+           height="100%" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#use4169"
+           id="use4202"
+           transform="translate(40.21667)"
+           width="100%"
+           height="100%" />
+      </g>
+      <g
+         id="g5028-0"
+         transform="translate(101.06483,-161.203)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-join.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g1083-1-1-1-7-4"
+           transform="matrix(1,0,0,1.1195131,-69.915622,151.89673)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path252-2-0-3-0-44"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path256-2-94-8-9-4"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:5.64444px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';stroke-width:0.264583"
+           x="33.068977"
+           y="301.94778"
+           id="text5021-7"><tspan
+             sodipodi:role="line"
+             id="tspan5019-6"
+             x="33.068977"
+             y="301.94778"
+             style="stroke-width:0.264583">def</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g1737"
+       transform="translate(-35.481849,-246.51024)"
+       style="opacity:0.99">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+         x="46.186249"
+         y="468.48059"
+         id="text2656-0-2-0-7-0-6-0-7-1-6-2"><tspan
+           sodipodi:role="line"
+           x="46.186249"
+           y="468.48059"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           id="tspan2658-6-2-7-7-3-1-0-41-2-64-9">StateT s m</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+         x="44.04475"
+         y="437.3577"
+         id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-70-9-1"><tspan
+           sodipodi:role="line"
+           x="44.04475"
+           y="437.3577"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-9-5-2">F s</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+         x="63.034275"
+         y="437.3577"
+         id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-7-3-0-7"><tspan
+           sodipodi:role="line"
+           x="63.034275"
+           y="437.3577"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-5-6-48-0">G s</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+         x="55.599018"
+         y="437.41272"
+         id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-3-2-7-6"><tspan
+           sodipodi:role="line"
+           x="55.599018"
+           y="437.41272"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+           id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-56-6-2-0">m</tspan></text>
+      <path
+         id="rect1568"
+         style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+         d="m 47.578274,438.20948 v 3.68144 c 0,5.62473 4.117364,10.15289 9.231479,10.15289 5.114115,0 9.231477,-4.52816 9.231477,-10.15289 v -3.68144"
+         sodipodi:nodetypes="csssc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 56.809752,438.20203 v 25.75764"
+         id="path1575"
+         sodipodi:nodetypes="cc" />
+      <path
+         id="path4286-6-4-1"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 53.160542,455.24327 -1.82875,-3.92706 h 10.95592 l -1.85691,3.92706 z"
+         sodipodi:nodetypes="ccccc" />
+    </g>
+    <g
+       id="g1818"
+       transform="translate(-48.341063,-252.67781)"
+       style="opacity:0.99">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+         x="93.891418"
+         y="443.90903"
+         id="text2656-0-2-0-7-0-6-0-7-1-6-2-9"><tspan
+           sodipodi:role="line"
+           x="93.891418"
+           y="443.90903"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           id="tspan2658-6-2-7-7-3-1-0-41-2-64-9-4">StateT s m</tspan></text>
+      <g
+         id="g1804">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="91.749916"
+           y="474.2644"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-70-9-1-9"><tspan
+             sodipodi:role="line"
+             x="91.749916"
+             y="474.2644"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-9-5-2-0">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="110.73945"
+           y="474.2644"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-7-3-0-7-9"><tspan
+             sodipodi:role="line"
+             x="110.73945"
+             y="474.2644"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-5-6-48-0-1">G s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+           x="103.30418"
+           y="474.31943"
+           id="text2656-0-2-0-7-0-6-0-0-6-3-6-3-3-3-2-7-6-7"><tspan
+             sodipodi:role="line"
+             x="103.30418"
+             y="474.31943"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.4;stroke-miterlimit:4;stroke-dasharray:none"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-1-3-3-6-56-6-2-0-7">m</tspan></text>
+      </g>
+      <path
+         id="rect1568-1"
+         style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+         d="m 95.283444,470.32911 v -3.68144 c 0,-5.62473 4.117364,-10.15289 9.231486,-10.15289 5.11411,0 9.23147,4.52816 9.23147,10.15289 v 3.68144"
+         sodipodi:nodetypes="csssc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 104.51492,470.33656 V 444.57892"
+         id="path1575-1"
+         sodipodi:nodetypes="cc" />
+      <path
+         id="path4286-6-4-1-5"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 100.86571,453.29532 -1.828746,3.92706 h 10.955916 l -1.85691,-3.92706 z"
+         sodipodi:nodetypes="ccccc" />
+    </g>
+    <g
+       id="g16174"
+       transform="translate(-140.89698,93.540161)">
+      <g
+         id="g5028-8"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"
+         transform="translate(233.59905,-204.60265)"
+         style="opacity:0.99">
+        <g
+           id="g1083-1-1-1-7-48"
+           transform="matrix(1,0,0,1.1195131,-69.915622,151.89673)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path252-2-0-3-0-1"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path256-2-94-8-9-0"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:5.64444px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';stroke-width:0.264583"
+           x="33.068977"
+           y="301.94778"
+           id="text5021-3"><tspan
+             sodipodi:role="line"
+             id="tspan5019-0"
+             x="33.068977"
+             y="301.94778"
+             style="stroke-width:0.264583">def</tspan></text>
+      </g>
+      <g
+         id="g2045"
+         transform="translate(151.05611,-328.87258)"
+         style="opacity:0.99">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 99.652329,422.88924 v 9.8156"
+           id="path171-7-0-7-5-9-9-6-77"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="89.028824"
+           y="436.64877"
+           id="text2656-0-2-0-7-0-6-0-0-6-6"><tspan
+             sodipodi:role="line"
+             x="89.028824"
+             y="436.64877"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-3">StateT s m</tspan></text>
+        <circle
+           style="fill:#ffffff;stroke:#0000ff;stroke-width:0.4;stroke-linejoin:round"
+           id="path1950"
+           cx="99.652328"
+           cy="419.56421"
+           r="3.5" />
+      </g>
+      <g
+         id="g2039"
+         transform="translate(152.62529,-328.03527)"
+         style="opacity:0.99">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 139.20006,420.36015 V 439.6014"
+           id="path1575-4"
+           sodipodi:nodetypes="cc" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           id="rect1982"
+           width="18.485382"
+           height="24.630358"
+           x="129.95737"
+           y="406.72906"
+           ry="9.242691" />
+        <path
+           id="path4286-6-4-1-4"
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 135.55086,434.65516 -1.82876,-3.92706 h 10.95592 l -1.85691,3.92706 z"
+           sodipodi:nodetypes="ccccc" />
+        <circle
+           style="fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round"
+           id="path1950-4"
+           cx="139.20006"
+           cy="418.66803"
+           r="3.5" />
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4859-7"
+           cx="139.20006"
+           cy="406.69724"
+           r="1.8239057" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="128.77113"
+           y="443.16434"
+           id="text2656-0-2-0-7-0-6-0-0-6-6-6"><tspan
+             sodipodi:role="line"
+             x="128.77113"
+             y="443.16434"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-3-3">StateT s m</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g16214"
+       transform="translate(-71.319204,9.0641961)">
+      <g
+         id="g5028-8-1"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"
+         transform="translate(252.66414,-120.47119)"
+         style="opacity:0.99">
+        <g
+           id="g1083-1-1-1-7-48-7"
+           transform="matrix(1,0,0,1.1195131,-69.915622,151.89673)"
+           inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-pure.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96">
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,134.91277 h 9.19489"
+             id="path252-2-0-3-0-1-5"
+             sodipodi:nodetypes="cc" />
+          <path
+             style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             d="m 103.05462,136.68926 h 9.25229"
+             id="path256-2-94-8-9-0-9"
+             sodipodi:nodetypes="cc" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:5.64444px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';stroke-width:0.264583"
+           x="33.068977"
+           y="301.94778"
+           id="text5021-3-6"><tspan
+             sodipodi:role="line"
+             id="tspan5019-0-2"
+             x="33.068977"
+             y="301.94778"
+             style="stroke-width:0.264583">def</tspan></text>
+      </g>
+      <g
+         id="g2152"
+         transform="translate(243.13944,-351.68609)"
+         style="opacity:0.99">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 26.634102,535.4966 v 9.8156"
+           id="path171-7-0-7-5-9-9-6-77-7"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="16.010597"
+           y="549.2561"
+           id="text2656-0-2-0-7-0-6-0-0-6-6-8"><tspan
+             sodipodi:role="line"
+             x="16.010597"
+             y="549.2561"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-3-5">StateT s m</tspan></text>
+        <path
+           id="rect1982-8-8"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 17.395907,515.52924 c -0.0013,0.0639 -0.0047,0.12708 -0.0047,0.19122 v 6.14484 c 10e-7,5.12045 4.122396,9.24285 9.242848,9.24285 5.12045,0 9.242846,-4.1224 9.242846,-9.24285 v -6.14484 c 0,-0.0641 -0.0034,-0.12737 -0.0047,-0.19122"
+           sodipodi:nodetypes="csssssc" />
+        <circle
+           style="fill:#ffffff;stroke:#0000ff;stroke-width:0.4;stroke-linejoin:round"
+           id="path1950-7"
+           cx="26.634102"
+           cy="532.17157"
+           r="3.5" />
+      </g>
+      <g
+         id="g2346"
+         transform="translate(216.84822,-348.9383)"
+         style="opacity:0.99">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 120.97719,534.30292 v 35.30692"
+           id="path1575-4-1"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="rect1982-8"
+           style="fill:none;stroke:#000000;stroke-width:1.51181;stroke-linejoin:round"
+           d="m 422.30273,2073.3613 v 13.4102 c 0,19.3529 15.58072,34.9336 34.9336,34.9336 19.35288,0 34.93359,-15.5807 34.93359,-34.9336 v -13.4102"
+           transform="scale(0.26458333)"
+           sodipodi:nodetypes="csssc" />
+        <path
+           id="path4286-6-4-1-4-5"
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 117.32799,564.6636 -1.82876,-3.92706 h 10.95592 l -1.85691,3.92706 z"
+           sodipodi:nodetypes="ccccc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="110.35368"
+           y="573.17279"
+           id="text2656-0-2-0-7-0-6-0-0-6-6-6-5"><tspan
+             sodipodi:role="line"
+             x="110.35368"
+             y="573.17279"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2658-6-2-7-7-3-1-0-4-2-3-3-3">StateT s m</tspan></text>
+        <g
+           id="g2205"
+           transform="translate(1.7606899,-20.514067)">
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="M 103.88849,533.9793 V 510.61012"
+             id="path2162"
+             sodipodi:nodetypes="cc" />
+          <path
+             id="rect2164"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+             d="m 113.13108,533.9602 v -5.83584 c 0,-5.12045 -4.1224,-9.24285 -9.24285,-9.24285 -5.12045,0 -9.242328,4.1224 -9.242328,9.24285 v 18.082"
+             sodipodi:nodetypes="csssc" />
+          <path
+             id="path2166"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 100.23929,515.55636 -1.828759,3.92706 h 10.955919 l -1.85691,-3.92706 z"
+             sodipodi:nodetypes="ccccc" />
+        </g>
+        <g
+           id="g2213"
+           transform="translate(32.416709,-20.533167)">
+          <path
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="M 103.88849,533.9793 V 510.61012"
+             id="path2207"
+             sodipodi:nodetypes="cc" />
+          <path
+             id="path2209"
+             style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+             d="m 113.13108,546.03796 v -17.9136 c 0,-5.12045 -4.1224,-9.24285 -9.24285,-9.24285 -5.12045,0 -9.242328,4.1224 -9.242328,9.24285 v 5.85494"
+             sodipodi:nodetypes="csssc" />
+          <path
+             id="path2211"
+             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 100.23929,515.55636 -1.828759,3.92706 h 10.955919 l -1.85691,-3.92706 z"
+             sodipodi:nodetypes="ccccc" />
+        </g>
+        <path
+           id="rect2215"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 114.89177,513.26936 v 1.55339 c 0,3.37132 2.71409,6.08542 6.08541,6.08542 3.37134,0 6.08542,-2.7141 6.08542,-6.08542 v -1.55339"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4859-7-7-8"
+           cx="120.97719"
+           cy="520.84094"
+           r="1.8239057" />
+        <path
+           id="rect2237"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 105.64892,513.25335 v 3.14605 c 0,8.4917 6.83654,15.32774 15.32826,15.32774 8.49172,0 15.32827,-6.83604 15.32827,-15.32774 v -3.14605"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round"
+           id="path1950-4-9"
+           cx="120.97719"
+           cy="531.39514"
+           r="3.5" />
+        <path
+           id="rect2290"
+           style="opacity:1;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 96.406592,525.63614 v 3.97238 c 0,4.24582 3.418303,7.6636 7.664128,7.6636"
+           sodipodi:nodetypes="csc" />
+        <path
+           id="path2305"
+           style="opacity:1;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 137.88417,537.23392 c -4.24583,0 -7.66413,3.41778 -7.66413,7.66363 v 3.97235"
+           sodipodi:nodetypes="csc" />
+        <path
+           id="path2297"
+           style="opacity:1;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 137.88417,537.23392 c 4.24583,0 7.66362,-3.41778 7.66362,-7.6636 v -3.97238"
+           sodipodi:nodetypes="csc" />
+        <path
+           id="path2302"
+           style="opacity:1;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round"
+           d="m 111.73434,548.9081 v -3.97235 c 0,-4.24585 -3.41779,-7.66363 -7.66362,-7.66363"
+           sodipodi:nodetypes="csc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="94.602531"
+           y="489.27521"
+           id="text2315"><tspan
+             sodipodi:role="line"
+             x="94.602531"
+             y="489.27521"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2313">StateT s m</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="125.71855"
+           y="489.54248"
+           id="text2319"><tspan
+             sodipodi:role="line"
+             x="125.71855"
+             y="489.54248"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan2317">StateT s m</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g3358"
+       transform="translate(-26.414297,176.83036)"
+       inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/monad-law-terse-color.png"
+       inkscape:export-xdpi="95.900002"
+       inkscape:export-ydpi="95.900002">
+      <g
+         id="g3266"
+         transform="translate(-3.6666667e-7,2.4509265)">
+        <path
+           id="rect2909-1"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 34.049568,63.39894 v 15.764078 c 0,5.124518 4.125563,9.250081 9.250082,9.250081 5.124518,0 9.249566,-4.125563 9.249566,-9.250081 v -3.389974"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path1950-4-1-1"
+           cx="43.299393"
+           cy="90.160393"
+           r="3.5" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 43.299391,94.001906 V 104.06035"
+           id="path2916-2"
+           sodipodi:nodetypes="cc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path1950-4-1-1-0"
+           cx="52.523926"
+           cy="74.443443"
+           r="3.5" />
+      </g>
+      <g
+         id="g2986-6"
+         transform="translate(-35.918691,50.852997)">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,34.43933 h 9.19489"
+           id="path252-2-9"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,36.21582 h 9.25229"
+           id="path256-2-3"
+           sodipodi:nodetypes="cc" />
+      </g>
+      <g
+         id="g3033"
+         transform="translate(3.2396447,50.852997)">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,34.43933 h 9.19489"
+           id="path3029"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,36.21582 h 9.25229"
+           id="path3031"
+           sodipodi:nodetypes="cc" />
+      </g>
+      <g
+         id="g3272"
+         transform="translate(-3.6666667e-7,3.017569)">
+        <path
+           id="path3021"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 93.065582,62.265655 v 16.897363 c 0,5.124518 -4.125563,9.250081 -9.250082,9.250081 -5.124518,0 -9.249566,-4.125563 -9.249566,-9.250081 v -3.389974"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="circle3023"
+           cx="-83.815765"
+           cy="90.160393"
+           r="3.5"
+           transform="scale(-1,1)" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 83.815759,94.001906 V 104.06035"
+           id="path3025"
+           sodipodi:nodetypes="cc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="circle3027"
+           cx="-74.59124"
+           cy="74.443443"
+           r="3.5"
+           transform="scale(-1,1)" />
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 110.2741,65.301727 V 107.05942"
+         id="path3055"
+         sodipodi:nodetypes="cc" />
+    </g>
+    <g
+       id="g3303"
+       inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/monad-law-terse-color.png"
+       inkscape:export-xdpi="95.900002"
+       inkscape:export-ydpi="95.900002"
+       transform="translate(-31.128533,174.43614)">
+      <g
+         id="g3279">
+        <path
+           id="rect2909-0"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 138.86769,70.3912 v 15.188441 c 0,5.124519 4.12556,9.250082 9.25008,9.250082 5.12452,0 9.24957,-4.125563 9.24957,-9.250082 v -3.389973"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path1950-4-1-14"
+           cx="148.11751"
+           cy="96.577019"
+           r="3.5" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 148.11751,100.41853 v 10.05845"
+           id="path2916-3"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="rect3149"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 151.24606,70.355912 v 3.603913 c 0,3.371091 2.71381,6.084901 6.0849,6.084901 3.37109,0 6.0849,-2.71381 6.0849,-6.084901 v -3.603913"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path1950-4-1-14-5"
+           cx="157.33562"
+           cy="81.762032"
+           r="3.5" />
+      </g>
+      <g
+         id="g3286">
+        <path
+           id="path3201"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 200.45753,70.3912 v 15.188441 c 0,5.124519 -4.12556,9.250082 -9.25008,9.250082 -5.12452,0 -9.24957,-4.125563 -9.24957,-9.250082 v -3.389973"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="circle3203"
+           cx="-191.20772"
+           cy="96.577019"
+           r="3.5"
+           transform="scale(-1,1)" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 191.20771,100.41853 v 10.05845"
+           id="path3205"
+           sodipodi:nodetypes="cc" />
+        <path
+           id="path3207"
+           style="opacity:0.99;fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 188.07916,70.355912 v 3.603913 c 0,3.371091 -2.71381,6.084901 -6.0849,6.084901 -3.37109,0 -6.0849,-2.71381 -6.0849,-6.084901 v -3.603913"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="opacity:0.99;fill:#ffffff;stroke:#d45500;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="circle3209"
+           cx="-181.98961"
+           cy="81.762032"
+           r="3.5"
+           transform="scale(-1,1)" />
+      </g>
+      <g
+         id="g3239"
+         transform="translate(72.031315,55.088871)">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,34.43933 h 9.19489"
+           id="path3235"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,36.21582 h 9.25229"
+           id="path3237"
+           sodipodi:nodetypes="cc" />
+      </g>
+    </g>
+    <g
+       id="g16258"
+       transform="translate(-0.57421188,-39.539186)">
+      <g
+         id="g3703"
+         transform="translate(-95.484112,172.45062)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4859-6"
+           cx="288.79895"
+           cy="124.35465"
+           r="1.8239057" />
+        <path
+           id="path4865-2"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 294.18698,130.88441 v -1.21806 c 0,-2.98495 -2.40282,-5.38778 -5.38777,-5.38778 -2.98497,0 -5.38832,2.40283 -5.38832,5.38778 v 17.10803"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4873-4"
+           cx="299.57504"
+           cy="-137.41478"
+           r="1.8239057"
+           transform="scale(1,-1)" />
+        <path
+           id="path4875-5"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 304.96307,114.15444 v 17.94851 c 0,2.98495 -2.40282,5.38779 -5.38777,5.38779 -2.98497,0 -5.38832,-2.40284 -5.38832,-5.38779 v -1.21854"
+           sodipodi:nodetypes="csssc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="275.66898"
+           y="142.43286"
+           id="text4272-6"><tspan
+             sodipodi:role="line"
+             x="275.66898"
+             y="142.43286"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4270-8">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="287.2821"
+           y="132.02917"
+           id="text4276-0"><tspan
+             sodipodi:role="line"
+             x="287.2821"
+             y="132.02917"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4274-4">G s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="297.61447"
+           y="119.31808"
+           id="text3510"><tspan
+             sodipodi:role="line"
+             x="297.61447"
+             y="119.31808"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508">F s</tspan></text>
+      </g>
+      <g
+         id="g3033-3"
+         transform="translate(119.26288,267.58746)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,34.43933 h 9.19489"
+           id="path3029-5"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,36.21582 h 9.25229"
+           id="path3031-2"
+           sodipodi:nodetypes="cc" />
+      </g>
+      <g
+         id="g3659"
+         transform="translate(-94.954945,172.38101)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="314.28101"
+           y="119.11607"
+           id="text3510-7"><tspan
+             sodipodi:role="line"
+             x="314.28101"
+             y="119.11607"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508-4">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="314.28101"
+           y="144.50667"
+           id="text3510-75"><tspan
+             sodipodi:role="line"
+             x="314.28101"
+             y="144.50667"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508-6">F s</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 321.78144,114.18675 v 32.69454"
+           id="path3055-4"
+           sodipodi:nodetypes="cc" />
+      </g>
+    </g>
+    <g
+       id="g16236"
+       transform="translate(-0.57421188,-39.539186)">
+      <g
+         id="g3691"
+         transform="translate(-95.484112,169.92234)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4859-6-5"
+           cx="354.4624"
+           cy="-139.10245"
+           r="1.8239057"
+           transform="scale(1,-1)" />
+        <path
+           id="path4865-2-7"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 359.85043,132.57269 v 1.21806 c 0,2.98495 -2.40282,5.38778 -5.38777,5.38778 -2.98497,0 -5.38832,-2.40283 -5.38832,-5.38778 v -17.10803"
+           sodipodi:nodetypes="csssc" />
+        <circle
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="circle4873-4-6"
+           cx="365.23849"
+           cy="126.04231"
+           r="1.8239057" />
+        <path
+           id="path4875-5-9"
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           d="m 370.62652,149.30266 v -17.94851 c 0,-2.98495 -2.40282,-5.38779 -5.38777,-5.38779 -2.98497,0 -5.38832,2.40284 -5.38832,5.38779 v 1.21854"
+           sodipodi:nodetypes="csssc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="341.29636"
+           y="122.12003"
+           id="text4276-0-3"><tspan
+             sodipodi:role="line"
+             x="341.29636"
+             y="122.12003"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan4274-4-2">G s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="352.65918"
+           y="133.15729"
+           id="text3510-3"><tspan
+             sodipodi:role="line"
+             x="352.65918"
+             y="133.15729"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508-8">F s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="362.99216"
+           y="144.87419"
+           id="text3648"><tspan
+             sodipodi:role="line"
+             x="362.99216"
+             y="144.87419"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3646">G s</tspan></text>
+      </g>
+      <g
+         id="g3033-3-0"
+         transform="translate(186.00717,267.58746)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,34.43933 h 9.19489"
+           id="path3029-5-5"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:none;stroke:#1b008c;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 93.78338,36.21582 h 9.25229"
+           id="path3031-2-2"
+           sodipodi:nodetypes="cc" />
+      </g>
+      <g
+         id="g3659-5"
+         transform="translate(-28.210647,172.38101)"
+         inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/openclose-terse.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="314.28101"
+           y="119.11607"
+           id="text3510-7-1"><tspan
+             sodipodi:role="line"
+             x="314.28101"
+             y="119.11607"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508-4-5">G s</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+           x="314.28101"
+           y="144.50667"
+           id="text3510-75-1"><tspan
+             sodipodi:role="line"
+             x="314.28101"
+             y="144.50667"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';stroke-width:0.264583"
+             id="tspan3508-6-1">G s</tspan></text>
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 321.78144,114.18675 v 32.69454"
+           id="path3055-4-5"
+           sodipodi:nodetypes="cc" />
+      </g>
+    </g>
+    <g
+       id="g4089"
+       transform="translate(148.1667)" />
+    <g
+       id="g2240-9"
+       transform="translate(-11.143066,-6.2668521)"
+       inkscape:export-filename="/home/koji/viercc.github.io/site-too-lazy-to-evaluate/images/string/state-t-newtype.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="fill:#f2e4cd;fill-opacity:1;stroke:none;stroke-width:0.352012;stroke-linejoin:round;stroke-opacity:1"
+         id="rect1556-5-2-2-6-4-2-4"
+         width="64.036819"
+         height="13.885895"
+         x="21.689417"
+         y="169.51822"
+         ry="1.3093108" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.69831px;line-height:1.25;font-family:'Noto Serif CJK JP';-inkscape-font-specification:'Noto Serif CJK JP';fill:#000000;stroke-width:0.220234"
+         x="23.252222"
+         y="174.89513"
+         id="text1554-4-1-8-3-90-9-1"><tspan
+           sodipodi:role="line"
+           x="23.252222"
+           y="174.89513"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.220234"
+           id="tspan4730-7-4">newtype StateT s m a =</tspan><tspan
+           sodipodi:role="line"
+           x="23.252222"
+           y="180.76802"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans Mono CJK JP';-inkscape-font-specification:'Noto Sans Mono CJK JP';fill:#000000;stroke-width:0.220234"
+           id="tspan5960-5">  StateT (G s (m (F s a)))</tspan></text>
+    </g>
+  </g>
+</svg>
