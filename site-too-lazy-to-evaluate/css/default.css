@@ -126,6 +126,10 @@ main th, main td {
 main table th {
     padding: 0 1em;
 }
+main img {
+    max-width: 100%;
+    height: auto;
+}
 
 footer {
     color: #999999;
