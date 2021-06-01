@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - ストリング図でMonad再入門(3)</title>
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        
+        
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>ストリング図でMonad再入門(3)</h1>
+            <article>
+    <section class="header">
+        
+            Posted on 2021-06-01
+        
+        
+    </section>
+    <section>
+        <p><a href="2021-05-24-string-2.html">前回</a>、ストリング図を使って<code>StateT</code>モナド変換子のモナド則を証明しました。 今度は<code>ReaderT</code>,<code>WriterT</code>,<code>ExceptT</code>の3つについてやっていきます。</p>
+<ul>
+<li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Reader.html#g:2">ReaderT</a></li>
+<li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Writer-Lazy.html#g:2">WriterT</a></li>
+<li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Except.html#g:2">ExceptT</a></li>
+</ul>
+<h2 id="共通の構造">共通の構造</h2>
+<p>前回の記事までは、証明の方針は私が天下り的に与えていましたが、 今回は「発見的な」やり方で説明してみようと思います。</p>
+<h3 id="writertの場合">WriterTの場合</h3>
+<p>まずは、<code>WriterT</code>の実装を眺めてみます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- transformers パッケージのものとは（同型ですが）少し違います</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">WriterT</span> w m a <span class="ot">=</span> <span class="dt">WriterT</span> {<span class="ot"> runWriterT ::</span> m (w, a) }</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">WriterT</span> w m) <span class="kw">where</span> <span class="co">{- 省略 -}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Monoid</span> w, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">WriterT</span> w m) <span class="kw">where</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> <span class="ot">=</span> pureWriter <span class="op">&gt;&gt;&gt;</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> <span class="dt">WriterT</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ot">      pureWriter ::</span> <span class="dt">Monoid</span> w <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> (w, a)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      pureWriter a <span class="ot">=</span> (<span class="fu">mempty</span>, a) <span class="co">-- Writerモナド (w,_) のpure</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  join <span class="ot">=</span> <span class="fu">fmap</span> runWriterT <span class="op">&gt;&gt;&gt;</span> runWriterT <span class="op">&gt;&gt;&gt;</span> joinT <span class="op">&gt;&gt;&gt;</span> <span class="dt">WriterT</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ot">      joinT ::</span> (<span class="dt">Monad</span> m, <span class="dt">Monoid</span> w) <span class="ot">=&gt;</span> m (w, m (w, a)) <span class="ot">-&gt;</span> m (w, a)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      joinT mwmwa <span class="ot">=</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span> (w, mwa) <span class="ot">&lt;-</span> mwmwa</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>           (w', a) <span class="ot">&lt;-</span> mwa</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">return</span> (w <span class="op">&lt;&gt;</span> w', a)</span></code></pre></div>
+<p>ここで、<code>pure</code>は自然変換<code>pureWriter</code>, <code>pure</code>, <code>WriterT</code>の合成で書くことができていて、 ストリング図に書きやすそうです。 一方、<code>join</code>の実装に使った<code>joinT</code>は、もっと単純な自然変換の合成で書けてはいないようです。 <code>joinT</code>をうまいこと自然変換たちに分解してみましょう。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Writerモナド(w,_)のjoinが使えそうです</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">joinWriter ::</span> <span class="dt">Monoid</span> w <span class="ot">=&gt;</span> (w, (w, a)) <span class="ot">-&gt;</span> (w, a)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>joinWriter (w, (w', a)) <span class="ot">=</span> (w <span class="op">&lt;&gt;</span> w', a)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">joinT ::</span> (<span class="dt">Monad</span> m, <span class="dt">Monoid</span> w) <span class="ot">=&gt;</span> m (w, m (w, a)) <span class="ot">-&gt;</span> m (w, a)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>joinT <span class="ot">=</span> \mwmwa <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  (w, mwa) <span class="ot">&lt;-</span> mwmwa</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  (w', a) <span class="ot">&lt;-</span> mwa</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (w <span class="op">&lt;&gt;</span> w', a)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \mwmwa <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  (w, mwa) <span class="ot">&lt;-</span> mwmwa</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmap</span> (\(w',a) <span class="ot">-&gt;</span> (w <span class="op">&lt;&gt;</span> w', a)) m</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \mwmwa <span class="ot">-&gt;</span> mwmwa <span class="op">&gt;&gt;=</span> \(w,mwa) <span class="ot">-&gt;</span> mwa <span class="op">&gt;&gt;=</span> \(w',a) <span class="ot">-&gt;</span> <span class="fu">return</span> (w <span class="op">&lt;&gt;</span> w', a)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \mwmwa <span class="ot">-&gt;</span> mwmwa <span class="op">&gt;&gt;=</span> \(w,mwa) <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\(w',a) <span class="ot">-&gt;</span> (w<span class="op">&lt;&gt;</span>w',a)) mwa</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> (\(w,mwa) <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\(w',a) <span class="ot">-&gt;</span> (w<span class="op">&lt;&gt;</span>w', a)) mwa) <span class="op">&gt;&gt;&gt;</span> join</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">--      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- ここで、この関数に注目してみます。</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- この関数の型は (w, m (w, a)) -&gt; m (w, a) です。</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- また、関数の中身がjoinWriterに似ていますが、</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">-- そのままではjoinWriterで置き換えられる部分がありません。</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- なのでまず (w, m (w, a)) の外側のWriterモナドとmを入れ替え、</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- fmap joinWriter :: m (w, (w, a)) -&gt; m (w, a) と合成するとよさそうです。</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> (swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> joinWriter) <span class="op">&gt;&gt;&gt;</span> join</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> joinWriter) <span class="op">&gt;&gt;&gt;</span> join</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span><span class="ot"> swapWM ::</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> (w, m b) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>          swapWM (w, mb) <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) mb</span></code></pre></div>
+<p>めでたく、<code>WriterT</code>の<code>join</code>も単純な自然変換の合成で書けました。まとめると、</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Writerモナド (w, )のpureとjoin</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">pureWriter ::</span> <span class="dt">Monoid</span> w <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> (w, a)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pureWriter a <span class="ot">=</span> (<span class="fu">mempty</span>, a)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">joinWriter ::</span> <span class="dt">Monoid</span> w <span class="ot">=&gt;</span> (w, (w, a)) <span class="ot">-&gt;</span> (w, a)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>joinWriter (w, (w', a)) <span class="ot">=</span> (w <span class="op">&lt;&gt;</span> w', a)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Writerとmの入れ替え</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ot">swapWM ::</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> (w, m b) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>swapWM (w, mb) <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) mb</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Monoid</span> w, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">WriterT</span> w m) <span class="kw">where</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> <span class="ot">=</span> pureWriter <span class="op">&gt;&gt;&gt;</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> <span class="dt">WriterT</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  join <span class="ot">=</span> <span class="fu">fmap</span> runWriterT          <span class="co">-- WriterT w m (WriterT w m a) -&gt; WriterT w m (m (w, a))</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> runWriterT               <span class="co">-- WriterT w m (m (w, a)) -&gt; m (w, m (w, a))</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> swapWM              <span class="co">-- m (w, m (w, a)) -&gt; m (m (w, (w, a)))</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> joinWriter)   <span class="co">-- m (m (w, (w, a))) -&gt; m (m (w, a))</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> join                     <span class="co">-- m (m (w, a)) -&gt; m (w, a)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> <span class="dt">WriterT</span>                  <span class="co">-- m (w, a) -&gt; WriterT w m a</span></span></code></pre></div>
+<p>これをストリング図に描いてみます。</p>
+<figure>
+<img src="../images/string/writer-t.png" alt="WriterTの定義" /><figcaption aria-hidden="true">WriterTの定義</figcaption>
+</figure>
+<figure>
+<img src="../images/string/writer-t-pure.png" alt="WriterTのpure" /><figcaption aria-hidden="true">WriterTのpure</figcaption>
+</figure>
+<figure>
+<img src="../images/string/writer-t-join.png" alt="WriterTのjoin" /><figcaption aria-hidden="true">WriterTのjoin</figcaption>
+</figure>
+<p>青丸を<code>WriterT w m</code>のモナド演算（<code>pure</code>または<code>join</code>）に当てていて、 同様に緑丸を<code>Writer</code>モナド、赤丸をモナド<code>m</code>に対応させています。 また、二つの線が交わるところにある点が<code>swapWM</code>です。</p>
+<figure>
+<img src="../images/string/writer-t-assumption.png" alt="WriterTの構成要素" /><figcaption aria-hidden="true">WriterTの構成要素</figcaption>
+</figure>
+<p>さて、私達は<code>WriterT</code>を構成する2つのモナド<code>(w,_)</code>と<code>m</code>のモナド演算については よくわかっていますが、自然変換<code>swapWM</code>についてはよくわかっていません。 そのため、ひとまず<code>WriterT</code>のモナド則の証明は後回しにしておきます。</p>
+<h3 id="readertの場合">ReaderTの場合</h3>
+<p><code>ReaderT</code>モナド変換子をストリング図に描く方法を考えます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ReaderT</span> r m a <span class="ot">=</span> <span class="dt">ReaderT</span> {<span class="ot"> runReaderT ::</span> r <span class="ot">-&gt;</span> m a }</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">ReaderT</span> r m) <span class="kw">where</span> <span class="co">{- 省略 -}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- WriterTはWriterモナドを部品として作ることができました。</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- ReaderTもそうなって欲しいですね。</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ot">pureReader ::</span> a <span class="ot">-&gt;</span> (r <span class="ot">-&gt;</span> a)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>pureReader <span class="ot">=</span> <span class="fu">const</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ot">joinReader ::</span> (r <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> (r <span class="ot">-&gt;</span> a)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>joinReader f r <span class="ot">=</span> f r r</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">ReaderT</span> r m) <span class="kw">where</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> <span class="ot">=</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> pureReader <span class="op">&gt;&gt;&gt;</span> <span class="dt">ReaderT</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  join <span class="ot">=</span> <span class="fu">fmap</span> runReaderT <span class="op">&gt;&gt;&gt;</span> runReaderT <span class="op">&gt;&gt;&gt;</span> joinT <span class="op">&gt;&gt;&gt;</span> <span class="dt">ReaderT</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ot">      joinT ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (r <span class="ot">-&gt;</span> m (r <span class="ot">-&gt;</span> m a)) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m a</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      joinT rmrma <span class="ot">=</span> \r <span class="ot">-&gt;</span> rmrma r <span class="op">&gt;&gt;=</span> \rma <span class="ot">-&gt;</span> rma r</span></code></pre></div>
+<p>ふたたび、<code>joinT</code>が単純な自然変換の合成になっていませんが、 <code>WriterT</code>のときと同じ作戦でいってみましょう。 <code>WriterT w m</code>が<code>Writer w = (w, )</code>と<code>m</code>の合成<code>Functor</code>だったように、 <code>ReaderT r m</code>も<code>m</code>と<code>Reader r = (r -&gt; _)</code>の合成<code>Functor</code>です。 そのため、<code>joinT</code>の引数は<code>Functor</code>の4段重ね<code>r -&gt; m (r -&gt; (m _))</code>になっています。 4段重ねの中央の2段、<code>m (r -&gt; _)</code>を入れ替えられれば、<code>Reader</code>と<code>m</code>の<code>join</code>を使えます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- mとReaderの入れ替え</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">swapMR ::</span> (<span class="dt">Functor</span> m) <span class="ot">=&gt;</span> m (r <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m b</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>swapMR mrb r <span class="ot">=</span> <span class="fu">fmap</span> (<span class="op">$</span> r) mrb</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- swapMRで中央を入れ替える方針で型を合わせるパズルをすれば、</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- joinTと同じ型の自然変換が見つかります。</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ot">joinT' ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (r <span class="ot">-&gt;</span> m (r <span class="ot">-&gt;</span> m a)) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m a</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>joinT' <span class="ot">=</span> <span class="fu">fmap</span> swapMR <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> join) <span class="op">&gt;&gt;&gt;</span> joinReader</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- joinT' = joinT を確認します。</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>joinT' rmrma</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinReader <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> join) <span class="op">$</span> <span class="fu">fmap</span> swapMR rmrma</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinReader <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> join) <span class="op">$</span> \r <span class="ot">-&gt;</span> swapMR (rmrma r)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinReader <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> join) <span class="op">$</span> \r r' <span class="ot">-&gt;</span> <span class="fu">fmap</span> (<span class="op">$</span> r') (rmrma r)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinReader <span class="op">$</span> \r r' <span class="ot">-&gt;</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="op">$</span> r') (rmrma r)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \r <span class="ot">-&gt;</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="op">$</span> r) (rmrma r)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \r <span class="ot">-&gt;</span> rmrma r <span class="op">&gt;&gt;=</span> (<span class="op">$</span> r)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> \r <span class="ot">-&gt;</span> rmrma r <span class="op">&gt;&gt;=</span> \rma <span class="ot">-&gt;</span> rma r</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinT rmrma</span></code></pre></div>
+<p>これをもとにストリング図を描くと、<code>WriterT</code>のものとラベル以外同じものが出来上がります。</p>
+<figure>
+<img src="../images/string/reader-t-all.png" alt="ReaderTの定義" /><figcaption aria-hidden="true">ReaderTの定義</figcaption>
+</figure>
+<h3 id="excepttの場合">ExceptTの場合</h3>
+<p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と“同じ構造”を持っています。 もはや細かい説明は不要かと思いますが、<code>ExceptT e m</code>はモナド<code>m</code>とモナド<code>Either e</code>の合成<code>Functor</code>で、 入れ替えをする自然変換<code>swapEM</code>によってモナドにしています。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ExceptT</span> e m a <span class="ot">=</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ExceptT</span> {<span class="ot"> runExceptT ::</span> m (<span class="dt">Either</span> e a) }</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ot">swapEM ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Either</span> e (m b) <span class="ot">-&gt;</span> m (<span class="dt">Either</span> e b)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>swapEM (<span class="dt">Left</span> e) <span class="ot">=</span> <span class="fu">pure</span> (<span class="dt">Left</span> e)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>swapEM (<span class="dt">Right</span> mb) <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">Right</span> mb</span></code></pre></div>
+<h3 id="つをひとまとめにする">3つをひとまとめにする</h3>
+<p><code>WriterT</code>、<code>ReaderT</code>、<code>ExceptT</code>はどれも、 モナドの合成順を入れ替える自然変換を使って定義できました。 この3つのどれも、以下の構造を持っています。</p>
+<ul>
+<li><p>あるモナド<code>m</code>とモナド<code>n</code>の合成<code>m ∘ n</code>になっている</p></li>
+<li><p>入れ替えをする自然変換<code>swap ::∀a. n (m a) -&gt; m (n a)</code>を持っている</p></li>
+<li><p><code>swap</code>を使って、<code>pure</code>と<code>join</code>が下図のように定義されている</p>
+<figure>
+<img src="../images/string/monad-compose.png" alt="モナドの合成の一般形" /><figcaption aria-hidden="true">モナドの合成の一般形</figcaption>
+</figure></li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>モナド変換子</th>
+<th>外側のモナド</th>
+<th>内側のモナド</th>
+<th><code>swap</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WriterT w m</code></td>
+<td><code>m</code></td>
+<td><code>(w,_)</code></td>
+<td><code>swapWM :: (w, m b) -&gt; m (w, b)</code></td>
+</tr>
+<tr class="even">
+<td><code>ReaderT r m</code></td>
+<td><code>r -&gt; _</code></td>
+<td><code>m</code></td>
+<td><code>swapMR :: m (r -&gt; b) -&gt; r -&gt; m b</code></td>
+</tr>
+<tr class="odd">
+<td><code>ExceptT e m</code></td>
+<td><code>m</code></td>
+<td><code>Either e</code></td>
+<td><code>swapEM :: Either e (m b) -&gt; m (Either e b)</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="モナドの合成のモナド則">モナドの合成のモナド則</h2>
+<p>任意のモナドの組み合わせ<code>m, n</code>と前節の<code>swap</code>によって、 <code>m ∘ n</code>がモナドになると言いたいところですが、<em>どんな</em>自然変換でもよいのでしょうか？そんなことは無さそうです。</p>
+<p>実際、なんでもOKではありません。<code>WriterT</code>の構成にある<code>swapWM :: (w, m a) -&gt; m (w, a)</code>で、 モノイド<code>w</code>を勝手に<code>mempty</code>に置き換えたりすれば、 出来上がった<code>WriterT w m</code>はモナド則を満たさなくなってしまいます。</p>
+<p>しかし、「<code>swap</code>が特定の条件を満たせば<code>m ∘ n</code>がモナドになる」とは言えるはずです。 ストリング図を描いて、どんな条件を満たせばよいのか考えてみます。</p>
+<p>まず、左単位法則から見てみます。</p>
+<figure>
+<img src="../images/string/monad-compose-left-unit.png" alt="モナドの合成、左単位法則" /><figcaption aria-hidden="true">モナドの合成、左単位法則</figcaption>
+</figure>
+<p>ピンク色で強調した部分が<em>成り立っているかどうかわからない</em>等式で、 それ以外の部分は<code>m</code>,<code>n</code>のモナド則といった、すでに知っている等式です。 この<em>成り立ってほしい等式(1)</em>は、もっと単純なバージョン（下図右辺）と同値になります。</p>
+<figure>
+<img src="../images/string/swap-left-unit.png" alt="成り立ってほしい等式(1)" /><figcaption aria-hidden="true">成り立ってほしい等式(1)</figcaption>
+</figure>
+<p>右単位法則が成り立つ条件から、同様に次の<em>成り立ってほしい等式(2)</em>が出てきます。</p>
+<figure>
+<img src="../images/string/swap-right-unit.png" alt="成り立ってほしい等式(2)" /><figcaption aria-hidden="true">成り立ってほしい等式(2)</figcaption>
+</figure>
+<p>最後に結合法則を見てみます。（結合法則が成り立つために成り立ってほしい等式を、 ピンク色で強調しています。）</p>
+<figure>
+<img src="../images/string/monad-compose-assoc.png" alt="モナドの合成、結合法則" /><figcaption aria-hidden="true">モナドの合成、結合法則</figcaption>
+</figure>
+<p>成り立ってほしい等式だけ取り出せば、次のようになります。</p>
+<figure>
+<img src="../images/string/swap-dist.png" alt="成り立ってほしい等式(3)(4)" /><figcaption aria-hidden="true">成り立ってほしい等式(3)(4)</figcaption>
+</figure>
+<p>これらの等式(1)-(4)を満たすような<code>swap</code>であれば、<code>m ∘ n</code>がモナドになると言えます。 等式(1)-(4)を、ストリング図からHaskellの式に書き直すと、次のようになります。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> m</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> n</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">swap ::</span> ∀b<span class="op">.</span> n (m b) <span class="ot">-&gt;</span> m (n b)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(1)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> swap <span class="ot">=</span> <span class="fu">fmap</span><span class="ot"> pure ::</span> ∀b<span class="op">.</span> m b <span class="ot">-&gt;</span> m (n b)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(2)</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> swap <span class="ot">= pure ::</span> ∀b<span class="op">.</span> n b <span class="ot">-&gt;</span> m (n b)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(3)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>join <span class="op">&gt;&gt;&gt;</span><span class="ot"> swap ::</span> ∀b<span class="op">.</span> n (n (m b)) <span class="ot">-&gt;</span> m (n b)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> swap <span class="op">&gt;&gt;&gt;</span> swap <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> join</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(4)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> join <span class="op">&gt;&gt;&gt;</span><span class="ot"> swap ::</span> ∀b<span class="op">.</span> n (m (m b)) <span class="ot">-&gt;</span> m (n b)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swap <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> swap <span class="op">&gt;&gt;&gt;</span> join</span></code></pre></div>
+<p>自然変換<code>swap</code>によって(1)-(4)が成り立つことを、 「<code>swap</code>は、モナド<code>m</code>がモナド<code>n</code>に対する<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>分配である<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>」と呼ぶことにして、 ここで証明できたことをまとめると、次のようになります。</p>
+<blockquote>
+<p>モナド<code>m</code>がモナド<code>n</code>に対する分配<code>swap</code>を持てば、<code>swap</code>を使って<code>m ∘ n</code>がモナドになる</p>
+</blockquote>
+<p>これを<code>WriterT</code>の場合に適用すれば、<code>WriterT w m</code>がモナド則を満たしていることの証明は、 <code>swap=swapWM</code>が分配であることを確認すればOKです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 再掲</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">swapWM ::</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> (w, m b) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>swapWM (w, mb) <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) mb</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(1)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>pureWriter <span class="op">&gt;&gt;&gt;</span> swapWM <span class="ot">=</span> <span class="fu">fmap</span><span class="ot"> pureWriter ::</span> ∀b<span class="op">.</span> m b <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>(pureWriter <span class="op">&gt;&gt;&gt;</span> swapWM) mb</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> swapWM (<span class="fu">mempty</span>, mb)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (<span class="fu">mempty</span>, b)) mb</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">fmap</span> pureWriter mb</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(2)</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> swapWM <span class="ot">= pure ::</span> ∀b<span class="op">.</span> (w, b) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> <span class="fu">pure</span> <span class="op">&gt;&gt;&gt;</span> swapWM <span class="op">$</span> (w,b)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> swapWM (w, <span class="fu">pure</span> b)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) (<span class="fu">pure</span> b)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">pure</span> (w,b)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(3)</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>joinWriter <span class="op">&gt;&gt;&gt;</span><span class="ot"> swapWM ::</span> ∀b<span class="op">.</span> (w, (w, m b)) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> joinWriter</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>joinWriter <span class="op">&gt;&gt;&gt;</span> swapWM <span class="op">$</span> (w,(w',mb))</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swapWM (w <span class="op">&lt;&gt;</span> w', mb)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w <span class="op">&lt;&gt;</span> w', b)) mb</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> joinWriter <span class="op">$</span> (w,(w',mb))</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> joinWriter <span class="op">$</span> (w, swapWM (w', mb))</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> joinWriter <span class="op">$</span> swapWM (w, swapWM (w', mb))</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> joinWriter <span class="op">$</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">$</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w',b)) mb</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (joinWriter <span class="op">.</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">.</span> (\b <span class="ot">-&gt;</span> (w',b))) <span class="op">$</span> mb</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> joinWriter (w,(w',b))) mb</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w <span class="op">&lt;&gt;</span> w', b)) mb</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(4)</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> join <span class="op">&gt;&gt;&gt;</span><span class="ot"> swapWM ::</span> ∀b<span class="op">.</span> (w, m (m b)) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> join</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> join <span class="op">&gt;&gt;&gt;</span> swapWM <span class="op">$</span> (w, mmb)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swapWM (w, join mmb)</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">$</span> join mmb</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>swapWM <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> join <span class="op">$</span> (w, mmb)</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> swapWM <span class="op">&gt;&gt;&gt;</span> join <span class="op">$</span> <span class="fu">fmap</span> (\mb <span class="ot">-&gt;</span> (w,mb)) mmb</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (swapWM <span class="op">.</span> (\mb <span class="ot">-&gt;</span> (w,mb))) mmb</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\mb <span class="ot">-&gt;</span> swapWM (w,mb)) mmb</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\mb <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) mb) mmb</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b))) mmb</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- join . fmap (fmap f) = fmap f . join</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">$</span> join mmb</span></code></pre></div>
+<p><code>ReaderT</code>も<code>ExceptT</code>も、同じように<code>swapMR</code>、<code>swapEM</code>が分配であることが示せて、 モナド則を満たすことがわかります。</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>（注意）</p>
+<p>「モナド<code>m</code>がモナド<code>n</code>に対する……」において、 <code>m</code>と<code>n</code>の順番には意味があります。 <code>swap :: ∀b. n (m b) -&gt; m (n b)</code>があるからといって、逆向きの自然変換 <code>reverseSwap :: ∀b. m (n b) -&gt; n (m b)</code>があったり、 それが等式(1)-(4)を満たす保証はまったく無いからです。</p>
+<p>そのため、「モナド<code>m,n</code>の……」のように並列で呼ばないようにしました。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>「分配」という単語は、これが圏論では「分配律(distributive law)」と呼ばれていることから取っています。</p>
+<p>「分配律」から「律」を落としたのは、モナド則の結合法則などの自然変換の間の等式と混同しないためです。 等式(1)-(4)を満たすような<code>swap</code>それ自体が「分配律」と呼ばれていて、等式(1)-(4)は「分配律」 の満たすべき性質（言うなれば「分配律律」）です。</p>
+<p>ややこしすぎて本文に書くことでは無いと思いました。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
