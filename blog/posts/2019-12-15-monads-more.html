@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - モナドを見分けるコツ</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -144,7 +144,7 @@
 <li><p><code>k&gt;1</code>, かつ <code>G(x) ~ x * H(x)</code>と書けるならば、<code>G(x)</code>の次数は<code>F(x)</code>より小さいので、帰納法の仮定を用いれば <code>G(x)</code> はMonadにできる。<code>F(x) ~ x * G(x) ~ (Id * G)(x)</code>かつIdもGもMonadなので、Monadの積によって<code>F(x)</code>もMonadのインスタンスを持てる。</p></li>
 <li><p><code>k&gt;1</code>, かつ<code>G(x) ~ x * H(x)</code>と書けないならば、<code>G(x) ~ 1 + H(x)</code>と書ける。このとき、</p>
 <pre><code>F(x) ~ x * (1 + H(x)) ~ x + x * H(x) ~ x + (Id * H)(x)</code></pre>
-<p>かつ、<code>(Id * H)(x)</code>の項の数は<code>F(x)</code>より一つ少ないので、帰納法の仮定を用いれば<code>(Id * H)(x)</code>はMonadにできる。 よって、先程述べた“単位の付加”の構成により、<code>F(x) ~ x + (Id * H)(x)</code>はMonadにできる。</p></li>
+<p>かつ、<code>(Id * H)(x)</code>の項の数は<code>F(x)</code>より一つ少ないので、帰納法の仮定を用いれば<code>(Id * H)(x)</code>はMonadにできる。 よって、先程述べた”単位の付加”の構成により、<code>F(x) ~ x + (Id * H)(x)</code>はMonadにできる。</p></li>
 </ul>
 <h2 id="主張2">主張2</h2>
 <blockquote>

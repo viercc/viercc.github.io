@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - ストリング図でMonad再入門(3)</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -167,7 +167,7 @@
 <img src="../images/string/reader-t-all.png" alt="ReaderTの定義" /><figcaption aria-hidden="true">ReaderTの定義</figcaption>
 </figure>
 <h3 id="excepttの場合">ExceptTの場合</h3>
-<p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と“同じ構造”を持っています。 もはや細かい説明は不要かと思いますが、<code>ExceptT e m</code>はモナド<code>m</code>とモナド<code>Either e</code>の合成<code>Functor</code>で、 入れ替えをする自然変換<code>swapEM</code>によってモナドにしています。</p>
+<p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と”同じ構造”を持っています。 もはや細かい説明は不要かと思いますが、<code>ExceptT e m</code>はモナド<code>m</code>とモナド<code>Either e</code>の合成<code>Functor</code>で、 入れ替えをする自然変換<code>swapEM</code>によってモナドにしています。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ExceptT</span> e m a <span class="ot">=</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ExceptT</span> {<span class="ot"> runExceptT ::</span> m (<span class="dt">Either</span> e a) }</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>

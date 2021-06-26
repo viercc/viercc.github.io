@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - ストリング図でMonad再入門(1)</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -56,7 +56,7 @@
 <li>他たくさんあると思いますが、覚えてなくてリストアップできませんごめんなさい・・・</li>
 </ul>
 <h2 id="ストリング図">ストリング図</h2>
-<p><a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>は、 圏論で使われる表記法です。圏論から道具を拝借するときによくあることですが、 ストリング図は“2-圏における2-射”という抽象度の高いものを描くよう定義されています。 しかし、今回の記事の中では、<code>Monad</code>について考えるだけなので、抽象度を下げたもの を説明していきます。</p>
+<p><a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>は、 圏論で使われる表記法です。圏論から道具を拝借するときによくあることですが、 ストリング図は”2-圏における2-射”という抽象度の高いものを描くよう定義されています。 しかし、今回の記事の中では、<code>Monad</code>について考えるだけなので、抽象度を下げたもの を説明していきます。</p>
 <p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。 改めて明示的に定義するなら、 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 <p>自然変換<code>tf :: ∀a. f a -&gt; f' a</code>を、以下の図のように描くことにします。</p>
 <figure>

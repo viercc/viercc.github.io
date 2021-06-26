@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - 可換なモナドとは？</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -66,7 +66,7 @@ abbcccc[(),(),(),(),(),(),(),()]</code></pre>
 <p>さて、「モナドが可換である」って、聞いたことあります？私は、「なんとなく言いたいことはわかるけど、 ちょっと曖昧じゃない？」と感じていました。例えば、ある2項演算<code>op :: (X, X) -&gt; X</code>が可換であると言うとき、ふつうは</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">swap ::</span> (x, y) <span class="ot">-&gt;</span> (y, x)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>swap (x, y) <span class="ot">=</span> (y, x)</span></code></pre></div>
-<p>のように、“引数の順番を入れ替える”写像を使って、<code>op . swap = op</code>のように定義します。しかし、<code>Monad</code>の“2項演算”は <code>join :: forall a. m (m a) -&gt; m a</code>です。この“引数の順番を入れ替える”ことは、一般にはできません。 では、Monadが可換であるという条件は、どう定義すればいいのでしょうか？</p>
+<p>のように、“引数の順番を入れ替える”写像を使って、<code>op . swap = op</code>のように定義します。しかし、<code>Monad</code>の”2項演算”は <code>join :: forall a. m (m a) -&gt; m a</code>です。この”引数の順番を入れ替える”ことは、一般にはできません。 では、Monadが可換であるという条件は、どう定義すればいいのでしょうか？</p>
 <h2 id="可換なモナド-とは">可換なモナド #とは</h2>
 <p>ググってみましょう。</p>
 <ul>

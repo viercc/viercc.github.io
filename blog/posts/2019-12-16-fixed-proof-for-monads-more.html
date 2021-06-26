@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - (主張3)の証明が改善の余地ありだったので修正</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -321,7 +321,7 @@
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="ot">isZero ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">F</span> x <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>isZero <span class="ot">=</span> <span class="fu">not</span> <span class="op">.</span> forSome (isJust <span class="op">.</span> mx) </span></code></pre></div>
-<p>と定義すると、<code>isZero mx = True</code> ⇔ <code>mx = zero</code>なので、<code>F x</code>は少なくとも一つの“定数項”と、それ以外の直和である。</p>
+<p>と定義すると、<code>isZero mx = True</code> ⇔ <code>mx = zero</code>なので、<code>F x</code>は少なくとも一つの”定数項”と、それ以外の直和である。</p>
 <p><code>isZero mx = False</code>となるような<code>mx :: F X</code>のうち、“自由度”(<code>x^n</code> の <code>n</code>)が1のものがあったとする。このとき、以下のようになるはずである。</p>
 <ul>
 <li><code>x :: X</code>が存在して、<code>x &lt;$ mx = mx</code></li>
@@ -347,7 +347,7 @@
 <li><code>p j = True</code>ならば、<code>mi j = (i &lt;$ mi) j = Just i</code>である。</li>
 <li><code>p j = True</code>ならば<code>i = j</code>である。</li>
 </ol>
-<p>となるが、このような性質を持つ（全域関数）<code>p</code>は存在しないのだった。したがって、<code>F X</code>に“自由度”が1の項は存在しない。 よって、<code>F = ReaderT BitStream Maybe</code>は</p>
+<p>となるが、このような性質を持つ（全域関数）<code>p</code>は存在しないのだった。したがって、<code>F X</code>に”自由度”が1の項は存在しない。 よって、<code>F = ReaderT BitStream Maybe</code>は</p>
 <ul>
 <li>“定数項”とそれ以外との直和に書かれる</li>
 <li>“自由度”が1の項は存在しない</li>

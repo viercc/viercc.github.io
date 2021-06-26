@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - matchable解説</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -55,7 +55,7 @@
 Just [(1,'a'),(2,'b'),(3,'c')]
 &gt;&gt;&gt; zipMatch [1, 2, 3] ['a', 'b']
 Nothing</code></pre>
-<p>さて、『コンテナが全く同じ「かたち」をしていれば』という表現をさっき使いましたが、これでは少しあいまいです。 なので、“Functor則”や“Monoid則”のように、<code>Matchable</code>のインスタンスが満たすべき“Matchable則”があります。</p>
+<p>さて、『コンテナが全く同じ「かたち」をしていれば』という表現をさっき使いましたが、これでは少しあいまいです。 なので、“Functor則”や”Monoid則”のように、<code>Matchable</code>のインスタンスが満たすべき”Matchable則”があります。</p>
 <p><strong>Matchable則</strong></p>
 <blockquote>
 <p><code>zipMatch ta tb = Just tab</code> が成立する ⇔<br />

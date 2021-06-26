@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - 型クラスAlignについて</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -166,7 +166,7 @@
 <h3 id="モノイド圏">モノイド圏</h3>
 <p>モノイド圏とは、圏<code>cat</code>に、追加で対象<code>1</code>と対象の上の演算子<code>⊗</code>が定義され、いろいろな条件を満たすもののことですが、<code>CartesianProduct</code>な圏にとっては、<a href="https://ncatlab.org/nlab/show/cartesian+monoidal+category">終対象と直積がこの条件を満たすらしい</a>ので、この記事では<code>1 = Terminal cat</code>, <code>⊗ = CP cat</code>と置かれているものとします。</p>
 <h3 id="関手">関手</h3>
-<p>関手[functor]とは、2つの圏のあいだの“準同型”みたいな関係です。圏<code>C</code>から圏<code>D</code>への関手<code>F</code>は、</p>
+<p>関手[functor]とは、2つの圏のあいだの”準同型”みたいな関係です。圏<code>C</code>から圏<code>D</code>への関手<code>F</code>は、</p>
 <ul>
 <li><code>C</code>の対象を<code>D</code>の対象に写す写像<code>F</code></li>
 <li><code>C</code>の射<code>C x y</code>を<code>D</code>の射<code>D (F x) (F y)</code>に写す写像<code>map</code></li>

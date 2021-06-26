@@ -5,10 +5,10 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Too lazy to evaluate - Day convolutionいろいろ</title>
+        
+        
         <link rel="stylesheet" href="../css/syntax.css" />
         <link rel="stylesheet" href="../css/default.css" />
-        
-        
     </head>
     <body>
         <header>
@@ -69,7 +69,7 @@
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ot">unit ::</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="kw">forall</span> c<span class="op">.</span> (() <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f c</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>unit i <span class="ot">=</span> <span class="fu">pure</span> (i ())</span></code></pre></div>
 <p>逆に、<code>mult</code> と <code>unit</code>が先に与えられても<code>liftA2</code>と<code>pure</code>がそこから定義でき、 <code>mult</code>と<code>unit</code>がモノイドになる（結合則、単位則）ならば<code>Applicative</code>則を満たします。</p>
-<p>モナドも自己関手の圏に<em>関手の合成でモノイド積を入れたもの</em>におけるモノイド対象だったので、 モナドも<code>Applicative</code>も“適切に選んだモノイド圏でのモノイド対象”という書き方ができます。 うれしいね、というのがこの論文で<code>Day</code>が持ち出された理由でした。</p>
+<p>モナドも自己関手の圏に<em>関手の合成でモノイド積を入れたもの</em>におけるモノイド対象だったので、 モナドも<code>Applicative</code>も”適切に選んだモノイド圏でのモノイド対象”という書き方ができます。 うれしいね、というのがこの論文で<code>Day</code>が持ち出された理由でした。</p>
 <h2 id="alternativeも略何か問題でも">Alternativeも（略）何か問題でも？</h2>
 <p>Day convolutionというのはなにも上に挙げた形のものだけでなく、</p>
 <ul>
