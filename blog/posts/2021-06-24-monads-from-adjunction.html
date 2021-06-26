@@ -52,7 +52,7 @@
 <p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。 改めて明示的に定義するなら、 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 </blockquote>
 <p>ストリング図は、<code>Functor</code>間の自然変換を表すと書きました。 しかし、実はどんな<strong>関手</strong>の間の<strong>自然変換</strong>でもよかったのです。</p>
-<p>今回は、<code>Functor</code>以外の関手を使って、次のモナドを分析していこうと思います。</p>
+<p>今度は、<code>Functor</code>以外の関手を使って、次のモナドを分析していこうと思います。</p>
 <ul>
 <li><code>Cont</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Cont.html">Control.Monad.Trans.Cont</a>)</li>
 <li><code>ListT m</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-List.html">Control.Monad.Trans.List</a>, “ListT done wrong”)</li>
@@ -109,23 +109,26 @@
 </ul>
 <p>これらは、集合と写像を一般化したものです。なので、圏の一番はじめの例は集合と写像の圏<span class="math inline">\Set</span>です。</p>
 <ul>
-<li><p><span class="math inline">\Set</span>という圏があります。</p>
+<li><p>圏<span class="math inline">\Set</span></p>
 <ul>
-<li><p><span class="math inline">\Set</span>の対象は集合です。</p></li>
-<li><p><span class="math inline">\Set</span>の射は関数です。集合<span class="math inline">a</span>を定義域、集合<span class="math inline">b</span>を値域とする関数を、 <span class="math inline">a</span>から出て<span class="math inline">b</span>に入る射と考えます。 そのような関数の集合として<span class="math inline">\Set(a,b)</span>をとることができます。</p></li>
-<li><p>集合<span class="math inline">a</span>上の恒等関数<span class="math inline">\id_a</span>と関数の合成が、そのまま恒等射と射の合成です。</p></li>
-<li><p>「関数に恒等関数を合成しても変化しない」「関数の合成は結合法則に従っている」は自明です。 （むしろ、この規則が関数の合成を一般化しようとして決められています。）</p></li>
+<li><p><span class="math inline">\Set</span>の対象は集合である。</p></li>
+<li><p><span class="math inline">\Set</span>の射は関数である。集合<span class="math inline">a</span>を定義域、集合<span class="math inline">b</span>を値域とする関数を、 <span class="math inline">a</span>から出て<span class="math inline">b</span>に入る射と考える。</p>
+<ul>
+<li>そのような関数の集合として<span class="math inline">\Set(a,b)</span>をとることができる。</li>
+</ul></li>
+<li><p>集合<span class="math inline">a</span>上の恒等関数<span class="math inline">\id_a</span>と関数の合成が、そのまま恒等射と射の合成である。</p></li>
+<li><p>「関数に恒等関数を合成しても変化しない」「関数の合成は結合法則に従っている」は明らか。 （むしろ、この規則が関数の合成を一般化しようとして決められている。）</p></li>
 </ul></li>
 </ul>
 <p>数学では「何らかの演算を備えた集合」と、「演算を保つ写像」を考えることがよくあります。 例えば体<span class="math inline">k</span>上のベクトル空間は足し算、引き算、そしてスカラー倍ができる集合で、 これらの演算がベクトル空間の公理を満たすものです。 ベクトル空間の間の線形写像は、足し算、ゼロ、…といった演算を保つ写像です。</p>
 <p>こういった「演算を備えた集合」と「演算を保つ写像」からなる圏を考えることもよくあります。</p>
 <ul>
-<li><p>体<span class="math inline">k</span>上のベクトル空間の圏<span class="math inline">k\Vect</span>は次のような圏である。</p>
+<li><p>体<span class="math inline">k</span>上のベクトル空間の圏<span class="math inline">k\Vect</span></p>
 <ul>
 <li><span class="math inline">k\Vect</span>の対象は<span class="math inline">k</span>ベクトル空間<span class="math inline">V</span></li>
 <li><span class="math inline">k\Vect</span>の射は線形写像</li>
 </ul></li>
-<li><p>モノイドの圏<span class="math inline">\Mon</span>は次のような圏である</p>
+<li><p>モノイドの圏<span class="math inline">\Mon</span></p>
 <ul>
 <li><span class="math inline">\Mon</span>の対象はモノイド</li>
 <li><span class="math inline">\Mon</span>の射はモノイド準同型</li>
@@ -133,7 +136,7 @@
 </ul>
 <p>また、Haskellの型と関数も、<span class="math inline">\Set</span>にそっくり似た圏になります<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。よく<span class="math inline">\Hask</span>と呼ばれる圏です。</p>
 <ul>
-<li><p><span class="math inline">\Hask</span>は次のような圏である。</p>
+<li><p><span class="math inline">\Hask</span></p>
 <ul>
 <li><p><span class="math inline">\Hask</span>の対象は型（詳しく言えば、型変数のない具体的に一つ決まった型）</p></li>
 <li><p><span class="math inline">\Hask</span>の射は関数です。<code>A -&gt; B</code>型の関数を、 <span class="math inline">A</span>から出て<span class="math inline">B</span>に入る射と考える</p></li>
@@ -247,7 +250,7 @@
 <ul>
 <li><p>自然変換<span class="math inline">t</span>とは、すべての<span class="math inline">C</span>の対象<span class="math inline">a</span>についてそれぞれ選ばれた <span class="math inline">D</span>の射<span class="math inline">t_a \in D(Fa, Ga)</span>の族であって、次の条件を満たすものである。</p>
 <ul>
-<li>任意の<span class="math inline">C</span>の射<span class="math inline">f \in C(a,b)</span>に対して、<span class="math inline">t_b \circ \map_F(f) = \map_G(f) t_a</span>が成り立つ</li>
+<li>任意の<span class="math inline">C</span>の射<span class="math inline">f \in C(a,b)</span>に対して、<span class="math inline">t_b \circ \map_F(f) = \map_G(f) \circ t_a</span>が成り立つ</li>
 </ul></li>
 </ul>
 <p>Haskell脳を働かせて、添字を全部省略して”型推論”してよいことにすると、 <span class="math inline">x \circ \map(f) = \map(f) \circ x</span>と略記できます。</p>
