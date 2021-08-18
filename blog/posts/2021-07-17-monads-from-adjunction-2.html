@@ -311,12 +311,12 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <li>任意のモノイド準同型<code>f :: a -&gt; b</code>についてモノイド準同型<code>map_T f :: T a -&gt; T b</code>があって</li>
 <li><code>map_T id = id</code> と <code>map_T f . map_T g = map_T (f . g)</code> を満たす</li>
 </ol></li>
-<li><p>自然変換<span class="math inline">\mathrm{pure}\colon \Id_C \to C</span>を持つ、つまり</p>
+<li><p>自然変換<span class="math inline">\mathrm{pure}\colon \Id_{\Mon} \to T</span>を持つ、つまり</p>
 <ol type="a">
 <li>任意のモノイド<code>a</code>についてモノイド準同型<code>pure :: a -&gt; T a</code>を持ち、</li>
 <li><code>map_T f . pure = pure . f</code> を満たす</li>
 </ol></li>
-<li><p>自然変換<span class="math inline">\mathrm{join}\colon C\circ C\to C</span>を持つ、つまり</p>
+<li><p>自然変換<span class="math inline">\mathrm{join}\colon T\circ T\to T</span>を持つ、つまり</p>
 <ol type="a">
 <li>任意のモノイド<code>a</code>についてモノイド準同型<code>join :: T (T a) -&gt; T a</code>を持ち、</li>
 <li><code>map_T f . join = join . map_T (map_T f)</code> を満たす</li>
@@ -368,12 +368,12 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <li><del>任意のモノイド準同型<code>f :: a -&gt; b</code>についてモノイド準同型<code>map_T f :: T a -&gt; T b</code>があって</del></li>
 <li><del><code>map_T id = id</code> と <code>map_T f . map_T g = map_T (f . g)</code> を満たす</del></li>
 </ol></li>
-<li><p>自然変換<span class="math inline">\mathrm{pure}\colon \Id_C \to C</span>を持つ、つまり</p>
+<li><p>自然変換<span class="math inline">\mathrm{pure}\colon \Id_{\Mon} \to T</span>を持つ、つまり</p>
 <ol type="a">
 <li>任意のモノイド<code>a</code>についてモノイド準同型<code>pure :: a -&gt; T a</code>を持ち、</li>
 <li><del><code>map_T f . pure = pure . f</code> を満たす</del></li>
 </ol></li>
-<li><p>自然変換<span class="math inline">\mathrm{join}\colon C\circ C\to C</span>を持つ、つまり</p>
+<li><p>自然変換<span class="math inline">\mathrm{join}\colon T\circ T\to T</span>を持つ、つまり</p>
 <ol type="a">
 <li>任意のモノイド<code>a</code>についてモノイド準同型<code>join :: T (T a) -&gt; T a</code>を持ち、</li>
 <li><del><code>map_T f . join = join . map_T (map_T f)</code> を満たす</del></li>
