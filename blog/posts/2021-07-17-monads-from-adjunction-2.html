@@ -430,7 +430,7 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>      <span class="fu">putStrLn</span> <span class="st">&quot;X&quot;</span></span>
 <span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span> (<span class="dt">Sum</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><code>join (ttx &lt;&gt; tty)</code>と<code>join ttx &lt;&gt; join tty</code>では出力の順番が違ってしまいます。 すなわち、<code>join</code>がモノイド準同型ではありません。</p>
-<p>この4番目の等式が成り立つことと、<code>T</code>が<a href="http://wiki.haskell.org/Monad#Commutative_monads">可換なモナド</a>であることは同値な条件になります。 （可換なモナドについては<a href="2020-02-29-commutative-monad.md">過去記事</a>でも取り上げました。）</p>
+<p>この4番目の等式が成り立つことと、<code>T</code>が<a href="http://wiki.haskell.org/Monad#Commutative_monads">可換なモナド</a>であることは同値な条件になります。 （可換なモナドについては<a href="2020-02-29-commutative-monad.html">過去記事</a>でも取り上げました。）</p>
 <p>まとめると、以下のようになります。</p>
 <ol type="1">
 <li><span class="math inline">\Mon</span>上のモナド<span class="math inline">T</span>があれば、<code>Monad</code>すなわち<span class="math inline">\Hask</span>上のモナド<span class="math inline">U\circ T\circ F</span>ができる。</li>
