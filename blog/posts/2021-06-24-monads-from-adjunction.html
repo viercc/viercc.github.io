@@ -253,7 +253,7 @@
 <li>任意の<span class="math inline">C</span>の射<span class="math inline">f \in C(a,b)</span>に対して、<span class="math inline">t_b \circ \map_F(f) = \map_G(f) \circ t_a</span>が成り立つ</li>
 </ul></li>
 </ul>
-<p>Haskell脳を働かせて、添字を全部省略して”型推論”してよいことにすると、 <span class="math inline">x \circ \map(f) = \map(f) \circ x</span>と略記できます。</p>
+<p>Haskell脳を働かせて、添字を全部省略して”型推論”してよいことにすると、 <span class="math inline">t \circ \map(f) = \map(f) \circ t</span>と略記できます。</p>
 <p><code>Functor</code>に限定した場合、つまり<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手<span class="math inline">F,G</span>についての場合、 次のようになります。</p>
 <ul>
 <li><p>自然変換<code>t</code>とは、すべての型<code>a</code>について定義されている 関数<code>t :: forall a. F a -&gt; G a</code>であって、次の条件を満たすものである。</p>
