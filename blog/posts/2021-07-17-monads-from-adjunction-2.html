@@ -69,7 +69,7 @@
 <figure>
 <img src="../images/string/state-openclose.png" alt="openとcloseの関係" /><figcaption aria-hidden="true">openとcloseの関係</figcaption>
 </figure>
-<p>さて、モナドを合成関手と見て、特別な自然変換からモナド演算<code>pure, join</code>を導くという手法は、 <a href="./string-3.html">別の回</a>でもやっています。 「二つのモナド<code>m, n</code>の分配<code>swap :: ∀a. n (m a) -&gt; m (n a)</code>を見つけることで、 <code>m∘n</code>をモナドにする」という方法で、<code>WriterT</code>や<code>ReaderT</code>を攻略しました。 では、<code>open</code>,<code>close</code>を使う手法で作れるモナドは<code>State</code>モナドのほかに無いのでしょうか？</p>
+<p>さて、モナドを合成関手と見て、特別な自然変換からモナド演算<code>pure, join</code>を導くという手法は、 <a href="./string-3.html">別の回</a>でもやっています。 「二つのモナド<code>m</code>の<code>n</code>に対する分配<code>swap :: ∀a. n (m a) -&gt; m (n a)</code>を見つけることで、 <code>m∘n</code>をモナドにする」という方法で、<code>WriterT</code>や<code>ReaderT</code>を攻略しました。 では、<code>open</code>,<code>close</code>を使う手法で作れるモナドは<code>State</code>モナドのほかに無いのでしょうか？</p>
 <p>実は、<code>State</code>モナドと同じ形のモナドしか作ることができないことが証明できます。 ある<code>F</code>と<code>G</code>が<code>Functor</code>であり、自然変換<code>open, close</code>を次のように持っていたとします。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 未知のF, GなるFunctor</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span></span>
@@ -239,7 +239,7 @@
 <ul>
 <li><p>「モノイドの圏」<span class="math inline">\Mon</span>を次のように定めます。</p>
 <ul>
-<li><p><span class="math inline">\Mon</span>の対象は、<span class="math inline">\Hask</span>の対象である型<code>a</code>で、 その型<code>a</code>の<code>Monoid</code>のインスタンスを合わせたものです。</p></li>
+<li><p><span class="math inline">\Mon</span>の対象は、<span class="math inline">\Hask</span>の対象である型<code>a</code>と、 その型<code>a</code>の<code>Monoid</code>のインスタンスを合わせたものです。</p></li>
 <li><p><span class="math inline">\Mon</span>の射<span class="math inline">f\in \Mon(a,b)</span>は、関数<code>f :: a -&gt; b</code>であって、 モノイド準同型であるものです。</p>
 <ul>
 <li>Example: <code>String</code>も<code>Sum Int</code>も<code>Monoid</code>のインスタンスで、<span class="math inline">\Mon</span>の対象です。</li>
