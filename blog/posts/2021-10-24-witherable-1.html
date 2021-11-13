@@ -361,7 +361,7 @@ Composition(合成則)
 </ul>
 <p>をフル活用しています。<span class="math inline">\delta_P</span>は<code>Maybe</code>に対する<code>sequenceA</code>のことです。</p>
 <h2 id="witherableの理論"><code>Witherable</code>の理論</h2>
-<p>この記事のはじめのほうで<code>Witherable</code>の定義と使い方を説明し、「<code>Witherable</code>は<code>Filterable</code>と<code>Traversable</code>の組み合わせたに過ぎないのではないか？」という疑問を取り上げました。 繰り返しになりますが、実は<code>Witherable</code>は<code>Filterable</code>+<code>Traversable</code>より厳しい制限が課せられているのです。この制限は<code>Witherable</code>則として表されています。</p>
+<p>この記事のはじめのほうで<code>Witherable</code>の定義と使い方を説明し、「<code>Witherable</code>は<code>Filterable</code>と<code>Traversable</code>の組み合わせに過ぎないのではないか？」という疑問を取り上げました。 繰り返しになりますが、実は<code>Witherable</code>は<code>Filterable</code>+<code>Traversable</code>より厳しい制限が課せられているのです。この制限は<code>Witherable</code>則として表されています。</p>
 <p><code>Witherable</code>の定義を再掲します。</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Traversable</span> t, <span class="dt">Filterable</span> t) <span class="ot">=&gt;</span> <span class="dt">Witherable</span> t <span class="kw">where</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  wither ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> f (<span class="dt">Maybe</span> b)) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> f (t b)</span></code></pre></div>
@@ -445,7 +445,7 @@ Naturality(自然性)
 </details>
 <details>
 <summary>
-Identitty(単位則)
+Identity(単位則)
 </summary>
 <img src="../images/witherable/to-traversable-ident.png" />
 </details>
