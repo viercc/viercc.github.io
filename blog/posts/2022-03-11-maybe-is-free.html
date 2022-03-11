@@ -38,6 +38,8 @@
                 <li>Posted on 2022-03-11</li>
             
             
+                <li>Last modified on 2022-03-11</li>
+            
             
             
         </ul>
@@ -103,7 +105,7 @@
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeFreeT ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (f <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (m <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">FreeT</span> f m <span class="op">~&gt;</span> n)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mergeFreeT f tr2 <span class="ot">=</span> go</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">FreeT</span> mx) <span class="ot">=</span> tr2 mfx <span class="op">&gt;&gt;=</span> goF</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">FreeT</span> mx) <span class="ot">=</span> tr2 mx <span class="op">&gt;&gt;=</span> goF</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    goF (<span class="dt">PureF</span> a) <span class="ot">=</span> <span class="fu">pure</span> a</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    goF (<span class="dt">WrapF</span> fy) <span class="ot">=</span> f fy <span class="op">&gt;&gt;=</span> go</span></code></pre></div></li>
@@ -116,7 +118,7 @@
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeMaybeT ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (<span class="dt">Proxy</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (m <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">MaybeT</span> m <span class="op">~&gt;</span> n)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mergeMaybeT h tr2 <span class="ot">=</span> go</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">MaybeT</span> mx) <span class="ot">=</span> tr2 mfx <span class="op">&gt;&gt;=</span> <span class="fu">maybe</span> (h <span class="dt">Proxy</span>) <span class="fu">pure</span></span></code></pre></div></li>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">MaybeT</span> mx) <span class="ot">=</span> tr2 mx <span class="op">&gt;&gt;=</span> <span class="fu">maybe</span> (h <span class="dt">Proxy</span>) <span class="fu">pure</span></span></code></pre></div></li>
 </ul>
 <p>これは結構意外なことではないでしょうか？</p>
 <p>例えば <code>m a = Reader k a = k -&gt; a</code>とすると、モナド準同型<code>tr</code>とは自然変換</p>
