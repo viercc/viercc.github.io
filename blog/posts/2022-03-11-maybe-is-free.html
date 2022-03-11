@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Maybe's Free</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Maybe's Free</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2022-03-11</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <p><code>Maybe</code>は<code>Free</code>モナドの一つです。特に、<code>Maybe = Free Proxy</code>です。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">|</span> <span class="dt">Just</span> a</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Free</span> f a <span class="ot">=</span> <span class="dt">Pure</span> a <span class="op">|</span> <span class="dt">Wrap</span> (f (<span class="dt">Free</span> f a))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Proxy</span> a <span class="ot">=</span> <span class="dt">Proxy</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- 自然変換の矢印</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> (<span class="op">~&gt;</span>) f g <span class="ot">=</span> <span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> g x</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">maybeToFree ::</span> <span class="dt">Maybe</span> <span class="op">~&gt;</span> <span class="dt">Free</span> <span class="dt">Proxy</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>maybeToFree <span class="dt">Nothing</span>  <span class="ot">=</span> <span class="dt">Wrap</span> <span class="dt">Proxy</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>maybeToFree (<span class="dt">Just</span> a) <span class="ot">=</span> <span class="dt">Pure</span> a</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ot">freeToMaybe ::</span> <span class="dt">Free</span> <span class="dt">Proxy</span> <span class="op">~&gt;</span> <span class="dt">Maybe</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>freeToMaybe (<span class="dt">Pure</span> a)      <span class="ot">=</span> <span class="dt">Just</span> a</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>freeToMaybe (<span class="dt">Wrap</span> _proxy) <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>これは単に<code>Functor</code>として同型であるだけでなく、<code>Monad</code>としても同型になっています<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。
+（そもそも、<code>Maybe</code>と同型な<code>Functor</code>に定義できる<code>Monad</code>のインスタンスは一つしかありません。）</p>
+<p>ここまでならば「ちょっと面白い」というだけなのですが、<code>Free</code>モナドというのはとても<em>特別な</em>モナドです。
+<code>Free</code>モナドの普遍性というものがあるからです。</p>
+<ul>
+<li><p>どんなモナド<code>m</code>についても、モナド準同型 <code>tr :: Free f ~&gt; m</code> と自然変換 <code>h :: f ~&gt; m</code>は、
+以下の<code>foldFree</code>によって<em>一対一に</em>対応する</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldFree ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (f <span class="op">~&gt;</span> m) <span class="ot">-&gt;</span> (<span class="dt">Free</span> f <span class="op">~&gt;</span> m) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>foldFree _ (<span class="dt">Pure</span> a)   <span class="ot">=</span> <span class="fu">pure</span> a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>foldFree h (<span class="dt">Wrap</span> fmx) <span class="ot">=</span> h fmx <span class="op">&gt;&gt;=</span> foldFree h</span></code></pre></div></li>
+</ul>
+<p><code>Maybe</code>は<code>Free Proxy</code>に同型であることを使えば、“<code>Maybe</code>モナドの普遍性”を以下のように得られます。</p>
+<ul>
+<li><p>どんなモナド<code>m</code>についても、モナド準同型 <code>tr :: Maybe ~&gt; m</code> と自然変換 <code>h :: Proxy ~&gt; m</code>は、
+以下の<code>foldMaybe</code>によって<em>一対一に</em>対応する</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldMaybe ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (<span class="dt">Proxy</span> <span class="op">~&gt;</span> m) <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> <span class="op">~&gt;</span> m)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>foldMaybe _ (<span class="dt">Just</span> a) <span class="ot">=</span> <span class="fu">pure</span> a</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>foldMaybe h <span class="dt">Nothing</span>  <span class="ot">=</span> h <span class="dt">Proxy</span></span></code></pre></div></li>
+</ul>
+<p>特に、モナド準同型 <code>tr :: Maybe ~&gt; m</code> は
+<code>tr Nothing :: ∀x. m x</code> のみによって特徴付けられることがわかります。</p>
+<p>また、<code>Maybe = Free Proxy</code>なのであれば、<code>FreeT Proxy m</code>は何でしょうか？
+うれしいことに、それは<code>MaybeT m</code>と一致します<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">MaybeT</span> m a <span class="ot">=</span> <span class="dt">MaybeT</span> (m (<span class="dt">Maybe</span> a))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">FreeF</span> f a b <span class="ot">=</span> <span class="dt">PureF</span> a <span class="op">|</span> <span class="dt">WrapF</span> (f b)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">FreeT</span> f m a <span class="ot">=</span> <span class="dt">FreeT</span> (m (<span class="dt">FreeF</span> f a (<span class="dt">FreeT</span> f m a)))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ot">maybeT_freeT ::</span> ∀m<span class="op">.</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">MaybeT</span> m <span class="op">~&gt;</span> <span class="dt">FreeT</span> <span class="dt">Proxy</span> m</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>maybeT_freeT (<span class="dt">MaybeT</span> x) <span class="ot">=</span> <span class="dt">FreeT</span> (maybeToFreeF <span class="op">&lt;$&gt;</span> x)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> maybeToFreeF (<span class="dt">Just</span> x) <span class="ot">=</span> <span class="dt">PureF</span> x</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        maybeToFreeF <span class="dt">Nothing</span>  <span class="ot">=</span> <span class="dt">WrapF</span> <span class="dt">Proxy</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ot">freeT_maybeT ::</span> ∀m a<span class="op">.</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">FreeT</span> <span class="dt">Proxy</span> m <span class="op">~&gt;</span> <span class="dt">MaybeT</span> m</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>freeT_maybeT (<span class="dt">FreeT</span> x) <span class="ot">=</span> <span class="dt">MaybeT</span> (freeFToMaybe <span class="op">&lt;$&gt;</span> x)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> freeFToMaybe (<span class="dt">PureF</span> x)     <span class="ot">=</span> <span class="dt">Just</span> x</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        freeFToMaybe (<span class="dt">WrapF</span> <span class="dt">Proxy</span>) <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p><code>FreeT</code>にも普遍性があります。</p>
+<ul>
+<li><p><code>m, n</code>をモナドとする。任意のモナド準同型<code>tr :: FreeT f m ~&gt; n</code>は、
+自然変換<code>f :: f ~&gt; n</code>とモナド準同型<code>tr2 :: m ~&gt; n</code>の組<code>(f, tr2)</code>へ、
+以下の<code>mergeFreeT</code>によって<em>一対一に</em>対応する。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeFreeT ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (f <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (m <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">FreeT</span> f m <span class="op">~&gt;</span> n)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mergeFreeT f tr2 <span class="ot">=</span> go</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">FreeT</span> mx) <span class="ot">=</span> tr2 mfx <span class="op">&gt;&gt;=</span> goF</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    goF (<span class="dt">PureF</span> a) <span class="ot">=</span> <span class="fu">pure</span> a</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    goF (<span class="dt">WrapF</span> fy) <span class="ot">=</span> f fy <span class="op">&gt;&gt;=</span> go</span></code></pre></div></li>
+</ul>
+<p>これも”<code>MaybeT</code>モナドの普遍性”に翻訳してみましょう。</p>
+<ul>
+<li><p><code>m, n</code>をモナドとする。任意のモナド準同型<code>tr :: MaybeT m ~&gt; n</code>は、
+自然変換<code>h :: Proxy ~&gt; n</code>とモナド準同型<code>tr2 :: m ~&gt; n</code>の組<code>(f, tr2)</code>へ、
+以下の<code>mergeMaybeT</code>によって<em>一対一に</em>対応する。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mergeMaybeT ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (<span class="dt">Proxy</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (m <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">MaybeT</span> m <span class="op">~&gt;</span> n)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mergeMaybeT h tr2 <span class="ot">=</span> go</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    go (<span class="dt">MaybeT</span> mx) <span class="ot">=</span> tr2 mfx <span class="op">&gt;&gt;=</span> <span class="fu">maybe</span> (h <span class="dt">Proxy</span>) <span class="fu">pure</span></span></code></pre></div></li>
+</ul>
+<p>これは結構意外なことではないでしょうか？</p>
+<p>例えば <code>m a = Reader k a = k -&gt; a</code>とすると、モナド準同型<code>tr</code>とは自然変換</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tr ::</span> <span class="dt">MaybeT</span> (<span class="dt">Reader</span> k) <span class="op">~&gt;</span> n</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">--  ~ ∀a. (k -&gt; Maybe a) -&gt; n a</span></span></code></pre></div>
+<p>であって、モナド演算を保つという条件を満たすものです。
+<code>m a ~ (k -&gt; Maybe a)</code>という関手は非常に”大きい”関手で、
+仮に単独の<code>data F a = ...</code>で表そうとするならば、
+<code>2^|k|</code>個のコンストラクタを設けないといけません。
+そのため、この”大きな”関手から別の関手<code>n</code>への自然変換は、<code>n</code>によっては本当に凄まじい数が存在します。</p>
+<p>ですが、<em>もしその自然変換がモナド準同型であったならば</em>、
+モナド準同型<code>tr2 :: ∀x. (k -&gt; x) -&gt; n x</code>とただ一つの値<code>h Proxy :: ∀x. n x</code>だけで記述できることがわかったのです。</p>
+<p>凄いでしょう！</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>これはきちんと証明しなければいけないことなのですが、省略します<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><code>Maybe = Free Proxy</code>と同様に証明は省いていますが、しっかり考えるとあまり自明ではないです<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

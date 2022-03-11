@@ -27,10 +27,14 @@
             <h1>Applicativeと対応する代数</h1>
             <article>
     <section class="header">
-        
-            Posted on 2020-05-30
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2020-05-30</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h1 id="動機">動機</h1>
@@ -40,9 +44,13 @@
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> <span class="dt">M</span> (<span class="dt">E</span> <span class="ot">-&gt;</span> a)</span></code></pre></div>
 <p>特に、このような<code>Monad F</code>を定めるような<code>M, E</code>上の代数的構造を明らかにしたかった。</p>
-<p>例えば、<code>Writer m a ~ (m, a)</code>の<code>Monad</code>のインスタンスには <code>m</code>上のモノイドが1対1に対応するし、 <code>Reader e a ~ (e -&gt; a)</code>は一意な方法で<code>Monad</code>になるが、これには <code>e</code>上の唯一の”余モノイド”<code>(const () :: e -&gt; (), join (,) :: e -&gt; (e,e))</code>が対応する。</p>
+<p>例えば、<code>Writer m a ~ (m, a)</code>の<code>Monad</code>のインスタンスには
+<code>m</code>上のモノイドが1対1に対応するし、
+<code>Reader e a ~ (e -&gt; a)</code>は一意な方法で<code>Monad</code>になるが、これには
+<code>e</code>上の唯一の”余モノイド”<code>(const () :: e -&gt; (), join (,) :: e -&gt; (e,e))</code>が対応する。</p>
 <p>こんな感じで、<code>Monad F</code>に対応する代数は何かを考えていた。</p>
-<p>が、何日かトライしたもののこれは相当難しい感じがするので、 まずは<code>Applicative F</code>に何が対応するのかから考えてみた。</p>
+<p>が、何日かトライしたもののこれは相当難しい感じがするので、
+まずは<code>Applicative F</code>に何が対応するのかから考えてみた。</p>
 <h2 id="applicative-f-の構造">Applicative F の構造</h2>
 <p>ここから、以下の変数が唐突に出てきたら、暗に”任意の<code>x</code>について…“等が挿入されていると思ってほしい。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x, y,<span class="ot"> z ::</span> <span class="dt">M</span></span>
@@ -55,7 +63,8 @@
 <p>また、<code>Applicative</code>のインスタンスは、次の<code>prod</code>を与えても決まる。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prod ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b <span class="ot">-&gt;</span> <span class="dt">F</span> (a,b)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prod <span class="ot">=</span> liftA2 (,)</span></code></pre></div>
-<p><code>M</code>と<code>E</code>に関する関数<code>(&lt;&gt;) :: M -&gt; M -&gt; M</code>と<code>d :: M -&gt; M -&gt; E -&gt; (E, E)</code>が、 <code>prod</code>の実装と1対1に対応する。</p>
+<p><code>M</code>と<code>E</code>に関する関数<code>(&lt;&gt;) :: M -&gt; M -&gt; M</code>と<code>d :: M -&gt; M -&gt; E -&gt; (E, E)</code>が、
+<code>prod</code>の実装と1対1に対応する。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prod (<span class="dt">F</span> x f) (<span class="dt">F</span> y g) <span class="ot">=</span> <span class="dt">F</span> (x <span class="op">&lt;&gt;</span> y) ((f <span class="op">***</span> g) <span class="op">.</span> d x y)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;&gt;</span> y <span class="ot">=</span> <span class="kw">case</span> prod (<span class="dt">F</span> x <span class="fu">id</span>) (<span class="dt">F</span> y <span class="fu">id</span>) <span class="kw">of</span></span>
@@ -105,7 +114,8 @@
 <span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>(x <span class="op">&lt;&gt;</span> y) <span class="op">&lt;&gt;</span> z <span class="ot">=</span> x <span class="op">&lt;&gt;</span> (y <span class="op">&lt;&gt;</span> z) <span class="co">-- (M-assoc)</span></span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>first (d x y) <span class="op">.</span> d (x <span class="op">&lt;&gt;</span> y) z</span>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> assoc <span class="op">.</span> second (d y z) <span class="op">.</span> d x (y <span class="op">&lt;&gt;</span> z)  <span class="co">-- (d-assoc)</span></span></code></pre></div>
-<p>(M-unitR), (M-unitL), (M-assoc)はモノイド則そのものである。 一方で<code>d</code>に関する法則はあまり明らかでない。</p>
+<p>(M-unitR), (M-unitL), (M-assoc)はモノイド則そのものである。
+一方で<code>d</code>に関する法則はあまり明らかでない。</p>
 <p>これらの法則はむしろ図に書いたほうがわかりやすい。</p>
 <pre><code>    |                 |
  ---+---           +--*--+
@@ -139,20 +149,29 @@
   |   |         |             |         |   |</code></pre>
 <h2 id="具体例を調べる">具体例を調べる</h2>
 <p>Applicativeの具体例を挙げて、ここまで述べた法則が満たされていることを確認していく。</p>
-<p>もっとも単純には、<code>Compose (Writer M) (Reader E)</code>と同じ <code>Applicative</code>のインスタンスが考えられる。これは、</p>
+<p>もっとも単純には、<code>Compose (Writer M) (Reader E)</code>と同じ
+<code>Applicative</code>のインスタンスが考えられる。これは、</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>d _ _ <span class="ot">=</span> \i <span class="ot">-&gt;</span> (i,i)</span></code></pre></div>
-<p>とした場合に相当する。この定義において<code>d</code>に関する各法則が成り立つことを確認するのは、 式(d-unitL),etc. を使っても簡単だが、 <code>d _ _</code> が「入力をただコピーする」ことを図で表した</p>
+<p>とした場合に相当する。この定義において<code>d</code>に関する各法則が成り立つことを確認するのは、
+式(d-unitL),etc. を使っても簡単だが、
+<code>d _ _</code> が「入力をただコピーする」ことを図で表した</p>
 <pre><code>   |           |
 ---+---        |
  d _ _   === +-*-+
 -+---+-      |   |
  |   |       |   |</code></pre>
 <p>を上の3図式に当てはめれば、法則が成り立っていることは自明である。</p>
-<p>また、<code>M = E -&gt; E</code> であるとき、 自然同型 <code>F x  ~  (E -&gt; E, E -&gt; x)  ~  E -&gt; (E, x)  ~  State E x</code> が得られるが、<code>State E</code>は<code>Monad</code>であり、もちろん<code>Applicative</code>でもあるので、 <code>F x</code>が<code>Applicative</code>として得られたことになる。このとき、<code>d</code>は</p>
+<p>また、<code>M = E -&gt; E</code> であるとき、
+自然同型 <code>F x  ~  (E -&gt; E, E -&gt; x)  ~  E -&gt; (E, x)  ~  State E x</code>
+が得られるが、<code>State E</code>は<code>Monad</code>であり、もちろん<code>Applicative</code>でもあるので、
+<code>F x</code>が<code>Applicative</code>として得られたことになる。このとき、<code>d</code>は</p>
 <pre><code>d x _ = \i -&gt; (i, x i)</code></pre>
-<p>である。このとき、<code>M</code>上のモノイド演算としては、<code>mempty = id</code>および <code>x &lt;&gt; y = x &gt;&gt;&gt; y = y . x</code>が使われている。</p>
+<p>である。このとき、<code>M</code>上のモノイド演算としては、<code>mempty = id</code>および
+<code>x &lt;&gt; y = x &gt;&gt;&gt; y = y . x</code>が使われている。</p>
 <h2 id="モノイド作用によるapplicative">モノイド作用によるApplicative</h2>
-<p><code>State E</code>と同型になるケースとの中間例として、 <code>M</code>が<code>E</code>上にモノイド作用を持つ場合というものを考えることができる。 モノイド<code>M</code>の<code>E</code>上への(右)モノイド作用<code>(◁) :: E -&gt; M -&gt; E</code>は</p>
+<p><code>State E</code>と同型になるケースとの中間例として、
+<code>M</code>が<code>E</code>上にモノイド作用を持つ場合というものを考えることができる。
+モノイド<code>M</code>の<code>E</code>上への(右)モノイド作用<code>(◁) :: E -&gt; M -&gt; E</code>は</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>i ◁ <span class="dv">1</span> <span class="ot">=</span> i</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>(i ◁ x) ◁ y <span class="ot">=</span> i ◁ (x <span class="op">&lt;&gt;</span> y)</span></code></pre></div>
 <p>を満たす関数である。モノイド作用<code>◁</code>を用いて、</p>
@@ -218,7 +237,8 @@
 |     |       |           |   |     |
 
  (モノイド作用の結合法則から両辺は等しい)</code></pre>
-<p>今考えたものは<em>右</em>モノイド作用であるが、<em>左</em>モノイド作用を考えることもできて、 左モノイド作用 <code>(▷) :: M -&gt; E -&gt; E</code> は次式を満たす。</p>
+<p>今考えたものは<em>右</em>モノイド作用であるが、<em>左</em>モノイド作用を考えることもできて、
+左モノイド作用 <code>(▷) :: M -&gt; E -&gt; E</code> は次式を満たす。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> ▷ i <span class="ot">=</span> i</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>x ▷ (y ▷ i) <span class="ot">=</span> (x <span class="op">&lt;&gt;</span> y) ▷ i</span></code></pre></div>
 <p>これを用いて、</p>
@@ -228,7 +248,9 @@
 <div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>d x y <span class="ot">=</span> \i <span class="ot">-&gt;</span> (y ▷ i, i ◁ x)</span></code></pre></div>
 <p>これは各法則を満たすだろうか？図を書いていくと（AAめっちゃ面倒だったので省略）</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(z ▷ i) ◁ x <span class="ot">=</span> z ▷ (i ◁ x)</span></code></pre></div>
-<p>が任意の<code>z,x :: M, i :: E</code>に対して成り立っているとき、そのときに限り成り立つことがわかる。 これは左右のモノイド作用が可換であることを言っている。 加群の例に倣うなら”E上の(M,M)-両側モノイド作用”とでも呼べばいいだろうか。</p>
+<p>が任意の<code>z,x :: M, i :: E</code>に対して成り立っているとき、そのときに限り成り立つことがわかる。
+これは左右のモノイド作用が可換であることを言っている。
+加群の例に倣うなら”E上の(M,M)-両側モノイド作用”とでも呼べばいいだろうか。</p>
 <p>具体例を出してみよう。<code>M = E = Int</code>とし、<code>M</code>のモノイドは<code>Int</code>の加法とする。</p>
 <pre><code>x ▷ y = x ◁ y = x + y</code></pre>
 <p>とすれば、これは左右のモノイド作用を定めており、さらに互いに可換である。</p>
@@ -239,9 +261,11 @@
 instance Applicative F where
   pure x = F (0, const x)
   F (x, f) &lt;*&gt; F (y, g) = F (x + y, \i -&gt; f (i + y) (g (i + x)))</code></pre>
-<p>である。こんなApplicativeは見たことさえないし、何かの役に立つのかまったくわからないが、 ともかく<strong>両側モノイド作用を使って、新しいApplicativeを量産する方法</strong>を手に入れたことになる。</p>
+<p>である。こんなApplicativeは見たことさえないし、何かの役に立つのかまったくわからないが、
+ともかく<strong>両側モノイド作用を使って、新しいApplicativeを量産する方法</strong>を手に入れたことになる。</p>
 <h2 id="一般論に戻って">一般論に戻って</h2>
-<p>しかし、本来の疑問は<strong>すべての</strong>Applicativeのインスタンスと対応する代数はなにかということだった。 両側モノイド作用によるApplicative以外にもそのような例があるだろうか？</p>
+<p>しかし、本来の疑問は<strong>すべての</strong>Applicativeのインスタンスと対応する代数はなにかということだった。
+両側モノイド作用によるApplicative以外にもそのような例があるだろうか？</p>
 <p>まだ次の疑問が解決していない。</p>
 <ul>
 <li>関手<code>F x ~ (M, E -&gt; x)</code>に対するすべての可能なApplicativeのインスタンスは、両側モノイド作用によるものか？</li>

@@ -27,14 +27,19 @@
             <h1>可換なモナドとは？</h1>
             <article>
     <section class="header">
-        
-            Posted on 2020-02-29
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2020-02-29</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h2 id="listtの醜名"><code>ListT</code>の醜名</h2>
-<p>よく知られた話として、モナド変換子 <code>ListT</code>（<a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-List.html#t:ListT">ドキュメント</a>） が<code>Monad</code>則を満たしていないという話があります。</p>
+<p>よく知られた話として、モナド変換子 <code>ListT</code>（<a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-List.html#t:ListT">ドキュメント</a>）
+が<code>Monad</code>則を満たしていないという話があります。</p>
 <p><code>ListT</code>は、あまり本質的でない部分を除くと、以下のように定義されています。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ListT</span> m a <span class="ot">=</span> <span class="dt">ListT</span> {<span class="ot"> runListT ::</span> m [a] }</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -44,7 +49,9 @@
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">ListT</span> m) <span class="kw">where</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> a <span class="ot">=</span> <span class="dt">ListT</span> <span class="op">$</span> <span class="fu">return</span> [a]</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ListT</span> mta <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">ListT</span> <span class="op">$</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> mta <span class="op">&gt;&gt;=</span> <span class="fu">traverse</span> (runListT <span class="op">.</span> f)</span></code></pre></div>
-<p>しかし、<code>instance Monad m =&gt; Monad (ListT m)</code> は正当なインスタンスではありません。 どんな <code>m</code> に対しても<code>ListT m</code>が真にMonadである―Monad則を満たす―わけではないからです。 （そのため、<code>Control.Monad.List</code>はモジュール全体がdeprecatedです。）</p>
+<p>しかし、<code>instance Monad m =&gt; Monad (ListT m)</code> は正当なインスタンスではありません。
+どんな <code>m</code> に対しても<code>ListT m</code>が真にMonadである―Monad則を満たす―わけではないからです。
+（そのため、<code>Control.Monad.List</code>はモジュール全体がdeprecatedです。）</p>
 <p>Monadとして破綻していることを実際に示すことも簡単にできます。</p>
 <pre><code>&gt;&gt;&gt; import Control.Monad.List
 &gt;&gt;&gt; :set -Wno-deprecations
@@ -56,28 +63,36 @@
 abccbcc[(),(),(),(),(),(),(),()]
 &gt;&gt;&gt; runListT $ (purr &quot;a&quot; &gt;&gt; purr &quot;b&quot;) &gt;&gt; purr &quot;c&quot;
 abbcccc[(),(),(),(),(),(),(),()]</code></pre>
-<p>副作用として出力された文字の順番に注目してください。カッコを付け替えただけなのに順番が違いますね？ Monad則の一つ、結合法則を満たしていません。</p>
+<p>副作用として出力された文字の順番に注目してください。カッコを付け替えただけなのに順番が違いますね？
+Monad則の一つ、結合法則を満たしていません。</p>
 <p>さて、<code>ListT</code>のドキュメントにはこんなことが書かれています。</p>
 <blockquote>
 <p><em>Note:</em> this does not yield a monad unless the argument monad is commutative.</p>
 <p><em>注意:</em> 引数のモナドが可換でない限り、これはMonadにはならない。</p>
 </blockquote>
 <p>裏を返せば、「引数のモナド<code>m</code>が可換なときに限り、<code>ListT m</code>はMonadになる」ということです。</p>
-<p>さて、「モナドが可換である」って、聞いたことあります？私は、「なんとなく言いたいことはわかるけど、 ちょっと曖昧じゃない？」と感じていました。例えば、ある2項演算<code>op :: (X, X) -&gt; X</code>が可換であると言うとき、ふつうは</p>
+<p>さて、「モナドが可換である」って、聞いたことあります？私は、「なんとなく言いたいことはわかるけど、
+ちょっと曖昧じゃない？」と感じていました。例えば、ある2項演算<code>op :: (X, X) -&gt; X</code>が可換であると言うとき、ふつうは</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">swap ::</span> (x, y) <span class="ot">-&gt;</span> (y, x)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>swap (x, y) <span class="ot">=</span> (y, x)</span></code></pre></div>
-<p>のように、“引数の順番を入れ替える”写像を使って、<code>op . swap = op</code>のように定義します。しかし、<code>Monad</code>の”2項演算”は <code>join :: forall a. m (m a) -&gt; m a</code>です。この”引数の順番を入れ替える”ことは、一般にはできません。 では、Monadが可換であるという条件は、どう定義すればいいのでしょうか？</p>
+<p>のように、“引数の順番を入れ替える”写像を使って、<code>op . swap = op</code>のように定義します。しかし、<code>Monad</code>の”2項演算”は
+<code>join :: forall a. m (m a) -&gt; m a</code>です。この”引数の順番を入れ替える”ことは、一般にはできません。
+では、Monadが可換であるという条件は、どう定義すればいいのでしょうか？</p>
 <h2 id="可換なモナド-とは">可換なモナド #とは</h2>
 <p>ググってみましょう。</p>
 <ul>
 <li><p><a href="https://wiki.haskell.org/Monad#Commutative_monads">HaskellWikiでの定義</a></p>
-<p><code>Monad m</code>が可換であるとは、任意の<code>actA :: m a, actB :: m b, m :: a -&gt; b -&gt; m c</code>に対して、 以下の等式が成り立つことを意味します。</p>
+<p><code>Monad m</code>が可換であるとは、任意の<code>actA :: m a, actB :: m b, m :: a -&gt; b -&gt; m c</code>に対して、
+以下の等式が成り立つことを意味します。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">do</span> { a <span class="ot">&lt;-</span> actA; b <span class="ot">&lt;-</span> actB; m a b }</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">do</span> { b <span class="ot">&lt;-</span> actB; a <span class="ot">&lt;-</span> actA; m a b }</span></code></pre></div>
-<p>Monad則を使えば、これは「任意の<code>f :: a -&gt; b -&gt; c</code>に対して <code>liftM2 f actA actB = liftM2 (flip f) actB actA</code>」 と同値です。</p>
-<p>どんなMonadも、その親クラスのApplicativeとの関係として、<code>liftA2 = liftM2</code>が要求されるため、 「<code>liftA2 f actA actB = liftA2 (flip f) actB actA</code>」とも同じことです。</p>
-<p>これで、Monadが可換である条件は、<code>Applicative</code>の言葉だけで書けました。 標語的に、「<code>m</code>が可換であるとは、<code>Applicative</code>として可換である」とでも言いましょう。</p></li>
+<p>Monad則を使えば、これは「任意の<code>f :: a -&gt; b -&gt; c</code>に対して <code>liftM2 f actA actB = liftM2 (flip f) actB actA</code>」
+と同値です。</p>
+<p>どんなMonadも、その親クラスのApplicativeとの関係として、<code>liftA2 = liftM2</code>が要求されるため、
+「<code>liftA2 f actA actB = liftA2 (flip f) actB actA</code>」とも同じことです。</p>
+<p>これで、Monadが可換である条件は、<code>Applicative</code>の言葉だけで書けました。
+標語的に、「<code>m</code>が可換であるとは、<code>Applicative</code>として可換である」とでも言いましょう。</p></li>
 <li><p><a href="https://en.wikipedia.org/wiki/Strong_monad">Wikipedia</a></p>
 <p>一般の（対称モノイダル）圏で考えるために色々書いてありますが、Haskellの<code>Monad</code>の場合だけを考えればそんなに難しいことは書いていないので、エイヤと翻訳してしまいます。</p>
 <p><code>Monad</code>である<code>T</code>が可換であるとは、次の関数を使って・・・</p>
@@ -108,7 +123,8 @@ abbcccc[(),(),(),(),(),(),(),()]</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">join' ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Compose</span> m m a <span class="ot">-&gt;</span> m a</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>join' <span class="ot">=</span> join <span class="op">.</span> runCompose</span></code></pre></div>
 <p><code>Compose</code>については<a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Functor-Compose.html">Data.Functor.Compose</a>を参照して下さい。</p>
-<p>Applicative準同型とは、<a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Traversable.html#t:Traversable">Data.Traversable</a>のドキュメントでしか見たことがない、でもまあ、そうなるよねっていう感じのする、 Applicativeの間の自然変換です（いいかげん）。</p>
+<p>Applicative準同型とは、<a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Traversable.html#t:Traversable">Data.Traversable</a>のドキュメントでしか見たことがない、でもまあ、そうなるよねっていう感じのする、
+Applicativeの間の自然変換です（いいかげん）。</p>
 <blockquote>
 <p>an <em>applicative transformation</em> is a function</p>
 <p><code>t :: (Applicative f, Applicative g) =&gt; f a -&gt; g a</code></p>

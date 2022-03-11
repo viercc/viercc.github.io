@@ -27,10 +27,14 @@
             <h1>多項式Applicative Functorの一般論（補遺）</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-01-01
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-01-01</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <p>書いていたら年が明けました。</p>
@@ -60,7 +64,8 @@
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      xy_f <span class="ot">=</span> x_f <span class="op">.</span> tr' x <span class="op">.</span> act y <span class="op">.</span> tr xy</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      xy_a <span class="ot">=</span> y_a <span class="op">.</span> tr' y <span class="op">.</span> tr xy</span></code></pre></div>
 </blockquote>
-<p>改めてこの部分を読んでみると、Functorとしての<code>(G, E -&gt; a)</code>への自然同型のとりかたを工夫すれば、 <code>tr x = tr' x = id</code>となるようにできますね。なので、次のようにしたほうが簡潔でした。</p>
+<p>改めてこの部分を読んでみると、Functorとしての<code>(G, E -&gt; a)</code>への自然同型のとりかたを工夫すれば、
+<code>tr x = tr' x = id</code>となるようにできますね。なので、次のようにしたほうが簡潔でした。</p>
 <blockquote>
 <p>モノイド<code>Ap F ()</code>が群<code>G</code>になるような多項式 Applicative <code>F</code> は、</p>
 <ul>
@@ -109,13 +114,16 @@
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> inv (x_a i) <span class="op">&lt;&gt;</span> x_a i)</span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">F</span> <span class="fu">mempty</span> (\i <span class="ot">-&gt;</span> <span class="fu">mempty</span>)</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mempty1</span></code></pre></div>
-<p>2つの群<code>G,H</code>と群作用<code>G -&gt; E -&gt; E</code>から新たな群を作るこの構成は、 群論の中ではズバリそのものがよく知られていて、<a href="https://ja.wikipedia.org/wiki/%E8%BC%AA%E7%A9%8D">輪積</a> という名前が付いています。（とえらそうに言いますが、私自身この補遺を書くまで気づいていませんでしたが。）</p>
+<p>2つの群<code>G,H</code>と群作用<code>G -&gt; E -&gt; E</code>から新たな群を作るこの構成は、
+群論の中ではズバリそのものがよく知られていて、<a href="https://ja.wikipedia.org/wiki/%E8%BC%AA%E7%A9%8D">輪積</a>
+という名前が付いています。（とえらそうに言いますが、私自身この補遺を書くまで気づいていませんでしたが。）</p>
 <p>まとめると、</p>
 <ul>
 <li><p>多項式Applicative Functorである<code>F</code>について、次は同値</p>
 <ol type="1">
 <li><code>Ap F ()</code>が群である</li>
-<li><code>F</code>に同型なApplicative<code>F'</code>として <code>F' a = (G, E -&gt; a)</code>が存在し、 <code>G</code>は群で、左<code>G</code>-作用<code>act :: G -&gt; E -&gt; E</code>から定まる<code>Applicative</code>演算を持つ</li>
+<li><code>F</code>に同型なApplicative<code>F'</code>として <code>F' a = (G, E -&gt; a)</code>が存在し、
+<code>G</code>は群で、左<code>G</code>-作用<code>act :: G -&gt; E -&gt; E</code>から定まる<code>Applicative</code>演算を持つ</li>
 <li>任意の群<code>H</code>について、<code>Ap F H</code>は群である。特に、<code>G</code>-作用を持つ集合<code>E</code>上の<code>H</code>の輪積になる。</li>
 </ol></li>
 </ul>

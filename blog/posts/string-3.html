@@ -27,20 +27,26 @@
             <h1>ストリング図でMonad再入門(3)</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-06-01
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-06-01</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
-        <p><a href="2021-05-24-string-2.html">前回</a>、ストリング図を使って<code>StateT</code>モナド変換子のモナド則を証明しました。 今度は<code>ReaderT</code>,<code>WriterT</code>,<code>ExceptT</code>の3つについてやっていきます。</p>
+        <p><a href="2021-05-24-string-2.html">前回</a>、ストリング図を使って<code>StateT</code>モナド変換子のモナド則を証明しました。
+今度は<code>ReaderT</code>,<code>WriterT</code>,<code>ExceptT</code>の3つについてやっていきます。</p>
 <ul>
 <li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Reader.html#g:2">ReaderT</a></li>
 <li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Writer-Lazy.html#g:2">WriterT</a></li>
 <li><a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Except.html#g:2">ExceptT</a></li>
 </ul>
 <h2 id="共通の構造">共通の構造</h2>
-<p>前回の記事までは、証明の方針は私が天下り的に与えていましたが、 今回は「発見的な」やり方で説明してみようと思います。</p>
+<p>前回の記事までは、証明の方針は私が天下り的に与えていましたが、
+今回は「発見的な」やり方で説明してみようと思います。</p>
 <h3 id="writertの場合">WriterTの場合</h3>
 <p>まずは、<code>WriterT</code>の実装を眺めてみます。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- transformers パッケージのものとは（同型ですが）少し違います</span></span>
@@ -60,7 +66,10 @@
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span> (w, mwa) <span class="ot">&lt;-</span> mwmwa</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>           (w', a) <span class="ot">&lt;-</span> mwa</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">return</span> (w <span class="op">&lt;&gt;</span> w', a)</span></code></pre></div>
-<p>ここで、<code>pure</code>は自然変換<code>pureWriter</code>, <code>pure</code>, <code>WriterT</code>の合成で書くことができていて、 ストリング図に書きやすそうです。 一方、<code>join</code>の実装に使った<code>joinT</code>は、もっと単純な自然変換の合成で書けてはいないようです。 <code>joinT</code>をうまいこと自然変換たちに分解してみましょう。</p>
+<p>ここで、<code>pure</code>は自然変換<code>pureWriter</code>, <code>pure</code>, <code>WriterT</code>の合成で書くことができていて、
+ストリング図に書きやすそうです。
+一方、<code>join</code>の実装に使った<code>joinT</code>は、もっと単純な自然変換の合成で書けてはいないようです。
+<code>joinT</code>をうまいこと自然変換たちに分解してみましょう。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Writerモナド(w,_)のjoinが使えそうです</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">joinWriter ::</span> <span class="dt">Monoid</span> w <span class="ot">=&gt;</span> (w, (w, a)) <span class="ot">-&gt;</span> (w, a)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>joinWriter (w, (w', a)) <span class="ot">=</span> (w <span class="op">&lt;&gt;</span> w', a)</span>
@@ -118,11 +127,15 @@
 <figure>
 <img src="../images/string/writer-t-join.png" alt="WriterTのjoin" /><figcaption aria-hidden="true">WriterTのjoin</figcaption>
 </figure>
-<p>青丸を<code>WriterT w m</code>のモナド演算（<code>pure</code>または<code>join</code>）に当てていて、 同様に緑丸を<code>Writer</code>モナド、赤丸をモナド<code>m</code>に対応させています。 また、二つの線が交わるところにある点が<code>swapWM</code>です。</p>
+<p>青丸を<code>WriterT w m</code>のモナド演算（<code>pure</code>または<code>join</code>）に当てていて、
+同様に緑丸を<code>Writer</code>モナド、赤丸をモナド<code>m</code>に対応させています。
+また、二つの線が交わるところにある点が<code>swapWM</code>です。</p>
 <figure>
 <img src="../images/string/writer-t-assumption.png" alt="WriterTの構成要素" /><figcaption aria-hidden="true">WriterTの構成要素</figcaption>
 </figure>
-<p>さて、私達は<code>WriterT</code>を構成する2つのモナド<code>(w,_)</code>と<code>m</code>のモナド演算については よくわかっていますが、自然変換<code>swapWM</code>についてはよくわかっていません。 そのため、ひとまず<code>WriterT</code>のモナド則の証明は後回しにしておきます。</p>
+<p>さて、私達は<code>WriterT</code>を構成する2つのモナド<code>(w,_)</code>と<code>m</code>のモナド演算については
+よくわかっていますが、自然変換<code>swapWM</code>についてはよくわかっていません。
+そのため、ひとまず<code>WriterT</code>のモナド則の証明は後回しにしておきます。</p>
 <h3 id="readertの場合">ReaderTの場合</h3>
 <p><code>ReaderT</code>モナド変換子をストリング図に描く方法を考えます。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ReaderT</span> r m a <span class="ot">=</span> <span class="dt">ReaderT</span> {<span class="ot"> runReaderT ::</span> r <span class="ot">-&gt;</span> m a }</span>
@@ -142,7 +155,12 @@
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ot">      joinT ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (r <span class="ot">-&gt;</span> m (r <span class="ot">-&gt;</span> m a)) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m a</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      joinT rmrma <span class="ot">=</span> \r <span class="ot">-&gt;</span> rmrma r <span class="op">&gt;&gt;=</span> \rma <span class="ot">-&gt;</span> rma r</span></code></pre></div>
-<p>ふたたび、<code>joinT</code>が単純な自然変換の合成になっていませんが、 <code>WriterT</code>のときと同じ作戦でいってみましょう。 <code>WriterT w m</code>が<code>Writer w = (w, )</code>と<code>m</code>の合成<code>Functor</code>だったように、 <code>ReaderT r m</code>も<code>m</code>と<code>Reader r = (r -&gt; _)</code>の合成<code>Functor</code>です。 そのため、<code>joinT</code>の引数は<code>Functor</code>の4段重ね<code>r -&gt; m (r -&gt; (m _))</code>になっています。 4段重ねの中央の2段、<code>m (r -&gt; _)</code>を入れ替えられれば、<code>Reader</code>と<code>m</code>の<code>join</code>を使えます。</p>
+<p>ふたたび、<code>joinT</code>が単純な自然変換の合成になっていませんが、
+<code>WriterT</code>のときと同じ作戦でいってみましょう。
+<code>WriterT w m</code>が<code>Writer w = (w, )</code>と<code>m</code>の合成<code>Functor</code>だったように、
+<code>ReaderT r m</code>も<code>m</code>と<code>Reader r = (r -&gt; _)</code>の合成<code>Functor</code>です。
+そのため、<code>joinT</code>の引数は<code>Functor</code>の4段重ね<code>r -&gt; m (r -&gt; (m _))</code>になっています。
+4段重ねの中央の2段、<code>m (r -&gt; _)</code>を入れ替えられれば、<code>Reader</code>と<code>m</code>の<code>join</code>を使えます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- mとReaderの入れ替え</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">swapMR ::</span> (<span class="dt">Functor</span> m) <span class="ot">=&gt;</span> m (r <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m b</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>swapMR mrb r <span class="ot">=</span> <span class="fu">fmap</span> (<span class="op">$</span> r) mrb</span>
@@ -167,7 +185,9 @@
 <img src="../images/string/reader-t-all.png" alt="ReaderTの定義" /><figcaption aria-hidden="true">ReaderTの定義</figcaption>
 </figure>
 <h3 id="excepttの場合">ExceptTの場合</h3>
-<p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と”同じ構造”を持っています。 もはや細かい説明は不要かと思いますが、<code>ExceptT e m</code>はモナド<code>m</code>とモナド<code>Either e</code>の合成<code>Functor</code>で、 入れ替えをする自然変換<code>swapEM</code>によってモナドにしています。</p>
+<p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と”同じ構造”を持っています。
+もはや細かい説明は不要かと思いますが、<code>ExceptT e m</code>はモナド<code>m</code>とモナド<code>Either e</code>の合成<code>Functor</code>で、
+入れ替えをする自然変換<code>swapEM</code>によってモナドにしています。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ExceptT</span> e m a <span class="ot">=</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ExceptT</span> {<span class="ot"> runExceptT ::</span> m (<span class="dt">Either</span> e a) }</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -175,7 +195,9 @@
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>swapEM (<span class="dt">Left</span> e) <span class="ot">=</span> <span class="fu">pure</span> (<span class="dt">Left</span> e)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>swapEM (<span class="dt">Right</span> mb) <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">Right</span> mb</span></code></pre></div>
 <h3 id="つをひとまとめにする">3つをひとまとめにする</h3>
-<p><code>WriterT</code>、<code>ReaderT</code>、<code>ExceptT</code>はどれも、 モナドの合成順を入れ替える自然変換を使って定義できました。 この3つのどれも、以下の構造を持っています。</p>
+<p><code>WriterT</code>、<code>ReaderT</code>、<code>ExceptT</code>はどれも、
+モナドの合成順を入れ替える自然変換を使って定義できました。
+この3つのどれも、以下の構造を持っています。</p>
 <ul>
 <li><p>あるモナド<code>m</code>とモナド<code>n</code>の合成<code>m ∘ n</code>になっている</p></li>
 <li><p>入れ替えをする自然変換<code>swap ::∀a. n (m a) -&gt; m (n a)</code>を持っている</p></li>
@@ -215,14 +237,20 @@
 </tbody>
 </table>
 <h2 id="モナドの合成のモナド則">モナドの合成のモナド則</h2>
-<p>任意のモナドの組み合わせ<code>m, n</code>と前節の<code>swap</code>によって、 <code>m ∘ n</code>がモナドになると言いたいところですが、<em>どんな</em>自然変換でもよいのでしょうか？そんなことは無さそうです。</p>
-<p>実際、なんでもOKではありません。<code>WriterT</code>の構成にある<code>swapWM :: (w, m a) -&gt; m (w, a)</code>で、 モノイド<code>w</code>を勝手に<code>mempty</code>に置き換えたりすれば、 出来上がった<code>WriterT w m</code>はモナド則を満たさなくなってしまいます。</p>
-<p>しかし、「<code>swap</code>が特定の条件を満たせば<code>m ∘ n</code>がモナドになる」とは言えるはずです。 ストリング図を描いて、どんな条件を満たせばよいのか考えてみます。</p>
+<p>任意のモナドの組み合わせ<code>m, n</code>と前節の<code>swap</code>によって、
+<code>m ∘ n</code>がモナドになると言いたいところですが、<em>どんな</em>自然変換でもよいのでしょうか？そんなことは無さそうです。</p>
+<p>実際、なんでもOKではありません。<code>WriterT</code>の構成にある<code>swapWM :: (w, m a) -&gt; m (w, a)</code>で、
+モノイド<code>w</code>を勝手に<code>mempty</code>に置き換えたりすれば、
+出来上がった<code>WriterT w m</code>はモナド則を満たさなくなってしまいます。</p>
+<p>しかし、「<code>swap</code>が特定の条件を満たせば<code>m ∘ n</code>がモナドになる」とは言えるはずです。
+ストリング図を描いて、どんな条件を満たせばよいのか考えてみます。</p>
 <p>まず、左単位法則から見てみます。</p>
 <figure>
 <img src="../images/string/monad-compose-left-unit.png" alt="モナドの合成、左単位法則" /><figcaption aria-hidden="true">モナドの合成、左単位法則</figcaption>
 </figure>
-<p>ピンク色で強調した部分が<em>成り立っているかどうかわからない</em>等式で、 それ以外の部分は<code>m</code>,<code>n</code>のモナド則といった、すでに知っている等式です。 この<em>成り立ってほしい等式(1)</em>は、もっと単純なバージョン（下図右辺）と同値になります。</p>
+<p>ピンク色で強調した部分が<em>成り立っているかどうかわからない</em>等式で、
+それ以外の部分は<code>m</code>,<code>n</code>のモナド則といった、すでに知っている等式です。
+この<em>成り立ってほしい等式(1)</em>は、もっと単純なバージョン（下図右辺）と同値になります。</p>
 <figure>
 <img src="../images/string/swap-left-unit.png" alt="成り立ってほしい等式(1)" /><figcaption aria-hidden="true">成り立ってほしい等式(1)</figcaption>
 </figure>
@@ -230,7 +258,8 @@
 <figure>
 <img src="../images/string/swap-right-unit.png" alt="成り立ってほしい等式(2)" /><figcaption aria-hidden="true">成り立ってほしい等式(2)</figcaption>
 </figure>
-<p>最後に結合法則を見てみます。（結合法則が成り立つために成り立ってほしい等式を、 ピンク色で強調しています。）</p>
+<p>最後に結合法則を見てみます。（結合法則が成り立つために成り立ってほしい等式を、
+ピンク色で強調しています。）</p>
 <figure>
 <img src="../images/string/monad-compose-assoc.png" alt="モナドの合成、結合法則" /><figcaption aria-hidden="true">モナドの合成、結合法則</figcaption>
 </figure>
@@ -238,7 +267,8 @@
 <figure>
 <img src="../images/string/swap-dist.png" alt="成り立ってほしい等式(3)(4)" /><figcaption aria-hidden="true">成り立ってほしい等式(3)(4)</figcaption>
 </figure>
-<p>これらの等式(1)-(4)を満たすような<code>swap</code>であれば、<code>m ∘ n</code>がモナドになると言えます。 等式(1)-(4)を、ストリング図からHaskellの式に書き直すと、次のようになります。</p>
+<p>これらの等式(1)-(4)を満たすような<code>swap</code>であれば、<code>m ∘ n</code>がモナドになると言えます。
+等式(1)-(4)を、ストリング図からHaskellの式に書き直すと、次のようになります。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> m</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> n</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -254,11 +284,14 @@
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- 等式(4)</span></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> join <span class="op">&gt;&gt;&gt;</span><span class="ot"> swap ::</span> ∀b<span class="op">.</span> n (m (m b)) <span class="ot">-&gt;</span> m (n b)</span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> swap <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> swap <span class="op">&gt;&gt;&gt;</span> join</span></code></pre></div>
-<p>自然変換<code>swap</code>によって(1)-(4)が成り立つことを、 「<code>swap</code>は、モナド<code>m</code>がモナド<code>n</code>に対する<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>分配である<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>」と呼ぶことにして、 ここで証明できたことをまとめると、次のようになります。</p>
+<p>自然変換<code>swap</code>によって(1)-(4)が成り立つことを、
+「<code>swap</code>は、モナド<code>m</code>がモナド<code>n</code>に対する<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>分配である<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>」と呼ぶことにして、
+ここで証明できたことをまとめると、次のようになります。</p>
 <blockquote>
 <p>モナド<code>m</code>がモナド<code>n</code>に対する分配<code>swap</code>を持てば、<code>swap</code>を使って<code>m ∘ n</code>がモナドになる</p>
 </blockquote>
-<p>これを<code>WriterT</code>の場合に適用すれば、<code>WriterT w m</code>がモナド則を満たしていることの証明は、 <code>swap=swapWM</code>が分配であることを確認すればOKです。</p>
+<p>これを<code>WriterT</code>の場合に適用すれば、<code>WriterT w m</code>がモナド則を満たしていることの証明は、
+<code>swap=swapWM</code>が分配であることを確認すればOKです。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 再掲</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">swapWM ::</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> (w, m b) <span class="ot">-&gt;</span> m (w, b)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>swapWM (w, mb) <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) mb</span>
@@ -302,15 +335,22 @@
 <span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b))) mmb</span>
 <span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- join . fmap (fmap f) = fmap f . join</span></span>
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">$</span> join mmb</span></code></pre></div>
-<p><code>ReaderT</code>も<code>ExceptT</code>も、同じように<code>swapMR</code>、<code>swapEM</code>が分配であることが示せて、 モナド則を満たすことがわかります。</p>
+<p><code>ReaderT</code>も<code>ExceptT</code>も、同じように<code>swapMR</code>、<code>swapEM</code>が分配であることが示せて、
+モナド則を満たすことがわかります。</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
 <li id="fn1" role="doc-endnote"><p>（注意）</p>
-<p>「モナド<code>m</code>がモナド<code>n</code>に対する……」において、 <code>m</code>と<code>n</code>の順番には意味があります。 <code>swap :: ∀b. n (m b) -&gt; m (n b)</code>があるからといって、逆向きの自然変換 <code>reverseSwap :: ∀b. m (n b) -&gt; n (m b)</code>があったり、 それが等式(1)-(4)を満たす保証はまったく無いからです。</p>
+<p>「モナド<code>m</code>がモナド<code>n</code>に対する……」において、
+<code>m</code>と<code>n</code>の順番には意味があります。
+<code>swap :: ∀b. n (m b) -&gt; m (n b)</code>があるからといって、逆向きの自然変換
+<code>reverseSwap :: ∀b. m (n b) -&gt; n (m b)</code>があったり、
+それが等式(1)-(4)を満たす保証はまったく無いからです。</p>
 <p>そのため、「モナド<code>m,n</code>の……」のように並列で呼ばないようにしました。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>「分配」という単語は、これが圏論では「分配律(distributive law)」と呼ばれていることから取っています。</p>
-<p>「分配律」から「律」を落としたのは、モナド則の結合法則などの自然変換の間の等式と混同しないためです。 等式(1)-(4)を満たすような<code>swap</code>それ自体が「分配律」と呼ばれていて、等式(1)-(4)は「分配律」 の満たすべき性質（言うなれば「分配律律」）です。</p>
+<p>「分配律」から「律」を落としたのは、モナド則の結合法則などの自然変換の間の等式と混同しないためです。
+等式(1)-(4)を満たすような<code>swap</code>それ自体が「分配律」と呼ばれていて、等式(1)-(4)は「分配律」
+の満たすべき性質（言うなれば「分配律律」）です。</p>
 <p>ややこしすぎて本文に書くことでは無いと思いました。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

@@ -27,18 +27,28 @@
             <h1>ストリング図でMonad再入門(2)</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-05-20
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-05-20</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
-        <p><a href="./2021-05-17-string-diagram.html">前回</a>、 ストリング図について紹介しました。 例として、ストリング図を使ってモナド則を視覚的に表して、 <code>State</code>モナドのモナド則をストリング図の変形で証明しています。</p>
-<p>しかし、<code>State</code>モナドのような単純なケースでは、ストリング図のありがたみが まだわからないかもしれません。</p>
-<p>今回は、<code>StateT</code>モナド変換子（<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-State-Lazy.html#g:2">Control.Monad.Trans.State.Lazy</a>を参照）のモナド則を、 ストリング図で示してみます。</p>
+        <p><a href="./2021-05-17-string-diagram.html">前回</a>、
+ストリング図について紹介しました。
+例として、ストリング図を使ってモナド則を視覚的に表して、
+<code>State</code>モナドのモナド則をストリング図の変形で証明しています。</p>
+<p>しかし、<code>State</code>モナドのような単純なケースでは、ストリング図のありがたみが
+まだわからないかもしれません。</p>
+<p>今回は、<code>StateT</code>モナド変換子（<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-State-Lazy.html#g:2">Control.Monad.Trans.State.Lazy</a>を参照）のモナド則を、
+ストリング図で示してみます。</p>
 <p>（あと、ちょっときれいな図を描けるようになりました。）</p>
 <h2 id="ストリング図でstatet">ストリング図で<code>StateT</code></h2>
-<p>前回の記事で使った<code>State</code>モナドの定義を再掲します。 （証明を楽にするために、<code>Monad</code>クラスの定義もHaskell標準のものからちょっと変えています。）</p>
+<p>前回の記事で使った<code>State</code>モナドの定義を再掲します。
+（証明を楽にするために、<code>Monad</code>クラスの定義もHaskell標準のものからちょっと変えています。）</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">G</span> s <span class="ot">=</span> (<span class="ot">-&gt;</span>) s <span class="co">-- (s -&gt;) と書きたいが、Haskellはこの書き方は不可</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">F</span> s <span class="ot">=</span> (,) s  <span class="co">-- (s, )  〃</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -57,7 +67,8 @@
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ot">close ::</span> <span class="dt">F</span> s (<span class="dt">G</span> s a) <span class="ot">-&gt;</span> a  <span class="co">-- (s, s -&gt; a) -&gt; a</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>close (s, f) <span class="ot">=</span> f s</span></code></pre></div>
-<p>この流儀に沿って、<code>StateT</code>を定義し直してみます。 嬉しいことに、<code>State</code>モナドの定義から<code>open</code>と<code>close</code>を流用できます。</p>
+<p>この流儀に沿って、<code>StateT</code>を定義し直してみます。
+嬉しいことに、<code>State</code>モナドの定義から<code>open</code>と<code>close</code>を流用できます。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">StateT</span> s m a <span class="ot">=</span> <span class="dt">State</span> {<span class="ot"> runState ::</span> <span class="dt">G</span> s (m (<span class="dt">F</span> s a)) }</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- StateT s m a ~ (G s `Compose` m `Compose` F s) a</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">--              ~ s -&gt; m (s, a)</span></span>
@@ -82,19 +93,23 @@
 <figure>
 <img src="../images/string/state-t-join.png" alt="StateTのjoin" /><figcaption aria-hidden="true">StateTのjoin</figcaption>
 </figure>
-<p>図の中で、変換されるモナド<code>m</code>の<code>pure</code>や<code>join</code>と、 これから構成する<code>StateT s m</code>の<code>pure</code>や<code>join</code>は、色をつけて区別しています。</p>
+<p>図の中で、変換されるモナド<code>m</code>の<code>pure</code>や<code>join</code>と、
+これから構成する<code>StateT s m</code>の<code>pure</code>や<code>join</code>は、色をつけて区別しています。</p>
 <p>さて、図が煩雑になってきたので、以降はラベルを省いて描いてしまいます。</p>
 <figure>
 <img src="../images/string/terse-notation.png" alt="省略記法" /><figcaption aria-hidden="true">省略記法</figcaption>
 </figure>
-<p>特に、モナドの<code>pure</code>,<code>join</code>は、どちらもラベルのない丸記号○だけで済ますことにします。 つながっている線の本数が違うため、<code>pure</code>と<code>join</code>の区別をつけるのに困ることはないです。</p>
+<p>特に、モナドの<code>pure</code>,<code>join</code>は、どちらもラベルのない丸記号○だけで済ますことにします。
+つながっている線の本数が違うため、<code>pure</code>と<code>join</code>の区別をつけるのに困ることはないです。</p>
 <p>この省略記法を使って、<code>StateT</code>のモナドの定義を描き直すと、次のようになります。</p>
 <figure>
 <img src="../images/string/state-t-terse.png" alt="省略記法でのStateTの定義" /><figcaption aria-hidden="true">省略記法でのStateTの定義</figcaption>
 </figure>
 <h2 id="statetのモナド則"><code>StateT</code>のモナド則</h2>
-<p><code>StateT s m</code>のモナド則も、<code>State</code>モナド同様に、 図をどんどん変形するだけでできてしまいます。</p>
-<p>ここで、モナド<code>m</code>がもつ<code>pure</code>と<code>join</code>（オレンジの丸）は、 モナド則を満たしていることが前提にできます。</p>
+<p><code>StateT s m</code>のモナド則も、<code>State</code>モナド同様に、
+図をどんどん変形するだけでできてしまいます。</p>
+<p>ここで、モナド<code>m</code>がもつ<code>pure</code>と<code>join</code>（オレンジの丸）は、
+モナド則を満たしていることが前提にできます。</p>
 <figure>
 <img src="../images/string/monad-law-terse-color.png" alt="mのモナド則" /><figcaption aria-hidden="true">mのモナド則</figcaption>
 </figure>
@@ -102,7 +117,8 @@
 <figure>
 <img src="../images/string/openclose-terse.png" alt="openとclose" /><figcaption aria-hidden="true">openとclose</figcaption>
 </figure>
-<p>これらの変形を組み合わせれば、<code>StateT s m</code>のモナド則も、 図を描いてそれを変形させていくことで証明できます。</p>
+<p>これらの変形を組み合わせれば、<code>StateT s m</code>のモナド則も、
+図を描いてそれを変形させていくことで証明できます。</p>
 <figure>
 <img src="../images/string/state-t-left-unit.png" alt="StateTのモナド則（左単位法則、右単位法則も同様）" /><figcaption aria-hidden="true">StateTのモナド則（左単位法則、右単位法則も同様）</figcaption>
 </figure>
@@ -110,8 +126,12 @@
 <img src="../images/string/state-t-assoc.png" alt="StateTのモナド則（結合法則）" /><figcaption aria-hidden="true">StateTのモナド則（結合法則）</figcaption>
 </figure>
 <h2 id="他のモナド変換子は">他のモナド変換子は？</h2>
-<p>ここまで来ると、<code>ReaderT</code>や<code>WriterT</code>、<code>ExceptT</code>といった、他のモナド変換子たちの モナド則がどう証明できるかが気になるかと思います。</p>
-<p>実のところ、<code>StateT</code>のモナド則というのは、 ストリング図による証明が一番簡単なたぐいのモナド変換子でした。 <code>ReaderT</code>や<code>WriterT</code>が成り立っている事情を説明するには、もうひとつ道具が必要です。 次の記事でそれを解説するつもりです。乞うご期待。</p>
+<p>ここまで来ると、<code>ReaderT</code>や<code>WriterT</code>、<code>ExceptT</code>といった、他のモナド変換子たちの
+モナド則がどう証明できるかが気になるかと思います。</p>
+<p>実のところ、<code>StateT</code>のモナド則というのは、
+ストリング図による証明が一番簡単なたぐいのモナド変換子でした。
+<code>ReaderT</code>や<code>WriterT</code>が成り立っている事情を説明するには、もうひとつ道具が必要です。
+次の記事でそれを解説するつもりです。乞うご期待。</p>
     </section>
 </article>
 

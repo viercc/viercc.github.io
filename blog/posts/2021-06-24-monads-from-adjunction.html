@@ -33,37 +33,49 @@
             <h1>随伴から作られるMonad(準備編)</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-06-26
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-06-26</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <!-- tex macros -->
 <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\Hask{\mathrm{\mathbf{Hask}}}  \gdef\Vect{\mathrm{\mathbf{Vect}}}  \gdef\Mon{\mathrm{\mathbf{Mon}}}  \gdef\id{\mathrm{id}}  \gdef\map{\mathrm{map}}  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}</span></p>
-<p>前回まで、各種モナド/モナド変換子を理解するために、 ストリング図という武器を使っていくつものモナドを見てきました。</p>
+<p>前回まで、各種モナド/モナド変換子を理解するために、
+ストリング図という武器を使っていくつものモナドを見てきました。</p>
 <ul>
 <li><code>State</code> ー <a href="./2021-05-17-string-diagram.html">ストリング図でMonad再入門(1)</a></li>
 <li><code>StateT</code> ー <a href="./2021-05-24-string-2.html">ストリング図でMonad再入門(2)</a></li>
 <li><code>WriterT, ReaderT, ExceptT</code> ー <a href="./string-3.html">ストリング図でMonad再入門(3)</a></li>
 </ul>
-<p>これら記事で使ったストリング図は、 「抽象度を下げたもの」でした。つまり、ストリング図は実はもっと色々なものを表現できる記法です。 第一回では次のように説明しました。</p>
+<p>これら記事で使ったストリング図は、
+「抽象度を下げたもの」でした。つまり、ストリング図は実はもっと色々なものを表現できる記法です。
+第一回では次のように説明しました。</p>
 <blockquote>
-<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。 改めて明示的に定義するなら、 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
+<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。
+改めて明示的に定義するなら、
+<code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 </blockquote>
-<p>ストリング図は、<code>Functor</code>間の自然変換を表すと書きました。 しかし、実はどんな<strong>関手</strong>の間の<strong>自然変換</strong>でもよかったのです。</p>
+<p>ストリング図は、<code>Functor</code>間の自然変換を表すと書きました。
+しかし、実はどんな<strong>関手</strong>の間の<strong>自然変換</strong>でもよかったのです。</p>
 <p>今度は、<code>Functor</code>以外の関手を使って、次のモナドを分析していこうと思います。</p>
 <ul>
 <li><code>Cont</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Cont.html">Control.Monad.Trans.Cont</a>)</li>
 <li><code>ListT m</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-List.html">Control.Monad.Trans.List</a>, “ListT done wrong”)</li>
 </ul>
-<p>ただ、<strong>関手</strong>とは何か、<strong>自然変換</strong>とは何か、という説明を端折ったままここまで来てしまいました。 このブログではまだきちんと書いていませんでしたので、この記事ではまず圏論の最序盤あたりを説明します。</p>
+<p>ただ、<strong>関手</strong>とは何か、<strong>自然変換</strong>とは何か、という説明を端折ったままここまで来てしまいました。
+このブログではまだきちんと書いていませんでしたので、この記事ではまず圏論の最序盤あたりを説明します。</p>
 <p>私のつたない説明で伝えられるのはほんの一部なので、以下の参考図書のような教科書にあたってくれたらそれが一番です。</p>
 <ul>
 <li><a href="https://www.amazon.co.jp/dp/0199237182">Category Theory (Oxford Logic Guides)</a>
 <ul>
 <li>定評のある教科書（らしい）</li>
-<li>日本語訳<a href="https://www.amazon.co.jp/dp/432011115X">圏論 第2版</a>もあるけど、 数学的内容に影響のある誤訳が結構な数あるので、正誤表を探しておいて覚悟して読むべし</li>
+<li>日本語訳<a href="https://www.amazon.co.jp/dp/432011115X">圏論 第2版</a>もあるけど、
+数学的内容に影響のある誤訳が結構な数あるので、正誤表を探しておいて覚悟して読むべし</li>
 </ul></li>
 <li><a href="https://www.amazon.co.jp/dp/4621300709/">ベーシック圏論 普遍性からの速習コース</a>
 <ul>
@@ -85,17 +97,24 @@
 <li><p><span class="math inline">C</span>が圏であるとは、</p>
 <ul>
 <li><p><strong>対象</strong>と呼ばれるものを（通常たくさん）持っている。</p></li>
-<li><p><strong>射</strong>と呼ばれるものを（通常たくさん）持っている。<span class="math inline">C</span>の射<span class="math inline">f</span>は、 それぞれ<span class="math inline">C</span>の2つの対象間をつなぐ矢印のようなもので、 その矢印が出る対象<span class="math inline">a</span>と矢印が向かう対象<span class="math inline">b</span>が決まっている。</p>
+<li><p><strong>射</strong>と呼ばれるものを（通常たくさん）持っている。<span class="math inline">C</span>の射<span class="math inline">f</span>は、
+それぞれ<span class="math inline">C</span>の2つの対象間をつなぐ矢印のようなもので、
+その矢印が出る対象<span class="math inline">a</span>と矢印が向かう対象<span class="math inline">b</span>が決まっている。</p>
 <ul>
-<li><span class="math inline">a</span>から出て<span class="math inline">b</span>に向かう射の集まりが集合になっていないこともあるが、 ここではそんな圏は考えない。<span class="math inline">C(a,b)</span>でそのような射の集合を表すことにする。</li>
+<li><span class="math inline">a</span>から出て<span class="math inline">b</span>に向かう射の集まりが集合になっていないこともあるが、
+ここではそんな圏は考えない。<span class="math inline">C(a,b)</span>でそのような射の集合を表すことにする。</li>
 </ul></li>
-<li><p>任意の対象<span class="math inline">a</span>について、<span class="math inline">a</span>から出てそのまま<span class="math inline">a</span>に入る射 <span class="math inline">\id_a \in C(a,a)</span>を持っている。</p>
+<li><p>任意の対象<span class="math inline">a</span>について、<span class="math inline">a</span>から出てそのまま<span class="math inline">a</span>に入る射
+<span class="math inline">\id_a \in C(a,a)</span>を持っている。</p>
 <ul>
 <li>この射は<strong>恒等射</strong>と呼ぶ。</li>
 </ul></li>
-<li><p>任意の二つの射<span class="math inline">f,g</span>について、<span class="math inline">g</span>の行き先の対象と<span class="math inline">f</span>の出元の対象が同じであるとき、 これらを<strong>合成</strong>した射<span class="math inline">f\circ g</span>も存在する。</p>
+<li><p>任意の二つの射<span class="math inline">f,g</span>について、<span class="math inline">g</span>の行き先の対象と<span class="math inline">f</span>の出元の対象が同じであるとき、
+これらを<strong>合成</strong>した射<span class="math inline">f\circ g</span>も存在する。</p>
 <ul>
-<li>より詳しく言うなら、<span class="math inline">f \in C(b,c)</span>と<span class="math inline">g \in C(a,b)</span>に対して、 <span class="math inline">f \circ g \in C(a,c)</span>を決める二項演算<span class="math inline">\circ</span>を、 すべての対象の組み合わせ<span class="math inline">a,b,c</span>について持っている。</li>
+<li>より詳しく言うなら、<span class="math inline">f \in C(b,c)</span>と<span class="math inline">g \in C(a,b)</span>に対して、
+<span class="math inline">f \circ g \in C(a,c)</span>を決める二項演算<span class="math inline">\circ</span>を、
+すべての対象の組み合わせ<span class="math inline">a,b,c</span>について持っている。</li>
 </ul></li>
 <li><p>射に恒等射を合成しても変化しない。</p>
 <ul>
@@ -103,7 +122,8 @@
 </ul></li>
 <li><p>射の合成は結合法則に従っている。</p>
 <ul>
-<li>任意の3つの射<span class="math inline">f,g,h</span>があって<span class="math inline">f\circ g</span>も<span class="math inline">g\circ h</span>も定義できるとき、 <span class="math inline">(f \circ g) \circ h = f \circ (g \circ h)</span></li>
+<li>任意の3つの射<span class="math inline">f,g,h</span>があって<span class="math inline">f\circ g</span>も<span class="math inline">g\circ h</span>も定義できるとき、
+<span class="math inline">(f \circ g) \circ h = f \circ (g \circ h)</span></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -112,15 +132,20 @@
 <li><p>圏<span class="math inline">\Set</span></p>
 <ul>
 <li><p><span class="math inline">\Set</span>の対象は集合である。</p></li>
-<li><p><span class="math inline">\Set</span>の射は関数である。集合<span class="math inline">a</span>を定義域、集合<span class="math inline">b</span>を値域とする関数を、 <span class="math inline">a</span>から出て<span class="math inline">b</span>に入る射と考える。</p>
+<li><p><span class="math inline">\Set</span>の射は関数である。集合<span class="math inline">a</span>を定義域、集合<span class="math inline">b</span>を値域とする関数を、
+<span class="math inline">a</span>から出て<span class="math inline">b</span>に入る射と考える。</p>
 <ul>
 <li>そのような関数の集合として<span class="math inline">\Set(a,b)</span>をとることができる。</li>
 </ul></li>
 <li><p>集合<span class="math inline">a</span>上の恒等関数<span class="math inline">\id_a</span>と関数の合成が、そのまま恒等射と射の合成である。</p></li>
-<li><p>「関数に恒等関数を合成しても変化しない」「関数の合成は結合法則に従っている」は明らか。 （むしろ、この規則が関数の合成を一般化しようとして決められている。）</p></li>
+<li><p>「関数に恒等関数を合成しても変化しない」「関数の合成は結合法則に従っている」は明らか。
+（むしろ、この規則が関数の合成を一般化しようとして決められている。）</p></li>
 </ul></li>
 </ul>
-<p>数学では「何らかの演算を備えた集合」と、「演算を保つ写像」を考えることがよくあります。 例えば体<span class="math inline">k</span>上のベクトル空間は足し算、引き算、そしてスカラー倍ができる集合で、 これらの演算がベクトル空間の公理を満たすものです。 ベクトル空間の間の線形写像は、足し算、ゼロ、…といった演算を保つ写像です。</p>
+<p>数学では「何らかの演算を備えた集合」と、「演算を保つ写像」を考えることがよくあります。
+例えば体<span class="math inline">k</span>上のベクトル空間は足し算、引き算、そしてスカラー倍ができる集合で、
+これらの演算がベクトル空間の公理を満たすものです。
+ベクトル空間の間の線形写像は、足し算、ゼロ、…といった演算を保つ写像です。</p>
 <p>こういった「演算を備えた集合」と「演算を保つ写像」からなる圏を考えることもよくあります。</p>
 <ul>
 <li><p>体<span class="math inline">k</span>上のベクトル空間の圏<span class="math inline">k\Vect</span></p>
@@ -139,12 +164,14 @@
 <li><p><span class="math inline">\Hask</span></p>
 <ul>
 <li><p><span class="math inline">\Hask</span>の対象は型（詳しく言えば、型変数のない具体的に一つ決まった型）</p></li>
-<li><p><span class="math inline">\Hask</span>の射は関数です。<code>A -&gt; B</code>型の関数を、 <span class="math inline">A</span>から出て<span class="math inline">B</span>に入る射と考える</p></li>
+<li><p><span class="math inline">\Hask</span>の射は関数です。<code>A -&gt; B</code>型の関数を、
+<span class="math inline">A</span>から出て<span class="math inline">B</span>に入る射と考える</p></li>
 <li><p>恒等関数<code>id</code>と関数の合成<code>(.)</code>を、そのまま恒等射と射の合成とする</p></li>
 <li><p>「関数に恒等関数を合成しても変化しない」「関数の合成は結合法則に従っている」を満たしている</p></li>
 </ul></li>
 </ul>
-<p>これはHaskellで書いてあったほうが理解しやすいかもしれません。<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Category.html#t:Category">Control.Category</a>に、 圏を定義するための型クラス<code>Category</code>があります。</p>
+<p>これはHaskellで書いてあったほうが理解しやすいかもしれません。<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Category.html#t:Category">Control.Category</a>に、
+圏を定義するための型クラス<code>Category</code>があります。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Control.Category</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Category</span> cat <span class="kw">where</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 恒等射</span></span>
@@ -160,7 +187,10 @@
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Hask</span> b c <span class="ot">-&gt;</span> <span class="dt">Hask</span> a b <span class="ot">-&gt;</span> <span class="dt">Hask</span> a c</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</span></code></pre></div>
-<p><span class="math inline">\Hask</span>の射を逆向きにした圏<span class="math inline">\op\Hask</span>というものも考えられます。つまり、 <code>A -&gt; B</code>を<code>B</code><strong>から</strong><code>A</code>に向かう射とした圏です。 GHCの<code>base</code>パッケージにはこの圏がすでに実装されていて、 <a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html#t:Op">Data.Functor.Contravariant.Op</a>にあります。</p>
+<p><span class="math inline">\Hask</span>の射を逆向きにした圏<span class="math inline">\op\Hask</span>というものも考えられます。つまり、
+<code>A -&gt; B</code>を<code>B</code><strong>から</strong><code>A</code>に向かう射とした圏です。
+GHCの<code>base</code>パッケージにはこの圏がすでに実装されていて、
+<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html#t:Op">Data.Functor.Contravariant.Op</a>にあります。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Op</span> b a <span class="ot">=</span> <span class="dt">Op</span> (a <span class="ot">-&gt;</span> b)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Op</span> <span class="kw">where</span></span>
@@ -170,7 +200,8 @@
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Op</span> b c   <span class="ot">-&gt;</span> <span class="dt">Op</span> a b   <span class="ot">-&gt;</span> <span class="dt">Op</span> a c</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (c -&gt; b) -&gt; (b -&gt; a) -&gt; (c -&gt; a)</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Op</span> f <span class="op">.</span> <span class="dt">Op</span> g <span class="ot">=</span> <span class="dt">Op</span> (g <span class="op">.</span> f)</span></code></pre></div>
-<p>一般に、どんな圏<span class="math inline">C</span>に対しても、すべての射の向きを反対にすることで得られる圏<span class="math inline">\op{C}</span>があります。 これもHaskellで書けば次のようになります。</p>
+<p>一般に、どんな圏<span class="math inline">C</span>に対しても、すべての射の向きを反対にすることで得られる圏<span class="math inline">\op{C}</span>があります。
+これもHaskellで書けば次のようになります。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- C^{op}</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Opposite</span> cat a b <span class="ot">=</span> <span class="dt">Opposite</span> (cat a b)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -211,62 +242,88 @@
 \map_F(g \circ h) = \map_F(g) \circ \map_F(h)
 </span></p></li>
 </ul>
-<p>Haskellの型クラス<code>Functor</code>は、関手全般を表しておらず、 <span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手のための型クラスになっています。</p>
+<p>Haskellの型クラス<code>Functor</code>は、関手全般を表しておらず、
+<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手のための型クラスになっています。</p>
 <ul>
 <li><p><code>Functor f</code>は、<code>f</code>が型<code>a</code>を型<code>f a</code>に対応させる型コンストラクタであるときに宣言できる。</p>
 <p><span class="math inline">\Hask</span>の対象は型なので、<span class="math inline">\Hask</span>の対象<code>a</code>を<span class="math inline">\Hask</span>の対象<code>f a</code>に対応させているとも読み替えられる。</p></li>
-<li><p><code>Functor f</code>ならば、<code>fmap :: (a -&gt; b) -&gt; (f a -&gt; f b)</code>を持つ。 これは、<code>fmap :: Hask a b -&gt; Hask (f a) (f b)</code>といっても同じである。 つまり、<code>fmap</code>は<span class="math inline">\Hask</span>の射を<span class="math inline">\Hask</span>の射にうつす関数である。</p></li>
+<li><p><code>Functor f</code>ならば、<code>fmap :: (a -&gt; b) -&gt; (f a -&gt; f b)</code>を持つ。
+これは、<code>fmap :: Hask a b -&gt; Hask (f a) (f b)</code>といっても同じである。
+つまり、<code>fmap</code>は<span class="math inline">\Hask</span>の射を<span class="math inline">\Hask</span>の射にうつす関数である。</p></li>
 <li><p><code>Functor</code>則は、関手であるための条件そのものである。</p>
 <ul>
 <li><code>fmap id = id</code></li>
 <li><code>fmap (f . g) = fmap f . fmap g</code></li>
 </ul></li>
 </ul>
-<p>関手を表すクラスは他にもあります。<code>base</code>パッケージの<code>Contravariant</code>クラス （<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html">Data.Functor.Contravariant</a>）は、 <span class="math inline">\op\Hask</span>から<span class="math inline">\Hask</span>への関手のための型クラスといえます。</p>
+<p>関手を表すクラスは他にもあります。<code>base</code>パッケージの<code>Contravariant</code>クラス
+（<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html">Data.Functor.Contravariant</a>）は、
+<span class="math inline">\op\Hask</span>から<span class="math inline">\Hask</span>への関手のための型クラスといえます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="kw">where</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  contramap ::</span> (a' <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f a'</span></code></pre></div>
 <ul>
 <li><p><code>Contravariant f</code>は、<code>f</code>が型<code>a</code>を型<code>f a</code>に対応させる型コンストラクタであるときに宣言できる。</p>
 <p><span class="math inline">\Hask</span>の対象も<span class="math inline">\op\Hask</span>の対象も型なので、<span class="math inline">\op\Hask</span>の対象<code>a</code>を<span class="math inline">\Hask</span>の対象<code>f a</code>に対応させているとも読み替えられる。</p></li>
-<li><p><code>Contravariant f</code>ならば、<code>contramap :: (a' -&gt; a) -&gt; f a -&gt; f a'</code>を持つ。 これは、<code>newtype</code>を無視すれば、<code>contramap :: Op a a' -&gt; Hask (f a) (f a')</code>といっても同じである。 つまり、<code>contramap</code>は<span class="math inline">\op\Hask</span>の射を<span class="math inline">\Hask</span>の射にうつす関数である。</p></li>
+<li><p><code>Contravariant f</code>ならば、<code>contramap :: (a' -&gt; a) -&gt; f a -&gt; f a'</code>を持つ。
+これは、<code>newtype</code>を無視すれば、<code>contramap :: Op a a' -&gt; Hask (f a) (f a')</code>といっても同じである。
+つまり、<code>contramap</code>は<span class="math inline">\op\Hask</span>の射を<span class="math inline">\Hask</span>の射にうつす関数である。</p></li>
 <li><p><code>Contravariant</code>則は、関手であるための条件そのものである。</p>
 <ul>
 <li><code>contramap id = id</code></li>
 <li><code>contramap (g . f) = contramap f . contramap g</code></li>
 </ul></li>
 </ul>
-<p><code>Partial</code>から<span class="math inline">\Hask</span>への関手も当然考えられます。3rd partyなライブラリにある型クラス <a href="https://hackage.haskell.org/package/witherable-0.4.1/docs/Data-Witherable.html#t:Filterable">Filterable</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> は、そのような関手の型クラスと見なせます。</p>
+<p><code>Partial</code>から<span class="math inline">\Hask</span>への関手も当然考えられます。3rd partyなライブラリにある型クラス
+<a href="https://hackage.haskell.org/package/witherable-0.4.1/docs/Data-Witherable.html#t:Filterable">Filterable</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
+は、そのような関手の型クラスと見なせます。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Filterable</span> t <span class="kw">where</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mapMaybe ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="co">-- Partial a b    -&gt; Hask (t a) (t b)</span></span></code></pre></div>
-<p><code>Functor</code>が合成できたように、一般の関手も合成関手を作ることができます。 これはほぼ<code>Functor</code>の合成（<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Compose.html">Data.Functor.Compose</a>） そのまま、どの圏のあいだの関手なのかが一般化されただけです。</p>
-<p><span class="math inline">F</span>が圏<span class="math inline">D</span>から圏<span class="math inline">E</span>への関手、<span class="math inline">G</span>が圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手のとき、 <span class="math inline">C</span>から<span class="math inline">E</span>への関手<span class="math inline">F\circ G</span>が定義できます。</p>
+<p><code>Functor</code>が合成できたように、一般の関手も合成関手を作ることができます。
+これはほぼ<code>Functor</code>の合成（<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Compose.html">Data.Functor.Compose</a>）
+そのまま、どの圏のあいだの関手なのかが一般化されただけです。</p>
+<p><span class="math inline">F</span>が圏<span class="math inline">D</span>から圏<span class="math inline">E</span>への関手、<span class="math inline">G</span>が圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手のとき、
+<span class="math inline">C</span>から<span class="math inline">E</span>への関手<span class="math inline">F\circ G</span>が定義できます。</p>
 <ul>
 <li><span class="math inline">C</span>の対象<span class="math inline">a</span>に対して、<span class="math inline">E</span>の対象<span class="math inline">(F\circ G)a=F(Ga)</span>を対応させます。</li>
-<li><span class="math inline">C</span>の射に対して<span class="math inline">E</span>の射を与える関数<span class="math inline">\map_{F\circ G}</span>を、<span class="math inline">\map_{F\circ G}(f)=\map_F(\map_G(f))</span> と定義します。</li>
+<li><span class="math inline">C</span>の射に対して<span class="math inline">E</span>の射を与える関数<span class="math inline">\map_{F\circ G}</span>を、<span class="math inline">\map_{F\circ G}(f)=\map_F(\map_G(f))</span>
+と定義します。</li>
 </ul>
 <h3 id="自然変換">自然変換</h3>
 <p>圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手がふたつ、<span class="math inline">F,G</span>とあったとします。<strong>自然変換</strong>を次のように定義します。</p>
 <ul>
-<li><p>自然変換<span class="math inline">t</span>とは、すべての<span class="math inline">C</span>の対象<span class="math inline">a</span>についてそれぞれ選ばれた <span class="math inline">D</span>の射<span class="math inline">t_a \in D(Fa, Ga)</span>の族であって、次の条件を満たすものである。</p>
+<li><p>自然変換<span class="math inline">t</span>とは、すべての<span class="math inline">C</span>の対象<span class="math inline">a</span>についてそれぞれ選ばれた
+<span class="math inline">D</span>の射<span class="math inline">t_a \in D(Fa, Ga)</span>の族であって、次の条件を満たすものである。</p>
 <ul>
 <li>任意の<span class="math inline">C</span>の射<span class="math inline">f \in C(a,b)</span>に対して、<span class="math inline">t_b \circ \map_F(f) = \map_G(f) \circ t_a</span>が成り立つ</li>
 </ul></li>
 </ul>
-<p>Haskell脳を働かせて、添字を全部省略して”型推論”してよいことにすると、 <span class="math inline">t \circ \map(f) = \map(f) \circ t</span>と略記できます。</p>
-<p><code>Functor</code>に限定した場合、つまり<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手<span class="math inline">F,G</span>についての場合、 次のようになります。</p>
+<p>Haskell脳を働かせて、添字を全部省略して”型推論”してよいことにすると、
+<span class="math inline">t \circ \map(f) = \map(f) \circ t</span>と略記できます。</p>
+<p><code>Functor</code>に限定した場合、つまり<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手<span class="math inline">F,G</span>についての場合、
+次のようになります。</p>
 <ul>
-<li><p>自然変換<code>t</code>とは、すべての型<code>a</code>について定義されている 関数<code>t :: forall a. F a -&gt; G a</code>であって、次の条件を満たすものである。</p>
+<li><p>自然変換<code>t</code>とは、すべての型<code>a</code>について定義されている
+関数<code>t :: forall a. F a -&gt; G a</code>であって、次の条件を満たすものである。</p>
 <ul>
 <li>任意の関数<code>f :: a -&gt; b</code>に対して、<code>t . fmap f = fmap f . t</code>が成り立つ</li>
 </ul></li>
 </ul>
-<p><a href="./2021-05-17-string-diagram.html">ストリング図の解説をしたとき</a>は、自然変換を 次のように説明していました。</p>
+<p><a href="./2021-05-17-string-diagram.html">ストリング図の解説をしたとき</a>は、自然変換を
+次のように説明していました。</p>
 <blockquote>
-<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。 改めて明示的に定義するなら、 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
+<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。
+改めて明示的に定義するなら、
+<code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 </blockquote>
-<p>この説明には、「任意の関数<code>f :: a -&gt; b</code>に対して、<code>t . fmap f = fmap f . t</code>が成り立つ」の部分がありません。 しかし、これは間違っていません。<em>Haskellの特殊な事情</em><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>によって、 あらゆる<code>t :: forall a. f a -&gt; g a</code>は、<code>t . fmap f = fmap f . t</code>を満たします<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
-<p>これはあくまで<em>Haskellの特殊な事情</em>で、しかも<code>Functor</code>に限ったことなので、 <code>Functor</code>以外の関手についてはきちんと確認する必要があります。 <span class="math inline">\Mon</span>といった代数的構造の圏が関係する場合はもちろん、 Haskellでプログラムとして定義した圏でも、<code>Functor</code>以外でこれが成り立たないことがあります。 特に、<code>Partial</code>から<span class="math inline">\Hask</span>への関手<code>Filterable</code>については成り立ちません。</p>
+<p>この説明には、「任意の関数<code>f :: a -&gt; b</code>に対して、<code>t . fmap f = fmap f . t</code>が成り立つ」の部分がありません。
+しかし、これは間違っていません。<em>Haskellの特殊な事情</em><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>によって、
+あらゆる<code>t :: forall a. f a -&gt; g a</code>は、<code>t . fmap f = fmap f . t</code>を満たします<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
+<p>これはあくまで<em>Haskellの特殊な事情</em>で、しかも<code>Functor</code>に限ったことなので、
+<code>Functor</code>以外の関手についてはきちんと確認する必要があります。
+<span class="math inline">\Mon</span>といった代数的構造の圏が関係する場合はもちろん、
+Haskellでプログラムとして定義した圏でも、<code>Functor</code>以外でこれが成り立たないことがあります。
+特に、<code>Partial</code>から<span class="math inline">\Hask</span>への関手<code>Filterable</code>については成り立ちません。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> [] <span class="kw">where</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    mapMaybe <span class="ot">=</span> Data.List.mapMaybe</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -292,7 +349,9 @@
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . length' = length' . mapMaybe f</span></span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="ot">length' ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Const</span> <span class="dt">Int</span> a</span>
 <span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>length' as <span class="ot">=</span> <span class="dt">Const</span> (<span class="fu">length</span> as)</span></code></pre></div>
-<p><code>Functor</code>とは限らない関手の話題では、自然変換と思っていた関数が <code>length'</code>のような”ジェネリックだけど自然じゃない変換”になっていないか、 注意を払う必要があります。</p>
+<p><code>Functor</code>とは限らない関手の話題では、自然変換と思っていた関数が
+<code>length'</code>のような”ジェネリックだけど自然じゃない変換”になっていないか、
+注意を払う必要があります。</p>
 <h2 id="つづく">つづく</h2>
 <section class="footnotes" role="doc-endnotes">
 <hr />
@@ -300,7 +359,9 @@
 <li id="fn1" role="doc-endnote"><p>実はならないのだけれど、無限ループや<code>undefined</code>のような停止しないことがある式に関係してのことなので、多目に見てください<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>残念ながら<code>Filterable</code>や同等の型クラスを提供するライブラリは統一されずに複数あって、これは私が好きなやつです<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3" role="doc-endnote"><p><a href="http://ecee.colorado.edu/ecen5533/fall11/reading/free.pdf">Theorems for free!</a>, Wadler 1989</p>
-<p>単純型付きラムダ計算で”任意の型aについて・・・という型が付く項はこんな性質を満たして・・・” という類の定理があって、Haskellの型システムはこの性質(parametricity)を崩さないように 設計されています。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<p>単純型付きラムダ計算で”任意の型aについて・・・という型が付く項はこんな性質を満たして・・・”
+という類の定理があって、Haskellの型システムはこの性質(parametricity)を崩さないように
+設計されています。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4" role="doc-endnote"><p>ただし、<code>Functor f, Functor g</code>がきちんと<code>Functor</code>則を満たしている場合に限ります<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

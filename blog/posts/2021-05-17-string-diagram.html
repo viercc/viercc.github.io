@@ -27,16 +27,28 @@
             <h1>ストリング図でMonad再入門(1)</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-05-17
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-05-17</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h2 id="いまさらモナド">いまさらモナド</h2>
-<p>この記事はHaskellにおけるモナドの解説です。 そして、「またかよ」「もう知ってる」と思われた方が想定読者です。</p>
-<p>（ほんとうにモナドについて初めて理解したくて来た方は申し訳ありません。 一応アドバイスするなら、私は<a href="https://wiki.haskell.org/Haskell">Haskell Wiki</a>等のWeb上の資料と <a href="https://www.ohmsha.co.jp/book/9784274068850/">すごいHaskell</a> で学びました。基礎を抑える感じの良い本と思いましたが、 合わなかったという感想もよく聞きます。）</p>
-<p>ねらいとしては、 <a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>という表記法を使って、 モナドについての（おそらくすでに知っているでしょう）計算が とても視覚的にできるようになって<strong>楽しい</strong>ということの紹介です。</p>
+<p>この記事はHaskellにおけるモナドの解説です。
+そして、「またかよ」「もう知ってる」と思われた方が想定読者です。</p>
+<p>（ほんとうにモナドについて初めて理解したくて来た方は申し訳ありません。
+一応アドバイスするなら、私は<a href="https://wiki.haskell.org/Haskell">Haskell Wiki</a>等のWeb上の資料と
+<a href="https://www.ohmsha.co.jp/book/9784274068850/">すごいHaskell</a>
+で学びました。基礎を抑える感じの良い本と思いましたが、
+合わなかったという感想もよく聞きます。）</p>
+<p>ねらいとしては、
+<a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>という表記法を使って、
+モナドについての（おそらくすでに知っているでしょう）計算が
+とても視覚的にできるようになって<strong>楽しい</strong>ということの紹介です。</p>
 <p>以下の文献・Webページを参考にしました。</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/String_diagram">String diagram - Wikipedia</a>
@@ -56,8 +68,14 @@
 <li>他たくさんあると思いますが、覚えてなくてリストアップできませんごめんなさい・・・</li>
 </ul>
 <h2 id="ストリング図">ストリング図</h2>
-<p><a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>は、 圏論で使われる表記法です。圏論から道具を拝借するときによくあることですが、 ストリング図は”2-圏における2-射”という抽象度の高いものを描くよう定義されています。 しかし、今回の記事の中では、<code>Monad</code>について考えるだけなので、抽象度を下げたもの を説明していきます。</p>
-<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。 改めて明示的に定義するなら、 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
+<p><a href="https://en.wikipedia.org/wiki/String_diagram">ストリング図</a>は、
+圏論で使われる表記法です。圏論から道具を拝借するときによくあることですが、
+ストリング図は”2-圏における2-射”という抽象度の高いものを描くよう定義されています。
+しかし、今回の記事の中では、<code>Monad</code>について考えるだけなので、抽象度を下げたもの
+を説明していきます。</p>
+<p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。
+改めて明示的に定義するなら、
+<code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 <p>自然変換<code>tf :: ∀a. f a -&gt; f' a</code>を、以下の図のように描くことにします。</p>
 <figure>
 <img src="../images/string/1.png" alt="ストリング図" /><figcaption aria-hidden="true">ストリング図</figcaption>
@@ -67,7 +85,9 @@
 <figure>
 <img src="../images/string/id.png" alt="ストリング図(id)" /><figcaption aria-hidden="true">ストリング図(id)</figcaption>
 </figure>
-<p>加えて、<code>∀a. f (g a) -&gt; h a</code>のように<code>Functor</code>がネストしているような場合も、 <code>f (g a)</code>と<code>Compose f g a</code>を同一視して、“<code>Compose f g</code>から<code>h</code>への自然変換”とみなすことにします。 何段ネストしていてもこれは変わらないことにしましょう。</p>
+<p>加えて、<code>∀a. f (g a) -&gt; h a</code>のように<code>Functor</code>がネストしているような場合も、
+<code>f (g a)</code>と<code>Compose f g a</code>を同一視して、“<code>Compose f g</code>から<code>h</code>への自然変換”とみなすことにします。
+何段ネストしていてもこれは変わらないことにしましょう。</p>
 <p>このようなネストした<code>Functor</code>間の自然変換は、以下の図のように描くことにします。</p>
 <figure>
 <img src="../images/string/2.png" alt="ストリング図(合成Functor1)" /><figcaption aria-hidden="true">ストリング図(合成Functor1)</figcaption>
@@ -75,16 +95,26 @@
 <figure>
 <img src="../images/string/3.png" alt="ストリング図(合成Functor2)" /><figcaption aria-hidden="true">ストリング図(合成Functor2)</figcaption>
 </figure>
-<p>上に突き出している端がそれぞれ<code>h, g, f</code>なのは、この自然変換が<code>Functor</code>の合成<code>f ∘ g ∘ h</code>を入力にとることを表していて、 下に突き出している端が<code>q, p</code>なのは、<code>p ∘ q</code>を出力することを表しています。 合成が<em>逆順</em>なのに注意してください。</p>
-<p>さらに、“0個の<code>Functor</code>のネスト”をも、<code>Identity</code>と同一視します。 つまり、<code>pure :: ∀a. a -&gt; f a</code>も<code>Identity</code>から<code>f</code>への自然変換とみなして、次の図のように書くことにします。このとき、図でうすく描いたような、<code>Identity</code>を表す線は引かないことにします。 （これによって後で困ることはありません！）</p>
+<p>上に突き出している端がそれぞれ<code>h, g, f</code>なのは、この自然変換が<code>Functor</code>の合成<code>f ∘ g ∘ h</code>を入力にとることを表していて、
+下に突き出している端が<code>q, p</code>なのは、<code>p ∘ q</code>を出力することを表しています。
+合成が<em>逆順</em>なのに注意してください。</p>
+<p>さらに、“0個の<code>Functor</code>のネスト”をも、<code>Identity</code>と同一視します。
+つまり、<code>pure :: ∀a. a -&gt; f a</code>も<code>Identity</code>から<code>f</code>への自然変換とみなして、次の図のように書くことにします。このとき、図でうすく描いたような、<code>Identity</code>を表す線は引かないことにします。
+（これによって後で困ることはありません！）</p>
 <figure>
 <img src="../images/string/pure-and-extract.png" alt="ストリング図(Identityの省略)" /><figcaption aria-hidden="true">ストリング図(Identityの省略)</figcaption>
 </figure>
-<p>自然変換どうしは垂直合成する（“縦につなげる”）こともできました。上図の<code>nt</code>と<code>foo</code>は、 合成して自然変換<code>nt &gt;&gt;&gt; foo :: ∀a. f (g (h a)) -&gt; p a</code>を作ることができます。 このように合成した自然変換は、 図を縦につなげて以下のように表します。 （ここでは、<code>foo . nt</code>のように<code>.</code>を使わず、代わりに<code>&gt;&gt;&gt;</code>で関数の合成を表記することにします。）</p>
+<p>自然変換どうしは垂直合成する（“縦につなげる”）こともできました。上図の<code>nt</code>と<code>foo</code>は、
+合成して自然変換<code>nt &gt;&gt;&gt; foo :: ∀a. f (g (h a)) -&gt; p a</code>を作ることができます。
+このように合成した自然変換は、
+図を縦につなげて以下のように表します。
+（ここでは、<code>foo . nt</code>のように<code>.</code>を使わず、代わりに<code>&gt;&gt;&gt;</code>で関数の合成を表記することにします。）</p>
 <figure>
 <img src="../images/string/vcomp.png" alt="ストリング図の垂直合成" /><figcaption aria-hidden="true">ストリング図の垂直合成</figcaption>
 </figure>
-<p>自然変換どうしを水平に合成する（“横にならべる”）こともできます。 ふたつの自然変換<code>tf :: ∀a. f a -&gt; f' a</code> と <code>tg :: ∀a. g a -&gt; g' a</code>があるとき、<code>tfg :: ∀a. f (g a) -&gt; f' (g' a)</code> が次のように定義できます。</p>
+<p>自然変換どうしを水平に合成する（“横にならべる”）こともできます。
+ふたつの自然変換<code>tf :: ∀a. f a -&gt; f' a</code> と <code>tg :: ∀a. g a -&gt; g' a</code>があるとき、<code>tfg :: ∀a. f (g a) -&gt; f' (g' a)</code>
+が次のように定義できます。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tfg ::</span> ∀ a<span class="op">.</span> f (g a) <span class="ot">-&gt;</span> f' (g' a)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tfg <span class="ot">=</span> <span class="fu">fmap</span> tg <span class="op">&gt;&gt;&gt;</span> tf</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> tf <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> tg</span>
@@ -96,18 +126,23 @@
 <figure>
 <img src="../images/string/hcomp-id.png" alt="ストリング図の水平合成（idと）" /><figcaption aria-hidden="true">ストリング図の水平合成（idと）</figcaption>
 </figure>
-<p>例を挙げてみましょう。次のように、<code>catMaybes</code>を <code>maybeToList</code>と<code>concat</code>で表したとします。</p>
+<p>例を挙げてみましょう。次のように、<code>catMaybes</code>を
+<code>maybeToList</code>と<code>concat</code>で表したとします。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">catMaybes ::</span> [<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> [a]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>catMaybes <span class="ot">=</span> <span class="fu">fmap</span> maybeToList <span class="op">&gt;&gt;&gt;</span> <span class="fu">concat</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">concat</span><span class="ot"> ::</span> [[a]] <span class="ot">-&gt;</span> [a]</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">maybeToList ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> [a]</span></code></pre></div>
-<p><code>catMaybes, maybeToList, concat</code>のいずれも、（ネストを許した広い意味で）自然変換です。 <code>catMaybes</code>の右辺をストリング図で描いてみると次のようになります。 <code>Maybe</code>と<code>[]</code>の合成順（左から右、Haskellでの記述と<em>逆順</em>）に気をつけてください。</p>
+<p><code>catMaybes, maybeToList, concat</code>のいずれも、（ネストを許した広い意味で）自然変換です。
+<code>catMaybes</code>の右辺をストリング図で描いてみると次のようになります。
+<code>Maybe</code>と<code>[]</code>の合成順（左から右、Haskellでの記述と<em>逆順</em>）に気をつけてください。</p>
 <figure>
 <img src="../images/string/catmaybes.png" alt="ストリング図の例(catMaybes)" /><figcaption aria-hidden="true">ストリング図の例(catMaybes)</figcaption>
 </figure>
 <h2 id="ストリング図でmonad">ストリング図でMonad</h2>
-<p><code>Monad</code>の定義を決めておきます。 ここでは、現実にHaskellで使われている定義ではないですが、 同値な定義として次のクラスを<code>Monad</code>だとします。</p>
+<p><code>Monad</code>の定義を決めておきます。
+ここでは、現実にHaskellで使われている定義ではないですが、
+同値な定義として次のクラスを<code>Monad</code>だとします。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Monadのインスタンスは以下のモナド則を満たさなければならない。</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- [単位法則]</span></span>
@@ -130,7 +165,10 @@
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ot">(&gt;&gt;=) ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>ma <span class="op">&gt;&gt;=</span> f <span class="ot">=</span> join (<span class="fu">fmap</span> f ma)</span></code></pre></div>
-<p><code>pure</code>、<code>join</code>ともに自然変換であり、モナド則も含めて ストリング図で描くことができます。 これにより、文字で書かれた「<code>Functor</code>である<code>m</code>が<code>Monad</code>である」という条件が、 次のように図で描けてしまいます。</p>
+<p><code>pure</code>、<code>join</code>ともに自然変換であり、モナド則も含めて
+ストリング図で描くことができます。
+これにより、文字で書かれた「<code>Functor</code>である<code>m</code>が<code>Monad</code>である」という条件が、
+次のように図で描けてしまいます。</p>
 <ul>
 <li><p>以下の自然変換<code>pure</code>と<code>join</code>があること：</p>
 <figure>
@@ -155,7 +193,8 @@
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  join mma <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> (s', ma) <span class="ot">=</span> runState mma s</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> runState ma s</span></code></pre></div>
-<p>ここで、<code>State</code>が二つの<code>Functor</code>の合成からなっていることに注目して、 次のように書き換えてみます。</p>
+<p>ここで、<code>State</code>が二つの<code>Functor</code>の合成からなっていることに注目して、
+次のように書き換えてみます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">G</span> s <span class="ot">=</span> (<span class="ot">-&gt;</span>) s <span class="co">-- (s -&gt;) と書きたいが、Haskellはこの書き方は不可</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">F</span> s <span class="ot">=</span> (,) s  <span class="co">-- (s, )  〃</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -190,7 +229,8 @@
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> close <span class="op">$</span> (s, \s <span class="ot">-&gt;</span> (s, a))</span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (\s <span class="ot">-&gt;</span> (s, a)) s</span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (s, a)</span></code></pre></div>
-<p><code>open, close</code>と、<code>State</code>の<code>newtype</code>をつけたり外したりする<code>State, runState</code>はいずれも自然変換 になっており、以下の通りストリング図に描けます。</p>
+<p><code>open, close</code>と、<code>State</code>の<code>newtype</code>をつけたり外したりする<code>State, runState</code>はいずれも自然変換
+になっており、以下の通りストリング図に描けます。</p>
 <figure>
 <img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" /><figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
 </figure>
@@ -200,10 +240,13 @@
 </figure>
 <p>“曲がった線”をまっすぐに伸ばすことができるという、見た目にわかりやすい関係になっているところがポイントです。</p>
 <div class="sidenote">
-<p>より一般的な話としては、<code>open, close</code>のペアは<code>F s</code>が<code>G s</code>の<a href="https://ja.wikipedia.org/wiki/随伴関手">左随伴</a>であるという ことを表します。<code>open, close</code>は私が勝手に使った用語法で、普通は単位(unit)、余単位(counit)と呼び、 ギリシャ文字<code>η, ε</code>で表します。</p>
+<p>より一般的な話としては、<code>open, close</code>のペアは<code>F s</code>が<code>G s</code>の<a href="https://ja.wikipedia.org/wiki/随伴関手">左随伴</a>であるという
+ことを表します。<code>open, close</code>は私が勝手に使った用語法で、普通は単位(unit)、余単位(counit)と呼び、
+ギリシャ文字<code>η, ε</code>で表します。</p>
 <p><code>open</code>と<code>close</code>の関係は、上図にあるストリング図の見た目から、ジグザグ関係式などと呼ばれています。</p>
 </div>
-<p>ここまでの道具を使えば、<code>State</code>のモナド則は図を描いていくだけで証明できます。 まず、<code>pure</code>と<code>join</code>をストリング図で書きます。</p>
+<p>ここまでの道具を使えば、<code>State</code>のモナド則は図を描いていくだけで証明できます。
+まず、<code>pure</code>と<code>join</code>をストリング図で書きます。</p>
 <figure>
 <img src="../images/string/state-pure-join.png" alt="Stateのpureとjoin" /><figcaption aria-hidden="true">Stateのpureとjoin</figcaption>
 </figure>

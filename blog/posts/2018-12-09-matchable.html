@@ -27,26 +27,38 @@
             <h1>matchable解説</h1>
             <article>
     <section class="header">
-        
-            Posted on 2018-12-09
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2018-12-09</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
-        <p>最近、<a href="http://hackage.haskell.org/package/matchable">matchable</a>というライブラリーを Hackageに上げました。この記事では、matchableが何をするライブラリーなのか・なぜ作ったのかに ついて解説します。</p>
+        <p>最近、<a href="http://hackage.haskell.org/package/matchable">matchable</a>というライブラリーを
+Hackageに上げました。この記事では、matchableが何をするライブラリーなのか・なぜ作ったのかに
+ついて解説します。</p>
 <h2 id="matchableって何">matchableって何？</h2>
-<p>matchableは、その名の通り<code>Matchable</code>という型クラスを提供するライブラリーです。 その<code>Matchable</code>とは何かと言うと、<a href="http://hackage.haskell.org/package/matchable-0.1.1.1/docs/Data-Matchable.html#t:Matchable">ドキュメント</a>をご覧ください。</p>
-<p>では解説記事にならないので、解説します。といっても<code>Matchable</code>は大して複雑な型クラスではありません。 その定義であるソースコードを見たほうが早いでしょう。</p>
+<p>matchableは、その名の通り<code>Matchable</code>という型クラスを提供するライブラリーです。
+その<code>Matchable</code>とは何かと言うと、<a href="http://hackage.haskell.org/package/matchable-0.1.1.1/docs/Data-Matchable.html#t:Matchable">ドキュメント</a>をご覧ください。</p>
+<p>では解説記事にならないので、解説します。といっても<code>Matchable</code>は大して複雑な型クラスではありません。
+その定義であるソースコードを見たほうが早いでしょう。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Eq1</span> t, <span class="dt">Functor</span> t) <span class="ot">=&gt;</span> <span class="dt">Matchable</span> t <span class="kw">where</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  zipMatch ::</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t (a,b))</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  zipMatch <span class="ot">=</span> zipMatchWith (<span class="fu">curry</span> <span class="dt">Just</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  zipMatchWith ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> c) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (t c)</span></code></pre></div>
-<p><code>Matchable t</code>における<code>t</code>は<code>Maybe</code>やリスト<code>[]</code>のようなコンテナです。 また、<code>Matchable</code>は、<code>zipMatch</code>と<code>zipMatchWith</code>という2つのメソッドを持つクラスです。それぞれ、次のような関数です。</p>
+<p><code>Matchable t</code>における<code>t</code>は<code>Maybe</code>やリスト<code>[]</code>のようなコンテナです。
+また、<code>Matchable</code>は、<code>zipMatch</code>と<code>zipMatchWith</code>という2つのメソッドを持つクラスです。それぞれ、次のような関数です。</p>
 <ul>
-<li><p><code>zipMatch</code>は、2つのコンテナ<code>ta :: t a</code> と <code>tb :: t b</code>を取り、<em>もしこれらが全く同じ「かたち」をしていれば</em>、 対応する各要素をペアにした新しいコンテナ<code>tab :: t (a,b)</code>を返します。 ただし、<code>ta</code>と<code>tb</code>が全く同じ「かたち」でなければ、<code>zipMatch</code>は失敗します。</p>
+<li><p><code>zipMatch</code>は、2つのコンテナ<code>ta :: t a</code> と <code>tb :: t b</code>を取り、<em>もしこれらが全く同じ「かたち」をしていれば</em>、
+対応する各要素をペアにした新しいコンテナ<code>tab :: t (a,b)</code>を返します。
+ただし、<code>ta</code>と<code>tb</code>が全く同じ「かたち」でなければ、<code>zipMatch</code>は失敗します。</p>
 <p>成功/失敗は<code>Maybe</code>で表されます。成功すれば<code>Just tab</code>が、失敗すれば<code>Nothing</code>が返り値になるということです。</p>
-<p>具体例をあげると、リスト型<code>[]</code>の場合、<code>zipMatch</code>は 次のような動作をします。</p>
+<p>具体例をあげると、リスト型<code>[]</code>の場合、<code>zipMatch</code>は
+次のような動作をします。</p>
 <ul>
 <li>2つの引数<code>ta</code>, <code>tb</code>の長さが同じなら、<code>Just (zip ta tb)</code>を返す</li>
 <li>そうでなければ、<code>Nothing</code>を返す</li>
@@ -55,14 +67,18 @@
 Just [(1,'a'),(2,'b'),(3,'c')]
 &gt;&gt;&gt; zipMatch [1, 2, 3] ['a', 'b']
 Nothing</code></pre>
-<p>さて、『コンテナが全く同じ「かたち」をしていれば』という表現をさっき使いましたが、これでは少しあいまいです。 なので、“Functor則”や”Monoid則”のように、<code>Matchable</code>のインスタンスが満たすべき”Matchable則”があります。</p>
+<p>さて、『コンテナが全く同じ「かたち」をしていれば』という表現をさっき使いましたが、これでは少しあいまいです。
+なので、“Functor則”や”Monoid則”のように、<code>Matchable</code>のインスタンスが満たすべき”Matchable則”があります。</p>
 <p><strong>Matchable則</strong></p>
 <blockquote>
 <p><code>zipMatch ta tb = Just tab</code> が成立する ⇔<br />
 　　ある<code>tab</code>が存在して、<code>ta = fmap fst tab</code> かつ <code>tb = fmap snd tab</code>が成り立つ</p>
 <p>さもなくば、<code>zipMatch ta tb = Nothing</code> である</p>
 </blockquote></li>
-<li><p><code>zipMatch</code>に対する<code>zipMatchWith</code>は、<code>zip</code>に対する<code>zipWith</code>のようなものです。ただし、 <code>zipMatchWith</code>が引数に取る関数は<code>a -&gt; b -&gt; Maybe c</code>です。この関数は、残り2つの引数として 渡されたコンテナ<code>ta</code>, <code>tb</code>の対応する各要素に対して適用されますが、この関数が<code>Nothing</code>を 返すと、<code>zipMatchWith</code>全体が<code>Nothing</code>を返します。</p>
+<li><p><code>zipMatch</code>に対する<code>zipMatchWith</code>は、<code>zip</code>に対する<code>zipWith</code>のようなものです。ただし、
+<code>zipMatchWith</code>が引数に取る関数は<code>a -&gt; b -&gt; Maybe c</code>です。この関数は、残り2つの引数として
+渡されたコンテナ<code>ta</code>, <code>tb</code>の対応する各要素に対して適用されますが、この関数が<code>Nothing</code>を
+返すと、<code>zipMatchWith</code>全体が<code>Nothing</code>を返します。</p>
 <p>実際、ドキュメントでは次の等式が成り立つことを要求しました。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>zipMatchWith f ta tb <span class="ot">=</span> zipMatch ta tb <span class="op">&gt;&gt;=</span> <span class="fu">traverse</span> (<span class="fu">uncurry</span> f)</span></code></pre></div>
 <p>これまた例をリスト型<code>[]</code>で示すなら、次のようになります。</p>
@@ -71,11 +87,13 @@ Nothing</code></pre>
 Just [1,1,1]
 &gt;&gt;&gt; zipMatchWith f [1,2,3] [2,2,3]
 Nothing</code></pre>
-<p><code>zipMatchWith f [1,2,3] [2,2,3]</code>では、2つのリストは同じ長さですが、最初の要素で <code>f 1 2 = Nothing</code> なので全体としても<code>Nothing</code>になっています。</p>
+<p><code>zipMatchWith f [1,2,3] [2,2,3]</code>では、2つのリストは同じ長さですが、最初の要素で <code>f 1 2 = Nothing</code>
+なので全体としても<code>Nothing</code>になっています。</p>
 <p>省略しますが、<code>zipMatchWith</code>にも<code>zipMatch</code>と同じように満たすべき法則があります。</p></li>
 </ul>
 <h2 id="なぜmatchableが必要なのか">なぜMatchableが必要なのか？</h2>
-<p>私が<code>Matchable</code>が必要だと感じたのは、自分で簡単なプログラミング言語を実装しているときでした。 パターンマッチングの実装を考え始め、次のようなコードを書き始めました。</p>
+<p>私が<code>Matchable</code>が必要だと感じたのは、自分で簡単なプログラミング言語を実装しているときでした。
+パターンマッチングの実装を考え始め、次のようなコードを書き始めました。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Value</span> <span class="ot">=</span> <span class="dt">IntVal</span> <span class="dt">Int</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">NullVal</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">ObjectVal</span> <span class="dt">ClassName</span> [<span class="dt">Value</span>]</span>
@@ -107,8 +125,10 @@ Nothing</code></pre>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>一番外側がマッチする <span class="ot">=</span> liftEq (\_ _ <span class="ot">-&gt;</span> <span class="dt">True</span>)</span></code></pre></div>
 <p>ここでつまづきました。いろいろなライブラリーを漁ってみても、既存の型クラスに</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>zipWithみたいな関数<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c</span></code></pre></div>
-<p>を適切に実装できそうなものは思い当たりませんでした。 また、この<code>zipWithみたいな関数</code>は、前提条件として<code>一番外側がマッチする</code>が<code>True</code>である引数に対してしか定義できないという問題もありました。</p>
-<p>そこで、「<code>zipMatch :: f a -&gt; f b -&gt; Maybe (f (a,b))</code>があったらいいなー」となったわけです。 その後、<code>zipMatch</code>の満たすべき性質についていろいろ考えた結果、この<code>Matchable</code>ができました。</p>
+<p>を適切に実装できそうなものは思い当たりませんでした。
+また、この<code>zipWithみたいな関数</code>は、前提条件として<code>一番外側がマッチする</code>が<code>True</code>である引数に対してしか定義できないという問題もありました。</p>
+<p>そこで、「<code>zipMatch :: f a -&gt; f b -&gt; Maybe (f (a,b))</code>があったらいいなー」となったわけです。
+その後、<code>zipMatch</code>の満たすべき性質についていろいろ考えた結果、この<code>Matchable</code>ができました。</p>
 <h2 id="さらなる応用ユニフィケーション">さらなる応用：ユニフィケーション</h2>
 <p>また、<code>Matchable</code>が既存のライブラリーに存在しないか調査する過程で、<a href="http://hackage.haskell.org/package/unification-fd">unification-fd</a>というライブラリーを発見しました。そこにあったのは、</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">UTerm</span> t v <span class="ot">=</span> <span class="dt">UVar</span> <span class="op">!</span>v</span>
@@ -121,7 +141,8 @@ Nothing</code></pre>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="ot">=&gt;</span> <span class="dt">UTerm</span> t v	 </span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="ot">-&gt;</span> <span class="dt">UTerm</span> t v	 </span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      <span class="ot">-&gt;</span> em m (<span class="dt">UTerm</span> t v)</span></code></pre></div>
-<p>という非常によく似た型クラス<code>Unifiable</code>でした。これに触発されて、 <code>Matchable</code>を使ったユニフィケーションの例も<a href="https://github.com/viercc/matchable/tree/master/example">書いてみました</a>。</p>
+<p>という非常によく似た型クラス<code>Unifiable</code>でした。これに触発されて、
+<code>Matchable</code>を使ったユニフィケーションの例も<a href="https://github.com/viercc/matchable/tree/master/example">書いてみました</a>。</p>
 <h2 id="実はいらない">実はいらない！？</h2>
 <p>実は、<code>zipMatch</code>は既存の型クラスの組み合わせで実装できたのです。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Functor.Classes</span> (<span class="dt">Eq1</span>(..))</span>
@@ -141,12 +162,16 @@ Nothing</code></pre>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      (b<span class="op">:</span>bs) <span class="ot">-&gt;</span> ((a,b),bs)</span></code></pre></div>
 <p>しかし、この実装は（難癖に近いかもしれませんが）少しだけ問題があります。</p>
 <ol type="1">
-<li><code>Eq1</code>には法則が無いため、本当に安全に<code>unsafeZip</code>が呼び出せる保証がないこと。 <code>Matchable</code>は新しい型クラスなので、必要なMatchable則を定義できる。</li>
-<li><code>liftEq</code>と<code>traverse</code>と<code>toList</code>で、<code>fa</code>と<code>fb</code>をそれぞれ2回走査しなければいけないこと。 ほとんどの場合<code>zipMatch</code>は1回の走査で実装できる。</li>
+<li><code>Eq1</code>には法則が無いため、本当に安全に<code>unsafeZip</code>が呼び出せる保証がないこと。
+<code>Matchable</code>は新しい型クラスなので、必要なMatchable則を定義できる。</li>
+<li><code>liftEq</code>と<code>traverse</code>と<code>toList</code>で、<code>fa</code>と<code>fb</code>をそれぞれ2回走査しなければいけないこと。
+ほとんどの場合<code>zipMatch</code>は1回の走査で実装できる。</li>
 </ol>
-<p>このうち2.はあまり関係ない(<code>Matchable</code>のインスタンスは大抵非再帰的な小さい型)のですが、 1.は<code>Matchable</code>をライブラリーとして公開する理由になると考えています。</p>
+<p>このうち2.はあまり関係ない(<code>Matchable</code>のインスタンスは大抵非再帰的な小さい型)のですが、
+1.は<code>Matchable</code>をライブラリーとして公開する理由になると考えています。</p>
 <h2 id="結論">結論</h2>
-<p><code>Matchable</code>という型クラスを提供するmatchableライブラリーを作ったので、紹介しました。 <code>Matchable</code>はパターンマッチやユニフィケーションを実装するのに便利です。</p>
+<p><code>Matchable</code>という型クラスを提供するmatchableライブラリーを作ったので、紹介しました。
+<code>Matchable</code>はパターンマッチやユニフィケーションを実装するのに便利です。</p>
     </section>
 </article>
 

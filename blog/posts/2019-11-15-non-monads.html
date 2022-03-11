@@ -27,10 +27,14 @@
             <h1>モナドになれないFunctor</h1>
             <article>
     <section class="header">
-        
-            Posted on 2019-11-15
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2019-11-15</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h2 id="モナドになれないfunctor-a-functor-which-cant-be-a-monad">モナドになれないFunctor (A Functor which can’t be a Monad)</h2>
@@ -40,7 +44,8 @@
 
 pure :: forall x. x -&gt; F2 x
 join :: forall x. F2 (F2 x) -&gt; F2 x</code></pre>
-<p><code>pure x ≠ Z</code> であることは簡単にわかります。<code>join . pure = id</code> でなければなりませんが、 <code>pure x = Z</code> であればその等式が成り立ちません。</p>
+<p><code>pure x ≠ Z</code> であることは簡単にわかります。<code>join . pure = id</code> でなければなりませんが、
+<code>pure x = Z</code> であればその等式が成り立ちません。</p>
 <pre><code>pure x = P x x   -- (1)</code></pre>
 <p><code>join</code>についてはどうでしょうか？ 自明にわかることとして、次の式が成り立つ必要があります。</p>
 <pre><code>join Z = Z           -- (2)</code></pre>
@@ -58,7 +63,9 @@ join $ fmap pure (P x y)
 <pre><code>join (P (P x y) (P z w)) = P x w      -- (6)</code></pre>
 <p>モナド則最後の一つは、次の等式で書かれる結合則です。</p>
 <pre><code>join . join = join (fmap join)</code></pre>
-<p>さて、いくつかのパターンで<code>join</code>が返すべき値が決まってしまっていますが、 次のパターンでは何を返せばいいでしょうか？実は、何を返してもモナド則に 従うことができないのです！</p>
+<p>さて、いくつかのパターンで<code>join</code>が返すべき値が決まってしまっていますが、
+次のパターンでは何を返せばいいでしょうか？実は、何を返してもモナド則に
+従うことができないのです！</p>
 <pre><code>join (P (P x y) Z) = ???</code></pre>
 <p><code>??? = Z</code> の場合、結合則の反例を次のように構成できます。</p>
 <pre><code>bad1 = P (P (P x y) Z      )
@@ -67,7 +74,8 @@ join $ fmap pure (P x y)
 (join . join)      bad1 = join (P (P x y) (P z w)) = P x w
 (join . fmap join) bad1 = join (P Z (join (P Z (P z w)))) ≠ P x w</code></pre>
 <p>一方は<code>x</code>に依存した値を返すのに対し、もう一方は<code>x</code>に依存しないので、これらは一致しません。</p>
-<p><code>??? = P (x または y) (x または y)</code> の場合。複雑になるので、どの組み合わせでも成立する <code>join (P (P x x) Z) = P x x</code>を仮定して、結合則の反例を構成します。</p>
+<p><code>??? = P (x または y) (x または y)</code> の場合。複雑になるので、どの組み合わせでも成立する
+<code>join (P (P x x) Z) = P x x</code>を仮定して、結合則の反例を構成します。</p>
 <pre><code>bad2 = P (P (P x x) Z)
          (P (P y y) Z)
 
@@ -83,7 +91,9 @@ join $ fmap pure (P x y)
 <p>もっと一般に、</p>
 <pre><code>data F k x = Zero | Pow (k -&gt; x)
     deriving (Functor)</code></pre>
-<p>という形のFunctorでも同じことが証明できます。 <code>F2</code>は<code>F Bool</code>とだいたい同型なので、これは一般化になっています。 また、<code>F k</code>は<code>Compose Maybe ((-&gt;) k)</code>とも同型なので、<code>Applicative</code>でもあります。</p>
+<p>という形のFunctorでも同じことが証明できます。
+<code>F2</code>は<code>F Bool</code>とだいたい同型なので、これは一般化になっています。
+また、<code>F k</code>は<code>Compose Maybe ((-&gt;) k)</code>とも同型なので、<code>Applicative</code>でもあります。</p>
 <p><code>F2</code>の場合と同じ議論によって、</p>
 <pre><code>pure :: forall x. x -&gt; F k 
 pure x = Pow (const x)</code></pre>

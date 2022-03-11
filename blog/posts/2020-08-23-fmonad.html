@@ -27,15 +27,23 @@
             <h1>Functor上のモナド、FMonadについて</h1>
             <article>
     <section class="header">
-        
-            Posted on 2020-08-23
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2020-08-23</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h1 id="モナドはmonad以外にもある">モナドは<code>Monad</code>以外にもある</h1>
-<p>この記事では、「モナド」と「<code>Monad</code>」とを違う意味の言葉として使いわけます。 <a href="https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8A%E3%83%89_(%E5%9C%8F%E8%AB%96)">モナド (圏論)</a>のうち、 ある特殊な場合が<code>Monad</code>である、とします。</p>
-<p>詳しい説明はここではしませんが、 次の<code>FMonad</code>は、「モナドだけど<code>Monad</code>じゃない」 性質を表す型クラスです。</p>
+<p>この記事では、「モナド」と「<code>Monad</code>」とを違う意味の言葉として使いわけます。
+<a href="https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8A%E3%83%89_(%E5%9C%8F%E8%AB%96)">モナド (圏論)</a>のうち、
+ある特殊な場合が<code>Monad</code>である、とします。</p>
+<p>詳しい説明はここではしませんが、
+次の<code>FMonad</code>は、「モナドだけど<code>Monad</code>じゃない」
+性質を表す型クラスです。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Natural</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> (<span class="op">~&gt;</span>) f g <span class="ot">=</span> <span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> g x</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -47,7 +55,10 @@
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">FFunctor</span> ff <span class="ot">=&gt;</span> <span class="dt">FMonad</span> ff <span class="kw">where</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ot">    fpure ::</span> (<span class="dt">Functor</span> g) <span class="ot">=&gt;</span> g <span class="op">~&gt;</span> ff g</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ot">    fjoin ::</span> (<span class="dt">Functor</span> g) <span class="ot">=&gt;</span> ff (ff g) <span class="op">~&gt;</span> ff g</span></code></pre></div>
-<p><code>FFunctor</code>と<code>FMonad</code>は、 <code>Functor</code>と<code>Monad</code>によく似ていることがわかります。 さらに、<code>FFunctor</code>則と<code>FMonad</code>則も<code>Functor</code>、<code>Monad</code>のものにそっくりです。 これらをまとめて抽象化できるのが、一般的なほうの「モナド」です。</p>
+<p><code>FFunctor</code>と<code>FMonad</code>は、
+<code>Functor</code>と<code>Monad</code>によく似ていることがわかります。
+さらに、<code>FFunctor</code>則と<code>FMonad</code>則も<code>Functor</code>、<code>Monad</code>のものにそっくりです。
+これらをまとめて抽象化できるのが、一般的なほうの「モナド」です。</p>
 <pre><code>FFunctor laws:
     ffmap id = id
     ffmap f . ffmap g = ffmap (f . g)
@@ -88,7 +99,10 @@ FMonad laws:
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    fjoin ::</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">ReaderT</span> e (<span class="dt">ReaderT</span> e f) <span class="op">~&gt;</span> <span class="dt">ReaderT</span> e f</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    fjoin <span class="ot">=</span> <span class="dt">ReaderT</span> <span class="op">.</span> (<span class="ot">join ::</span> (e <span class="ot">-&gt;</span> e <span class="ot">-&gt;</span> f x) <span class="ot">-&gt;</span> e <span class="ot">-&gt;</span> f x) <span class="op">.</span> <span class="fu">fmap</span> runReaderT <span class="op">.</span> runReaderT</span></code></pre></div>
-<p><code>ReaderT e f x</code> は、<code>newtype</code>を外せば <code>e -&gt; f x</code> で、これは <code>Monad</code>である<code>(e -&gt; _)</code> と、<code>Monad</code>とは限らない <code>f</code> の合成Functorと見ることができます。 <code>m ~ ((-&gt;) e)</code>とおけば、<code>fpure</code>は<code>return</code>で<code>f x</code>を包んで<code>m (f x)</code>にして、 <code>fjoin</code>は<code>join</code>で<code>m (m (f x))</code>を潰して<code>m (f x)</code>にしているだけです。</p>
+<p><code>ReaderT e f x</code> は、<code>newtype</code>を外せば <code>e -&gt; f x</code> で、これは
+<code>Monad</code>である<code>(e -&gt; _)</code> と、<code>Monad</code>とは限らない <code>f</code> の合成Functorと見ることができます。
+<code>m ~ ((-&gt;) e)</code>とおけば、<code>fpure</code>は<code>return</code>で<code>f x</code>を包んで<code>m (f x)</code>にして、
+<code>fjoin</code>は<code>join</code>で<code>m (m (f x))</code>を潰して<code>m (f x)</code>にしているだけです。</p>
 <p>一般化すれば、Functorの合成（<a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor-Compose.html">Data.Functor.Compose</a>）に対して、次のインスタンスが作れます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> m <span class="ot">=&gt;</span> <span class="dt">FFunctor</span> (<span class="dt">Compose</span> m)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> m   <span class="ot">=&gt;</span> <span class="dt">FMonad</span> (<span class="dt">Compose</span> m)</span></code></pre></div>
@@ -115,15 +129,19 @@ FMonad laws:
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        joinWriter ((x,w2),w1) <span class="ot">=</span> (x, w1 <span class="op">&lt;&gt;</span> w2)</span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- join (Writer (Writer (x, w2), w1)) = Writer (x, w1 &lt;&gt; w2)</span></span></code></pre></div>
-<p>1つめの例と同じように、これは任意の<code>Monad m</code>に拡張できて、 内側に<code>Monad m</code>を合成する<code>(`Compose` m)</code>は、 <code>FMonad</code>になります。</p>
-<p>ただし、Haskellは<code>(`Compose` m)</code>のような型を作れないので、 それ用の新しい型を定義する必要があります。</p>
+<p>1つめの例と同じように、これは任意の<code>Monad m</code>に拡張できて、
+内側に<code>Monad m</code>を合成する<code>(`Compose` m)</code>は、
+<code>FMonad</code>になります。</p>
+<p>ただし、Haskellは<code>(`Compose` m)</code>のような型を作れないので、
+それ用の新しい型を定義する必要があります。</p>
 <pre><code>newtype FlipCompose m f a = FlipCompose { getFlipCompose :: f (m a) }
 
 instance (Functor m, Functor f) =&gt; Functor (FlipCompose m f)
 instance (Functor m) =&gt; FFunctor (FlipCompose m)
 instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 <h2 id="具体例3sum-f">具体例3:<code>Sum f</code></h2>
-<p>これまでMonad Transformerばかりでしたが、<code>FMonad</code>がそうしたものに限られるわけではありません。 <code>Sum f</code>（<a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor-Sum.html">Data.Functor.Sum</a>）は<code>FMonad</code>です。これは、Monad Transformerでないどころか、<code>Monad</code>とは何の関係もありません。</p>
+<p>これまでMonad Transformerばかりでしたが、<code>FMonad</code>がそうしたものに限られるわけではありません。
+<code>Sum f</code>（<a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor-Sum.html">Data.Functor.Sum</a>）は<code>FMonad</code>です。これは、Monad Transformerでないどころか、<code>Monad</code>とは何の関係もありません。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Sum</span> f g a <span class="ot">=</span> <span class="dt">InL</span> (f a) <span class="op">|</span> <span class="dt">InR</span> (g a)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Sum</span> f g)</span></code></pre></div>
@@ -175,7 +193,8 @@ instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 <span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="ot">liftF ::</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> f <span class="op">~&gt;</span> <span class="dt">Free</span> f</span>
 <span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>liftF fx <span class="ot">=</span> <span class="dt">Free</span> (<span class="fu">fmap</span> <span class="dt">Pure</span> fx)</span></code></pre></div>
-<p>ここまでの例では省略してきましたが、<code>FFunctor</code>則・<code>FMonad</code>則も証明していきたいと思います。 その前に、次の有用な事実を確認しておきます: 任意の<code>Functor f, Monad n</code>および<code>t :: f ~&gt; n</code>に対して、</p>
+<p>ここまでの例では省略してきましたが、<code>FFunctor</code>則・<code>FMonad</code>則も証明していきたいと思います。
+その前に、次の有用な事実を確認しておきます: 任意の<code>Functor f, Monad n</code>および<code>t :: f ~&gt; n</code>に対して、</p>
 <ol type="1">
 <li><code>foldFree t . liftF = t</code></li>
 <li><code>foldFree t</code>は<code>Monad</code>準同型</li>
@@ -252,8 +271,11 @@ instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 <span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="co">-- よって、再帰的に、lhs = rhsでなければならない</span></span></code></pre></div>
 <p><strong>条件1.と2.を満たすような<code>Monad</code>準同型はただ一つだけ存在する</strong></p>
-<p>言い換えれば、任意の<code>Monad</code>準同型<code>ft :: Free f ~&gt; n</code>が <code>ft . liftF = t</code>を満たすなら、必ず<code>ft = foldFree t = foldFree (ft . liftF)</code>となります。</p>
-<p>これは2段階に分けて証明しましょう。まず、<code>u :: n ~&gt; n'</code>を<code>Monad</code>準同型としたとき、 任意の<code>t :: f ~&gt; n</code>について<code>foldFree (u . t) = u . foldFree t</code>です。これは「<code>foldFree</code>の自然性」 と呼ぶことにします。</p>
+<p>言い換えれば、任意の<code>Monad</code>準同型<code>ft :: Free f ~&gt; n</code>が
+<code>ft . liftF = t</code>を満たすなら、必ず<code>ft = foldFree t = foldFree (ft . liftF)</code>となります。</p>
+<p>これは2段階に分けて証明しましょう。まず、<code>u :: n ~&gt; n'</code>を<code>Monad</code>準同型としたとき、
+任意の<code>t :: f ~&gt; n</code>について<code>foldFree (u . t) = u . foldFree t</code>です。これは「<code>foldFree</code>の自然性」
+と呼ぶことにします。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lhs <span class="ot">=</span> foldFree (u <span class="op">.</span> t)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rhs <span class="ot">=</span> u <span class="op">.</span> foldFree t</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -360,7 +382,9 @@ instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 <span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a>   <span class="ot">=</span> foldFree (<span class="fu">id</span> <span class="op">.</span> foldFree <span class="fu">id</span>)</span>
 <span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>   <span class="ot">=</span> foldFree (foldFree <span class="fu">id</span>)</span></code></pre></div>
 <h2 id="なんでこの記事を書いたのか">なんでこの記事を書いたのか？</h2>
-<p>この<code>FFunctor</code>や<code>FMonad</code>は、 じつは私が<a href="https://github.com/viercc/kitchen-sink-hs/blob/master/experiment/src/FMonad.hs">ついこの間書いた</a>ものです。<a href="https://www.reddit.com/r/haskell/comments/i76yx2/listt_instances_and_xderivingvia/">Redditでのこの話題</a>に対する反応なので、別に実用上の必要があったわけではありません。一応Hackageも漁りましたけど、category-extrasに存在したことがあるぐらいで、 今もメンテナンスされているパッケージには見つかりませんでした。多分他の人も必要なかったのか、自分の検索が足りてないかです。</p>
+<p>この<code>FFunctor</code>や<code>FMonad</code>は、
+じつは私が<a href="https://github.com/viercc/kitchen-sink-hs/blob/master/experiment/src/FMonad.hs">ついこの間書いた</a>ものです。<a href="https://www.reddit.com/r/haskell/comments/i76yx2/listt_instances_and_xderivingvia/">Redditでのこの話題</a>に対する反応なので、別に実用上の必要があったわけではありません。一応Hackageも漁りましたけど、category-extrasに存在したことがあるぐらいで、
+今もメンテナンスされているパッケージには見つかりませんでした。多分他の人も必要なかったのか、自分の検索が足りてないかです。</p>
 <p>ただ、割とよく似ているものに<a href="https://hackage.haskell.org/package/index-core">index-core</a>と<a href="https://hackage.haskell.org/package/mmorph">mmorph</a>とがあります。それぞれ、</p>
 <ul>
 <li>index-core: カインド<code>k -&gt; Type</code>をもつ任意の型コンストラクタ<code>f :: k -&gt; Type</code>上の関手やモナド
@@ -374,7 +398,9 @@ instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 <li>モナドは<code>MMonad</code>という名前</li>
 </ul></li>
 </ul>
-<p>です。<code>FMonad</code>は<code>Functor</code>上のモナドなので、上のどちらとも一般/特殊の関係にありません。しかも、例に挙げたように、 <code>FFunctor</code>、<code>FMonad</code>のインスタンスは多様で、かつたびたび使う型が含まれています。 ちょっと深堀りしてみる価値があるかな、と思ってやってみました。</p>
+<p>です。<code>FMonad</code>は<code>Functor</code>上のモナドなので、上のどちらとも一般/特殊の関係にありません。しかも、例に挙げたように、
+<code>FFunctor</code>、<code>FMonad</code>のインスタンスは多様で、かつたびたび使う型が含まれています。
+ちょっと深堀りしてみる価値があるかな、と思ってやってみました。</p>
 <p>次の表は<code>IMonad</code>、<code>MMonad</code>、<code>FMonad</code>の比較です。</p>
 <table>
 <thead>
@@ -438,10 +464,15 @@ instance (Monad m)   =&gt; FMonad (FlipCompose m)</code></pre>
 </tr>
 </tbody>
 </table>
-<p><sup>[1]</sup> mmorphパッケージには無いけれど多分なれます。 また、<code>MMonad (FreeT f)</code>と<code>f</code>を固定して<code>m</code>を引数と見るのでなく、<code>m</code>を固定して<code>f</code>を引数と見るなら、<a href="https://github.com/viercc/kitchen-sink-hs/blob/master/experiment/src/FreeT_FMonad.md"><code>FreeT _ m</code>は<code>FMonad</code>です</a>。</p>
-<p><sup>[2]</sup> IxState: 下記のもの。<code>s</code>が反変な位置にあるので<code>FMonad</code>になれません。 あと、<code>x</code>として、GADTを使ったものを入れないと、 計算後の状態の型がわからなくなるので、<code>Functor</code>な<code>x</code>だけを使うとかなり不便です。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">IxState</span> x s <span class="kw">where</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">IxState</span><span class="ot"> ::</span> (s <span class="ot">-&gt;</span> (t, x t)) <span class="ot">-&gt;</span> <span class="dt">IxState</span> x s</span></code></pre></div>
+<p><sup>[1]</sup> mmorphパッケージには無いけれど多分なれます。
+また、<code>MMonad (FreeT f)</code>と<code>f</code>を固定して<code>m</code>を引数と見るのでなく、<code>m</code>を固定して<code>f</code>を引数と見るなら、<a href="https://github.com/viercc/kitchen-sink-hs/blob/391efc1a30f02a65bbcc37a4391bd5cb0d3eee8c/functor-monad/FreeT_FMonad.md"><code>FreeT _ m</code>は<code>FMonad</code>です</a>。</p>
+<p><sup>[2]</sup> IxState: 下記のもの。<code>s</code>が反変な位置にあるので<code>FMonad</code>になれません。
+あと、<code>x</code>として、GADTを使ったものを入れないと、
+計算後の状態の型がわからなくなるので、<code>Functor</code>な<code>x</code>だけを使うとかなり不便です。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">SomePair</span> x <span class="kw">where</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SomePair</span><span class="ot"> ::</span> t <span class="ot">-&gt;</span> x t <span class="ot">-&gt;</span> <span class="dt">SomePair</span> x</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">IxState</span> x s <span class="kw">where</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">IxState</span><span class="ot"> ::</span> (s <span class="ot">-&gt;</span> <span class="dt">SomePair</span> x) <span class="ot">-&gt;</span> <span class="dt">IxState</span> x s</span></code></pre></div>
     </section>
 </article>
 

@@ -27,14 +27,20 @@
             <h1>reflectionを使ったテクニック</h1>
             <article>
     <section class="header">
-        
-            Posted on 2018-12-18
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2018-12-18</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
-        <p><a href="http://hackage.haskell.org/package/reflection">reflection</a>というライブラリを使って、ちょっと便利なものを思いつきました。 <a href="https://gist.github.com/viercc/0f5e57d6c1cc1029eed2eb090d8f2a32">これです</a>。</p>
-<p>何をするものかと言うと、<code>forall a. Show a =&gt; Show (f a)</code>と書ける<code>Show</code>のインスタンスを持つ型<code>f</code>に対して、 <code>Show1 f</code>を機械的に定義できるようにするモジュールです。</p>
+        <p><a href="http://hackage.haskell.org/package/reflection">reflection</a>というライブラリを使って、ちょっと便利なものを思いつきました。
+<a href="https://gist.github.com/viercc/0f5e57d6c1cc1029eed2eb090d8f2a32">これです</a>。</p>
+<p>何をするものかと言うと、<code>forall a. Show a =&gt; Show (f a)</code>と書ける<code>Show</code>のインスタンスを持つ型<code>f</code>に対して、
+<code>Show1 f</code>を機械的に定義できるようにするモジュールです。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Automatic Show1(liftShowsPrec) </span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>autoLiftShowsPrec</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> (<span class="dt">Functor</span> f)</span>
@@ -57,8 +63,10 @@
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show1</span> <span class="dt">F</span> <span class="kw">where</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    liftShowsPrec <span class="ot">=</span> autoLiftShowsPrec <span class="fu">showsPrec</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    liftShowList <span class="ot">=</span> autoLiftShowList <span class="fu">showList</span></span></code></pre></div>
-<p>Genericsが不要なことと、<code>reflection</code>以外のライブラリに依存しないことがウリです。 また、同じ手法で<code>Show2</code>,<code>Read1</code>, <code>Read2</code>もできます。残念ながら<code>(Eq|Ord)(1|2)</code>は無理です。</p>
-<p>もしかしたらライブラリとしてすでに存在するのかもしれませんが、ちょっと探しきれなかったのでここで公開してみます。 要望があればちゃんとしたパッケージにします。</p>
+<p>Genericsが不要なことと、<code>reflection</code>以外のライブラリに依存しないことがウリです。
+また、同じ手法で<code>Show2</code>,<code>Read1</code>, <code>Read2</code>もできます。残念ながら<code>(Eq|Ord)(1|2)</code>は無理です。</p>
+<p>もしかしたらライブラリとしてすでに存在するのかもしれませんが、ちょっと探しきれなかったのでここで公開してみます。
+要望があればちゃんとしたパッケージにします。</p>
     </section>
 </article>
 

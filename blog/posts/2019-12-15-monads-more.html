@@ -27,10 +27,14 @@
             <h1>モナドを見分けるコツ</h1>
             <article>
     <section class="header">
-        
-            Posted on 2019-12-15
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2019-12-15</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h1 id="概要">概要</h1>
@@ -38,7 +42,9 @@
 <h1 id="準備">準備</h1>
 <p>ここでは、<strong>多項式Functor</strong>を、次の形をしたFunctor <code>F</code> のことと定義します。</p>
 <pre><code>F(x) ~ x^(a_0) + x^(a_1) + x^(a_2) + ... + x^(a_k)</code></pre>
-<p>ただし、<code>~</code>は<code>x</code>について自然な同型、<code>+</code>は直和型、<code>x^a</code>は<code>x</code>の<code>a</code>個の直積とします。 また、項の数<code>k</code>は0以上、すなわち<code>F(x)</code>は<code>Void</code>でもよいとします。また、<code>a_i</code>も0でもよいとします。 <code>x^0</code>はUnit型、ただ1つの値のみを持つ型です。</p>
+<p>ただし、<code>~</code>は<code>x</code>について自然な同型、<code>+</code>は直和型、<code>x^a</code>は<code>x</code>の<code>a</code>個の直積とします。
+また、項の数<code>k</code>は0以上、すなわち<code>F(x)</code>は<code>Void</code>でもよいとします。また、<code>a_i</code>も0でもよいとします。
+<code>x^0</code>はUnit型、ただ1つの値のみを持つ型です。</p>
 <ul>
 <li>Remark.
 <ul>
@@ -59,7 +65,8 @@
 <li><code>Proxy = Const ()</code></li>
 </ul>
 <p>多項式Functorでないものももちろんあります。例えば<code>Cont r</code>がそうです。</p>
-<p>また、すでにあるMonadのインスタンスから、新たなインスタンスを次々構成する方法が多数あります。 各種Monad Transformerなどはおなじみかと思いますが、それ以外にも次のようなものがあります：</p>
+<p>また、すでにあるMonadのインスタンスから、新たなインスタンスを次々構成する方法が多数あります。
+各種Monad Transformerなどはおなじみかと思いますが、それ以外にも次のようなものがあります：</p>
 <ul>
 <li><p>Monadの積。<code>Data.Functor.Product</code>という名前で<code>base</code>にもあるので、Monad則の証明は省きます。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> (<span class="op">*</span>) f g a <span class="ot">=</span> f a <span class="op">:*:</span> g a</span>
@@ -102,11 +109,13 @@
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">TLift</span> ma <span class="op">&gt;&gt;=</span> \a <span class="ot">-&gt;</span> (f a <span class="op">&gt;&gt;=</span> g)</span></code></pre></div></li>
 </ul>
 <h1 id="本論">本論</h1>
-<p>ある多項式Functor <code>F</code>に対して、<code>F</code>のMonadのインスタンスが定義できるだろうか？という問題を考えます。 まず、これが常に可能であるわけではありません。例えば、<code>F ~ Const e</code>は<code>e</code>が2つ以上の異なる値を持つときにMonadになりません。加えて、先日の記事では以下の事実を示しました。</p>
+<p>ある多項式Functor <code>F</code>に対して、<code>F</code>のMonadのインスタンスが定義できるだろうか？という問題を考えます。
+まず、これが常に可能であるわけではありません。例えば、<code>F ~ Const e</code>は<code>e</code>が2つ以上の異なる値を持つときにMonadになりません。加えて、先日の記事では以下の事実を示しました。</p>
 <blockquote>
 <p><code>F ~ Maybe (e -&gt; x)</code> は、<code>e</code>が2つ以上の異なる値を持つときにMonadにならない</p>
 </blockquote>
-<p>一方で、非常に広い範囲の多項式Functorに対してMonadのインスタンスが定義できることもわかっています。 これらを組み合わせて、任意の多項式Functorに対してMonadのインスタンスが定義できるかどうかを判定する方法を示します。</p>
+<p>一方で、非常に広い範囲の多項式Functorに対してMonadのインスタンスが定義できることもわかっています。
+これらを組み合わせて、任意の多項式Functorに対してMonadのインスタンスが定義できるかどうかを判定する方法を示します。</p>
 <ul>
 <li><p>主張0: ある多項式Functor<code>F</code>が <code>F(x) ~ c</code> と書けるならば、<code>|c| = 1</code>のとき、またそのときに限り<code>F</code>のMonadのインスタンスが存在する。</p></li>
 <li><p>主張1: ある多項式Functor<code>F</code>が <code>F(x) ~ x * G(x)</code> と書けるならば、<code>F</code>のMonadのインスタンスが存在する。</p></li>
@@ -127,7 +136,8 @@
 <h3 id="証明">証明</h3>
 <p>（以下、証明部分は常体で書きます）</p>
 <p>(⇒)は<a href="http://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Proxy.html#t:Proxy">Proxy</a>と同じようにMonadのインスタンスが定義できることからわかる。</p>
-<p>(⇐)を示す。<code>pure :: x -&gt; F x</code> はある定数関数 <code>const c0</code> である。このとき、<code>c0 :: F x ~ c</code> である。 任意の<code>c1 :: F x ~ c</code>について、<code>join (pure c1) = join (const c0 c1) = join c0</code>となるが、Monad則より<code>join . pure = id</code>なので<code>join (pure c1) = c1</code>でもある。したがって、任意の<code>c</code>型の値は<code>join c0</code>に等しい。これはすなわち、<code>|c| = 1</code>を意味する。</p>
+<p>(⇐)を示す。<code>pure :: x -&gt; F x</code> はある定数関数 <code>const c0</code> である。このとき、<code>c0 :: F x ~ c</code> である。
+任意の<code>c1 :: F x ~ c</code>について、<code>join (pure c1) = join (const c0 c1) = join c0</code>となるが、Monad則より<code>join . pure = id</code>なので<code>join (pure c1) = c1</code>でもある。したがって、任意の<code>c</code>型の値は<code>join c0</code>に等しい。これはすなわち、<code>|c| = 1</code>を意味する。</p>
 <h2 id="主張1">主張1</h2>
 <blockquote>
 <p>ある多項式Functor<code>F</code>が <code>F(x) ~ x * G(x)</code> と書けるならば、<code>F</code>のMonadのインスタンスが存在する。</p>
@@ -144,7 +154,8 @@
 <li><p><code>k&gt;1</code>, かつ <code>G(x) ~ x * H(x)</code>と書けるならば、<code>G(x)</code>の次数は<code>F(x)</code>より小さいので、帰納法の仮定を用いれば <code>G(x)</code> はMonadにできる。<code>F(x) ~ x * G(x) ~ (Id * G)(x)</code>かつIdもGもMonadなので、Monadの積によって<code>F(x)</code>もMonadのインスタンスを持てる。</p></li>
 <li><p><code>k&gt;1</code>, かつ<code>G(x) ~ x * H(x)</code>と書けないならば、<code>G(x) ~ 1 + H(x)</code>と書ける。このとき、</p>
 <pre><code>F(x) ~ x * (1 + H(x)) ~ x + x * H(x) ~ x + (Id * H)(x)</code></pre>
-<p>かつ、<code>(Id * H)(x)</code>の項の数は<code>F(x)</code>より一つ少ないので、帰納法の仮定を用いれば<code>(Id * H)(x)</code>はMonadにできる。 よって、先程述べた”単位の付加”の構成により、<code>F(x) ~ x + (Id * H)(x)</code>はMonadにできる。</p></li>
+<p>かつ、<code>(Id * H)(x)</code>の項の数は<code>F(x)</code>より一つ少ないので、帰納法の仮定を用いれば<code>(Id * H)(x)</code>はMonadにできる。
+よって、先程述べた”単位の付加”の構成により、<code>F(x) ~ x + (Id * H)(x)</code>はMonadにできる。</p></li>
 </ul>
 <h2 id="主張2">主張2</h2>
 <blockquote>
@@ -156,7 +167,8 @@
 <li><code>F(x) ~ 1 + x + x^2 + x^3</code>, 長さが 0 〜 3 のリストにはMonadのインスタンスが存在します。</li>
 </ul>
 <h3 id="証明-2">証明</h3>
-<p>どの多項式FunctorもTraversableにできるのであった。<code>G(x)</code>も<code>Traversable</code>であると仮定してよい。 次のように <code>F x ~ U g x = 1 + x + g x</code> とそのMonadのインスタンスを定義する。</p>
+<p>どの多項式FunctorもTraversableにできるのであった。<code>G(x)</code>も<code>Traversable</code>であると仮定してよい。
+次のように <code>F x ~ U g x = 1 + x + g x</code> とそのMonadのインスタンスを定義する。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">U</span> g x <span class="ot">=</span> <span class="dt">Nothing'</span> <span class="op">|</span> <span class="dt">Just'</span> x <span class="op">|</span> <span class="dt">Wrap</span> (g x)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">toMaybe ::</span> <span class="dt">U</span> g x <span class="ot">-&gt;</span> <span class="dt">Maybe</span> x</span>
@@ -270,7 +282,8 @@
 <li><code>F(x) ~ 3 + x^2 + x^4</code></li>
 </ul>
 <h3 id="証明-3">証明</h3>
-<p>まず、どんな多項式Functorに対しても、<code>forall x. x -&gt; F x</code>という型を持つ関数があれば、それは<code>F(x)</code>の特定の項 <code>F(x) ~ ... + x^n + ...</code>に対応するコンストラクタに、<code>n</code>個の<code>x</code>のコピーを渡した値を返す。このコンストラクタは、当然、<code>x</code>に依存せずに決まる。</p>
+<p>まず、どんな多項式Functorに対しても、<code>forall x. x -&gt; F x</code>という型を持つ関数があれば、それは<code>F(x)</code>の特定の項
+<code>F(x) ~ ... + x^n + ...</code>に対応するコンストラクタに、<code>n</code>個の<code>x</code>のコピーを渡した値を返す。このコンストラクタは、当然、<code>x</code>に依存せずに決まる。</p>
 <p>いま問題としている<code>F(x) ~ c + x^2 * G(x)</code>において、Monadの定義における<code>return :: forall x. x -&gt; F x</code>に対応する項が<code>x^n</code>であるとしたら、<code>n == 0</code>であるか、または<code>n &gt;= 2</code>である。</p>
 <p>仮に<code>n == 0</code>であったとする。これはすなわち<code>return</code>は定数関数であり、<code>return x</code>の値は<code>x</code>に依存しないことを意味している。しかし、Monad則より<code>join (return fx) = fx</code>でなければならず、また空でない型<code>X</code>において<code>fx :: F X</code>は2つ以上の異なる値を持つので、<code>return</code>は定数関数であってはならない。したがって、<code>n &gt;= 2</code>でなければならない。</p>
 <p><code>return</code>の返り値に対応する項<code>x^n</code>を明示して、<code>F(x)</code>が以下のように定義されているとする。</p>
@@ -326,7 +339,8 @@
 <p>ここで、次の関数を考える。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">at ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">N</span> <span class="ot">-&gt;</span> x <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>at i x <span class="ot">=</span> join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> x <span class="kw">else</span> zero)</span></code></pre></div>
-<p>いま、ある<code>i :: N</code>において<code>at i x</code>が<code>x</code>に依存しないと仮定する。 このとき、次の<code>sweep f</code>は<code>f i</code>の値に依存しないはずである。</p>
+<p>いま、ある<code>i :: N</code>において<code>at i x</code>が<code>x</code>に依存しないと仮定する。
+このとき、次の<code>sweep f</code>は<code>f i</code>の値に依存しないはずである。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sweep ::</span> <span class="kw">forall</span> x<span class="op">.</span> (<span class="dt">N</span> <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> <span class="dt">F</span> (<span class="dt">F</span> x)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sweep f <span class="ot">=</span> <span class="dt">U</span> <span class="op">$</span> \j <span class="ot">-&gt;</span> at j (f j)</span></code></pre></div>
 <p>一方、<code>join $ sweep f</code>を<code>join</code>の結合則を用いて計算すると、以下のようになる。</p>
@@ -357,7 +371,8 @@
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> (f j) <span class="kw">else</span> zero)</span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> (f i) <span class="kw">else</span> zero)</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> at i (f i)</span></code></pre></div>
-<p>いま、<code>N</code>には2つ以上の異なる値があるので、<code>i' /= i</code>なる<code>i' :: N</code>が存在して、<code>U f</code>は<code>f i</code>にも<code>f i'</code>にも依存する。 しかし、<code>at i (f i)</code>は<code>f i</code>にしか依存しないので、<code>at i = return</code> ではありえない。</p>
+<p>いま、<code>N</code>には2つ以上の異なる値があるので、<code>i' /= i</code>なる<code>i' :: N</code>が存在して、<code>U f</code>は<code>f i</code>にも<code>f i'</code>にも依存する。
+しかし、<code>at i (f i)</code>は<code>f i</code>にしか依存しないので、<code>at i = return</code> ではありえない。</p>
 <ul>
 <li><strong>事実2</strong>: 任意の<code>i</code>に対して<code>at i /= return</code></li>
 </ul>
@@ -393,7 +408,8 @@
 <ul>
 <li><strong>事実3</strong>: 任意の<code>i, k :: N</code>に対して、<code>i /= k</code>ならば<code>at i /= at k</code></li>
 </ul>
-<p>いま、<code>at i x</code>は<code>x</code>に依存するのであった。<code>return</code>のときと同様の議論によって、<code>at i x</code>が返すコンストラクタは2つ以上の<code>x</code>の値に依存することができるので、関数<code>con :: N -&gt; x -&gt; x -&gt; F x</code>が存在して、<code>con i x y</code>は<code>x</code>と<code>y</code>の両方に依存し、 <code>con i x x = at i x</code>となるようにできる。</p>
+<p>いま、<code>at i x</code>は<code>x</code>に依存するのであった。<code>return</code>のときと同様の議論によって、<code>at i x</code>が返すコンストラクタは2つ以上の<code>x</code>の値に依存することができるので、関数<code>con :: N -&gt; x -&gt; x -&gt; F x</code>が存在して、<code>con i x y</code>は<code>x</code>と<code>y</code>の両方に依存し、
+<code>con i x x = at i x</code>となるようにできる。</p>
 <p><code>con i</code>に関する等式をいくつか示す。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> zero <span class="kw">else</span> at i x)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> join (<span class="fu">return</span> zero) <span class="kw">else</span> join <span class="op">$</span> <span class="dt">U</span> (\k <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> k <span class="kw">then</span> <span class="fu">return</span> x <span class="kw">else</span> zero))</span>
@@ -444,7 +460,8 @@
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">$</span> <span class="dt">U</span> (\j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> at i (f i) <span class="kw">else</span> <span class="fu">return</span> (f j))</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> hole f i (at i)</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">U</span> f</span></code></pre></div>
-<p>まず、<code>extra</code>は<code>x</code>に関して自然なので、任意の<code>x, y, f</code>に関して<code>extra i x y f = U _</code>とならなければならない。 また、<code>extra i x y f</code>は任意の<code>j /= i</code>における<code>f j</code>と、<code>x</code>, <code>y</code>のいずれか片方に依存する。</p>
+<p>まず、<code>extra</code>は<code>x</code>に関して自然なので、任意の<code>x, y, f</code>に関して<code>extra i x y f = U _</code>とならなければならない。
+また、<code>extra i x y f</code>は任意の<code>j /= i</code>における<code>f j</code>と、<code>x</code>, <code>y</code>のいずれか片方に依存する。</p>
 <p>さらに、</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i (extra i x y f)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> <span class="dt">U</span> <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> extra i x y f <span class="kw">else</span> zero</span>

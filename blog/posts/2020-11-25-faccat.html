@@ -27,19 +27,26 @@
             <h1>多項式Applicative Functorの一般論</h1>
             <article>
     <section class="header">
-        
-            Posted on 2020-11-25
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2020-11-25</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h2 id="多項式functor">多項式Functor</h2>
-<p>半年ぐらい前から、 <code>newtype F x = F (M, E -&gt; x)</code> の形をしたApplicative Functorのすべてを決めるような <code>M</code>と<code>E</code>上の代数的構造を考えていました。</p>
+<p>半年ぐらい前から、
+<code>newtype F x = F (M, E -&gt; x)</code> の形をしたApplicative Functorのすべてを決めるような
+<code>M</code>と<code>E</code>上の代数的構造を考えていました。</p>
 <ul>
 <li><a href="2020-05-30-applicatives.html">Applicativeと対応する代数</a></li>
 <li><a href="2020-07-25-found-counterexample.html">Applicativeと対応する代数 反例発見</a></li>
 </ul>
-<p>最近この問題が自分の中で再燃し、いろいろ考えたところ、 <em>一般の多項式Functorを考えたほうが自然である</em>という結論に達しました。</p>
+<p>最近この問題が自分の中で再燃し、いろいろ考えたところ、
+<em>一般の多項式Functorを考えたほうが自然である</em>という結論に達しました。</p>
 <p>一般の多項式Functor <code>F</code> を、ここでは次のように定義します：</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>  <span class="co">-- Dependent Type!</span></span>
@@ -49,10 +56,13 @@
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">F</span> (x, g)) <span class="ot">=</span> <span class="dt">F</span> (x, f <span class="op">.</span> g)</span></code></pre></div>
-<p>ここで <code>Σ(x :: M). E x -&gt; a</code> は<a href="https://en.wikipedia.org/wiki/Dependent_type#%7F'%22%60UNIQ--postMath-00000016-QINU%60%22'%7F_type">Dependent sum type</a>です。 この型をもつ値は、対<code>(x, f)</code>であって、<code>x :: M</code> かつ <code>f :: E x -&gt; a</code>となるようなものです。</p>
-<p><code>f</code>の型が<em>値</em>である<code>x</code>に依存するので、このような型はHaskellでは(自然には)書くことができませんが、 拡張を駆使していろいろ工夫すると不可能ではないです。</p>
+<p>ここで <code>Σ(x :: M). E x -&gt; a</code> は<a href="https://en.wikipedia.org/wiki/Dependent_type#%7F'%22%60UNIQ--postMath-00000016-QINU%60%22'%7F_type">Dependent sum type</a>です。
+この型をもつ値は、対<code>(x, f)</code>であって、<code>x :: M</code> かつ <code>f :: E x -&gt; a</code>となるようなものです。</p>
+<p><code>f</code>の型が<em>値</em>である<code>x</code>に依存するので、このような型はHaskellでは(自然には)書くことができませんが、
+拡張を駆使していろいろ工夫すると不可能ではないです。</p>
 <p>このような型は、多項式Functorを表現します。</p>
-<p>例を挙げるなら、<code>M</code>がちょうど2つの値<code>M0, M1</code>をもち、 <code>E M0 = Void, E M1 = ()</code>とすれば、<code>F</code>は<code>Maybe</code>と同型になります。</p>
+<p>例を挙げるなら、<code>M</code>がちょうど2つの値<code>M0, M1</code>をもち、
+<code>E M0 = Void, E M1 = ()</code>とすれば、<code>F</code>は<code>Maybe</code>と同型になります。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">M</span> <span class="ot">=</span> <span class="dt">M0</span> <span class="op">|</span> <span class="dt">M1</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">E</span><span class="ot"> ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
@@ -67,23 +77,29 @@
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ot">fromF ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>fromF (<span class="dt">F</span> (<span class="dt">M0</span>, _)) <span class="ot">=</span> <span class="dt">Nothing</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>fromF (<span class="dt">F</span> (<span class="dt">M1</span>, f)) <span class="ot">=</span> <span class="dt">Just</span> (f ())</span></code></pre></div>
-<p>また、<code>M</code>が自然数で、<code>E m</code>が『<code>m</code>より小さい自然数』の型であるようにすると、 <code>E m</code>はちょうど<code>m</code>個の異なる値をとる型で、<code>F</code>は（有限）リスト関手です。</p>
+<p>また、<code>M</code>が自然数で、<code>E m</code>が『<code>m</code>より小さい自然数』の型であるようにすると、
+<code>E m</code>はちょうど<code>m</code>個の異なる値をとる型で、<code>F</code>は（有限）リスト関手です。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>[]      <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">0</span>, absurd)   <span class="co">-- E 0 ~ Void</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>[a]     <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">1</span>, \<span class="dv">0</span> <span class="ot">-&gt;</span> a)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>[a,b]   <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">2</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b})</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>[a,b,c] <span class="op">&lt;-&gt;</span> <span class="dt">F</span>(<span class="dv">3</span>, \<span class="kw">case</span> {<span class="dv">0</span> <span class="ot">-&gt;</span> a, <span class="dv">1</span> <span class="ot">-&gt;</span> b, <span class="dv">2</span> <span class="ot">-&gt;</span> c})</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span></span></code></pre></div>
-<p>このように定義された<code>F</code>が<code>Applicative</code>になるためには、 <code>M</code>と<code>E x</code>上にどのような代数構造が必要か？を次節から考えます。</p>
+<p>このように定義された<code>F</code>が<code>Applicative</code>になるためには、
+<code>M</code>と<code>E x</code>上にどのような代数構造が必要か？を次節から考えます。</p>
 <h2 id="多項式applicative-functorの特徴づけ">多項式Applicative Functorの特徴づけ</h2>
-<p>どんなApplicativeに対しても、モノイド<code>Ap f () ~ f ()</code>を考えられます。 (cf. <a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Monoid.html#t:Ap">Data.Monoid.Ap</a>)</p>
+<p>どんなApplicativeに対しても、モノイド<code>Ap f () ~ f ()</code>を考えられます。
+(cf. <a href="https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Monoid.html#t:Ap">Data.Monoid.Ap</a>)</p>
 <p>Applicativeである<code>F</code>が多項式Functorでもあって、上のような表現がされていれば、<code>Ap F ()</code>と<code>M</code>の間に全単射</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prj ::</span> <span class="dt">F</span> () <span class="ot">-&gt;</span> <span class="dt">M</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prj (<span class="dt">F</span> (x, _)) <span class="ot">=</span> x</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">inj ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">F</span> ()</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>inj x <span class="ot">=</span> <span class="dt">F</span> (x, <span class="fu">const</span> ())</span></code></pre></div>
-<p>があります。この全単射で<code>Ap F ()</code>上のモノイド演算を<code>M</code>上に写せば、 <code>M</code>はモノイド演算<code>(mempty, &lt;&gt;)</code>を持ちます。このモノイド演算を前提として、 <code>Applicative F</code>の実装がどうなっているか考えれば、 parametricityから</p>
+<p>があります。この全単射で<code>Ap F ()</code>上のモノイド演算を<code>M</code>上に写せば、
+<code>M</code>はモノイド演算<code>(mempty, &lt;&gt;)</code>を持ちます。このモノイド演算を前提として、
+<code>Applicative F</code>の実装がどうなっているか考えれば、
+parametricityから</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span><span class="ot"> ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">F</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">M</span>, <span class="fu">const</span> a)</span></code></pre></div>
 <p>および</p>
@@ -213,16 +229,20 @@ fabc'
 <li><code>phi (x, y, z) . phi (x', x &lt;&gt; y &lt;&gt; z, z') = phi (x' &lt;&gt; x, y, z &lt;&gt; z')</code></li>
 </ol>
 <p>とても<code>Functor</code>則に似ていますね？</p>
-<p>モノイド M が適当に与えられているとき、圏 MFac を次のように定義します。 （Mの単位元は1で、Mの乗法は単に並べて書くことにします。）</p>
+<p>モノイド M が適当に与えられているとき、圏 MFac を次のように定義します。
+（Mの単位元は1で、Mの乗法は単に並べて書くことにします。）</p>
 <ul>
 <li><p>MFacの対象はモノイドMの各要素</p></li>
 <li><p>MFacの対象（モノイドMの要素）s, t に対して、射はMの要素の三つ組 (x, t, z) であって、s = xtz を満たすもの</p>
 <p>MFac(s,t) = { (x, t, z) | s = xtz }</p></li>
 <li><p>各対象 s に対して、 (1, s, 1) ∈ MFac(s,s) がidentity</p></li>
 <li><p>(x, u, z) ∈ MFac(t,u) および (x’, t, z’) ∈ MFac(s,t) に対して、射の合成 ∘ が</p>
-<p>(x, u, z)∘(x’, t, z’) = (x, u, z)∘(x’, xuz, z’) = (x’x, u, zz’) ∈ MFac(s,u)</p></li>
+<p>(x, u, z)∘(x’, t, z’)
+= (x, u, z)∘(x’, xuz, z’)
+= (x’x, u, zz’) ∈ MFac(s,u)</p></li>
 </ul>
-<p><code>phi</code>の満たす法則は、とりもなおさず<code>E :: M -&gt; Type</code>が 圏MFac から 圏Hask への関手で、 <code>phi</code> がMFacの射 (x,y,z)∈MFac(xyz, y) を Haskの射<code>E (x &lt;&gt; y &lt;&gt; z) -&gt; E y</code>に移す<code>fmap</code>であることを表しています。</p>
+<p><code>phi</code>の満たす法則は、とりもなおさず<code>E :: M -&gt; Type</code>が 圏MFac から 圏Hask への関手で、
+<code>phi</code> がMFacの射 (x,y,z)∈MFac(xyz, y) を Haskの射<code>E (x &lt;&gt; y &lt;&gt; z) -&gt; E y</code>に移す<code>fmap</code>であることを表しています。</p>
 <p>※ちなみに、モノイド（対象が１つの圏と見ることもできる）の代わりに任意の圏で同じようなことをしたものが、<a href="https://ncatlab.org/nlab/show/twisted+arrow+category">Category of factorizationsやtwisted arrow categoryなどと呼ばれている</a>らしいことまでは調べきれたのですが、以降力尽きました・・・</p>
 <h2 id="まとめ">まとめ</h2>
 <p>多項式Functorである<code>F</code>が<code>M, E</code>によって次のように表示されているとき、</p>
@@ -265,7 +285,8 @@ phi (_,  _,  M0) = absurd</code></pre>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ES</span><span class="ot"> ::</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> <span class="dt">E</span> (<span class="dt">S</span> x)</span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">List</span> (Σ(<span class="ot">x ::</span> <span class="dt">Nat</span>)<span class="op">.</span> <span class="dt">E</span> x <span class="ot">-&gt;</span> a)</span></code></pre></div>
-<p>に対して、<code>[]</code>と同じApplicativeを考えると、 <code>Nat</code>に入るモノイド演算は、自然数としての乗算によるものです。</p>
+<p>に対して、<code>[]</code>と同じApplicativeを考えると、
+<code>Nat</code>に入るモノイド演算は、自然数としての乗算によるものです。</p>
 <pre><code>instance Num Nat where
   fromInteger = ...
   Z   + y = y
@@ -288,17 +309,24 @@ instance Monoid Nat where
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (i <span class="ot">`div`</span> z) <span class="ot">`mod`</span> y</span></code></pre></div>
 <h2 id="モノイドより強い条件">モノイドより強い条件</h2>
 <p><code>M</code>がモノイドであるだけでなくより強い条件を満たす、例えば群でもあるような場合はどうなるでしょうか？</p>
-<p>群<code>G</code>に対する圏GFacは、任意の射に対して逆射がある圏、groupoidになります。 さらに、任意の2対象（= 群Gの任意の2元）の間に射があります。<code>E</code>がこれからの関手であるため、 どの<code>E x, E y</code>の間にも全単射があることがわかります。 これはつまり、<code>E x</code>たちが有限個の値をとる型ならば、 それらは全て同じ個数でなければならないということです。</p>
-<p>群Gの単位元1に対して、GFac(1,1)は群になりますが、特にこれは群G自身と同じものです。 実際、GFac(1,1)とGは1対1に対応します</p>
+<p>群<code>G</code>に対する圏GFacは、任意の射に対して逆射がある圏、groupoidになります。
+さらに、任意の2対象（= 群Gの任意の2元）の間に射があります。<code>E</code>がこれからの関手であるため、
+どの<code>E x, E y</code>の間にも全単射があることがわかります。
+これはつまり、<code>E x</code>たちが有限個の値をとる型ならば、
+それらは全て同じ個数でなければならないということです。</p>
+<p>群Gの単位元1に対して、GFac(1,1)は群になりますが、特にこれは群G自身と同じものです。
+実際、GFac(1,1)とGは1対1に対応します</p>
 <pre><code>GFac(1,1) = { (x,1,y) | x :: G, y :: G, 1 = x1y } = { (y^(-1), 1, y) | y :: G }</code></pre>
 <p>また、Gにおける単位元・合成・逆元がそのままGFac(1,1)におけるそれになります。</p>
-<p>さらに、“標準”移動 (s,1,1) :: GFac(s,1) とその逆射 (s^(-1),s,1) :: GFac(1,s)によって、任意のGFac(s,t)とGFac(1,1)に 1対1対応がつけられます。</p>
+<p>さらに、“標準”移動 (s,1,1) :: GFac(s,1) とその逆射 (s^(-1),s,1) :: GFac(1,s)によって、任意のGFac(s,t)とGFac(1,1)に
+1対1対応がつけられます。</p>
 <pre><code>getPerm :: GFac(s,t) -&gt; GFac(1,1)
 getPerm (x,t,y) {- xty == s -}
  = (t,1,1) ∘ (x,t,y) ∘ (s^(-1), s, 1)
  = (s^(-1)xt, 1, y)
  = (y^(-1), 1, y)</code></pre>
-<p>これにより、任意の関手<code>E :: GFac -&gt; Hask</code>は、 その<code>GFac(1,1)</code>上での挙動(= 群<code>GFac(1,1)</code>の<code>E 1</code>への作用 = <code>G</code>-作用)および各<code>s</code>における全単射<code>phi (s,1,1) :: E s -&gt; E 1</code>のみで定義されることになります。</p>
+<p>これにより、任意の関手<code>E :: GFac -&gt; Hask</code>は、
+その<code>GFac(1,1)</code>上での挙動(= 群<code>GFac(1,1)</code>の<code>E 1</code>への作用 = <code>G</code>-作用)および各<code>s</code>における全単射<code>phi (s,1,1) :: E s -&gt; E 1</code>のみで定義されることになります。</p>
 <p>まとめると、モノイド<code>Ap F ()</code>が群<code>G</code>になるような多項式 Applicative <code>F</code> は、</p>
 <ul>
 <li>Functorとして<code>(G, E -&gt; a)</code> に自然同型</li>

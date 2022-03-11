@@ -27,14 +27,19 @@
             <h1>幅優先探索</h1>
             <article>
     <section class="header">
-        
-            Posted on 2020-08-21
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2020-08-21</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <h1 id="haskellで幅優先探索">Haskellで幅優先探索</h1>
-<p>Haskellで<a href="https://ja.wikipedia.org/wiki/%E5%B9%85%E5%84%AA%E5%85%88%E6%8E%A2%E7%B4%A2">幅優先探索</a>をしようとして、 キューをどうするか困ったことはないでしょうか？</p>
+<p>Haskellで<a href="https://ja.wikipedia.org/wiki/%E5%B9%85%E5%84%AA%E5%85%88%E6%8E%A2%E7%B4%A2">幅優先探索</a>をしようとして、
+キューをどうするか困ったことはないでしょうか？</p>
 <p>まず思いつくだろうことは、<a href="https://hackage.haskell.org/package/containers-0.6.3.1/docs/Data-Sequence.html#t:Seq">Data.Sequence.Seq</a>をキューとして使って、キュー<code>Seq node</code>を状態として持ち回れば、手続き型言語で普段書いていたような幅優先探索が書ける、ということでしょう。</p>
 <p>もちろん、Mutableな配列をキューにしてもできます。<code>IO</code>や<code>ST</code>を探索以外に使わなければならない事情があればいい選択肢です。</p>
 <p>しかし、キューを明示的に使わなくてもできる方法がいくつかあります。それぞれ面白みがあるので紹介していきます。</p>
@@ -100,7 +105,8 @@
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>solvePuzzleList <span class="ot">=</span> firstJust f <span class="op">$</span> bfList addCoin' ([], <span class="dv">0</span>)</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> f (path, <span class="dv">100</span>) <span class="ot">=</span> <span class="dt">Just</span> (<span class="fu">reverse</span> path)</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        f _           <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
-<p><code>ans = root : go 1 ans</code>のように再帰的に構築されたリストが、 まるでキューのように扱えます。</p>
+<p><code>ans = root : go 1 ans</code>のように再帰的に構築されたリストが、
+まるでキューのように扱えます。</p>
 <h2 id="遅延データ構造を使う">遅延データ構造を使う</h2>
 <p>次の<code>Lazy</code>型を考えます。<code>Lazy a</code>は、<code>a</code>型の値が</p>
 <ul>
@@ -108,7 +114,8 @@
 <li>計算終了した … <code>Ok a</code></li>
 <li>計算中である … <code>Next x</code></li>
 </ul>
-<p>という3つの状態を表します。<code>forceLazy</code>は、 これを単なる失敗または成功として<code>Maybe a</code>に単純化します。</p>
+<p>という3つの状態を表します。<code>forceLazy</code>は、
+これを単なる失敗または成功として<code>Maybe a</code>に単純化します。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Lazy</span> a <span class="ot">=</span> <span class="dt">Fail</span> <span class="op">|</span> <span class="dt">Ok</span> a <span class="op">|</span> <span class="dt">Next</span> (<span class="dt">Lazy</span> a)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>, <span class="dt">Foldable</span>, <span class="dt">Traversable</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -126,7 +133,8 @@
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Fail</span>   <span class="op">&gt;&gt;=</span> _ <span class="ot">=</span> <span class="dt">Fail</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Ok</span> a   <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> k a</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Next</span> x <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">Next</span> (x <span class="op">&gt;&gt;=</span> k)</span></code></pre></div>
-<p>さらに、“2つの<code>Lazy a</code>のうち先に完了したほうを返す”を<code>(&lt;|&gt;)</code>として、 <code>Alternative</code>にもなります。</p>
+<p>さらに、“2つの<code>Lazy a</code>のうち先に完了したほうを返す”を<code>(&lt;|&gt;)</code>として、
+<code>Alternative</code>にもなります。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Alternative</span> <span class="dt">Lazy</span> <span class="kw">where</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  empty <span class="ot">=</span> <span class="dt">Fail</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Fail</span>   <span class="op">&lt;|&gt;</span> y      <span class="ot">=</span> y</span>

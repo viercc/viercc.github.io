@@ -27,14 +27,20 @@
             <h1>型クラスAlignについて</h1>
             <article>
     <section class="header">
-        
-            Posted on 2018-12-29
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2018-12-29</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <p>型クラス<a href="http://hackage.haskell.org/package/these-0.7.5/docs/Data-Align.html"><code>Align</code></a>は<code>Kleisli Maybe</code>から<code>-&gt;</code>へのlax monoidal functorだとドキュメントに書いてあるけど、それは違うんじゃないかという事についてです。</p>
-<p>Applicativeによく似た構造をしているAlignですが、その意味をきちんと定義するAlign則はまだ未完成で、 先日それに関して作者のGitHubにIssueを投げました。 この記事はその準備として書き始めたものですが、せっかくなのでここで公開することししました。</p>
+<p>Applicativeによく似た構造をしているAlignですが、その意味をきちんと定義するAlign則はまだ未完成で、
+先日それに関して作者のGitHubにIssueを投げました。
+この記事はその準備として書き始めたものですが、せっかくなのでここで公開することししました。</p>
 <h2 id="align-って何"><code>Align</code> って何</h2>
 <p><code>Align</code>は、theseパッケージのData.Alignで定義されている型クラスです。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Align</span> f <span class="kw">where</span></span>
@@ -47,7 +53,8 @@
 <blockquote>
 <p>もしその関手が現に<code>Kleisli Maybe</code>から<code>Hask</code>への関手であれば（すなわち<code>maybeMap :: (a -&gt; Maybe b) -&gt; f a -&gt; f b</code>を持てば）、[訳補:その関手の]<code>Align</code>のインスタンスは、その関手を<code>Kleisli Maybe</code>上の直積モノイド構造に対してlax monoidalにします。なぜなら、<code>These</code>はその圏における直積だからです(<code>a -&gt; Maybe (These b c) ~ (a -&gt; Maybe b, a -&gt; Maybe c)</code>)。</p>
 </blockquote>
-<p>割と意味不明な圏論用語が多かったので、nlabというサイトを参考になんとなく調べたらなんとなく意味がわかった気がしました。 でも、私の理解した限りではこのドキュメントは間違っています。なので、圏論をHaskellに翻訳しながら「なぜ間違っているのか」説明しようと思います。</p>
+<p>割と意味不明な圏論用語が多かったので、nlabというサイトを参考になんとなく調べたらなんとなく意味がわかった気がしました。
+でも、私の理解した限りではこのドキュメントは間違っています。なので、圏論をHaskellに翻訳しながら「なぜ間違っているのか」説明しようと思います。</p>
 <ul>
 <li>圏、対象、射[category, object, morphism]</li>
 <li>直積[cartesian product]</li>
@@ -57,7 +64,9 @@
 </ul>
 <p>をHaskellに翻訳しながら説明します。（自分がHaskellに翻訳しないと理解できないため）</p>
 <h3 id="圏対象射">圏、対象、射</h3>
-<p>ここでは、圏とは次の型クラス<code>Category</code>のインスタンス<code>cat :: k -&gt; k -&gt; Type</code>を、 対象とはカインド<code>k</code>の型を、射とは<code>cat x y :: Type</code>型の値という意味<em>だとします</em>。 混乱を避けるために繰り返して言うと、対象は<em>型</em>で、射は<em>値</em>です。</p>
+<p>ここでは、圏とは次の型クラス<code>Category</code>のインスタンス<code>cat :: k -&gt; k -&gt; Type</code>を、
+対象とはカインド<code>k</code>の型を、射とは<code>cat x y :: Type</code>型の値という意味<em>だとします</em>。
+混乱を避けるために繰り返して言うと、対象は<em>型</em>で、射は<em>値</em>です。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Category</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="kw">where</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    id ::</span> cat x x</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    (.) ::</span> cat y z <span class="ot">-&gt;</span> cat x y <span class="ot">-&gt;</span> cat x z</span></code></pre></div>
@@ -86,7 +95,11 @@
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Kl</span> f <span class="op">.</span> <span class="dt">Kl</span> g <span class="ot">=</span> <span class="dt">Kl</span> <span class="op">$</span> f <span class="op">&lt;=&lt;</span> g</span></code></pre></div>
 <h3 id="直積">直積</h3>
 <p>圏論での直積は、集合の直積を一般化したような概念です。</p>
-<p>Haskellで言うなら、ある圏(Category)の対象2つをとって別の対象を返す(型レベルの)関数で、 集合の直積みたいな性質を表すいくつかの射を持つものです。 3個、4個、有限のn個の対象の直積は、適当に2個の直積を組み合わせればよいです。 どんな順番でどのように積をとっても、すべて同型になると示すことができます。 また、“0個の対象の直積”として終対象という特別な対象も考えます。</p>
+<p>Haskellで言うなら、ある圏(Category)の対象2つをとって別の対象を返す(型レベルの)関数で、
+集合の直積みたいな性質を表すいくつかの射を持つものです。
+3個、4個、有限のn個の対象の直積は、適当に2個の直積を組み合わせればよいです。
+どんな順番でどのように積をとっても、すべて同型になると示すことができます。
+また、“0個の対象の直積”として終対象という特別な対象も考えます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">CartesianProduct</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="op">*</span>) <span class="kw">where</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">CP</span><span class="ot"> cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> k</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">Terminal</span><span class="ot"> cat ::</span> k</span>
@@ -180,7 +193,8 @@
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- map id = id</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- map (f . g) = map f . map g</span></span></code></pre></div>
-<p>例をあげると、今定義した方ではなくていつも使っている方の<code>Functor</code>は<code>Hask</code>から<code>Hask</code>への関手です。 いつも使っている方の<code>Prelude.Functor</code>を使うというラッパー<code>HaskF</code>を定義しましょう。</p>
+<p>例をあげると、今定義した方ではなくていつも使っている方の<code>Functor</code>は<code>Hask</code>から<code>Hask</code>への関手です。
+いつも使っている方の<code>Prelude.Functor</code>を使うというラッパー<code>HaskF</code>を定義しましょう。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">HaskF</span> f a <span class="ot">=</span> <span class="dt">HaskF</span> (f a)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Prelude.Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">HaskF</span> f) <span class="kw">where</span></span>
@@ -211,7 +225,9 @@
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Map.mapMaybe return = Map.mapMaybe Just = id</span></span>
 <span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Map.mapMaybe (f &lt;=&lt; g) = Map.mapMaybe f . Map.mapMaybe g</span></span></code></pre></div>
-<p>一般的に言って、<a href="http://hackage.haskell.org/package/witherable-0.3/docs/Data-Witherable.html#t:Filterable">Filterable</a> のインスタンスは<code>Kleisli Maybe</code>から<code>Hask</code>への関手です。Filterable則をじっと眺めたら、<code>Kleisli Maybe</code>から<code>Hask</code>への<code>Functor</code>則 だということがわかるでしょう。</p>
+<p>一般的に言って、<a href="http://hackage.haskell.org/package/witherable-0.3/docs/Data-Witherable.html#t:Filterable">Filterable</a>
+のインスタンスは<code>Kleisli Maybe</code>から<code>Hask</code>への関手です。Filterable則をじっと眺めたら、<code>Kleisli Maybe</code>から<code>Hask</code>への<code>Functor</code>則
+だということがわかるでしょう。</p>
 <h3 id="lax-monoidal-関手">lax monoidal 関手</h3>
 <p>(Lax) monoidal 関手は、モノイド圏からモノイド圏への関手で、その構造を保つためのいくつかの条件を満たすものです。今は終対象と直積からなるモノイドだけを考えていたので、それを織り込み済みで書くなら、</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">CartesianProduct</span> (<span class="dt">Dom</span> f), <span class="dt">CartesianProduct</span> (<span class="dt">Cod</span> f), <span class="dt">Functor</span> f) <span class="ot">=&gt;</span></span>
@@ -239,7 +255,8 @@
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    unit _ <span class="ot">=</span> <span class="dt">HaskF</span> (<span class="fu">pure</span> ())</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    multiply (<span class="dt">HaskF</span> fa, <span class="dt">HaskF</span> fb) <span class="ot">=</span> <span class="dt">HaskF</span> <span class="op">$</span> (,) <span class="op">&lt;$&gt;</span> fa <span class="op">&lt;*&gt;</span> fb</span></code></pre></div>
-<p>そしてなんと、<code>Kleisli Maybe</code>から<code>Hask</code>への関手としての<code>Map k</code>も<code>LaxMonoidalFunctor</code>になって、 そのメソッドは<code>Align</code>クラスを使って定義できるのです！</p>
+<p>そしてなんと、<code>Kleisli Maybe</code>から<code>Hask</code>への関手としての<code>Map k</code>も<code>LaxMonoidalFunctor</code>になって、
+そのメソッドは<code>Align</code>クラスを使って定義できるのです！</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Ord</span> k) <span class="ot">=&gt;</span> <span class="dt">LaxMonoidalFunctor</span> (<span class="dt">Map</span> k) <span class="kw">where</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    unit ::</span> <span class="co">--    Cod f (Terminal (Cod f)) (f (Terminal (Dom f)))</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>            <span class="co">--  = Terminal Hask -&gt; Map k (Terminal (Kleisli Maybe)) =</span></span>
@@ -268,8 +285,11 @@
 </blockquote>
 <p>という説明は<strong>現状に合っていない</strong>ということです。</p>
 <h2 id="結論">結論</h2>
-<p><code>Data.Align</code>のドキュメンテーションには、「<code>Align</code>は<code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手を表す」 という格好いい一文があり、それがもし本当ならAlign則のもっと適切なバージョンを導くといったうれしい点がありました。</p>
-<p>しかし、現状<code>Map k</code>や<code>HashMap k</code>といったインスタンスだけがlax monoidal関手を表しており、 <code>[]</code>や<code>Seq</code>などはそうなっていません。つまり、現状を追認する形でAlign則を定義しようとするなら、 <em><code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手</em>というアプローチは取れないということです。</p>
+<p><code>Data.Align</code>のドキュメンテーションには、「<code>Align</code>は<code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手を表す」
+という格好いい一文があり、それがもし本当ならAlign則のもっと適切なバージョンを導くといったうれしい点がありました。</p>
+<p>しかし、現状<code>Map k</code>や<code>HashMap k</code>といったインスタンスだけがlax monoidal関手を表しており、
+<code>[]</code>や<code>Seq</code>などはそうなっていません。つまり、現状を追認する形でAlign則を定義しようとするなら、
+<em><code>Kleisli Maybe</code>から<code>Hask</code>へのlax monoidal関手</em>というアプローチは取れないということです。</p>
     </section>
 </article>
 

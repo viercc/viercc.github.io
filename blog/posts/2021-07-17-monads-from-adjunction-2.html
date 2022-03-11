@@ -33,10 +33,14 @@
             <h1>随伴から作られるMonad</h1>
             <article>
     <section class="header">
-        
-            Posted on 2021-08-18
-        
-        
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2021-08-18</li>
+            
+            
+            
+            
+        </ul>
     </section>
     <section>
         <!-- tex macros -->
@@ -47,9 +51,14 @@
 <li><code>Cont r</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-Cont.html">Control.Monad.Trans.Cont</a>)</li>
 <li><code>ListT m</code> (<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-List.html">Control.Monad.Trans.List</a>, “ListT done wrong”)</li>
 </ul>
-<p>しかし、<code>Functor</code>以外の関手などというものをこれまできちんと定義してこなかったツケを返済するため、 前回は圏・関手・自然変換といった(数学の)用語の意味について、 Haskellでの例を引きながら説明しました。 今回はようやく本題に入れます。</p>
+<p>しかし、<code>Functor</code>以外の関手などというものをこれまできちんと定義してこなかったツケを返済するため、
+前回は圏・関手・自然変換といった(数学の)用語の意味について、
+Haskellでの例を引きながら説明しました。
+今回はようやく本題に入れます。</p>
 <h2 id="stateモナドの一般化に挑戦する">Stateモナドの一般化に挑戦する</h2>
-<p><a href="./2021-05-17-string-diagram.html">以前の記事</a>では、 <code>State</code>モナドを以下の二つの<code>Functor</code>の合成と考えることで、 きれいなストリング図が書けることを紹介しました。</p>
+<p><a href="./2021-05-17-string-diagram.html">以前の記事</a>では、
+<code>State</code>モナドを以下の二つの<code>Functor</code>の合成と考えることで、
+きれいなストリング図が書けることを紹介しました。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- G s = (s -&gt;)も F s = (s, )もFunctor</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">G</span> s <span class="ot">=</span> (<span class="ot">-&gt;</span>) s</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">F</span> s <span class="ot">=</span> (,) s</span>
@@ -62,15 +71,22 @@
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ot">close ::</span> <span class="dt">F</span> s (<span class="dt">G</span> s a) <span class="ot">-&gt;</span> a  <span class="co">-- (s, s -&gt; a) -&gt; a</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>close (s, f) <span class="ot">=</span> f s</span></code></pre></div>
-<p>ここで使った”トリック”は、 恒等関手<code>Identity</code>からふたつの関手の合成<code>G s ∘ F s</code>をつくる自然変換 <code>open</code>と、逆に<code>F s ∘ G s</code>から<code>Identity</code>を取り出す<code>close</code>を考えるというものでした。</p>
+<p>ここで使った”トリック”は、
+恒等関手<code>Identity</code>からふたつの関手の合成<code>G s ∘ F s</code>をつくる自然変換
+<code>open</code>と、逆に<code>F s ∘ G s</code>から<code>Identity</code>を取り出す<code>close</code>を考えるというものでした。</p>
 <figure>
 <img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" /><figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
 </figure>
 <figure>
 <img src="../images/string/state-openclose.png" alt="openとcloseの関係" /><figcaption aria-hidden="true">openとcloseの関係</figcaption>
 </figure>
-<p>さて、モナドを合成関手と見て、特別な自然変換からモナド演算<code>pure, join</code>を導くという手法は、 <a href="./string-3.html">別の回</a>でもやっています。 「二つのモナド<code>m</code>の<code>n</code>に対する分配<code>swap :: ∀a. n (m a) -&gt; m (n a)</code>を見つけることで、 <code>m∘n</code>をモナドにする」という方法で、<code>WriterT</code>や<code>ReaderT</code>を攻略しました。 では、<code>open</code>,<code>close</code>を使う手法で作れるモナドは<code>State</code>モナドのほかに無いのでしょうか？</p>
-<p>実は、<code>State</code>モナドと同じ形のモナドしか作ることができないことが証明できます。 ある<code>F</code>と<code>G</code>が<code>Functor</code>であり、自然変換<code>open, close</code>を次のように持っていたとします。</p>
+<p>さて、モナドを合成関手と見て、特別な自然変換からモナド演算<code>pure, join</code>を導くという手法は、
+<a href="./string-3.html">別の回</a>でもやっています。
+「二つのモナド<code>m</code>の<code>n</code>に対する分配<code>swap :: ∀a. n (m a) -&gt; m (n a)</code>を見つけることで、
+<code>m∘n</code>をモナドにする」という方法で、<code>WriterT</code>や<code>ReaderT</code>を攻略しました。
+では、<code>open</code>,<code>close</code>を使う手法で作れるモナドは<code>State</code>モナドのほかに無いのでしょうか？</p>
+<p>実は、<code>State</code>モナドと同じ形のモナドしか作ることができないことが証明できます。
+ある<code>F</code>と<code>G</code>が<code>Functor</code>であり、自然変換<code>open, close</code>を次のように持っていたとします。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 未知のF, GなるFunctor</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">G</span></span>
@@ -81,10 +97,13 @@
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">M</span> a <span class="ot">=</span> <span class="dt">M</span> {<span class="ot"> runM ::</span> <span class="dt">G</span> (<span class="dt">F</span> a) }</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">M</span> <span class="kw">where</span> <span class="co">-- etc.</span></span></code></pre></div>
-<p>そして、<code>open, close</code>が上記ストリング図に書いた関係式を満たしているとします。 Haskellの式で書くなら、以下の等式になります。</p>
+<p>そして、<code>open, close</code>が上記ストリング図に書いた関係式を満たしているとします。
+Haskellの式で書くなら、以下の等式になります。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>open <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> close <span class="ot">= id ::</span> <span class="dt">G</span> a <span class="ot">-&gt;</span> <span class="dt">G</span> a</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> open <span class="op">&gt;&gt;&gt;</span> close <span class="ot">= id ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</span></code></pre></div>
-<p>このとき、任意の型<code>x</code>について、<code>G x</code>が<code>F () -&gt; x</code>と同型であり、 また<code>F x</code>が<code>(F (), x)</code>と同型であることが証明できてしまいます。 全部書き下すと長くなってしまうので概略だけ紹介します。</p>
+<p>このとき、任意の型<code>x</code>について、<code>G x</code>が<code>F () -&gt; x</code>と同型であり、
+また<code>F x</code>が<code>(F (), x)</code>と同型であることが証明できてしまいます。
+全部書き下すと長くなってしまうので概略だけ紹介します。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- runG, makeGが同型の証拠になっている</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">runG ::</span> <span class="dt">G</span> x <span class="ot">-&gt;</span> (<span class="dt">F</span> () <span class="ot">-&gt;</span> x)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>runG gx f1 <span class="ot">=</span> close <span class="op">$</span> <span class="fu">fmap</span> (\() <span class="ot">-&gt;</span> gx) f1</span>
@@ -106,16 +125,27 @@
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- open &gt;&gt;&gt; fmap close = id</span></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (\() <span class="ot">-&gt;</span> gx) <span class="op">$</span> ()</span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> gx</span></code></pre></div>
-<p>結果的に、<code>G (F x)</code>は<code>F () -&gt; (F (), x)</code>と同型、 すなわち<code>State (F ()) x</code>と同型になってしまい、 更に<code>open, close</code>から作ったモナド演算<code>pure, join</code>も<code>State (F ())</code>のモナド演算と 同型の違いを除いて同じになってしまいます。 つまり、<code>State</code>モナドとは違うモナドは作れませんでした。</p>
+<p>結果的に、<code>G (F x)</code>は<code>F () -&gt; (F (), x)</code>と同型、
+すなわち<code>State (F ()) x</code>と同型になってしまい、
+更に<code>open, close</code>から作ったモナド演算<code>pure, join</code>も<code>State (F ())</code>のモナド演算と
+同型の違いを除いて同じになってしまいます。
+つまり、<code>State</code>モナドとは違うモナドは作れませんでした。</p>
 <h2 id="随伴">随伴</h2>
-<p><code>State</code>モナドを作る材料となった<code>F</code>と<code>G</code>は<code>Functor</code>、すなわち<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手でした。 これを任意の圏の間の関手に一般化すると、<strong>随伴</strong>とよばれるものになります。</p>
-<p>圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手<span class="math inline">F</span>と、 圏<span class="math inline">D</span>から圏<span class="math inline">C</span>への関手<span class="math inline">G</span>（逆向き）について、 <span class="math inline">F</span><strong>が</strong><span class="math inline">G</span><strong>の左随伴</strong>であるということを次のように定義します。</p>
+<p><code>State</code>モナドを作る材料となった<code>F</code>と<code>G</code>は<code>Functor</code>、すなわち<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手でした。
+これを任意の圏の間の関手に一般化すると、<strong>随伴</strong>とよばれるものになります。</p>
+<p>圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手<span class="math inline">F</span>と、
+圏<span class="math inline">D</span>から圏<span class="math inline">C</span>への関手<span class="math inline">G</span>（逆向き）について、
+<span class="math inline">F</span><strong>が</strong><span class="math inline">G</span><strong>の左随伴</strong>であるということを次のように定義します。</p>
 <ul>
 <li><p>自然変換<span class="math inline">\mathrm{unit} \colon \Id_C \to G\circ F</span>が存在する。</p>
 <ul>
 <li><p><span class="math inline">\Id_C</span>は圏<span class="math inline">C</span>上の恒等関手です。</p></li>
-<li><p>自然変換の定義を当てはめれば、すべての<span class="math inline">C</span>の対象<span class="math inline">a</span>に対して定義された射の族 <span class="math inline">\mathrm{unit}_a \in C(\Id_C(a), G(F(a)))</span>で、任意の射<span class="math inline">f\in C(a,b)</span>に対して <span class="math inline">\mathrm{unit}_b \circ \map_{\Id_C}(f) = \map_{G\circ F}(f) \circ \mathrm{unit}_a</span> を満たすもののことです。</p>
-<p>恒等関手をわざわざ書かないことにすれば、<span class="math inline">\mathrm{unit}_a \in C(a, G(F(a)))</span>となります。 <code>open</code>の型<code>∀a. a -&gt; G s (F s a)</code>と見比べれば、<span class="math inline">\mathrm{unit}</span>は<code>open</code>の一般化として考えることができます。</p></li>
+<li><p>自然変換の定義を当てはめれば、すべての<span class="math inline">C</span>の対象<span class="math inline">a</span>に対して定義された射の族
+<span class="math inline">\mathrm{unit}_a \in C(\Id_C(a), G(F(a)))</span>で、任意の射<span class="math inline">f\in C(a,b)</span>に対して
+<span class="math inline">\mathrm{unit}_b \circ \map_{\Id_C}(f) = \map_{G\circ F}(f) \circ \mathrm{unit}_a</span>
+を満たすもののことです。</p>
+<p>恒等関手をわざわざ書かないことにすれば、<span class="math inline">\mathrm{unit}_a \in C(a, G(F(a)))</span>となります。
+<code>open</code>の型<code>∀a. a -&gt; G s (F s a)</code>と見比べれば、<span class="math inline">\mathrm{unit}</span>は<code>open</code>の一般化として考えることができます。</p></li>
 </ul></li>
 <li><p>自然変換<span class="math inline">\mathrm{counit} \colon F\circ G \to \Id_D</span>が存在する。</p>
 <ul>
@@ -127,7 +157,8 @@
 \begin{equation}
   \mathrm{counit}_{F(a)} \circ \map_F(\mathrm{unit}_a) = \id_{F(a)}
 \end{equation}
-</span> <span class="math display">
+</span>
+<span class="math display">
 \begin{equation}
   \map_G(\mathrm{counit}_a) \circ \mathrm{unit}_{G(a)} = \id_{G(a)}
 \end{equation}
@@ -143,22 +174,30 @@
 <li><span class="math inline">F \dashv G</span></li>
 </ul>
 </div>
-<p>ここで、<span class="math inline">C=\Hask</span>である場合を考えます。すなわち、<span class="math inline">F</span>は<span class="math inline">\Hask</span>から<span class="math inline">D</span>への関手、 <span class="math inline">G</span>は<span class="math inline">D</span>から<span class="math inline">\Hask</span>への関手です。このとき、<span class="math inline">G\circ F</span>は<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手で、 <code>State</code>と同じようにして<code>Monad</code>になります。</p>
+<p>ここで、<span class="math inline">C=\Hask</span>である場合を考えます。すなわち、<span class="math inline">F</span>は<span class="math inline">\Hask</span>から<span class="math inline">D</span>への関手、
+<span class="math inline">G</span>は<span class="math inline">D</span>から<span class="math inline">\Hask</span>への関手です。このとき、<span class="math inline">G\circ F</span>は<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>への関手で、
+<code>State</code>と同じようにして<code>Monad</code>になります。</p>
 <p><span class="math display">
 \begin{equation}
   \mathrm{pure} = \mathrm{unit} \colon \forall a. a \to G(F(a))
 \end{equation}
-</span> <span class="math display">
+</span>
+<span class="math display">
 \begin{equation}
   \mathrm{join} = \map_G(\mathrm{counit}) \colon \forall a. G(F(G(F(a)))) \to G(F(a))
 \end{equation}
 </span></p>
 <div class="sidenote">
-<p>より一般に、「圏<span class="math inline">C</span>上のモナド」を考えることができて、<code>Monad</code>は「<span class="math inline">\Hask</span>上のモナド」です。 <span class="math inline">C=\Hask</span>以外の場合でも<span class="math inline">G\circ F</span>は<span class="math inline">C</span>上のモナドです。</p>
+<p>より一般に、「圏<span class="math inline">C</span>上のモナド」を考えることができて、<code>Monad</code>は「<span class="math inline">\Hask</span>上のモナド」です。
+<span class="math inline">C=\Hask</span>以外の場合でも<span class="math inline">G\circ F</span>は<span class="math inline">C</span>上のモナドです。</p>
 </div>
 <h2 id="随伴をストリング図に描く">随伴をストリング図に描く</h2>
-<p><a href="./2021-05-17-string-diagram.html">以前の記事で導入したストリング図</a>は、 <code>Functor</code>すなわち<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>自身への関手と、それらの間の自然変換だけを考えていました。 ですが、その記事で説明したストリング図は、そのままでも任意の圏どうしの関手を扱うように拡張できます。</p>
-<p>例えば、関手<span class="math inline">F</span>はストリング図では線で描かれます。 そして、<span class="math inline">F</span>が圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手であったなら、<span class="math inline">F</span>の線の<strong>左側の領域</strong>に「ここは圏<span class="math inline">C</span>である」、 <strong>右側の領域</strong>に「ここは圏<span class="math inline">D</span>である」と書き込むことで、この関手の型を明示することができます。</p>
+<p><a href="./2021-05-17-string-diagram.html">以前の記事で導入したストリング図</a>は、
+<code>Functor</code>すなわち<span class="math inline">\Hask</span>から<span class="math inline">\Hask</span>自身への関手と、それらの間の自然変換だけを考えていました。
+ですが、その記事で説明したストリング図は、そのままでも任意の圏どうしの関手を扱うように拡張できます。</p>
+<p>例えば、関手<span class="math inline">F</span>はストリング図では線で描かれます。
+そして、<span class="math inline">F</span>が圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手であったなら、<span class="math inline">F</span>の線の<strong>左側の領域</strong>に「ここは圏<span class="math inline">C</span>である」、
+<strong>右側の領域</strong>に「ここは圏<span class="math inline">D</span>である」と書き込むことで、この関手の型を明示することができます。</p>
 <figure>
 <img src="../images/string/categorical-functor-f.png" alt="CからDへの関手F" /><figcaption aria-hidden="true">CからDへの関手F</figcaption>
 </figure>
@@ -166,12 +205,18 @@
 <figure>
 <img src="../images/string/categorical-functor-g.png" alt="DからCへの関手G" /><figcaption aria-hidden="true">DからCへの関手G</figcaption>
 </figure>
-<p>（ここでは模様付きで領域に色を塗りましたが、別にそこまでする必要はありません。 わかり易さのためにラベル付けしているだけであって、無くてもかまわないものです。）</p>
-<p>ストリング図に複数の関手の合成関手が出てきたとき、それは並行する線で表されていました。 合成関手<span class="math inline">G\circ F</span>は並行する<span class="math inline">F</span>と<span class="math inline">G</span>の線で表されており、 <span class="math inline">F</span>の右側の領域は<span class="math inline">G</span>の左側の領域でもあるのですが、<span class="math inline">F,G</span>が合成できているため、 この領域に書き込まれる圏の名前は一致しているはずです。 なので、ひとつの領域には丁度ひとつの圏のラベルが書き込まれます。</p>
+<p>（ここでは模様付きで領域に色を塗りましたが、別にそこまでする必要はありません。
+わかり易さのためにラベル付けしているだけであって、無くてもかまわないものです。）</p>
+<p>ストリング図に複数の関手の合成関手が出てきたとき、それは並行する線で表されていました。
+合成関手<span class="math inline">G\circ F</span>は並行する<span class="math inline">F</span>と<span class="math inline">G</span>の線で表されており、
+<span class="math inline">F</span>の右側の領域は<span class="math inline">G</span>の左側の領域でもあるのですが、<span class="math inline">F,G</span>が合成できているため、
+この領域に書き込まれる圏の名前は一致しているはずです。
+なので、ひとつの領域には丁度ひとつの圏のラベルが書き込まれます。</p>
 <figure>
 <img src="../images/string/categorical-functor-gf.png" alt="合成関手G∘F" /><figcaption aria-hidden="true">合成関手G∘F</figcaption>
 </figure>
-<p><span class="math inline">F</span>が<span class="math inline">G</span>の左随伴だとします。このとき、自然変換<span class="math inline">\mathrm{unit}, \mathrm{counit}</span>は、 次のようにストリング図に描かれます。</p>
+<p><span class="math inline">F</span>が<span class="math inline">G</span>の左随伴だとします。このとき、自然変換<span class="math inline">\mathrm{unit}, \mathrm{counit}</span>は、
+次のようにストリング図に描かれます。</p>
 <figure>
 <img src="../images/string/adjunction-unit.png" alt="自然変換unit" /><figcaption aria-hidden="true">自然変換unit</figcaption>
 </figure>
@@ -186,7 +231,8 @@
 <img src="../images/string/adjunction-zigzag-2.png" alt="ジグザグ関係式(2)" /><figcaption aria-hidden="true">ジグザグ関係式(2)</figcaption>
 </figure>
 <h2 id="随伴からcont-rを作る">随伴から<code>Cont r</code>を作る</h2>
-<p><code>State s</code>以外のモナドで、随伴から作られているものの例として、 まずは継続モナド<code>Cont r</code>について考えます。</p>
+<p><code>State s</code>以外のモナドで、随伴から作られているものの例として、
+まずは継続モナド<code>Cont r</code>について考えます。</p>
 <p>継続モナド<code>Cont r</code>は、関手<code>(_ -&gt; r)</code>を二つ合成したものと見ることができます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Cont</span> r a <span class="ot">=</span> <span class="dt">Cont</span> {<span class="ot"> runCont ::</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r }</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">--      Cont r a ~ ((_ -&gt; r) ∘ (_ -&gt; r)) a</span></span>
@@ -208,7 +254,9 @@
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Contravariant</span> (_ <span class="ot">-&gt;</span> r) <span class="kw">where</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  contramap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> r)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  contramap f g <span class="ot">=</span> g <span class="op">.</span> f</span></code></pre></div>
-<p>また、一般論として<span class="math inline">\op{C}</span>から<span class="math inline">D</span>への関手は、 <span class="math inline">C</span>から<span class="math inline">\op{D}</span>への関手と見なすこともできます<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。そのため、 <code>(_ -&gt; r)</code>は<span class="math inline">\Hask</span>から<span class="math inline">\op\Hask</span>への関手、かつ<span class="math inline">\op\Hask</span>から<span class="math inline">\Hask</span>への関手です。</p>
+<p>また、一般論として<span class="math inline">\op{C}</span>から<span class="math inline">D</span>への関手は、
+<span class="math inline">C</span>から<span class="math inline">\op{D}</span>への関手と見なすこともできます<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。そのため、
+<code>(_ -&gt; r)</code>は<span class="math inline">\Hask</span>から<span class="math inline">\op\Hask</span>への関手、かつ<span class="math inline">\op\Hask</span>から<span class="math inline">\Hask</span>への関手です。</p>
 <p>ですので、<code>Cont r</code>は（見た目は同じですが）二つの関手</p>
 <ul>
 <li><code>(_ -&gt; r)</code>: <span class="math inline">\Hask</span>から<span class="math inline">\op\Hask</span></li>
@@ -218,7 +266,10 @@
 <figure>
 <img src="../images/string/adjunction-cont.png" alt="Cont rは(_ -&gt; r)の合成" /><figcaption aria-hidden="true"><code>Cont r</code>は<code>(_ -&gt; r)</code>の合成</figcaption>
 </figure>
-<p>先程の一般論「関手<span class="math inline">F</span>が関手<span class="math inline">G</span>の左随伴なら、<span class="math inline">G\circ F</span>はモナドである」と、 <code>Cont r</code>がモナドであることを踏まえると、 「<code>Cont r</code>がモナドになるのは<code>(_ -&gt; r)</code>が<code>(_ -&gt; r)</code>の左随伴だったからなのでは！？」と予想できるでしょう。 実際のところ、それは正しいです。</p>
+<p>先程の一般論「関手<span class="math inline">F</span>が関手<span class="math inline">G</span>の左随伴なら、<span class="math inline">G\circ F</span>はモナドである」と、
+<code>Cont r</code>がモナドであることを踏まえると、
+「<code>Cont r</code>がモナドになるのは<code>(_ -&gt; r)</code>が<code>(_ -&gt; r)</code>の左随伴だったからなのでは！？」と予想できるでしょう。
+実際のところ、それは正しいです。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Hask</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Op</span> a b <span class="ot">=</span> <span class="dt">Op</span> {<span class="ot"> getOp ::</span> b <span class="ot">-&gt;</span> a }</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -228,19 +279,28 @@
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ot">counit ::</span> <span class="dt">Op</span> ((a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r) a</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>counit <span class="ot">=</span> <span class="dt">Op</span> unit</span></code></pre></div>
 <p>ジグザグ関係式も成り立っていますが、証明は省略します。</p>
-<p>つまり、<code>State s</code>と<code>Cont r</code>という、まったく異なるモナドが、 「随伴の関係にある関手の合成」として同じように理解できるのです。 嬉しいですね！</p>
+<p>つまり、<code>State s</code>と<code>Cont r</code>という、まったく異なるモナドが、
+「随伴の関係にある関手の合成」として同じように理解できるのです。
+嬉しいですね！</p>
 <div class="sidenote">
-<p>実は、どんなモナドでも、適切な圏をとってくれば「随伴の関係にある関手の合成」 として書けます。(“Eilenberg-Moore圏”や”Kleisli圏”といったキーワードで調べてください。)</p>
-<p>ですが、モナドを随伴の関係にある関手たちに分解する方法は一意ではなくて、 「よく知っている関手が使われていて、理解を深められる」ような分解があるかどうかは別です。</p>
+<p>実は、どんなモナドでも、適切な圏をとってくれば「随伴の関係にある関手の合成」
+として書けます。(“Eilenberg-Moore圏”や”Kleisli圏”といったキーワードで調べてください。)</p>
+<p>ですが、モナドを随伴の関係にある関手たちに分解する方法は一意ではなくて、
+「よく知っている関手が使われていて、理解を深められる」ような分解があるかどうかは別です。</p>
 </div>
 <h2 id="リストモナドを随伴に分ける">リストモナド<code>[]</code>を随伴に分ける</h2>
-<p>リストモナド<code>[]</code>も、随伴<span class="math inline">\listof{} = U\circ F, F \dashv U</span>に分けることが可能です。 ここで、<span class="math inline">F</span>は<span class="math inline">\Hask</span>から「モノイドの圏」<span class="math inline">\Mon</span>への関手、 <span class="math inline">U</span>は<span class="math inline">\Mon</span>から<span class="math inline">\Hask</span>への関手です。</p>
-<p>「モノイドの圏」とは何か、<span class="math inline">F,U</span>はどんな関手なのか、 定義を書き下していきます。</p>
+<p>リストモナド<code>[]</code>も、随伴<span class="math inline">\listof{} = U\circ F, F \dashv U</span>に分けることが可能です。
+ここで、<span class="math inline">F</span>は<span class="math inline">\Hask</span>から「モノイドの圏」<span class="math inline">\Mon</span>への関手、
+<span class="math inline">U</span>は<span class="math inline">\Mon</span>から<span class="math inline">\Hask</span>への関手です。</p>
+<p>「モノイドの圏」とは何か、<span class="math inline">F,U</span>はどんな関手なのか、
+定義を書き下していきます。</p>
 <ul>
 <li><p>「モノイドの圏」<span class="math inline">\Mon</span>を次のように定めます。</p>
 <ul>
-<li><p><span class="math inline">\Mon</span>の対象は、<span class="math inline">\Hask</span>の対象である型<code>a</code>と、 その型<code>a</code>の<code>Monoid</code>のインスタンスを合わせたものです。</p></li>
-<li><p><span class="math inline">\Mon</span>の射<span class="math inline">f\in \Mon(a,b)</span>は、関数<code>f :: a -&gt; b</code>であって、 モノイド準同型であるものです。</p>
+<li><p><span class="math inline">\Mon</span>の対象は、<span class="math inline">\Hask</span>の対象である型<code>a</code>と、
+その型<code>a</code>の<code>Monoid</code>のインスタンスを合わせたものです。</p></li>
+<li><p><span class="math inline">\Mon</span>の射<span class="math inline">f\in \Mon(a,b)</span>は、関数<code>f :: a -&gt; b</code>であって、
+モノイド準同型であるものです。</p>
 <ul>
 <li>Example: <code>String</code>も<code>Sum Int</code>も<code>Monoid</code>のインスタンスで、<span class="math inline">\Mon</span>の対象です。</li>
 <li>Example: <code>f = Sum . length :: String -&gt; Sum Int</code>はモノイド準同型で<span class="math inline">\Mon</span>の射です。</li>
@@ -251,13 +311,22 @@
 <ul>
 <li><p><span class="math inline">\Hask</span>の対象<span class="math inline">a</span>、すなわち型<code>a</code>に対して、<span class="math inline">F(a)</span>は<code>a</code>のリスト<code>[a]</code>です。</p>
 <p>任意の型<code>a</code>についてインスタンス<code>Monoid [a]</code>があるので、<code>[a]</code>は<span class="math inline">\Mon</span>の対象です。</p></li>
-<li><p><span class="math inline">\Hask</span>の射<span class="math inline">f\in \Hask(a,b)</span>、すなわち関数<code>f :: a -&gt; b</code>に対して、 <span class="math inline">F(f)</span>は<code>map f :: [a] -&gt; [b]</code>です。任意の<code>f</code>について<code>map f</code>はモノイド準同型になっており、 <span class="math inline">\Mon</span>の射の集合<span class="math inline">\Mon(F(a), F(b))</span>に含まれます。</p></li>
-<li><p>「これは<code>Functor []</code>とは何が違うのか？型<code>a</code>を<code>[a]</code>に写し、<code>fmap = map</code>と言っているだけじゃないか！」 と考える人も居るかと思います。何が違うのかというと、<code>[a]</code>がモノイドであり、 <code>map</code>がモノイド準同型であるという知識を、 「<span class="math inline">\Hask</span>より限定的な圏<span class="math inline">\Mon</span>への関手である」と表しているのです。 言うなれば、「実質的には同じだけれど、より”強い”型を付けている」と思ってください。</p></li>
+<li><p><span class="math inline">\Hask</span>の射<span class="math inline">f\in \Hask(a,b)</span>、すなわち関数<code>f :: a -&gt; b</code>に対して、
+<span class="math inline">F(f)</span>は<code>map f :: [a] -&gt; [b]</code>です。任意の<code>f</code>について<code>map f</code>はモノイド準同型になっており、
+<span class="math inline">\Mon</span>の射の集合<span class="math inline">\Mon(F(a), F(b))</span>に含まれます。</p></li>
+<li><p>「これは<code>Functor []</code>とは何が違うのか？型<code>a</code>を<code>[a]</code>に写し、<code>fmap = map</code>と言っているだけじゃないか！」
+と考える人も居るかと思います。何が違うのかというと、<code>[a]</code>がモノイドであり、
+<code>map</code>がモノイド準同型であるという知識を、
+「<span class="math inline">\Hask</span>より限定的な圏<span class="math inline">\Mon</span>への関手である」と表しているのです。
+言うなれば、「実質的には同じだけれど、より”強い”型を付けている」と思ってください。</p></li>
 </ul></li>
 <li><p><span class="math inline">\Mon</span>から<span class="math inline">\Hask</span>への関手<span class="math inline">U</span>を、次のように定めます<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
 <ul>
-<li><p><span class="math inline">\Mon</span>の対象<span class="math inline">a</span>は型なので、<span class="math inline">\Hask</span>の対象でもあります。 <span class="math inline">U(a)</span>は、<span class="math inline">\Mon</span>の対象<span class="math inline">a</span>に対して、 それが<code>Monoid</code>のインスタンスを持っていることを忘れて、<span class="math inline">\Hask</span>の対象と見なします。</p></li>
-<li><p><span class="math inline">\Mon</span>の射<span class="math inline">f \in \Mon(a,b)</span>はモノイド準同型<code>f :: a -&gt; b</code>でした。 <span class="math inline">U(f)</span>は、これが準同型だったことを忘れて、単なる関数として<span class="math inline">\Hask</span>の射と見なします。</p></li>
+<li><p><span class="math inline">\Mon</span>の対象<span class="math inline">a</span>は型なので、<span class="math inline">\Hask</span>の対象でもあります。
+<span class="math inline">U(a)</span>は、<span class="math inline">\Mon</span>の対象<span class="math inline">a</span>に対して、
+それが<code>Monoid</code>のインスタンスを持っていることを忘れて、<span class="math inline">\Hask</span>の対象と見なします。</p></li>
+<li><p><span class="math inline">\Mon</span>の射<span class="math inline">f \in \Mon(a,b)</span>はモノイド準同型<code>f :: a -&gt; b</code>でした。
+<span class="math inline">U(f)</span>は、これが準同型だったことを忘れて、単なる関数として<span class="math inline">\Hask</span>の射と見なします。</p></li>
 </ul></li>
 </ul>
 <p>そして、<strong><span class="math inline">F</span>は<span class="math inline">U</span>の左随伴です</strong>。</p>
@@ -265,7 +334,9 @@
 <li>自然変換<span class="math inline">\mathrm{unit}</span>は、関数<code>unit = (\a -&gt; [a]) :: a -&gt; [a]</code>です。</li>
 <li>自然変換<span class="math inline">\mathrm{counit}</span>は、モノイド準同型<code>counit = mconcat :: Monoid a =&gt; [a] -&gt; a</code>です<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</li>
 </ul>
-<p>ジグザグ関係式を確かめてみましょう。 <span class="math inline">\Hask</span>と<span class="math inline">\Mon</span>のどちらの圏なのかは（実際の対象と射は共通で、制限の有無しか違わないので） 雑に無視して計算すれば、以下のようになります。</p>
+<p>ジグザグ関係式を確かめてみましょう。
+<span class="math inline">\Hask</span>と<span class="math inline">\Mon</span>のどちらの圏なのかは（実際の対象と射は共通で、制限の有無しか違わないので）
+雑に無視して計算すれば、以下のようになります。</p>
 <p><span class="math display">
 \begin{equation}
 \begin{split}
@@ -286,16 +357,26 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 \end{split}
 \end{equation}
 </span></p>
-<p>この随伴によって<span class="math inline">U\circ F</span>は<code>Monad</code>になります。 この<code>Monad</code>は通常の<code>Monad []</code>と全く同じものです。</p>
+<p>この随伴によって<span class="math inline">U\circ F</span>は<code>Monad</code>になります。
+この<code>Monad</code>は通常の<code>Monad []</code>と全く同じものです。</p>
 <h2 id="listt-mは随伴のサンドイッチだった"><code>ListT m</code>は随伴のサンドイッチだった</h2>
-<p>前節では<code>[]</code>を随伴<span class="math inline">F\colon \Hask\to\Mon</span>と<span class="math inline">U\colon\Mon\to\Hask</span> のペアとして表しましたが、これだけでは有用には見えません。そこで、 応用例を出してみましょう。</p>
-<p>関手<span class="math inline">F\colon C\to D</span>に右随伴<span class="math inline">G\colon D\to C</span>があれば、 <span class="math inline">G\circ F\colon C\to C</span>がモナドになるということを説明しました。 これは、自然変換<code>open, close</code>を使った<code>State</code>モナドの構成の一般化だったのですが、 <code>StateT</code>モナド変換子も<code>open, close</code>を使って作れたことを思い出してください（<a href="2021-05-24-string-2.html">過去記事</a>）。</p>
-<p><code>StateT</code>モナド変換子は、関手<code>F s = (s, _)</code>と関手<code>G s = (s -&gt; _)</code>の随伴があるとき、任意のモナド<code>m</code>に対して <code>G s ∘ m ∘ F s</code>もモナドになることを原理としていました。</p>
+<p>前節では<code>[]</code>を随伴<span class="math inline">F\colon \Hask\to\Mon</span>と<span class="math inline">U\colon\Mon\to\Hask</span>
+のペアとして表しましたが、これだけでは有用には見えません。そこで、
+応用例を出してみましょう。</p>
+<p>関手<span class="math inline">F\colon C\to D</span>に右随伴<span class="math inline">G\colon D\to C</span>があれば、
+<span class="math inline">G\circ F\colon C\to C</span>がモナドになるということを説明しました。
+これは、自然変換<code>open, close</code>を使った<code>State</code>モナドの構成の一般化だったのですが、
+<code>StateT</code>モナド変換子も<code>open, close</code>を使って作れたことを思い出してください（<a href="2021-05-24-string-2.html">過去記事</a>）。</p>
+<p><code>StateT</code>モナド変換子は、関手<code>F s = (s, _)</code>と関手<code>G s = (s -&gt; _)</code>の随伴があるとき、任意のモナド<code>m</code>に対して
+<code>G s ∘ m ∘ F s</code>もモナドになることを原理としていました。</p>
 <figure>
 <img src="../images/string/state-t-terse.png" alt="StateTの構成" /><figcaption aria-hidden="true"><code>StateT</code>の構成</figcaption>
 </figure>
-<p>同じことが任意の圏のあいだの随伴でも言えます。上記<span class="math inline">F,G</span>に対して、圏<span class="math inline">D</span>上のモナド<span class="math inline">T</span>があれば、 <code>StateT</code>の場合とまったく同じようにして<span class="math inline">G\circ T\circ F\colon C\to C</span>が圏<span class="math inline">C</span>上のモナドになります。</p>
-<p>これを、リストモナド<code>[]</code>をつくる随伴<span class="math inline">F\colon \Hask\to\Mon, U\colon\Mon\to\Hask</span>に適用してみましょう。 つまり、<span class="math inline">\Mon</span>上のモナド<span class="math inline">T</span>に対して、<span class="math inline">G\circ T\circ F</span>というモナドが作れます。 <em>このモナドは一体どういったものなんでしょうか</em>？</p>
+<p>同じことが任意の圏のあいだの随伴でも言えます。上記<span class="math inline">F,G</span>に対して、圏<span class="math inline">D</span>上のモナド<span class="math inline">T</span>があれば、
+<code>StateT</code>の場合とまったく同じようにして<span class="math inline">G\circ T\circ F\colon C\to C</span>が圏<span class="math inline">C</span>上のモナドになります。</p>
+<p>これを、リストモナド<code>[]</code>をつくる随伴<span class="math inline">F\colon \Hask\to\Mon, U\colon\Mon\to\Hask</span>に適用してみましょう。
+つまり、<span class="math inline">\Mon</span>上のモナド<span class="math inline">T</span>に対して、<span class="math inline">G\circ T\circ F</span>というモナドが作れます。
+<em>このモナドは一体どういったものなんでしょうか</em>？</p>
 <p><span class="math inline">\Mon</span>上のモナドとは何か、というところから考えてみます。一般に圏<span class="math inline">C</span>上のモナド<span class="math inline">T</span>とは</p>
 <ol type="1">
 <li>関手<span class="math inline">C\to C</span>であって</li>
@@ -323,8 +404,11 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 </ol></li>
 <li><p><code>(pure, join)</code>がモナド則（右単位則、左単位則、結合則）を満たす</p></li>
 </ol>
-<p>さて、モノイドの圏<span class="math inline">\Mon</span>は<span class="math inline">\Hask</span>の対象と射を制限したものでした。 そのため、<span class="math inline">\Hask</span>上のモナドすなわち普通の<code>Monad</code>から、 <span class="math inline">\Mon</span>上のモナドにもなっているものを探すのは不自然ではないでしょう。</p>
-<p><code>T</code>をある<code>Monad</code>だとします。任意のモノイド<code>a</code>に対して、 <code>T a</code>をモノイドにする方法があります。</p>
+<p>さて、モノイドの圏<span class="math inline">\Mon</span>は<span class="math inline">\Hask</span>の対象と射を制限したものでした。
+そのため、<span class="math inline">\Hask</span>上のモナドすなわち普通の<code>Monad</code>から、
+<span class="math inline">\Mon</span>上のモナドにもなっているものを探すのは不自然ではないでしょう。</p>
+<p><code>T</code>をある<code>Monad</code>だとします。任意のモノイド<code>a</code>に対して、
+<code>T a</code>をモノイドにする方法があります。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">T</span> a) <span class="kw">where</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  tx <span class="op">&lt;&gt;</span> ty <span class="ot">=</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">do</span> x <span class="ot">&lt;-</span> tx</span>
@@ -333,7 +417,8 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">T</span> a) <span class="kw">where</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="fu">pure</span> <span class="fu">mempty</span></span></code></pre></div>
-<p><code>T a</code>のモノイド演算が上記のものであると仮定し、 <code>map_T = fmap</code>と定義すれば、<code>T</code>は<span class="math inline">\Mon</span>から<span class="math inline">\Mon</span>への関手になります。</p>
+<p><code>T a</code>のモノイド演算が上記のものであると仮定し、
+<code>map_T = fmap</code>と定義すれば、<code>T</code>は<span class="math inline">\Mon</span>から<span class="math inline">\Mon</span>への関手になります。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">map_T ::</span> (<span class="dt">Monoid</span> a, <span class="dt">Monoid</span> b) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">T</span> b</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>map_T <span class="ot">=</span> <span class="fu">fmap</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -360,7 +445,8 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>      y' <span class="ot">&lt;-</span> <span class="fu">fmap</span> f ty</span>
 <span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span> (x' <span class="op">&lt;&gt;</span> y')</span>
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> map_T f tx <span class="op">&lt;&gt;</span> map_T f ty</span></code></pre></div>
-<p>さらに<code>pure</code>と<code>join</code>を（<span class="math inline">\Hask</span>上の）<code>Monad</code>から流用すれば、上記の条件のほとんどを満たせます。 すでにわかっている条件を<del>打消し線</del>で消します：</p>
+<p>さらに<code>pure</code>と<code>join</code>を（<span class="math inline">\Hask</span>上の）<code>Monad</code>から流用すれば、上記の条件のほとんどを満たせます。
+すでにわかっている条件を<del>打消し線</del>で消します：</p>
 <ol type="1">
 <li><p><del>関手<span class="math inline">\Mon\to\Mon</span>である、つまり</del></p>
 <ol type="a">
@@ -391,7 +477,9 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- 4</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>join (ttx <span class="op">&lt;&gt;</span> tty) <span class="ot">=</span> join ttx <span class="op">&lt;&gt;</span> join tty</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> ttx,<span class="ot"> tty ::</span> <span class="dt">T</span> (<span class="dt">T</span> a)</span></code></pre></div>
-<p>これらのうち、4番目の式以外は、任意のモナド<code>T</code>について成り立っています(証明略)。 しかし、4番目の<code>join (ttx &lt;&gt; tty) = join ttx &lt;&gt; join tty</code>はそうではありません。 例えば、<code>T</code>として<code>IO</code>モナドを選ぶと、この式は成り立ちません。</p>
+<p>これらのうち、4番目の式以外は、任意のモナド<code>T</code>について成り立っています(証明略)。
+しかし、4番目の<code>join (ttx &lt;&gt; tty) = join ttx &lt;&gt; join tty</code>はそうではありません。
+例えば、<code>T</code>として<code>IO</code>モナドを選ぶと、この式は成り立ちません。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- T=IOで4番目の式が成り立たない反例</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ttx,<span class="ot"> tty ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> (<span class="dt">Sum</span> <span class="dt">Int</span>))</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ttx <span class="ot">=</span> <span class="fu">return</span> (<span class="fu">putStrLn</span> <span class="st">&quot;X&quot;</span> <span class="op">&gt;&gt;</span> <span class="fu">return</span> (<span class="dt">Sum</span> <span class="dv">1</span>))</span>
@@ -429,15 +517,19 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="kw">do</span> <span class="fu">putStrLn</span> <span class="st">&quot;Y&quot;</span></span>
 <span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>      <span class="fu">putStrLn</span> <span class="st">&quot;X&quot;</span></span>
 <span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span> (<span class="dt">Sum</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><code>join (ttx &lt;&gt; tty)</code>と<code>join ttx &lt;&gt; join tty</code>では出力の順番が違ってしまいます。 すなわち、<code>join</code>がモノイド準同型ではありません。</p>
-<p>この4番目の等式が成り立つことと、<code>T</code>が<a href="http://wiki.haskell.org/Monad#Commutative_monads">可換なモナド</a>であることは同値な条件になります。 （可換なモナドについては<a href="2020-02-29-commutative-monad.html">過去記事</a>でも取り上げました。）</p>
+<p><code>join (ttx &lt;&gt; tty)</code>と<code>join ttx &lt;&gt; join tty</code>では出力の順番が違ってしまいます。
+すなわち、<code>join</code>がモノイド準同型ではありません。</p>
+<p>この4番目の等式が成り立つことと、<code>T</code>が<a href="http://wiki.haskell.org/Monad#Commutative_monads">可換なモナド</a>であることは同値な条件になります。
+（可換なモナドについては<a href="2020-02-29-commutative-monad.html">過去記事</a>でも取り上げました。）</p>
 <p>まとめると、以下のようになります。</p>
 <ol type="1">
 <li><span class="math inline">\Mon</span>上のモナド<span class="math inline">T</span>があれば、<code>Monad</code>すなわち<span class="math inline">\Hask</span>上のモナド<span class="math inline">U\circ T\circ F</span>ができる。</li>
 <li>可換な<code>Monad</code>である<code>T</code>は、ここまで述べた方法で<span class="math inline">\Mon</span>上のモナドにできる</li>
 <li>したがって、可換な<code>Monad</code>である<code>T</code>に対して、新しい<code>Monad</code>である<span class="math inline">U\circ T\circ F</span>ができる。</li>
 </ol>
-<p>この新しい<code>Monad</code>は具体的にどんな形をしているでしょうか？ <span class="math inline">F</span>はただ、<code>Functor []</code>の行き先を<span class="math inline">\Mon</span>に制限したものでした。 <span class="math inline">U</span>は<span class="math inline">\Mon</span>の制限を忘れるだけでした。したがって、新しいモナド<span class="math inline">U\circ T \circ F</span>は以下のように実装できます。</p>
+<p>この新しい<code>Monad</code>は具体的にどんな形をしているでしょうか？
+<span class="math inline">F</span>はただ、<code>Functor []</code>の行き先を<span class="math inline">\Mon</span>に制限したものでした。
+<span class="math inline">U</span>は<span class="math inline">\Mon</span>の制限を忘れるだけでした。したがって、新しいモナド<span class="math inline">U\circ T \circ F</span>は以下のように実装できます。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- T にあたるパラメータの名前は、モナド変換子の慣習にそってmとしました。</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ListT</span> m a <span class="ot">=</span> <span class="dt">ListT</span> {<span class="ot"> runListT ::</span> m [a] }</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- ListT m ~ m ∘ []</span></span>
@@ -458,16 +550,23 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="ot">counit' ::</span> (<span class="dt">CommutativeMonad</span> m, <span class="dt">Monoid</span> b) <span class="ot">=&gt;</span> [m b] <span class="ot">-&gt;</span> m b</span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>counit' <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&lt;&lt;&gt;&gt;</span>) (<span class="fu">pure</span> <span class="fu">mempty</span>)</span>
 <span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> mx <span class="op">&lt;&lt;&gt;&gt;</span> my <span class="ot">=</span> <span class="kw">do</span> x <span class="ot">&lt;-</span> mx; y <span class="ot">&lt;-</span> my; <span class="fu">return</span> (x <span class="op">&lt;&gt;</span> y)</span></code></pre></div>
-<p>これはそう、<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-List.html">ListT (done wrong)</a> に他なりません！</p>
-<p>つまり、<code>ListT</code>は、ある意味では間違って(wrong)はいなかったのです。 （もちろん可換なモナドしか使えないというのは”モナド変換子としては”問題で、 そのために<a href="https://hackage.haskell.org/package/list-t">ListT done right</a>が作られたとも言えます。）</p>
+<p>これはそう、<a href="https://hackage.haskell.org/package/transformers-0.5.6.2/docs/Control-Monad-Trans-List.html">ListT (done wrong)</a>
+に他なりません！</p>
+<p>つまり、<code>ListT</code>は、ある意味では間違って(wrong)はいなかったのです。
+（もちろん可換なモナドしか使えないというのは”モナド変換子としては”問題で、
+そのために<a href="https://hackage.haskell.org/package/list-t">ListT done right</a>が作られたとも言えます。）</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p><span class="math inline">\op{C}</span>の射<span class="math inline">f\in \op{C}(a,b)</span>＝<span class="math inline">C</span>の射<span class="math inline">f\in C(b,a)</span>で、<span class="math inline">\op{D}</span>についても同様なので、 <span class="math inline">\op{C}</span>から<span class="math inline">D</span>への関手<span class="math inline">F</span>は<span class="math inline">f\in C(b,a)</span>を<span class="math inline">\map_F(f)\in \op{D}(F(b),F(a))</span>に対応させます。 これはすなわち<span class="math inline">C</span>から<span class="math inline">\op{D}</span>への関手です。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1" role="doc-endnote"><p><span class="math inline">\op{C}</span>の射<span class="math inline">f\in \op{C}(a,b)</span>＝<span class="math inline">C</span>の射<span class="math inline">f\in C(b,a)</span>で、<span class="math inline">\op{D}</span>についても同様なので、
+<span class="math inline">\op{C}</span>から<span class="math inline">D</span>への関手<span class="math inline">F</span>は<span class="math inline">f\in C(b,a)</span>を<span class="math inline">\map_F(f)\in \op{D}(F(b),F(a))</span>に対応させます。
+これはすなわち<span class="math inline">C</span>から<span class="math inline">\op{D}</span>への関手です。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p><span class="math inline">F</span>はよく<em>自由モノイド関手</em>と呼ばれている関手です<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3" role="doc-endnote"><p><span class="math inline">U</span>はよく<em>忘却関手</em>と呼ばれている関手です。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>ここは実は、<code>[a]</code>が無限リストになり得ることを考慮すると破綻しています。 無限個の積が定義できないモノイドがほとんどなので、これは関数にすらなっていません。</p>
-<p><code>[a]</code>は有限リストの型であると思えば、 結合法則をリストの長さと同じくらいの回数使うと<code>counit</code>がモノイド準同型であると示せます。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>ここは実は、<code>[a]</code>が無限リストになり得ることを考慮すると破綻しています。
+無限個の積が定義できないモノイドがほとんどなので、これは関数にすらなっていません。</p>
+<p><code>[a]</code>は有限リストの型であると思えば、
+結合法則をリストの長さと同じくらいの回数使うと<code>counit</code>がモノイド準同型であると示せます。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
