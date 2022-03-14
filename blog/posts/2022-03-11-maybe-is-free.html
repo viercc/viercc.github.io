@@ -38,7 +38,7 @@
                 <li>Posted on 2022-03-11</li>
             
             
-                <li>Last modified on 2022-03-11</li>
+                <li>Last modified on 2022-03-14</li>
             
             
             
@@ -125,11 +125,11 @@
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tr ::</span> <span class="dt">MaybeT</span> (<span class="dt">Reader</span> k) <span class="op">~&gt;</span> n</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">--  ~ ∀a. (k -&gt; Maybe a) -&gt; n a</span></span></code></pre></div>
 <p>であって、モナド演算を保つという条件を満たすものです。
-<code>m a ~ (k -&gt; Maybe a)</code>という関手は非常に”大きい”関手で、
+<code>(k -&gt; Maybe a)</code>という関手は非常に”大きい”関手で、
 仮に単独の<code>data F a = ...</code>で表そうとするならば、
 <code>2^|k|</code>個のコンストラクタを設けないといけません。
 そのため、この”大きな”関手から別の関手<code>n</code>への自然変換は、<code>n</code>によっては本当に凄まじい数が存在します。</p>
-<p>ですが、<em>もしその自然変換がモナド準同型であったならば</em>、
+<p>ですが、<em>もしその自然変換がモナド準同型であると知っているならば</em>、
 モナド準同型<code>tr2 :: ∀x. (k -&gt; x) -&gt; n x</code>とただ一つの値<code>h Proxy :: ∀x. n x</code>だけで記述できることがわかったのです。</p>
 <p>凄いでしょう！</p>
 <section class="footnotes" role="doc-endnotes">
