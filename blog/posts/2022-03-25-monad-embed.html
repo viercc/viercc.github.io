@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - MaybeモナドとReaderモナドの特別な関係 (1)</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>MaybeモナドとReaderモナドの特別な関係 (1)</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2022-03-25</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <h2 id="概要">概要</h2>
+<p><code>A</code>を適当な型とします。
+<code>MaybeT (Reader A) x</code>と<code>ReaderT A Maybe x</code>という2つの型は、
+<code>newtype</code>の包みを剥がせばどちらも<code>A -&gt; Maybe x</code>となり、
+更にこれらは実質的に同じモナドを定義しています。</p>
+<p>この記事ではこれらのモナド（<code>Reader A, Maybe, MaybeT (Reader A)</code>）に何度も言及するので、
+以下のように省略して書くことにしましょう。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P</span>   <span class="ot">=</span> <span class="dt">Maybe</span>    <span class="co">-- Pointed の P</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">R</span> x <span class="ot">=</span> <span class="dt">A</span> <span class="ot">-&gt;</span> x <span class="co">-- Reader の R</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">--   R   = Reader A</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">RP</span> x <span class="ot">=</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> x</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">--   RP   ~ ReaderT A Maybe</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">--        ~ MaybeT (Reader A)</span></span></code></pre></div>
+<p>また、<code>f ~&gt; g</code>という表記で自然変換<code>∀x. f x -&gt; g x</code>を表すことにします。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> (<span class="op">~&gt;</span>) f g <span class="ot">=</span> <span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> g x</span></code></pre></div>
+<p>このモナド<code>RP</code>は以下の3つの特別な性質を持ちます。</p>
+<ul>
+<li><code>Monad</code>と<code>Monad</code>準同型からなる圏において、<code>R</code>と<code>P</code>の余積（後述; <code>Either</code>のようなもの）とみなせる対象である
+<ul>
+<li>標準入射（<code>Either</code>に対する<code>Left</code>や<code>Right</code>のような射）となるモナド準同型<code>liftP :: P ~&gt; RP</code>と<code>liftR :: R ~&gt; RP</code>がある</li>
+<li>任意のモナド<code>T</code>と2つのモナド準同型<code>r :: R ~&gt; T</code>と<code>p :: P ~&gt; T</code>が与えられたとき、
+普遍射（<code>Either</code>に対する<code>either f g</code>のような射）となるモナド準同型<code>coprod r p :: RP ~&gt; T</code>をもつ</li>
+</ul></li>
+<li><code>r</code>が単射ならば<code>coprod r p</code>も単射である</li>
+<li><code>r</code>がEquifibered自然変換ならば<code>coprod r p</code>もEquifibered自然変換である
+<ul>
+<li><strong>Equifibered</strong>（<a href="https://ncatlab.org/nlab/show/equifibered+natural+transformation">nLab</a>、日本語の訳語はわかりません）については次回の記事をお待ちください</li>
+</ul></li>
+</ul>
+<p>これを使うことで、<a href="https://viercc.github.io/blog/posts/2019-12-16-fixed-proof-for-monads-more.html">過去の記事</a>
+においては力業で行った証明を、見通しよくすることができます。</p>
+<h2 id="maybet-m-は-maybe-と-m-の余積である"><code>MaybeT m</code> は <code>Maybe</code> と <code>m</code> の余積である</h2>
+<p><code>RP = MaybeT (Reader A)</code>は<code>Maybe</code>と<code>Reader A</code>の余積です。
+より一般に、任意のモナド<code>m</code>について、<code>MaybeT m</code>は<code>Maybe</code>と<code>m</code>の余積になります。</p>
+<p><strong>モナドの余積</strong>という言葉について、明確に定義しておきます。
+あるモナド<code>LM</code>がモナド<code>L</code>とモナド<code>M</code>の余積であることを、
+次のように定義します。</p>
+<ul>
+<li><p><code>L, M</code>のそれぞれから<code>LM</code>へのモナド準同型をもつ。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lift1 ::</span> <span class="dt">L</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">lift2 ::</span> <span class="dt">M</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span></code></pre></div>
+<p>これらの準同型は<em>標準入射</em>とよぶ。</p></li>
+<li><p>任意のモナド<code>N</code>と、<code>L, M</code>それぞれから<code>N</code>へのモナド準同型
+<code>tr1 :: L ~&gt; N, tr2 :: M ~&gt; N</code>が与えられたとき、
+以下の性質を満たす唯一のモナド準同型<code>coprod tr1 tr2 :: LM x ~&gt; N</code>が存在する。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">coprod ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (<span class="dt">L</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">M</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">LM</span> <span class="op">~&gt;</span> n)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>coprod tr1 tr2 <span class="op">.</span> lift1 <span class="ot">=</span> tr1</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>coprod tr1 tr2 <span class="op">.</span> lift2 <span class="ot">=</span> tr1</span></code></pre></div></li>
+</ul>
+<p>モナド<code>L</code>と<code>M</code>の余積は、存在すればいずれも同型なモナドになります<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<p><code>MaybeT m</code>が<code>Maybe</code>と<code>m</code>の余積であることは、<a href="2022-03-11-maybe-is-free.html">先日の記事</a>において説明した</p>
+<ul>
+<li><code>Free</code>と<code>FreeT</code>の普遍性</li>
+<li><code>Maybe</code>が<code>Free Proxy</code>と同型である</li>
+<li><code>MaybeT m</code>が<code>FreeT Proxy m</code>と同型である</li>
+</ul>
+<p>から得られます。<code>Free</code>と<code>FreeT</code>の普遍性はそれぞれ</p>
+<dl>
+<dt><code>Free</code>の普遍性</dt>
+<dd><code>Free f</code>からモナド<code>T</code>への準同型<code>tr :: Free f x -&gt; T x</code>は、
+自然変換<code>h :: f x -&gt; T x</code>と一対一に対応する
+</dd>
+<dt><code>FreeT</code>の普遍性</dt>
+<dd><code>FreeT f m</code>からモナド<code>T</code>への準同型<code>tr :: FreeT f m x -&gt; T x</code>は、
+準同型<code>tr1 :: m x -&gt; T x</code>と自然変換<code>h :: f x -&gt; T x</code>との組<code>(tr1, h)</code>と一対一に対応する
+</dd>
+</dl>
+<p>でしたが、ここで<code>FreeT</code>の普遍性に対して<code>Free</code>の普遍性を使うと</p>
+<dl>
+<dt><code>FreeT</code>の普遍性(余積ver.)</dt>
+<dd><code>FreeT f m</code>は<code>m</code>と<code>Free f</code>との余積である。
+すなわち、<code>FreeT f m</code>からモナド<code>T</code>への準同型<code>tr :: FreeT f m x -&gt; T x</code>は、
+準同型<code>tr1 :: m x -&gt; T x</code>と準同型<code>tr2 :: Free f x -&gt; T x</code>の組<code>(tr1, tr2)</code>と一対一に対応する
+</dd>
+</dl>
+<p>と書くことができます。前回の記事で述べたように、
+モナドの同型<code>Maybe ~ Free Proxy</code>と<code>MaybeT ~ FreeT Proxy</code>があるため、
+<code>MaybeT m</code>は<code>Maybe</code>と<code>m</code>の余積であることがわかります。</p>
+<p><code>coprod</code>の実装も、ここで明示的に書いておきます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">coprod ::</span> (<span class="dt">Monad</span> m, <span class="dt">Monad</span> t)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>       <span class="ot">=&gt;</span> (∀x<span class="op">.</span> m x <span class="ot">-&gt;</span> t x)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>       <span class="ot">-&gt;</span> (∀x<span class="op">.</span> <span class="dt">Maybe</span> x <span class="ot">-&gt;</span> t x)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>       <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> x) <span class="ot">-&gt;</span> t x           <span class="co">-- MaybeT m x ~ m (Maybe x)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>coprod tr1 tr2 <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> tr2 <span class="op">.</span> tr1</span></code></pre></div>
+<h2 id="rが単射ならばcoprod-r-pも単射である"><code>r</code>が単射ならば<code>coprod r p</code>も単射である</h2>
+<p>ふたたび、<code>RP = MaybeT (Reader A)</code>モナドに限った議論をします。</p>
+<p><code>T</code>を任意のモナドとして、モナド準同型<code>r, p</code>が以下のように与えられているとします。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">r ::</span> <span class="dt">R</span> x <span class="ot">-&gt;</span> <span class="dt">T</span> x</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">p ::</span> <span class="dt">P</span> x <span class="ot">-&gt;</span> <span class="dt">T</span> x</span></code></pre></div>
+<p><code>RP</code>は<code>R = Reader A</code> と<code>P = Maybe</code>の余積でしたから、以下のモナド準同型があります。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">rp ::</span> <span class="dt">RP</span> x <span class="ot">-&gt;</span> <span class="dt">T</span> x</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>rp <span class="ot">=</span> coprod r p</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r</span></code></pre></div>
+<p>このとき、<code>r</code> が単射<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>ならば、<code>rp = coprod r p</code> も単射であることがいえます。</p>
+<div class="sidenote">
+<p>モナド準同型<code>p :: P x -&gt; T x</code>は、<code>T</code>が自明なモナド（<a href="https://hackage.haskell.org/package/base-4.16.1.0/docs/Data-Proxy.html">Data.Proxy</a>）
+でない限り常に単射です。
+したがって、「<code>r</code>が単射ならば<code>rp</code>も単射」は、「<code>r, p</code>がともに単射ならば<code>rp</code>も単射」と、
+自明なケースを除いて同じことを言っています。</p>
+<p>これは非常に珍しいことであり、一般の余積について言えることではありません。
+例えば、<code>Hask</code>における余積<code>Either</code>が持つ普遍射<code>either :: (x -&gt; z) -&gt; (y -&gt; z) -&gt; Either x y -&gt; z</code>においては、
+<code>f,g</code>がそれぞれ単射であっても<code>either f g</code>が単射であるとは限りません。</p>
+<p>更に、<code>MaybeT m</code>に限っても、任意のモナド<code>m</code>について成り立つわけではありません。
+反例をひとつあげると、<code>id :: Maybe x -&gt; Maybe x</code>は明らかに単射なモナド準同型ですが、
+<code>coprod id id :: MaybeT Maybe x -&gt; Maybe x</code>は単射ではありません。
+実際、<code>MyabeT Nothing</code>と<code>MaybeT (Just Nothing)</code>は、どちらも<code>Nothing</code>に写されます。</p>
+<p>ほかの圏で同じことが起きる例には、「アーベル群の圏における ℤ/cℤ と ℤ/dℤ の余積(=直積) ℤ/cℤ ⊕ ℤ/dℤ でcとdが互いに素なとき」などがあります。</p>
+</div>
+<p>証明の補助のため、以下の2つの関数を定義します。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">zero ::</span> <span class="dt">T</span> a</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">=</span> p <span class="dt">Nothing</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ot">refill ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> (<span class="dt">P</span> a)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>refill ta cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> ta <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- 型シノニムに注意</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">--   P = Maybe</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">--   R x = A -&gt; x</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="ot">mask ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> a</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>mask ta cond <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ta cond</span></code></pre></div>
+<p><code>x</code>を任意の<code>RP a</code>型の値としたとき、<code>refill (rp x) cond</code>を以下のように計算することができます。</p>
+<dl>
+<dt>(Eq1)</dt>
+<dd><div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) cond <span class="ot">=</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span></code></pre></div>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) cond</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="op">@</span><span class="dt">T</span> <span class="dt">Just</span> (rp x) <span class="kw">else</span> <span class="fu">pure</span> <span class="op">@</span><span class="dt">T</span> <span class="dt">Nothing</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> rp (<span class="fu">fmap</span> <span class="op">@</span><span class="dt">RP</span> <span class="dt">Just</span> x) <span class="kw">else</span> rp (<span class="fu">pure</span> <span class="op">@</span><span class="dt">RP</span> <span class="dt">Nothing</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> (\j <span class="ot">-&gt;</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x j)) <span class="kw">else</span> <span class="fu">const</span> (<span class="dt">Just</span> <span class="dt">Nothing</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> rp <span class="op">$</span> \i j <span class="ot">-&gt;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x j) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 下記 (Eq1') より </span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">.</span> join <span class="op">@</span><span class="dt">R</span> <span class="op">$</span> \i j <span class="ot">-&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x j) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- (Eq1')</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> rp</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> p)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> r <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">.</span> join <span class="op">@</span><span class="dt">R</span></span></code></pre></div>
+</details>
+<p>同様に、<code>mask (rp x) cond</code>も計算すると以下のようになります。</p>
+<dl>
+<dt>(Eq2)</dt>
+<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) cond <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) cond</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill (rp x) cond</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 下記(Eq2')より</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">@</span><span class="dt">P</span>) <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> cond i <span class="kw">then</span> join (<span class="fu">fmap</span> <span class="dt">Just</span> (x i)) <span class="kw">else</span> join (<span class="dt">Just</span> <span class="dt">Nothing</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- (Eq2')</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> p</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> <span class="fu">fmap</span> p</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> <span class="fu">fmap</span> p</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> p)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> (p <span class="op">.</span> join <span class="op">@</span><span class="dt">P</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">@</span><span class="dt">P</span>)</span></code></pre></div>
+</details>
+<p>(Eq1)を用いて<code>refill (rp x) (isJust . x)</code>を計算すると、次の(Eq3)を得ます。</p>
+<dl>
+<dt>(Eq3)</dt>
+<dd><pre><code>refill (rp x) (isJust . x) = r x</code></pre>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>     <span class="kw">if</span> isJust (x i) <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>     <span class="kw">case</span> x i <span class="kw">of</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>       <span class="dt">Just</span> a <span class="ot">-&gt;</span> <span class="dt">Just</span> (<span class="dt">Just</span> a)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>       <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="dt">Just</span> (x i)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Just</span> <span class="op">$</span> x</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> (p <span class="op">.</span> <span class="dt">Just</span>) <span class="op">.</span> r <span class="op">$</span> x</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> r x</span></code></pre></div>
+</details>
+<p>(Eq3)により、次のことがわかります。</p>
+<dl>
+<dt>(Lemma1) <code>rp</code>によって<code>zero</code>に写るのは<code>const Nothing</code>のみ</dt>
+<dd><code>rp x = zero</code> ⇒ <code>x = const Nothing</code>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<p><code>rp x = zero</code>となる<code>x</code>に対して、ある<code>i :: A</code>があって<code>x i = Just _</code>と仮定すると、
+以下の自然変換<code>f :: a -&gt; RP a</code>が単射になります。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">f ::</span> a <span class="ot">-&gt;</span> <span class="dt">RP</span> a</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>f a <span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> (<span class="fu">const</span> a)) x</span></code></pre></div>
+このとき、<code>refill (rp (f a)) (isJust . f a) = r (f a)</code>です。しかし、<code>isJust . f a</code>は<code>a</code>に依存しない<code>isJust . x</code>に等しく、
+仮定より<code>rp (f a)</code>は<code>a</code>によらず<code>zero</code>に等しいためこちらも定数です。したがって、左辺は定数です。
+これは<code>r . f</code>が単射であることと矛盾します。したがって<code>x i = Just _</code>となるような<code>i</code>は存在せず、<code>x = const Nothing</code>です。
+</details>
+<p>次に、以下の事実を示します。</p>
+<dl>
+<dt>(Lemma2)</dt>
+<dd><code>mask (rp x) cond = zero</code> ⇒ <code>(\i -&gt; cond i &amp;&amp; isJust x i) = const False</code>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<p>(Eq2)より</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) cond</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rp (\i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> zero</span></code></pre></div>
+<p>です。したがって、(Lemma1)より</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>         (\i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span>) <span class="ot">=</span>          <span class="fu">const</span> <span class="dt">Nothing</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>isJust <span class="op">.</span> (\i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span>) <span class="ot">=</span> isJust <span class="op">.</span> <span class="fu">const</span> <span class="dt">Nothing</span></span></code></pre></div>
+です。この左辺は<code>\i -&gt; cond i &amp;&amp; isJust x i</code>に、右辺は<code>const False</code>に等しくなります。
+</details>
+<p>これらを用いれば、<code>refill . rp</code>が単射であること、結果として<code>rp</code>も単射であることを証明できます<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
+<dl>
+<dt><code>refill . rp</code>の単射性</dt>
+<dd>任意の<code>x,y :: RP a</code>に対して、
+<code>refill (rp x) = refill (rp y)</code>ならば<code>x = y</code>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<p><code>mask</code>の定義より、<code>refill (rp x) = refill (rp y)</code>ならば<code>mask (rp x) = mask (rp y)</code>です。</p>
+<p>また、(Eq2)より</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> x)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="fu">not</span> (isJust (x i)) <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="dt">Nothing</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> zero</span></code></pre></div>
+<p>です。ここで、仮定より<code>mask (rp x) = mask (rp y)</code>なので、(Lemma2)より次式(*)が成り立ちます。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>(\i <span class="ot">-&gt;</span> <span class="fu">not</span> (isJust (x i)) <span class="op">&amp;&amp;</span> isJust (y i)) <span class="ot">=</span> <span class="fu">const</span> <span class="dt">False</span> <span class="co">-- (*)</span></span></code></pre></div>
+<p><code>x</code>と<code>y</code>を入れ替えて、同様に次式(**)も成り立ちます。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>(\i <span class="ot">-&gt;</span> <span class="fu">not</span> (isJust (y i)) <span class="op">&amp;&amp;</span> isJust (x i)) <span class="ot">=</span> <span class="fu">const</span> <span class="dt">False</span> <span class="co">-- (**)</span></span></code></pre></div>
+<p>これらが両方成り立つのは、<code>(\i -&gt; isJust (x i) /= isJust (y i)) = const False</code>のとき、
+すなわち<code>isJust . x = isJust . y</code>のときに限ります。</p>
+<p>更に(Eq1)を用いると</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>   r x <span class="ot">=</span> refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> refill (rp y) (isJust <span class="op">.</span> y) <span class="ot">=</span> r y</span></code></pre></div>
+が成り立ちます。<code>r</code>は単射なので、<code>x = y</code>でなければなりません。
+</details>
+<h2 id="rpが単射であることの意義">「<code>rp</code>が単射である」ことの意義</h2>
+<p>「<code>r</code>が単射ならば<code>rp = coprod r p</code>も単射である」ことがわかりましたが、
+これがどのように役立つのか説明していませんでした。
+役立つ一例を見てみましょう。</p>
+<p>以下に定義する<code>H</code>に対して<code>Monad H</code>というインスタンスを定義するならば、
+必ず<code>pure a = One a</code>でなければいけません。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">H</span> a <span class="ot">=</span> <span class="dt">Err</span> <span class="dt">Integer</span> <span class="op">|</span> <span class="dt">One</span> a <span class="op">|</span> <span class="dt">Two</span> a a</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">H</span> <span class="kw">where</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    pure ::</span> a <span class="ot">-&gt;</span> <span class="dt">H</span> a</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    join ::</span> <span class="dt">H</span> (<span class="dt">H</span> a) <span class="ot">-&gt;</span> <span class="dt">H</span> a</span></code></pre></div>
+<p>「<code>r</code>が単射ならば<code>rp = coprod r p</code>も単射である」を使えば、このことを容易に示せます。</p>
+<ul>
+<li><p><code>join . pure = id</code>が成り立たなくなるため、<code>pure _ = Err i</code>にはなり得ません。</p></li>
+<li><p><code>pure a = F2 a a</code>であるような<code>Monad H</code>のインスタンスがあったと仮定して、矛盾を導きます。</p>
+<p>このとき、モナド則から<code>join (Two (Two aa ab) (Two ba bb)) = Two aa bb</code>となります。
+ここで<code>r :: (Bool -&gt; a) -&gt; H a</code>と<code>p :: Maybe a -&gt; H a</code>を以下のようにおくと、
+これらはモナド準同型になり、更に<code>r</code>は単射です。
+したがって、<code>rp :: (Bool -&gt; Maybe a) -&gt; H a</code>も単射です。</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>r f <span class="ot">=</span> <span class="dt">Two</span> (f <span class="dt">False</span>) (f <span class="dt">True</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>p <span class="dt">Nothing</span>  <span class="ot">=</span> <span class="dt">Err</span> <span class="dv">0</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>p (<span class="dt">Just</span> a) <span class="ot">=</span> <span class="fu">pure</span> a</span></code></pre></div>
+<p><code>Bool -&gt; Maybe a</code>は以下の4つの異なる”コンストラクタ”</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>\_ <span class="ot">-&gt;</span> <span class="dt">Nothing</span><span class="ot">                                        ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>\a0 <span class="ot">-&gt;</span> \<span class="kw">case</span> { <span class="dt">False</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> a0; <span class="dt">True</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span>}<span class="ot">    ::</span> a <span class="ot">-&gt;</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>\a1 <span class="ot">-&gt;</span> \<span class="kw">case</span> { <span class="dt">False</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span>; <span class="dt">True</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> a1}<span class="ot">    ::</span> a <span class="ot">-&gt;</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>\a0 a1 <span class="ot">-&gt;</span> \<span class="kw">case</span> { <span class="dt">False</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> a0; <span class="dt">True</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> a1}<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a)</span></code></pre></div>
+<p>を持ちます。<code>rp</code>が単射であるためには、<code>rp</code>はこれらを<code>F</code>の異なるコンストラクタに写さなければ
+ならず、更に最初の1つ以外を<code>Err _</code>に写すことができません。ですが、これは不可能です。</p></li>
+</ul>
+<p>しかし、この事実（<code>r</code>が単射ならば<code>rp</code>も単射）だけでは力不足な目標もあります。
+実は、次のような既知の事実を一挙に証明することを目論んでいました。</p>
+<ul>
+<li><p>リスト関手<code>[]</code>に対する<code>Monad</code>のインスタンスとして、可能な<code>pure :: x -&gt; [x]</code>の選択肢は<code>pure x = [x]</code>のみである。</p>
+<ul>
+<li><a href="https://qiita.com/1to100pen/items/4c0909d07174203c1f8b">@1to100pen 氏による証明</a></li>
+</ul></li>
+<li><p>定数でない多項式Functor<code>F</code>で、“次数”が1の項を持たず、かつ”定数項”を持つようなもの、
+すなわち<code>F(x) = c + x^2 * G(x)</code>と書けるようなものには、<code>Monad</code>のインスタンスが存在しない。</p>
+<ul>
+<li>このブログで以前証明しました（<a href="https://viercc.github.io/blog/posts/2019-12-16-fixed-proof-for-monads-more.html">過去の記事</a>）</li>
+</ul></li>
+</ul>
+<p>リスト関手<code>[]</code>に関する事実は、前述の<code>H</code>についての証明をなぞれば、
+「<code>n</code>個の値をとる型<code>A</code>に対して<code>rp :: (A -&gt; Maybe a) -&gt; [a]</code>が単射であることができない」
+といった形で証明できそうに見えます。しかし、リスト関手には「定数でない項」が無限個あるため、
+単射<code>(A -&gt; Maybe a) -&gt; [a]</code>が取れなくなることはありません。2つめの事実も、同様に「単射である」
+だけでは不十分です。</p>
+<p>既にあるこれらの証明では、<code>F</code>のあるコンストラクタの”次数”、<code>[]</code>の”長さ”・・・といったものが丁度 <code>n</code> である、
+という形の制約を発見し、うまく利用しています。しかし、「単射である」という事実からは、“次数”<code>n</code>のコンストラクタが写される
+先のコンストラクタの”次数”は<code>n</code>以上であるということしかわからず、<em>ぴったり</em> <code>n</code> であるという条件が得られません。</p>
+<p>ここでの「“次数”<code>n</code>のコンストラクタが写される先のコンストラクタの”次数”がぴったり<code>n</code>に一致する」
+を厳密に述べるための概念がEquifibered自然変換というものです<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。
+このブログの次回の記事でそれを説明しようと思います。</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>ここでの余積の定義は、一般の圏における余積をモナドとモナド準同型からなる圏に
+特殊化したものです。そのため、一般の圏における「余積は存在すれば同型を除いて一意」
+という証明がそのまま通用します。</p>
+<p>モナド<code>L, M</code>の余積として、モナド<code>LM, LM'</code>があったとします。
+それぞれ標準入射と普遍射の名前を</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lift1 ::</span> <span class="dt">L</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">lift2 ::</span> <span class="dt">M</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">coprod ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (<span class="dt">L</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">M</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">LM</span> <span class="op">~&gt;</span> n)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ot">lift1' ::</span> <span class="dt">L</span> <span class="op">~&gt;</span> <span class="dt">LM'</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ot">lift2' ::</span> <span class="dt">M</span> <span class="op">~&gt;</span> <span class="dt">LM'</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ot">coprod' ::</span> <span class="dt">Monad</span> n <span class="ot">=&gt;</span> (<span class="dt">L</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">M</span> <span class="op">~&gt;</span> n) <span class="ot">-&gt;</span> (<span class="dt">LM'</span> <span class="op">~&gt;</span> n)</span></code></pre></div>
+<p>とします。このとき</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> coprod lift1'<span class="ot"> lift2' ::</span> <span class="dt">LM</span> <span class="op">~&gt;</span> <span class="dt">LM'</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> coprod' lift1<span class="ot"> lift2  ::</span> <span class="dt">LM'</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span></code></pre></div>
+<p>とおくと、普遍性から<code>f</code>と<code>g</code>は互いに逆であることが示せます。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><code>f</code>が単射である⇔「任意の<code>x,y</code>に対して<code>f x = f y</code>⇒<code>x = y</code>」と定義します。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>一般に、<code>f . g</code>が単射ならば<code>g</code>も単射です。
+∵ <code>g x = g y</code> ⇒ <code>f (g x) = f (g y)</code> かつ <code>f (g x) = f (g y)</code> ⇒ <code>x = y</code><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>正確には、「私がこの概念を厳密化したものを探し求めて本やネットを漁っていたら、最近になってようやく見つけた用語」
+がEquifibered自然変換です。</p>
+<p>なので、「より適切な概念があるよ」などのご指摘がございましたら教えていただけると嬉しいです。
+（加えて、どんなコメントでも元より大歓迎です。メール <a href="mailto:viercc@gmail.com" class="email">viercc@gmail.com</a> またはtwitter <span class="citation" data-cites="viercc">@viercc</span> まで！）<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
