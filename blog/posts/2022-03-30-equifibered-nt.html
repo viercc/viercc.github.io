@@ -158,8 +158,6 @@
 値域に対しては<code>τ</code>は同型</li>
 </ul>
 <p>となります。</p>
-<p>また、逆も成り立ちません。equifiberedにならない例として挙げた<code>bad'</code>のように、
-単射であってequifiberedでないことがあります。</p>
 <h2 id="rがequifiberedならばrpもequifibered"><code>r</code>がequifiberedならば<code>rp</code>もequifibered</h2>
 <p>モナド<code>T</code>とモナド準同型<code>r :: R ~&gt; T</code>と<code>p :: P ~&gt; T</code>が与えられたとき、
 「<code>r</code>がequifiberedモナド準同型であれば<code>rp</code>もそうである」ことを証明します。</p>
@@ -308,7 +306,9 @@ equifiberedなモナド準同型<code>r :: (N -&gt; x) -&gt; F x</code>と、単
 <ol>
 <li id="fn1" role="doc-endnote"><p><code>F a = (N -&gt; a)</code>であるときは、自然変換<code>τ :: F a -&gt; G a</code>がequifiberedならば単射です。
 一般にはこれは言えません。例えば、<code>F a = (Bool, N -&gt; a), G a = (N -&gt; a)</code>としたとき、
-<code>snd :: F a -&gt; G a</code>はequifiberedになります。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<code>snd :: F a -&gt; G a</code>はequifiberedになります。
+また、逆も成り立ちません。equifiberedにならない例として挙げた<code>bad'</code>のように、
+単射であってequifiberedでないことがあります。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>この弱い主張の証明を、Twitter上のやりとりで（<a href="https://gist.github.com/viercc/38853067c893f7ad9e0894abb543178b">Gist</a>,
 <a href="https://gist.github.com/Lysxia/b105bcb2f2ba835012476ab7fe37ae87">@lysxia 氏によるCoqでの形式化</a>）行っていたところ、
 1to100pen 氏本人からより強い主張ができている上記Qiita記事を教えていただきました。</p>
