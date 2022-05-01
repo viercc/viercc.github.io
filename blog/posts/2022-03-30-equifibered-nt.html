@@ -158,72 +158,74 @@
 値域に対しては<code>τ</code>は同型</li>
 </ul>
 <p>となります。</p>
+<p>また、逆も成り立ちません。equifiberedにならない例として挙げた<code>bad'</code>のように、
+単射であってequifiberedでないことがあります。</p>
 <h2 id="rがequifiberedならばrpもequifibered"><code>r</code>がequifiberedならば<code>rp</code>もequifibered</h2>
 <p>モナド<code>T</code>とモナド準同型<code>r :: R ~&gt; T</code>と<code>p :: P ~&gt; T</code>が与えられたとき、
 「<code>r</code>がequifiberedモナド準同型であれば<code>rp</code>もそうである」ことを証明します。</p>
 <p>証明には、前回の記事で用いた補助的な関数や等式を使います。
 まず、<code>refill, mask</code>という関数を以下のように定義していました。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">zero ::</span> <span class="dt">T</span> a</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">=</span> p <span class="dt">Nothing</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ot">refill ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> (<span class="dt">P</span> a)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>refill ta cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> ta <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ot">mask ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> a</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>mask ta cond <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ta cond</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">zero ::</span> <span class="dt">T</span> a</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">=</span> p <span class="dt">Nothing</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ot">refill ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> (<span class="dt">P</span> a)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>refill ta cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> ta <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ot">mask ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> a</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>mask ta cond <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ta cond</span></code></pre></div>
 <p>前回の記事では、これらの関数について、以下の等式を証明しました。</p>
 <dl>
 <dt>(Eq3)</dt>
-<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> r x</span></code></pre></div>
+<dd><div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> r x</span></code></pre></div>
 </dd>
 </dl>
 <p><code>mask</code>は以下のように書くこともできます。</p>
 <dl>
 <dt>(Eq4)</dt>
-<dd><div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mask y cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span></code></pre></div>
+<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask y cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span></code></pre></div>
 </dd>
 </dl>
 <details>
 <summary>
 証明
 </summary>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>  mask y cond</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Just</span>) y</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">pure</span>) <span class="dt">Nothing</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> <span class="fu">pure</span>) y</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">pure</span> <span class="op">.</span> p) <span class="dt">Nothing</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (*)</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>  mask y cond</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Just</span>) y</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">pure</span>) <span class="dt">Nothing</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> <span class="fu">pure</span>) y</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">pure</span> <span class="op">.</span> p) <span class="dt">Nothing</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (*)</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p)</span></code></pre></div>
 </details>
 <p>任意の<code>xb :: R (P b), ya :: T a</code>に対して、<code>rp xb = fmap f ya</code>が成り立っているならば、
 ある<code>xa :: R (P a)</code>が存在して<code>rp xa = ya, fmap (fmap f) xa = xb</code>となること、
 及びそのような<code>xa</code>が唯一であることを示します。</p>
 <p>まず、そのような<code>xa</code>が存在すれば唯一であることを示します。</p>
 <p>次の値<code>za</code>を考えます。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">za ::</span> <span class="dt">T</span> (<span class="dt">Maybe</span> a)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>za <span class="ot">=</span> refill ya (isJust <span class="op">.</span> xb)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">za ::</span> <span class="dt">T</span> (<span class="dt">Maybe</span> a)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>za <span class="ot">=</span> refill ya (isJust <span class="op">.</span> xb)</span></code></pre></div>
 <p>ここで<code>fmap (fmap f) za = r xb</code>です。</p>
 <details>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> (<span class="fu">fmap</span> f) za</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> f) (refill ya (isJust <span class="op">.</span> xb))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 自然性</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (<span class="fu">fmap</span> f ya) (isJust <span class="op">.</span> xb)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 仮定より fmap f ya = rp xb</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (rp xb) (isJust <span class="op">.</span> xb)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Eq3)</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> r xb</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> (<span class="fu">fmap</span> f) za</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> f) (refill ya (isJust <span class="op">.</span> xb))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 自然性</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (<span class="fu">fmap</span> f ya) (isJust <span class="op">.</span> xb)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 仮定より fmap f ya = rp xb</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (rp xb) (isJust <span class="op">.</span> xb)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Eq3)</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> r xb</span></code></pre></div>
 </details>
 <p>いま、任意の<code>xa :: R (P a)</code>について、仮に<code>rp xa = ya</code>かつ<code>fmap (fmap f) xa = xb</code>が成り立っているとすると、
 (Eq3)より<code>r xa = refill (rp xa) (isJust . xa) = refill ya (isJust . xb) = za</code>です。
@@ -235,51 +237,51 @@
 このとき、<code>rp xa = ya</code> が成り立ちます。すなわち、<code>xa</code> は <code>f :: a -&gt; b</code>に沿って
 <code>xb :: R (P b)</code> を <code>ya :: T a</code>に引き戻した値になります。</p>
 <details>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>rp xa</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> xa</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> za</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ya (isJust <span class="op">.</span> xb)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> mask ya (isJust <span class="op">.</span> xb)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (**)</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">else</span> mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> ya</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) j <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> <span class="fu">const</span> ya</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (***)</span></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> \_ <span class="ot">-&gt;</span> ya</span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> ya</span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="co">-- (**)</span></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f (mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (<span class="fu">fmap</span> f ya) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (rp xb) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> zero</span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) <span class="ot">=</span> zero</span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="co">-- (***)</span></span>
-<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r)</span>
-<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
-<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
-<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rp xa</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> xa</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> za</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ya (isJust <span class="op">.</span> xb)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> mask ya (isJust <span class="op">.</span> xb)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (**)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">else</span> mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> ya</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) j <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> <span class="fu">const</span> ya</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (***)</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> \_ <span class="ot">-&gt;</span> ya</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> ya</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="co">-- (**)</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f (mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (<span class="fu">fmap</span> f ya) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (rp xb) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> zero</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) <span class="ot">=</span> zero</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a><span class="co">-- (***)</span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r)</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join</span></code></pre></div>
 </details>
 <h3 id="equifiberedを使ってわかること">Equifiberedを使ってわかること</h3>
 <p>この系として、面倒な等式変形を要した以下の2つの定理が得られます。</p>
@@ -306,10 +308,7 @@ equifiberedなモナド準同型<code>r :: (N -&gt; x) -&gt; F x</code>と、単
 <ol>
 <li id="fn1" role="doc-endnote"><p><code>F a = (N -&gt; a)</code>であるときは、自然変換<code>τ :: F a -&gt; G a</code>がequifiberedならば単射です。
 一般にはこれは言えません。例えば、<code>F a = (Bool, N -&gt; a), G a = (N -&gt; a)</code>としたとき、
-<code>snd :: F a -&gt; G a</code>はequifiberedになります。</p>
-<pre><code>また、逆も成り立ちません。equifiberedにならない例として挙げた`bad'`のように、
-単射であってequifiberedでないことがあります。</code></pre>
-<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></li>
+<code>snd :: F a -&gt; G a</code>はequifiberedになります。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>この弱い主張の証明を、Twitter上のやりとりで（<a href="https://gist.github.com/viercc/38853067c893f7ad9e0894abb543178b">Gist</a>,
 <a href="https://gist.github.com/Lysxia/b105bcb2f2ba835012476ab7fe37ae87">@lysxia 氏によるCoqでの形式化</a>）行っていたところ、
 1to100pen 氏本人からより強い主張ができている上記Qiita記事を教えていただきました。</p>
