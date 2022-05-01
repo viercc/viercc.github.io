@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - MaybeモナドとReaderモナドの特別な関係 (2)</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>MaybeモナドとReaderモナドの特別な関係 (2)</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2022-05-01</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <p><a href="2022-03-25-monad-embed.html">前回</a>の続きです。</p>
+<h2 id="前回のまとめ">前回のまとめ</h2>
+<p>前回の記事と同様に、<code>R, P, RP</code>を以下のモナドとします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P</span>   <span class="ot">=</span> <span class="dt">Maybe</span>    <span class="co">-- Pointed の P</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">R</span> x <span class="ot">=</span> <span class="dt">A</span> <span class="ot">-&gt;</span> x   <span class="co">-- Reader の R</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">RP</span> x <span class="ot">=</span> <span class="dt">A</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> x</span></code></pre></div>
+<p>前回は、モナド<code>RP x = MaybeT (Reader A) x = A -&gt; Maybe x</code>が持つ特別な性質として、</p>
+<ul>
+<li>モナド<code>T</code>とモナド準同型<code>r :: R ~&gt; T</code>と<code>p :: P ~&gt; T</code>が与えられたとき、
+<code>rp = join . fmap p . r :: RP ~&gt; T</code>もモナド準同型である</li>
+<li><code>r</code>が単射であれば、上述の<code>rp</code>も単射である</li>
+</ul>
+<p>ことを示しました。また、これを用いれば、一部のモナド<code>T</code>の性質に関する証明が簡単になることがわかりました。</p>
+<p>一方で、</p>
+<ul>
+<li>リスト関手<code>[]</code>上に定義されたモナドは、必ず<code>pure a = [a]</code>であること（<a href="https://qiita.com/1to100pen/items/4c0909d07174203c1f8b">リンク</a>）</li>
+<li>モナド演算を持てない多項式関手の特徴づけ（<a href="https://viercc.github.io/blog/posts/2019-12-16-fixed-proof-for-monads-more.html">過去の記事</a>）</li>
+</ul>
+<p>といった証明に使うには、単射<code>rp</code>を持つだけでは不十分でした。
+これらの証明は、「ある方法で構成したリストの長さが必ず<code>n</code>で、しかも長さ<code>n</code>の任意のリストを構成できる」
+「特定のコンストラクタがちょうど<code>n</code>個の引数をとる」
+といった類の事実を発見することで行っていました。</p>
+<p>こういった性質をアドホックに定式化するならば、例えば次のようなかたちを取るでしょう。</p>
+<ul>
+<li><p>「ある自然変換<code>f :: (N -&gt; a) -&gt; [a]</code>は、長さがちょうど|N|のリストへの同型になっている」ことを、
+「リスト関手を長さが|N|のリストとそれ以外の長さのリストに分割する自然同型<code>split_N, unsplit_N</code>
+が存在して、<code>f = unsplit_N . Left</code>」と表現する</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- @unsplit_N@ は @split_N@ の逆</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">split_N   ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Either</span> (<span class="dt">N</span> <span class="ot">-&gt;</span> a) (<span class="dt">ListButN</span> a)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">unsplit_N ::</span> <span class="dt">Either</span> (<span class="dt">N</span> <span class="ot">-&gt;</span> a) (<span class="dt">ListButN</span> a) <span class="ot">-&gt;</span> [a]</span></code></pre></div></li>
+<li><p>「関手<code>G</code>は、ある自然変換<code>f :: (N -&gt; a) -&gt; G a</code>を持っており、これは『|N|引数のコンストラクタ』とみなせる」を、
+リストの場合と同様に、「ある自然同型<code>split_N, unsplit_N</code>があり、<code>f = unsplit_N . Left</code>であること」と表現する</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">split_N   ::</span> <span class="dt">G</span> a <span class="ot">-&gt;</span> <span class="dt">Either</span> (<span class="dt">N</span> <span class="ot">-&gt;</span> a) (<span class="dt">G_ButN</span> a)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">unsplit_N ::</span> <span class="dt">Either</span> (<span class="dt">N</span> <span class="ot">-&gt;</span> a) (<span class="dt">G_ButN</span> a) <span class="ot">-&gt;</span> <span class="dt">G</span> a</span></code></pre></div></li>
+</ul>
+<p>より一般に、ある自然変換<code>f</code>が、関手<code>F</code>を関手<code>G</code>の「直和成分」にすること、すなわち以下のように定式化することが考えられます。</p>
+<ul>
+<li><p>自然変換<code>f :: F a -&gt; G a</code>は、<code>G</code>を<code>F</code>と<code>G_minus_F</code>の和に分解するような自然同型</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">split   ::</span> <span class="dt">G</span> a <span class="ot">-&gt;</span> <span class="dt">Either</span> (<span class="dt">F</span> a) (<span class="dt">G_minus_F</span> a)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">unsplit ::</span> <span class="dt">Either</span> (<span class="dt">F</span> a) (<span class="dt">G_minus_F</span> a) <span class="ot">-&gt;</span> <span class="dt">G</span> a</span></code></pre></div>
+<p>を使って、<code>f = unsplit . Left</code>と書ける</p></li>
+</ul>
+<p>しかし、この定式化はいくつかの点で望ましくありません。</p>
+<ol type="1">
+<li>自然変換の値域になる関手とならない関手に分けるという操作が煩雑であり、証明の見通しが良くならなかった</li>
+<li>そもそも、「自然変換の値域にならない関手」が定義できないことがある。例えば、
+<code>F x = (Integer -&gt; Integer, x)</code>という関手において<code>f a = (id, a)</code>の値域にならないもの、という関手を作るには、
+<code>Integer -&gt; Integer</code>から<code>id</code>の一点だけを除いた型が必要になるが、そのような型はない。</li>
+</ol>
+<p>そのため、こうした問題を迂回できるような、よい定式化を探しました。
+そこで見つけたのがequifibered自然変換です。</p>
+<h2 id="equifibered自然変換">Equifibered自然変換</h2>
+<h3 id="定義">定義</h3>
+<p><strong>Equifibered</strong>自然変換(<a href="https://ncatlab.org/nlab/show/equifibered+natural+transformation">equifibered natural transformation - nLab</a>)とは、
+関手<code>F, G</code> 間の自然変換 <code>τ :: ∀a. F a -&gt; G a</code>であって、任意の型<code>a, b</code>と関数<code>f :: a -&gt; b</code>に対して、以下の条件を満たすものです。</p>
+<ul>
+<li><p><code>τ</code>の自然性を表す以下の可換図式は引き戻しである</p>
+<pre><code>         fmap f
+    F a --------&gt; F b
+     |             |
+     | τ           | τ
+     |             |
+     v   fmap f    v
+    G a --------&gt; G b</code></pre></li>
+</ul>
+<p>これは、<code>Haskell</code>の<code>Functor</code>間の自然変換に限れば、次のように言い換えることができます。</p>
+<ul>
+<li>任意の<code>f :: a -&gt; b</code>, <code>x :: F b</code>と<code>y :: G a</code>で<code>τ x = fmap f y :: G b</code>を満たすものがあれば、
+ある<code>v :: F a</code>が存在して<code>x = fmap f v</code> かつ <code>y = τ v</code> を満たす。
+また、この条件を満たす<code>v</code>は唯一つに定まる。</li>
+</ul>
+<p>この<code>x :: F b</code>と<code>y :: G a</code>に対して唯一定まる<code>v :: F a</code>のことを、「<code>f :: a -&gt; b</code>に沿って
+<code>x</code>を<code>y</code>に引き戻した値」と呼ぶことにします。</p>
+<h3 id="equifibered自然変換の例">Equifibered自然変換の例</h3>
+<p>Equifibered自然変換の具体例を考えます。<code>F</code>がただ値を2つ保持する関手、<code>G</code>をリスト関手とします。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> a a</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">G</span> a <span class="ot">=</span> [a]</span></code></pre></div>
+<p>以下の自然変換<code>ok</code>と<code>ok'</code>はequifiberedですが、<code>bad</code>と<code>bad'</code>はequifiberedではありません。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ok, ok', bad,<span class="ot"> bad' ::</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">G</span> a</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ok (<span class="dt">F</span> a1 a2) <span class="ot">=</span> [a1, a2]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ok' (<span class="dt">F</span> a1 a2) <span class="ot">=</span> [a2, a1]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>bad (<span class="dt">F</span> a1 a2) <span class="ot">=</span> [a1]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>bad' (<span class="dt">F</span> a1 a2) <span class="ot">=</span> [a1, a1, a2, a2]</span></code></pre></div>
+<ul>
+<li><p><code>x = F b1 b2 :: F b</code>が任意に与えられているとき、<code>y :: [a]</code>が<code>ok x = fmap f y</code>を満たしたとします。
+<code>fmap</code>はリストの長さを変えないので、<code>y = [a1, a2]</code>でしかありえません。更に、</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ok x     <span class="ot">=</span> ok (<span class="dt">F</span> b1 b2)    <span class="ot">=</span> [b1, b2]     <span class="ot">=</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f y <span class="ot">=</span> <span class="fu">fmap</span> f [a1, a2] <span class="ot">=</span> [f a1, f a2]</span></code></pre></div>
+<p>なので、<code>f a1 = b1, f a2 = b2</code>が成り立っています。したがって、<code>v = F a1 a2</code>とすれば、
+<code>fmap f v = x, ok v = y</code>が成り立ちます。</p></li>
+<li><p><code>ok'</code>も同様です。<code>y = [a1, a2]</code>のとき、ただ順序を入れ替えて<code>v = F x2 x1</code>とすれば、
+<code>fmap f v = x, ok v = y</code>が成り立ちます。</p></li>
+<li><p><code>bad</code>は<code>F</code>に含まれている情報を捨ててしまいます。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dt">F</span> b1 b2</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> [a1]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>bad' x   <span class="ot">=</span> [b1]   <span class="ot">=</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f y <span class="ot">=</span> [f a1]</span></code></pre></div>
+<p>すなわち<code>f a1 = b1</code>であることだけがわかります。<code>v = F a1 a2</code>のうち、
+<code>fmap f v = x</code>すなわち<code>f a2 = b2</code>であるような<code>a2</code>が唯一存在すればよかったのですが、
+<code>f</code>は任意の関数であるため、<code>f a2 = b2</code>を満たす<code>a2</code>が一つもないこともあれば複数あって一意に定まらないこともあります。</p>
+<p>そのため、<code>bad</code>はequifiberedではありません。</p></li>
+<li><p><code>bad'</code>は単射自然変換ではあるので、少なくとも<code>x</code>に関する情報を消してしまうことはありません。
+<code>y</code>は長さ4のリストだとわかっています。しかし、</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dt">F</span> b1 b2</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> [a1, a2, a3, a4]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>bad' x   <span class="ot">=</span> [b1,   b1,   b2,   b2] <span class="ot">=</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f y <span class="ot">=</span> [f a1, f a2, f a3, f a4]</span></code></pre></div>
+<p>が成り立ちながら<code>a1 /= a2, a3 /= a4</code>であることは十分あり得るにもかかわらず、
+<code>bad'</code>の値域はつねに1番目と2番目、3番目と4番目の要素が等しいため、
+<code>bad' v = y</code>が成り立つ<code>v</code>は存在しないことがあります。</p>
+<p>したがって、<code>bad'</code>はequifiberedではありません。</p></li>
+</ul>
+<p>こういった例からわかるように、リストのような多項式関手の場合は、</p>
+<ul>
+<li><code>τ :: (N -&gt; a) -&gt; G a</code>がequifibered自然変換 ⇔ <code>G</code>は<code>τ</code>の値域とそれ以外の直和に分けることができ、
+値域に対しては<code>τ</code>は同型 <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+<li><code>τ :: F a -&gt; G a</code>がequifibered自然変換かつ単射 ⇔ <code>F</code>は<code>τ</code>の値域とそれ以外の直和に分けることができ、
+値域に対しては<code>τ</code>は同型</li>
+</ul>
+<p>となります。</p>
+<h2 id="rがequifiberedならばrpもequifibered"><code>r</code>がequifiberedならば<code>rp</code>もequifibered</h2>
+<p>モナド<code>T</code>とモナド準同型<code>r :: R ~&gt; T</code>と<code>p :: P ~&gt; T</code>が与えられたとき、
+「<code>r</code>がequifiberedモナド準同型であれば<code>rp</code>もそうである」ことを証明します。</p>
+<p>証明には、前回の記事で用いた補助的な関数や等式を使います。
+まず、<code>refill, mask</code>という関数を以下のように定義していました。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">zero ::</span> <span class="dt">T</span> a</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">=</span> p <span class="dt">Nothing</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ot">refill ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> (<span class="dt">P</span> a)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>refill ta cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> ta <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ot">mask ::</span> <span class="dt">T</span> a <span class="ot">-&gt;</span> <span class="dt">R</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">T</span> a</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>mask ta cond <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ta cond</span></code></pre></div>
+<p>前回の記事では、これらの関数について、以下の等式を証明しました。</p>
+<dl>
+<dt>(Eq3)</dt>
+<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> r x</span></code></pre></div>
+</dd>
+</dl>
+<p><code>mask</code>は以下のように書くこともできます。</p>
+<dl>
+<dt>(Eq4)</dt>
+<dd><div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mask y cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span></code></pre></div>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>  mask y cond</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> y <span class="kw">else</span> <span class="fu">pure</span> <span class="dt">Nothing</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Just</span>) y</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> <span class="fu">pure</span>) <span class="dt">Nothing</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> cond i <span class="kw">then</span> (join <span class="op">.</span> <span class="fu">fmap</span> <span class="fu">pure</span>) y</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">else</span> (join <span class="op">.</span> <span class="fu">pure</span> <span class="op">.</span> p) <span class="dt">Nothing</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (*)</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> join <span class="op">.</span> r</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> p) <span class="op">.</span> r</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> p)</span></code></pre></div>
+</details>
+<p>任意の<code>xb :: R (P b), ya :: T a</code>に対して、<code>rp xb = fmap f ya</code>が成り立っているならば、
+ある<code>xa :: R (P a)</code>が存在して<code>rp xa = ya, fmap (fmap f) xa = xb</code>となること、
+及びそのような<code>xa</code>が唯一であることを示します。</p>
+<p>まず、そのような<code>xa</code>が存在すれば唯一であることを示します。</p>
+<p>次の値<code>za</code>を考えます。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">za ::</span> <span class="dt">T</span> (<span class="dt">Maybe</span> a)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>za <span class="ot">=</span> refill ya (isJust <span class="op">.</span> xb)</span></code></pre></div>
+<p>ここで<code>fmap (fmap f) za = r xb</code>です。</p>
+<details>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> (<span class="fu">fmap</span> f) za</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> f) (refill ya (isJust <span class="op">.</span> xb))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 自然性</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (<span class="fu">fmap</span> f ya) (isJust <span class="op">.</span> xb)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 仮定より fmap f ya = rp xb</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> refill (rp xb) (isJust <span class="op">.</span> xb)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Eq3)</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> r xb</span></code></pre></div>
+</details>
+<p>いま、任意の<code>xa :: R (P a)</code>について、仮に<code>rp xa = ya</code>かつ<code>fmap (fmap f) xa = xb</code>が成り立っているとすると、
+(Eq3)より<code>r xa = refill (rp xa) (isJust . xa) = refill ya (isJust . xb) = za</code>です。
+これは、equifibered自然変換<code>r :: R ~&gt; T</code> の下、 <code>xa</code> が <code>fmap f :: P a -&gt; P b</code>に沿って
+<code>xb :: T (P a)</code> を <code>za :: T (P a)</code> に引き戻した値であることを意味します。
+そのため、このような<code>xa</code>は存在すれば唯一です。</p>
+<p>逆に、<code>xa :: R (P a)</code>を、<code>fmap f</code> に沿って <code>xb</code> を <code>za</code> に引き戻した値とします。
+すなわち、<code>r xa = za</code> かつ <code>fmap (fmap f) xa = xb</code>を満たす唯一の値だとします。
+このとき、<code>rp xa = ya</code> が成り立ちます。すなわち、<code>xa</code> は <code>f :: a -&gt; b</code>に沿って
+<code>xb :: R (P b)</code> を <code>ya :: T a</code>に引き戻した値になります。</p>
+<details>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>rp xa</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">.</span> r <span class="op">$</span> xa</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> za</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> p <span class="op">$</span> refill ya (isJust <span class="op">.</span> xb)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> mask ya (isJust <span class="op">.</span> xb)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (**)</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i) <span class="kw">then</span> ya</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">else</span> mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (Eq4)</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> ya</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) j <span class="kw">then</span> ya <span class="kw">else</span> zero</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> join <span class="op">.</span> r <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r) <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> <span class="fu">const</span> ya</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- from (***)</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> isJust (xb i)</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>      <span class="kw">then</span> \_ <span class="ot">-&gt;</span> ya</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>      <span class="kw">else</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> isJust (xb j) <span class="kw">then</span> zero <span class="kw">else</span> ya</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> <span class="fu">const</span> ya</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> ya</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="co">-- (**)</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> f (mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (<span class="fu">fmap</span> f ya) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> mask (rp xb) (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb)</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> zero</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>mask ya (<span class="fu">not</span> <span class="op">.</span> isJust <span class="op">.</span> xb) <span class="ot">=</span> zero</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="co">-- (***)</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> r)</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">.</span> r <span class="op">.</span> <span class="fu">fmap</span> r</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> r <span class="op">.</span> join</span></code></pre></div>
+</details>
+<h3 id="equifiberedを使ってわかること">Equifiberedを使ってわかること</h3>
+<p>この系として、面倒な等式変形を要した以下の2つの定理が得られます。</p>
+<ul>
+<li><p>定数でない多項式Functor<code>F</code>で、“次数”が1の項を持たず、かつ”定数項”を持つようなもの、
+すなわち<code>F(x) = c + x^2 * G(x)</code>と書けるようなものには、<code>Monad</code>のインスタンスが存在しない。
+（<a href="https://viercc.github.io/blog/posts/2019-12-16-fixed-proof-for-monads-more.html">過去の記事</a>）</p>
+<p><code>F</code>の<code>Monad</code>のインスタンスを仮定すれば、ある有限な型<code>N</code>（|N| ≥ 2）が存在して
+equifiberedなモナド準同型<code>r :: (N -&gt; x) -&gt; F x</code>と、単射なモナド準同型<code>p :: Maybe x -&gt; F x</code>をとることができる。
+このとき<code>rp = coprod r p :: (N -&gt; Maybe x) -&gt; F x</code>も単射かつequifiberedである。
+したがって、<code>F x</code>は<code>rp</code>の値域<code>(1 + x)^N</code>とそれ以外との直和<code>F(x) = (1 + x)^N + H(x)</code>
+として書かれる。しかし、<code>F(x)</code>は次数が1の項を持たなかったはずなので、これは矛盾である。</p>
+<p>すなわち、<code>F</code>は<code>Monad</code>のインスタンスを持てない。</p></li>
+<li><p>リスト関手<code>[]</code>に対する<code>Monad</code>のインスタンスとして、可能な<code>pure :: x -&gt; [x]</code>の選択肢は<code>pure x = [x]</code>のみである。
+（ <a href="https://qiita.com/1to100pen/items/4c0909d07174203c1f8b">@1to100pen 氏による証明</a> ）
+特に、<code>ZipList</code>と同様に<code>repeat :: x -&gt; [x]</code>を<code>pure</code>として用いる<code>Monad []</code>のインスタンスはない<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
+<p><code>pure x = []</code>ではありえないことはすぐにわかる。<code>length (pure x) = N &gt; 0</code>とおくと、
+上記と同様に、単射かつequifiberedなモナド準同型<code>rp :: (N -&gt; Maybe x) -&gt; [x]</code>を持たなければならない。
+これによって、 <code>[x] = 1 + x + x^2 + x^3 + ...</code> は <code>[x] = (1+x)^N + G(x)</code>と書けなければならない。
+この分解が成り立つ<code>N</code>は<code>N=1</code>に限られる。</p></li>
+</ul>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><code>F a = (N -&gt; a)</code>であるときは、自然変換<code>τ :: F a -&gt; G a</code>がequifiberedならば単射です。
+一般にはこれは言えません。例えば、<code>F a = (Bool, N -&gt; a), G a = (N -&gt; a)</code>としたとき、
+<code>snd :: F a -&gt; G a</code>はequifiberedになります。</p>
+<pre><code>また、逆も成り立ちません。equifiberedにならない例として挙げた`bad'`のように、
+単射であってequifiberedでないことがあります。</code></pre>
+<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></li>
+<li id="fn2" role="doc-endnote"><p>この弱い主張の証明を、Twitter上のやりとりで（<a href="https://gist.github.com/viercc/38853067c893f7ad9e0894abb543178b">Gist</a>,
+<a href="https://gist.github.com/Lysxia/b105bcb2f2ba835012476ab7fe37ae87">@lysxia 氏によるCoqでの形式化</a>）行っていたところ、
+1to100pen 氏本人からより強い主張ができている上記Qiita記事を教えていただきました。</p>
+<p>これが今回の記事の大きなモチベーションになっています。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
