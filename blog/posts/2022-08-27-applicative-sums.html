@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Constructing Applicative from sum of Applicatives</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Constructing Applicative from sum of Applicatives</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2022-05-01</li>
+            
+            
+                <li>Last modified on 2022-08-27</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <p>This is a quick revision of my past article
+<a href="./2020-11-25-faccat.html">多項式Applicative Functorの一般論</a>. Rewritten in English,
+sum of any applicatives rather than Reader, etc.</p>
+<p>Suppose <code>F0, F1, F2, ...</code> are <code>Applicative</code> and <code>F</code> is their sum</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">C0</span> (<span class="dt">F0</span> a) <span class="op">|</span> <span class="dt">C1</span> (<span class="dt">F1</span> a) <span class="op">|</span> <span class="dt">C2</span> (<span class="dt">F2</span> a) <span class="op">|</span> <span class="op">...</span></span></code></pre></div>
+<p>Also, suppose <code>F</code> has <code>Applicative</code> instance defined as:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">C0</span> (<span class="fu">pure</span> <span class="op">@</span><span class="dt">F0</span> a)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">Ci</span> x <span class="op">&lt;*&gt;</span> <span class="dt">Cj</span> y <span class="ot">=</span> <span class="dt">C</span>(i<span class="op">&lt;&gt;</span>j) (left i j x <span class="op">&lt;*&gt;</span> right i j y) </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">where</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>     <span class="dt">Applicatives</span> <span class="dt">Fi</span> <span class="fu">and</span> tags <span class="dt">Ci</span> are indexed by (<span class="ot">i ::</span> <span class="dt">M</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>     <span class="op">&lt;&gt;</span> is a <span class="dt">Monoid</span> operation on <span class="dt">M</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>     <span class="dv">0</span> is the unit <span class="kw">of</span> <span class="op">&lt;&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>     left <span class="fu">and</span> right are <span class="kw">family</span> <span class="kw">of</span> <span class="dt">Applicative</span> morphisms</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ot">     left  ::</span> (<span class="ot">i ::</span> <span class="dt">M</span>) <span class="ot">-&gt;</span> (<span class="ot">j ::</span> <span class="dt">M</span>) <span class="ot">-&gt;</span> (∀a<span class="op">.</span> <span class="dt">F</span>(i) a <span class="ot">-&gt;</span> <span class="dt">F</span>(i<span class="op">&lt;&gt;</span>j) a)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ot">     right ::</span> (<span class="ot">i ::</span> <span class="dt">M</span>) <span class="ot">-&gt;</span> (<span class="ot">j ::</span> <span class="dt">M</span>) <span class="ot">-&gt;</span> (∀a<span class="op">.</span> <span class="dt">F</span>(j) a <span class="ot">-&gt;</span> <span class="dt">F</span>(i<span class="op">&lt;&gt;</span>j) a)</span></code></pre></div>
+<p>By the applicative laws, these conditions on <code>left</code> and <code>right</code> must hold.
+(Well, it’s not trivial but teduous calculations)</p>
+<ol type="1">
+<li><code>left  i 0 = id :: F(i) ~&gt; F(i&lt;&gt;0)</code></li>
+<li><code>right 0 j = id :: F(j) ~&gt; F(0&lt;&gt;j)</code></li>
+<li><code>left (i &lt;&gt; j) k . left i j = left i (j &lt;&gt; k) :: F(i) ~&gt; F(i&lt;&gt;j&lt;&gt;k)</code></li>
+<li><code>right i (j &lt;&gt; k) . right j k = right (i &lt;&gt; j) k :: F(k) ~&gt; F(i&lt;&gt;j&lt;&gt;k)</code></li>
+<li><code>left (i &lt;&gt; j) k . right i j = right i (j &lt;&gt; k) . left j k :: F(j) ~&gt; F(i&lt;&gt;j&lt;&gt;k)</code></li>
+</ol>
+<p>Let <code>mid</code> be the composition occured in 5.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mid ::</span> ∀i j<span class="ot"> k ::</span> <span class="dt">M</span> <span class="ot">-&gt;</span> <span class="dt">F</span>(j) <span class="op">~&gt;</span> <span class="dt">F</span>(i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mid i j k <span class="ot">=</span> left (i <span class="op">&lt;&gt;</span> j) k <span class="op">.</span> right i j</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">--        = right i (j &lt;&gt; k) . left j k</span></span></code></pre></div>
+<p>These properties about <code>mid</code> follows from 1-5.</p>
+<ul>
+<li><code>mid 0 i j = left i j</code></li>
+<li><code>mid i j 0 = right i j</code></li>
+<li><code>mid 0 j 0 = id</code></li>
+<li><code>mid i' (i &lt;&gt; j &lt;&gt; k) k' . mid i j k = mid (i' &lt;&gt; i) j (k &lt;&gt; k')</code></li>
+</ul>
+<p>Here, we want to show that if <code>(M,&lt;&gt;,0)</code> was a group not just a monoid, <code>left i j</code> and <code>right i j</code> must be isomorphisms.</p>
+<p>It’s equivalent to say <code>mid i j k</code> must be isomorphism.</p>
+<p>Since <code>M</code> is a group, <code>i</code> and <code>k</code> have their inverses <code>i⁻¹, k⁻¹</code> resp.
+Then <code>mid i⁻¹ (i &lt;&gt; j &lt;&gt; k) k⁻¹</code> is the inverse of <code>mid i j k</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mid i⁻¹ (i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k) k⁻¹ <span class="op">.</span> mid i j k</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mid (i⁻¹ <span class="op">&lt;&gt;</span> i) j (k <span class="op">&lt;&gt;</span> k⁻¹)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mid <span class="dv">0</span> j <span class="dv">0</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>mid i j k <span class="op">.</span> mid i⁻¹ (i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k) k⁻¹</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mid i (i⁻¹ <span class="op">&lt;&gt;</span> i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k <span class="op">&lt;&gt;</span> k⁻¹) k <span class="op">.</span> mid i⁻¹ (i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k) k⁻¹</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mid (i <span class="op">&lt;&gt;</span> i⁻¹) (i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k) (k⁻¹ <span class="op">&lt;&gt;</span> k)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> mid <span class="dv">0</span> (i <span class="op">&lt;&gt;</span> j <span class="op">&lt;&gt;</span> k) <span class="dv">0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
