@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Trail: 踏跡モナド</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Trail: 踏跡モナド</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2022-10-16</li>
+            
+            
+                <li>Last modified on 2022-10-17</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <h2 id="モチベーション-listt-done-right-を-freet-から作る">モチベーション: ListT done right を FreeT から作る</h2>
+<p>ListT done right （ちゃんとした方のListT） というモナド変換子をご存知でしょうか？
+<code>ListT</code> (done wrong) はこのブログで度々取り上げました（<a href="./2020-02-29-commutative-monad.html">2020年</a>, <a href="./2021-07-17-monads-from-adjunction-2.html">2021年</a>）
+が、done right はこれとは別物です。(done wrong)はほぼ使われることはない<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>のですが、done right は結構便利なモナドです。</p>
+<p>さて、本記事では ListT done right にしか用がないので、それを<code>ListT</code>とだけ呼ぶことにします。
+<code>ListT m a</code>は、要素<code>a</code>を一つ取り出すたびにモナド<code>m</code>の副作用が必要になるようなリストを表している、と考えることができます。
+例えば、ネットワーク越しの通信によってデータを少しづつ読み出すときには <code>ListT IO ByteString</code>が使えます。</p>
+<p><code>ListT</code>には<a href="https://hackage.haskell.org/package/list-t">list-t</a>, <a href="https://hackage.haskell.org/package/list-transformer-1.0.9/">list-transformer</a>, <a href="https://hackage.haskell.org/package/List">List</a>
+など複数の実装があります<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。初めてこのモナドに触れる方には<a href="https://hackage.haskell.org/package/list-transformer-1.0.9/">list-transformer</a>のドキュメントが最もわかりやすいかと思います。</p>
+<p>list-transformer の<code>ListT</code>の定義を以下に引用します。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ListT</span> m a <span class="ot">=</span> <span class="dt">ListT</span> {<span class="ot"> next ::</span> m (<span class="dt">Step</span> m a) }</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Step</span> m a <span class="ot">=</span> <span class="dt">Cons</span> a (<span class="dt">ListT</span> m a) <span class="op">|</span> <span class="dt">Nil</span></span></code></pre></div>
+<p>さて、この<code>ListT</code>ですが、モナドの演算を忘れて単なる型として見れば、
+<code>FreeT</code>モナド変換子（<a href="https://hackage.haskell.org/package/free-5.1.7/docs/Control-Monad-Trans-Free.html">Control.Monad.Trans.Free</a>）の特殊ケースになっています。</p>
+<p><code>FreeT</code>は以下のように定義されています。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">FreeT</span> f m a <span class="ot">=</span> <span class="dt">FreeT</span> {<span class="ot"> runFreeT ::</span> m (<span class="dt">FreeF</span> f a (<span class="dt">FreeT</span> f m a)) }</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">FreeT</span> f a r <span class="ot">=</span> <span class="dt">Pure</span> a <span class="op">|</span> <span class="dt">Free</span> (f r)</span></code></pre></div>
+<p>このとき、次のような同型があります<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">ListT</span> m a <span class="op">&lt;-&gt;</span> <span class="dt">FreeT</span> ((,) a) m ()</span></code></pre></div>
+<p>ここで、<code>((,) a)</code>はタプル型のコンストラクタ<code>(,)</code>に<code>a</code>を部分適用した関手、つまり<code>((,) a) b = (a,b)</code>のことです。
+読みやすさのために、<code>Pair = (,)</code>という別名を付けて書くことにします。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Pair</span> <span class="ot">=</span> (,)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">ListT</span> m a <span class="op">&lt;-&gt;</span> <span class="dt">FreeT</span> (<span class="dt">Pair</span> a) m ()</span></code></pre></div>
+<p>さて、モナド<code>m</code>を固定したとき、<code>FreeT f m</code> は、適当な<code>Functor</code>である<code>f</code>から別の<code>Functor</code>である<code>FreeT f m</code>を構成していると見なすことができます。</p>
+<p>そのような性質の型コンストラクタ<code>mm</code>、すなわち<code>Functor f</code>に対して<code>mm f</code>も<code>Functor</code>であるような<code>mm</code>について、
+<code>mm (Pair a) ()</code>が<code>Monad</code>として振る舞うような一般化、つまり</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">GeneralizedListT</span> mm a <span class="op">&lt;-&gt;</span> mm (<span class="dt">Pair</span> a) ()</span></code></pre></div>
+<p>として、<code>GeneralizedListT mm</code>が<code>Monad</code>になるよう、<code>FreeT</code>を一般化できないか、と考えると、
+<code>FFunctor</code>と<code>FMonad</code>という抽象化にたどり着きます。</p>
+<h2 id="trailモナド-fmonadから作ったmonad">Trailモナド: FMonadから作ったMonad</h2>
+<p>以前、<code>Functor</code>上のモナド<code>FMonad</code>というものを紹介しました。</p>
+<ul>
+<li><p><a href="./2020-08-23-fmonad.html">過去記事</a></p></li>
+<li><p>上記記事の内容をHaskellのライブラリとして整理したものが<a href="https://github.com/viercc/functor-monad">GitHubにあります</a>。本記事ではしばしば
+このリポジトリ上のソースコードへのリンクを張ります。</p>
+<ul>
+<li>見ればわかるように未完成(<a href="https://github.com/viercc/functor-monad/tree/c63aff1f330009d88d10a49f651c8e95fd99a7ca">本記事投稿時点でのHEAD</a>)ですし、Hackageには出していません</li>
+</ul></li>
+</ul>
+<p><code>FFunctor</code>と<code>FMonad</code>についておさらいします。<a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/FFunctor.hs">FFunctor</a>は、
+<code>Functor</code>における関数の型 <code>a -&gt; b</code> を自然変換 <code>f ~&gt; g = (∀x. f x -&gt; g x)</code> に置き換えたようなクラスです。
+つまり、<code>Functor f</code> が <code>a -&gt; b</code> を <code>f a -&gt; f b</code> に写すように、 <code>FFunctor ff</code>は <code>g ~&gt; h</code> を <code>ff g ~&gt; ff h</code> に写します。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> f <span class="op">~&gt;</span> g <span class="ot">=</span> ∀x<span class="op">.</span> f x <span class="ot">-&gt;</span> g x</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="kw">forall</span> g<span class="op">.</span> <span class="dt">Functor</span> g <span class="ot">=&gt;</span> <span class="dt">Functor</span> (ff g)) <span class="ot">=&gt;</span> <span class="dt">FFunctor</span> ff <span class="kw">where</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    ffmap ::</span> (<span class="dt">Functor</span> g, <span class="dt">Functor</span> h) <span class="ot">=&gt;</span> (g <span class="op">~&gt;</span> h) <span class="ot">-&gt;</span> ff g x <span class="ot">-&gt;</span> ff h x</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">--    :: (Functor g, Functor h) =&gt; (g ~&gt; h) -&gt; (ff g ~&gt; ff h)</span></span></code></pre></div>
+<p><a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/FMonad.hs">FMonad</a>は、同様に、<code>Monad</code>に対して関数を自然変換に置き換えたクラスです。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">FFunctor</span> ff <span class="ot">=&gt;</span> <span class="dt">FMonad</span> ff <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    fpure ::</span> <span class="dt">Functor</span> g <span class="ot">=&gt;</span> g <span class="op">~&gt;</span> ff g</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    fjoin ::</span> <span class="dt">Functor</span> g <span class="ot">=&gt;</span> ff (ff g) <span class="op">~&gt;</span> ff g</span></code></pre></div>
+<p>ある<code>ff</code>が<code>FMonad</code>だからといって、<code>ff g</code>が<code>Monad</code>になったりは<em>しない</em>ことに注意してください。
+以下の2組の操作はまったく別のことを意味しています。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- FMonad ff のときできる操作</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">fpure ::</span> g a <span class="ot">-&gt;</span> ff g a</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ot">fjoin ::</span> ff (ff g) a <span class="ot">-&gt;</span> ff g a</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Monad (ff g) のときできる操作</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> ff g a</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ot">join ::</span> ff g (ff g a) <span class="ot">-&gt;</span> ff g a</span></code></pre></div>
+<p>しかし、<code>FMonad</code>から<code>Monad</code>を新たに作りだす方法があります。その方法の一つが<code>Trail</code>モナドです。
+（<a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/Control/Monad/Trail.hs">Control.Monad.Trail</a>参照）</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Trail は FMonad をとって Monad を作る</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Trail</span><span class="ot"> ::</span> ((<span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- --          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">--             FMonadのカインド                      |</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">--                                                Monadのカインド</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Trail</span> mm a <span class="ot">=</span> <span class="dt">Trail</span> {<span class="ot"> runTrail ::</span> mm (<span class="dt">Pair</span> a) () }</span></code></pre></div>
+<div class="sidenote">
+<p>これを行う既存の概念はなさそうなので、勝手に命名しちゃいました。“trail”というのは野山を通る小道のことで、
+舗装されていない踏み跡が道になったようなイメージです。けもの道が”animal trail”ですね。
+この<code>Monad</code>をtrailと名付けた理由は、<code>ListT</code>の一般化である、という所からです。<code>ListT m a</code>は、
+<code>m ()</code>の計算過程に<code>a</code>型のデータを足跡のようにつけて行ったものというイメージをしていたので、そこから取っています。</p>
+</div>
+<p>まず、<code>Trail mm</code>が<code>Functor</code>であることを見てみます。<code>Trail mm a</code>は <code>mm (Pair a) ()</code>をラップした型なので、
+関数<code>f :: a -&gt; b</code>に対して<code>mm (Pair a) () -&gt; mm (Pair b) ()</code>という関数を作れれば<code>fmap</code>になります。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">FFunctor</span> mm) <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Trail</span> mm) <span class="kw">where</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f <span class="ot">=</span> <span class="dt">Trail</span> <span class="op">.</span> ffmap (first f) <span class="op">.</span> runTrail</span></code></pre></div>
+<p><code>ffmap (first f)</code>は所望の型を持っていますね！ <code>first f</code>で、
+関数<code>f :: a -&gt; b</code>を自然変換<code>∀c. Pair a c -&gt; Pair b c</code>として表してくれたおかげで、
+自然変換をとる<code>ffmap</code>に渡せることがポイントです。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">f               ::</span>           a   <span class="ot">-&gt;</span>      b</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>first<span class="ot"> f         ::</span> ∀c<span class="op">.</span> <span class="dt">Pair</span> a c <span class="ot">-&gt;</span> <span class="dt">Pair</span> b c</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>first<span class="ot"> f         ::</span>      (<span class="dt">Pair</span> a) <span class="op">~&gt;</span> (<span class="dt">Pair</span> b)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>ffmap (first f)<span class="ot"> ::</span>   mm (<span class="dt">Pair</span> a) <span class="op">~&gt;</span> mm (<span class="dt">Pair</span> b)</span></code></pre></div>
+<p><code>FMonad mm</code>が与えられたとき、<code>Trail mm</code>が<code>Monad</code>になる理由も見てみましょう。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pureTrail ::</span> <span class="dt">FMonad</span> mm <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Trail</span> mm a</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>pureTrail a <span class="ot">=</span> <span class="dt">Trail</span> <span class="op">$</span> fpure (a,())</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ot">joinTrail ::</span> <span class="dt">FMonad</span> mm <span class="ot">=&gt;</span> <span class="dt">Trail</span> mm (<span class="dt">Trail</span> mm a) <span class="ot">-&gt;</span> <span class="dt">Trail</span> mm a</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>joinTrail <span class="ot">=</span> <span class="dt">Trail</span> <span class="op">.</span> fjoin <span class="op">.</span> ffmap (plug <span class="op">.</span> first runTrail) <span class="op">.</span> runTrail</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ot">plug ::</span> <span class="kw">forall</span> f x<span class="op">.</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Pair</span> (f ()) x <span class="ot">-&gt;</span> f x</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>plug (f_,a) <span class="ot">=</span> a <span class="op">&lt;$</span> f_</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">FMonad</span> mm <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Trail</span> mm) <span class="kw">where</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pure</span> <span class="ot">=</span> pureTrail</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">FMonad</span> mm <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Trail</span> mm) <span class="kw">where</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    ma <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> joinTrail (<span class="fu">fmap</span> k ma)</span></code></pre></div>
+<p><code>pureTrail</code>の「型が合っている」様子は次の通りです。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(a, ())<span class="ot">       ::</span>     <span class="dt">Pair</span> a  ()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>fpure (a, ())<span class="ot"> ::</span> mm (<span class="dt">Pair</span> a) ()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>pureTrail<span class="ot"> a   ::</span> <span class="dt">Trail</span> mm a</span></code></pre></div>
+<p><code>joinTrail</code>は結構複雑です。1ステップずつ追っていくと、次のようになっています。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">runTrail              ::</span> <span class="dt">Trail</span> mm a <span class="ot">-&gt;</span> mm (<span class="dt">Pair</span> a) ()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>first<span class="ot"> runTrail        ::</span> <span class="dt">Pair</span> (<span class="dt">Trail</span> mm a) <span class="op">~&gt;</span> <span class="dt">Pair</span> (mm (<span class="dt">Pair</span> a) ())</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ot">plug                  ::</span>                      <span class="dt">Pair</span> (f           ()) <span class="op">~&gt;</span> f</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>plug <span class="op">.</span> first<span class="ot"> runTrail ::</span> <span class="dt">Pair</span> (<span class="dt">Trail</span> mm a)         <span class="op">~&gt;</span>                  mm (<span class="dt">Pair</span> a)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pf <span class="ot">=</span> plug <span class="op">.</span> first runTrail <span class="co">-- 省略</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="ot">pf               ::</span>     <span class="dt">Pair</span> (<span class="dt">Trail</span> mm a)  <span class="op">~&gt;</span>     mm (<span class="dt">Pair</span> a)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ffmap<span class="ot"> pf         ::</span> mm (<span class="dt">Pair</span> (<span class="dt">Trail</span> mm a)) <span class="op">~&gt;</span> mm (mm (<span class="dt">Pair</span> a))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="ot">fjoin            ::</span>                           mm (mm f)        <span class="op">~&gt;</span> mm f</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>fjoin <span class="op">.</span> ffmap<span class="ot"> pf ::</span> mm (<span class="dt">Pair</span> (<span class="dt">Trail</span> mm a))           <span class="op">~&gt;</span>           mm (<span class="dt">Pair</span> a)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>fjoin <span class="op">.</span> ffmap<span class="ot"> pf ::</span> mm (<span class="dt">Pair</span> (<span class="dt">Trail</span> mm a)) ()        <span class="ot">-&gt;</span>           mm (<span class="dt">Pair</span> a) ()</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="ot">joinTrail        ::</span> <span class="dt">Trail</span> mm (<span class="dt">Trail</span> mm a)            <span class="ot">-&gt;</span>           <span class="dt">Trail</span> mm a</span></code></pre></div>
+<p>この定義が<code>Monad</code>則を満たしている証明はここでは省略します。
+等式を並べただけの荒いものですが、
+証明は<a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/Control/Monad/Trail.hs#L43">ソースコード中にコメントとして</a>残してあります。</p>
+<h2 id="listt-を-freet-から作れるか">ListT を FreeT から作れるか</h2>
+<p>さて、<code>FMonad</code>は<code>ListT</code>を<code>FreeT</code>として表すことの一般化を狙っていた、と言いました。
+実際にこれは達成できています。</p>
+<p><code>FreeT f m a</code>の引数<code>f</code>と<code>m</code>を入れ替えた型を<code>FreeT'</code>と定義します。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Control.Monad.Trans.Free</span> <span class="kw">as</span> <span class="dt">Original</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">FreeT'</span> m f b <span class="ot">=</span> <span class="dt">WrapFreeT'</span> {<span class="ot"> unwrapFreeT' ::</span> <span class="dt">Original.FreeT</span> f m b }</span></code></pre></div>
+<p><code>m</code>が<code>Monad</code>ならば<code>FreeT' m</code>は<code>FMonad</code>になります。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">FMonad</span> (<span class="dt">FreeT'</span> m)</span></code></pre></div>
+<p>したがって、<code>Trail (FreeT' m) a</code>も<code>Monad</code>になりますが、<code>newtype</code>による読み替えを外していけば</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Trail</span> (<span class="dt">FreeT'</span> m) a <span class="op">&lt;-&gt;</span> <span class="dt">FreeT'</span> m (<span class="dt">Pair</span> a) ()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                   <span class="op">&lt;-&gt;</span> <span class="dt">FreeT</span> (<span class="dt">Pair</span> a) m ()</span></code></pre></div>
+<p>となり、これは<code>ListT m a</code>と同型なのでした。そして期待通りに、<code>Monad</code>としても同じになるよう定義できています<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
+<h2 id="trail-は-listt-以外にどんな-monad-を作れるの">Trail は ListT 以外にどんな Monad を作れるの？</h2>
+<p><code>FreeT'</code> 以外の <code>FMonad mm</code> を入れてみて、 <code>Trail mm</code> がどのようなモナドになったか調べてみましょう。</p>
+<ul>
+<li><p><a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/FMonad.hs#L96">Free</a> (Freeモナド)</p>
+<p><code>Trail Free</code>はリストモナド<code>[]</code>になります。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Free</span> f x <span class="ot">=</span> <span class="dt">Pure</span> x <span class="op">|</span> <span class="dt">Free</span> (f (<span class="dt">Free</span> f x))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Trail</span> <span class="dt">Free</span> a <span class="op">&lt;-&gt;</span> <span class="dt">Free</span> (<span class="dt">Pair</span> a) ()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>             <span class="op">&lt;-&gt;</span> <span class="dt">Either</span> () (<span class="dt">Pair</span> a (<span class="dt">Free</span> (<span class="dt">Pair</span> a) ()))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>             <span class="op">&lt;-&gt;</span> <span class="dt">Maybe</span> (a, <span class="dt">Trail</span> <span class="dt">Free</span> a)</span></code></pre></div></li>
+<li><p><a href="https://hackage.haskell.org/package/free-5.1.8/docs/Control-Applicative-Free.html">Ap</a> (Free Applicative)</p>
+<p><code>Trail Ap</code> もリストモナド<code>[]</code>になります。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Ap</span> f a <span class="kw">where</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Pure</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">Ap</span> f a</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Ap</span><span class="ot">   ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Ap</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Ap</span> f b</span></code></pre></div>
+<p>疑似コードですが、上の定義で <code>Ap f ()</code> の場合を考えると、とても単純な形になることがわかります。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Ap</span> f () <span class="kw">where</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Pure</span><span class="ot"> ::</span> () <span class="ot">-&gt;</span> <span class="dt">Ap</span> f ()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Ap</span><span class="ot"> ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Ap</span> f (a <span class="ot">-&gt;</span> ()) <span class="ot">-&gt;</span> <span class="dt">Ap</span> f ()</span></code></pre></div>
+<p>ここで <code>a -&gt; ()</code> は <code>()</code> と同型、存在量化された型変数 <code>a</code> は何も使いみちがないため任意の型を入れてよく、
+<code>a = ()</code>を代入できます。すると</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Ap</span> f () <span class="kw">where</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Pure</span><span class="ot"> ::</span> <span class="dt">Ap</span> f ()</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Ap</span><span class="ot"> ::</span> f () <span class="ot">-&gt;</span> <span class="dt">Ap</span> f () <span class="ot">-&gt;</span> <span class="dt">Ap</span> f ()</span></code></pre></div>
+<p>これは<code>[f ()]</code>と完全に同じです。したがって、</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Trail</span> <span class="dt">Ap</span> a <span class="op">&lt;-&gt;</span> <span class="dt">Ap</span> (<span class="dt">Pair</span> a) () <span class="op">&lt;-&gt;</span> [<span class="dt">Pair</span> a ()] <span class="op">&lt;-&gt;</span> [a]</span></code></pre></div>
+<p>となります。</p></li>
+<li><p><a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/FMonad.hs#L86">Compose</a></p>
+<p><code>Trail (Compose m)</code> はモナドとしてはただの <code>m</code> になります。</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Compose</span> f g x <span class="ot">=</span> <span class="dt">Compose</span> {<span class="ot"> getCompose ::</span> f (g x) }</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Trail</span> (<span class="dt">Compose</span> m) a</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;-&gt;</span> <span class="dt">Compose</span> m (<span class="dt">Pair</span> a) ()</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;-&gt;</span> m (<span class="dt">Pair</span> a ())</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> m (a, ())</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;-&gt;</span> m a</span></code></pre></div></li>
+<li><p><a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/FMonad/Compose.hs#L48">ComposePre</a></p>
+<p><code>Trail (ComposePre m) a</code> はモナドとしては <code>Writer (m ())</code> になります。
+ここで <code>m ()</code> は<code>(&gt;&gt;) :: m () -&gt; m () -&gt; m ()</code> によって<code>Monoid</code>になっています。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ComposePre</span> g f x <span class="ot">=</span> <span class="dt">ComposePre</span> {<span class="ot"> getComposePre ::</span> f (g x) }</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Trail</span> (<span class="dt">ComposePre</span> m) a</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;-&gt;</span> <span class="dt">ComposePre</span> m (<span class="dt">Pair</span> a) ()</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;-&gt;</span> <span class="dt">Pair</span> a (m ())</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> (a, m ())</span></code></pre></div></li>
+</ul>
+<p>この辺りはよく見知った<code>Monad</code>しか出てきませんね。ですが複雑であまり見たことがないものも現れます。</p>
+<ul>
+<li><p><a href="https://github.com/viercc/functor-monad/blob/c63aff1f330009d88d10a49f651c8e95fd99a7ca/src/Control/Applicative/Trans/FreeAp.hs">ApT</a> (Free Applicative Transformer<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>)</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">ApT</span> f g x <span class="ot">=</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">PureT</span> (g x)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="kw">forall</span> a b c<span class="op">.</span> <span class="dt">ApT</span> (g a) (f b) (<span class="dt">ApT</span> f g c) (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> x)</span></code></pre></div>
+<p><code>ApT</code> は２通りの方法で<code>FMonad</code>になります。
+1つ目は<code>ApT f g</code>で<code>f</code>を固定して<code>g</code>を引数と見たとき、もう一つは<code>g</code>を固定して<code>f</code>を引数と見たときです。</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">FMonad</span> (<span class="dt">ApT</span> f)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> g <span class="ot">=&gt;</span> <span class="dt">FMonad</span> (<span class="dt">Flip1</span> <span class="dt">ApT</span> g)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Flip1</span> t g f x <span class="ot">=</span> <span class="dt">Flip1</span> {<span class="ot"> unFlip1 ::</span> t g f x }</span></code></pre></div>
+<p><code>ApT</code> の定義はやや複雑ですが、<code>Ap</code>のときと同様、<code>x = ()</code>に限って考えると単純化できます。</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">ApT</span> f g () <span class="ot">=</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">PureT</span> (g ())</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">ApT</span> (g ()) (f ()) (<span class="dt">ApT</span> f g ())</span></code></pre></div>
+<p>これは<code>g ()</code>と<code>f ()</code>が交互に並んだリストになっています。つまり、以下のように定義される<code>AltList</code>型を使って、
+<code>ApT f g ()</code> は <code>AltList (f ()) (g ())</code> と同型になっています。</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- [b,a,b,a,...,b] と交互に並んだリスト</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">AltList</span> a b <span class="ot">=</span> <span class="dt">Last</span> b <span class="op">|</span> <span class="dt">Next</span> b a (<span class="dt">AltList</span> a b)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- 実際のHaskellではできませんが、ここでは、`AltList a b`をリストの記法で以下のように</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- 書いてよいことにします。</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>[b]<span class="ot">             ::</span> <span class="dt">AltList</span> a b</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>[b, a, b]<span class="ot">       ::</span> <span class="dt">AltList</span> a b</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>[b, a, b, a, b]<span class="ot"> ::</span> <span class="dt">AltList</span> a b</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- ...</span></span></code></pre></div>
+<ul>
+<li><p><code>Trail (ApT f) b</code>は次のように「<code>b</code>と<code>f ()</code>とが交互に並んだリスト」と同型です。</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>[b, f (), b, f (), b, f (), <span class="op">...</span>, b] </span></code></pre></div>
+<p><code>Monad</code>としては、<code>Monad (AltList a)</code>というインスタンスに<code>a = f ()</code>とした場合になっています。
+この<code>Monad</code>がどのようなものか例を挙げると、</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> b <span class="ot">=</span> [b]</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>join [[b], a, [b,a,b,a,b], a, [b,a,b]]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span>  [ b,  a,  b,a,b,a,b,  a,  b,a,b ]</span></code></pre></div>
+<p>のように、ネストした<code>AltList a (AltList a b)</code>を平坦にする操作を<code>join</code>とする<code>Monad</code>です。</p></li>
+<li><p>もう一方の<code>Trail (Flip1 ApT g) a</code> は、 <code>g ()</code>と<code>a</code>が交互に並んだリストです。</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>[g (), a, g (), a, <span class="op">...</span>, g ()]</span></code></pre></div>
+<p><code>Monad</code>としては、<code>AltList</code>の引数を入れ替えた</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">AltList'</span> b a <span class="ot">=</span> <span class="dt">AltList'</span> (<span class="dt">AltList</span> a b)</span></code></pre></div>
+<p>が持つ、<code>Monoid b =&gt; Monad (AltList' b)</code>というインスタンスがベースになります。
+このモナドは次のような演算を持ちます。</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> a <span class="ot">=</span> [<span class="fu">mempty</span>, a, <span class="fu">mempty</span>]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>join [b,  [b],  b,  [b, a, b, a, b],  b]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span>  [b <span class="op">&lt;&gt;</span> b <span class="op">&lt;&gt;</span> b <span class="op">&lt;&gt;</span> b, a, b, a, b <span class="op">&lt;&gt;</span> b]</span></code></pre></div>
+<p><code>Trail (Filp1 ApT g)</code>は、<code>g ()</code>を<code>Applicative</code>を使って<code>Monoid</code>とみなし、<code>AltList' (g ())</code>と同型になります。</p></li>
+</ul></li>
+</ul>
+<p>さて、<code>FreeT</code>を使って<code>ListT</code>を作り出したとき、<code>FreeT f m</code>の<code>m</code>を固定して<code>f</code>を引数とみなしました。
+実は、<code>f</code>を固定して<code>m</code>を引数とみなしても、<code>FreeT</code>は<code>FMonad</code>になります。</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">FMonad</span> (<span class="dt">FreeT</span> f)</span></code></pre></div>
+<p><code>Trail (FreeT f) a</code>はどのような<code>Monad</code>でしょうか？<code>t a = Trail (TreeT f) a</code>と置いて定義を展開していくと次のようになります。</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>t a <span class="ot">=</span> <span class="dt">Trail</span> (<span class="dt">FreeT</span> f) a</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;-&gt;</span> <span class="dt">FreeT</span> f (<span class="dt">Pair</span> a) ()</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;-&gt;</span> <span class="dt">Pair</span> a (<span class="dt">FreeF</span> f () (<span class="dt">FreeT</span> f (<span class="dt">Pair</span> a) ()))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;-&gt;</span> <span class="dt">Pair</span> a (<span class="dt">FreeF</span> f () (t a))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;-&gt;</span> <span class="dt">Pair</span> a (<span class="dt">Either</span> () (f (t a)))</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;-&gt;</span> <span class="dt">Pair</span> a (<span class="dt">Maybe</span> (f (t a)))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>   <span class="ot">=</span> (a, <span class="dt">Maybe</span> (f (t a)))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>t a <span class="op">&lt;-&gt;</span> (a, <span class="dt">Maybe</span> (f (t a)))</span></code></pre></div>
+<p>すなわち、以下のように定義された型が<code>Monad</code>になって、それが<code>Trail (FreeT f)</code>と同型になります。</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">T</span> f a <span class="ot">=</span> a <span class="op">:&lt;</span> <span class="dt">Maybe</span> (f (<span class="dt">T</span> f a))</span></code></pre></div>
+<p>この<code>Monad</code>、私は全く見たことがなかったので<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>、<code>T</code>という味気ない一文字の代わりに<code>Efreet</code>という名前を勝手に付けて<a href="https://twitter.com/viercc/status/1578363588754165760">twitterでやいのやいのしていました</a>。
+この型は<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#t:Comonad">Comonad</a>にもなっているので、ちょっと面白かったんですよね。</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>理論的には面白いモナドなんですが、実用する機会は無いと言っていいと思います。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>どれも事実上同じモナドを実装しています。実装方法の違いによる性能差はあるかもしれませんが私は検証していません。パッケージ間の主な違いはモナドを使いやすくするAPIです。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>Monadとしての同型ではなく、<code>ListT m</code>のモナド演算と<code>FreeT f m</code>のモナド演算に直接の関係はありません。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>同じになっていることの証明はhandwaveさせて下さい。ごめんなさい・・・<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p>freeパッケージにも”Free Applicative Transformer”と呼ばれているもの（<a href="https://hackage.haskell.org/package/free-5.1.9/docs/Control-Applicative-Trans-Free.html">Control.Applicative.Trans.Free</a>）
+が含まれますが、それとは異なります。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6" role="doc-endnote"><p>Twitterで”ちょっと違うけど似ているMonadを使ったことがあるよ”と教えていただきました(<a href="https://twitter.com/KyleDavidE/status/1578414051537088512">twitter</a>)。この違いがどの程度影響しているのか等、自分はまだよく解っていませんので、理解が進んだらまた紹介するかもしれません。<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
