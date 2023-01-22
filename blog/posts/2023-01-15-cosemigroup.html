@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Cosemigroupについて</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Cosemigroupについて</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2023-01-22</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <!-- tex macros -->
+<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\id{\mathrm{id}}  \gdef\assoc{\mathrm{assoc}}  \gdef\comult{\mathrm{comult}}  \gdef\comp{\circ}  \gdef\setbraces#1{\left\{{#1}\right\}}  \gdef\blank{-}</span></p>
+<h2 id="cosemigroup-semigroupの双対"><code>Cosemigroup</code>: <code>Semigroup</code>の双対</h2>
+<h3 id="cosemigroupのアイデアと定義"><code>Cosemigroup</code>のアイデアと定義</h3>
+<p>Haskellでの半群(<code>Semigroup</code>)の定義は以下のようになっていました。
+（半群およびモノイドについては既知とします。）</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Semigroup</span> a <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- | Semigroup則: @(&lt;&gt;)@ は以下の結合法則を満たす</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">--</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- x &lt;&gt; (y &lt;&gt; z) == (x &lt;&gt; y) &lt;&gt; z</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;&gt;) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p><code>Semigroup</code>の「双対をとったもの」は、2個の<code>a</code>型の値から1個の<code>a</code>型の値を作る<code>&lt;&gt;</code>という演算に対して、
+<strong>1個の</strong>値から<strong>2個の</strong>値を取り出す<code>comult</code>という演算を持ち、「結合法則」も流れを逆にした条件（<strong>余</strong>結合法則と呼ぶ）を持ちます。</p>
+<p>つまり、次のようなクラスです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Cosemigroup則: @comult@は以下の余結合法則を満たす</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- first comult . comult = assoc . second comult . comult</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Cosemigroup</span> a <span class="kw">where</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    comult ::</span> a <span class="ot">-&gt;</span> (a,a)</span></code></pre></div>
+<p>ここで、<code>first, second, assoc</code>は次のように定義されているものとします。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>first  f (a,b) <span class="ot">=</span> (f a, b)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>second f (a,b) <span class="ot">=</span> (a, f b)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>assoc (a,(b,c)) <span class="ot">=</span> ((a,b),c)</span></code></pre></div>
+<p>これがなぜ「結合法則」の逆であるのかは、データの流れを図にしてみると一目瞭然です。</p>
+<figure>
+<img src="../images/cosemigroup/semigroup-and-cosemigroup.png" alt="Semigroup・Cosemigroupとそれらの法則" /><figcaption aria-hidden="true">Semigroup・Cosemigroupとそれらの法則</figcaption>
+</figure>
+<p>以降はHaskellでの表現を離れて、単に数学的なものとしてのCosemigroupを考えます。
+更に言えば、
+「集合と、その集合の上の演算と、演算の満たす公理」という形でCosemigroupを考えます<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<p>次のように集合<span class="math inline">C</span>上のCosemigroupを定義します。</p>
+<dl>
+<dt>Cosemigroupの定義（やや煩雑）</dt>
+<dd>集合<span class="math inline">C</span>がCosemigroupであるとは、<span class="math inline">C</span>について関数<span class="math inline">\comult\colon C \to C \times C</span>が定義されていて、
+<span class="math display">
+\begin{equation}
+\left( \comult \times \id \right) \comp \comult = \assoc \comp \left( \id \times \comult \right) \comp \comult
+\end{equation}
+  </span>
+が成り立つことであると定義する。
+</dd>
+</dl>
+<p>ですが、この定義では直積集合を操作するためだけに<span class="math inline">\assoc</span>などの関数が出てきて、煩雑になってしまいます。
+そこで、
+<span class="math inline">\comult(x) = \left(x\cdot l, x\cdot r \right)</span>となるような2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times \setbraces{l,r} \to C</span>を代わりに用いることにします。</p>
+<dl>
+<dt>Cosemigroupの定義</dt>
+<dd>2つの異なる元からなる集合<span class="math inline">\setbraces{l,r}</span>をとって固定する。集合<span class="math inline">C</span>がCosemigroupであることを、2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times \setbraces{l,r} \to C</span>があり、3つの等式
+<span class="math display">
+\begin{align}
+  (x \cdot l) \cdot l = x \cdot l \\
+  (x \cdot r) \cdot r = x \cdot r \\
+  (x \cdot l) \cdot r = (x \cdot r) \cdot l
+\end{align}
+  </span>
+が任意の<span class="math inline">x\in C</span>について成り立つことであると定義する。
+</dd>
+</dl>
+<p>これは、<span class="math inline">\comult</span>の余結合法則を<span class="math inline">(\blank \cdot l), (\blank \cdot r)</span>を使って言い換えたものになっています。</p>
+<ul>
+<li><span class="math inline">(\blank \cdot l)</span>と<span class="math inline">(\blank \cdot r)</span>は両方とも<span class="math inline">C</span>上のべき等関数です。</li>
+<li><span class="math inline">(\blank \cdot l)</span>と<span class="math inline">(\blank \cdot r)</span>は<span class="math inline">C</span>上の関数として可換です。つまり、どの順で適用しても同じ結果になります。</li>
+</ul>
+<p>これは更に、次のように言い換えられます。生成元<span class="math inline">\setbraces{l,r}</span>と関係式<span class="math inline">\{l \cdot l = l, r \cdot r = r, l \cdot r = r \cdot l\}</span>によって表示されるモノイド<span class="math inline">M</span>を考えます。
+このモノイドの元は<span class="math inline">l,r</span>に単位元の<span class="math inline">1</span>と<span class="math inline">l \cdot r</span>を加えた<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>4つのみになります。以降、<span class="math inline">M</span>の元は<span class="math inline">M = \setbraces{1, l, r, l\cdot r}</span>と書くことにします。</p>
+<p><span class="math inline">C</span>がCosemigroupであることは、<span class="math inline">C</span>が<span class="math inline">M</span>による作用<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>をもつことと同値になります。</p>
+<dl>
+<dt>Cosemigroupの定義（<span class="math inline">M</span>-作用版）</dt>
+<dd><span class="math inline">M</span>を上記のモノイドとする。集合<span class="math inline">C</span>がCosemigroupであることを、<span class="math inline">C</span>が<span class="math inline">M</span>-集合であること、
+すなわち<span class="math inline">M</span>の作用をもつことと定義する。
+</dd>
+</dl>
+<p>更に具体的に言えば、<span class="math inline">C</span>がCosemigroupであれば、2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times M \to C</span>があり、
+<span class="math inline">C</span>の元<span class="math inline">x</span>と<span class="math inline">M</span>の元<span class="math inline">a,b</span>に対して、以下が成り立ちます。
+<span class="math display">
+  \begin{align*}
+    (x \cdot 1) &amp;= 1\\
+    (x \cdot a) \cdot b &amp;= x \cdot (a \cdot b)
+  \end{align*}
+</span></p>
+<p>ただし、記号<span class="math inline">(\blank \cdot \blank)</span>を、モノイド<span class="math inline">M</span>の間の積と<span class="math inline">C</span>への作用の両方に使いました。
+また、以降は<span class="math inline">C</span>の元<span class="math inline">x</span>と<span class="math inline">M</span>の元<span class="math inline">a,b</span>について、括弧を省略して<span class="math inline">x \cdot a \cdot b</span>のように書くことにします。</p>
+<h3 id="cosemigroupの例">Cosemigroupの例</h3>
+<p>Haskellでいう<code>Maybe A</code>のように、集合<span class="math inline">A</span>に対して<span class="math inline">A</span>に含まれない一点<span class="math inline">\star</span>を付け加えた集合<span class="math inline">A + \setbraces{\star}</span>は、
+以下の3つの方法でCosemigroupにすることができます。</p>
+<ol type="1">
+<li>任意の<span class="math inline">x</span>に対して、<span class="math inline">x \cdot l = x \cdot r = \star</span></li>
+<li>任意の<span class="math inline">x</span>に対して、<span class="math inline">x \cdot l = \star, x \cdot r = x</span></li>
+<li>任意の<span class="math inline">x</span>に対して、<span class="math inline">x \cdot l = x, x \cdot r = \star</span></li>
+</ol>
+<p>Cosemigroupは<span class="math inline">M</span>-集合のことであるため、モノイド作用を持つ集合の一般論から、
+以下のような例が考えられます。</p>
+<ul>
+<li><p>自明なCosemigroup</p>
+<p>任意の集合<span class="math inline">X</span>は、自明な作用によって<span class="math inline">M</span>-集合になります。つまり、任意の<span class="math inline">a\in M</span>に対して<span class="math inline">x \cdot a = x</span>と定義してCosemigroupにすることができます。</p></li>
+<li><p>Cosemigroupの直和</p>
+<p>2つの集合<span class="math inline">X, Y</span>がそれぞれCosemigroupになっているとします。</p>
+<p><span class="math inline">X</span>と<span class="math inline">X</span>の集合としての直和<span class="math inline">X + Y</span>上、もとの集合に対する<span class="math inline">M</span>の作用をそのまま適用するように定義して、
+<span class="math inline">X+Y</span>をCosemigroupにできます。特に断らなければ、単に<span class="math inline">X+Y</span>と書いたとき、このCosemigroupを意味することにします。</p>
+<p>任意の集合<span class="math inline">I</span>で添字付けられたCosemigroupの族<span class="math inline">(X_i)_{i \in I}</span>に対して、
+<span class="math inline">I</span>にわたる<span class="math inline">X_i</span>の直和をとった集合<span class="math inline">(\sum_{i\in I} X_i)</span>も、同様にしてCosemigroupになります。</p></li>
+<li><p>空Cosemigroup</p>
+<p><span class="math inline">\emptyset \times M</span>は空集合なので、
+空関数<span class="math inline">\emptyset \times M \to \emptyset</span>も<span class="math inline">\emptyset</span>に対する<span class="math inline">M</span>-作用と考えることができます。</p></li>
+<li><p>Cosemigroupの直積</p>
+<p>2つのCosemigroup <span class="math inline">X,Y</span>に対して、直積集合<span class="math inline">X\times Y</span>も以下のようにCosemigroupにすることができます。</p>
+<p><span class="math display">
+  \begin{align*}
+    (x,y) \cdot a &amp;= (x \cdot a, y \cdot a)
+  \end{align*}
+</span></p></li>
+</ul>
+<h3 id="弱推移的なcosemigroup">弱推移的なCosemigroup</h3>
+<p>前節で見たCosemigroupの例にもあったように、Cosemigroupの中には「2つのCosemigroupの直和」
+として表すことができるものもあります。
+空でないCosemigroup<span class="math inline">C</span>のうち、「2つの空でないCosemigroupの直和」
+として表すことができないようなものは、<span class="math inline">l\cdot r</span>を作用させることで1点に潰れてしまうようなCosemigroupです。
+そのようなものを「弱推移的なCosemigroup」と呼ぶことにします<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
+<dl>
+<dt>定義</dt>
+<dd>Cosemigroup <span class="math inline">C</span>が弱推移的なCosemigroupである ⇔ <span class="math inline">C \cdot l\cdot r = \setbraces{c \cdot l\cdot r \mid c \in C}</span>が1元集合
+</dd>
+</dl>
+<p>ただし、記法の簡便のために、Cosemigroup <span class="math inline">C</span>の部分集合<span class="math inline">X \subseteq C</span>に対して<span class="math inline">X \cdot a</span>と書くと、
+それぞれ集合の各要素に<span class="math inline">a</span>作用させた集合を意味することにしました。</p>
+<dl>
+<dt>（弱推移的ならば直和ではない）</dt>
+<dd>弱推移的なCosemigroupは2つの空でないCosemigroupの直和ではない。
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+対偶を考える。Cosemigroup <span class="math inline">C</span>が2つの空でないCosemigroup<span class="math inline">X, Y</span>の直和<span class="math inline">X + Y</span>であれば、
+<span class="math inline">C \cdot l\cdot r</span>は<span class="math inline">X \cdot l\cdot r</span>と<span class="math inline">Y \cdot l\cdot r</span>の集合としての直和である。
+それらはどちらも空でないので、<span class="math inline">C \cdot l\cdot r</span>は1元集合ではありえず、<span class="math inline">C</span>は弱推移的ではない。
+</details>
+<p>どのCosemigroupも、弱推移的なCosemigroupの和として表されます。</p>
+<dl>
+<dt>（弱推移的成分への分解）</dt>
+<dd>どんなCosemigroup<span class="math inline">C</span>も、0個以上の弱推移的なCosemigroupの直和として表すことができる。
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<p><span class="math inline">I = C \cdot l\cdot r</span>とおく。<span class="math inline">C</span>の元それぞれを、<span class="math inline">l\cdot r</span>の作用によって<span class="math inline">I</span>のどの元に写るかによって分割する。</p>
+<p><span class="math display">
+  \begin{align*}
+    C &amp;= \sum_{i \in I} C_i \\
+    C_i &amp;= \setbraces{ x \in C \mid x \cdot l\cdot r = i }
+  \end{align*}
+</span></p>
+任意の<span class="math inline">x_i \in C_i</span>および<span class="math inline">a \in M)に対して、\\(x_i \cdot a \cdot l\cdot r = x_i \cdot l\cdot r = i</span>であるため、<span class="math inline">x_i \cdot a \in C_i</span>である。
+したがって、<span class="math inline">C_i</span>は<span class="math inline">M</span>の作用に関して閉じており、すなわちCosemigroupになっている。これによって、<span class="math inline">C</span>はすべての<span class="math inline">C_i</span>のCosemigroupのとしての直和になっている。
+更に、<span class="math inline">C_i</span>は定義から<span class="math inline">C_i \cdot l\cdot r = \setbraces{i}</span>なので、弱推移的なCosemigroupである。
+</details>
+<h3 id="弱推移的なcosemigroupの表示">弱推移的なCosemigroupの表示</h3>
+<p><span class="math inline">C</span>を任意のCosemigroupとします。このとき、<span class="math inline">C</span>を「<span class="math inline">C \cdot l</span>に含まれるかどうか」および「<span class="math inline">C \cdot r</span>に含まれるかどうか」という2つの基準で、
+交わらない4つの集合<span class="math inline">I, L, R, S</span>に分割することを考えます。</p>
+<p><span class="math display">
+  \begin{align*}
+    &amp; I = C\cdot l \cap C\cdot r\\
+    &amp; L = C\cdot l \setminus C\cdot r = C\cdot l \setminus I\\
+    &amp; R = C\cdot r \setminus C\cdot l = C\cdot r \setminus I\\
+    &amp; S = C \setminus (C\cdot l \cup C\cdot r) = C \setminus (L + R + I)
+  \end{align*}
+</span></p>
+<p>ここで、<span class="math inline">C\cdot l \cap C\cdot r = C\cdot l\cdot r</span>なので<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>、弱推移的なCosemigroupにおいて<span class="math inline">I</span>は1元集合になります。</p>
+<p><span class="math inline">C</span>が弱推移的なCosemigroupである場合に、上記の分割を考えます。<span class="math inline">C</span>が弱推移的であるため、<span class="math inline">I</span>は1元集合になりますが、その元を<span class="math inline">i</span>と書くことにします。
+すなわち、<span class="math inline">I=\setbraces{i}</span>です。</p>
+<p>この分割<span class="math inline">C = \setbraces{i} + L + R + S</span>に対して、<span class="math inline">l, r</span>は次のように作用します。</p>
+<p><span class="math display">
+  \begin{align*}
+    x \cdot l &amp;= \begin{cases}
+      i &amp; \text{if} &amp; x \in \setbraces{i} \\
+      x &amp; \text{if} &amp; x \in L \\
+      i &amp; \text{if} &amp; x \in R \\
+      f_L(x) &amp; \text{if} &amp; x \in S
+      \end{cases}\\
+    x \cdot r &amp;= \begin{cases}
+      i &amp; \text{if} &amp; x \in \setbraces{i} \\
+      i &amp; \text{if} &amp; x \in L \\
+      x &amp; \text{if} &amp; x \in R \\
+      f_R(x) &amp; \text{if} &amp; x \in S
+      \end{cases}\\
+  \end{align*}
+</span></p>
+<p>ここで、<span class="math inline">f_L</span>は<span class="math inline">(\blank \cdot l)</span>の定義域を<span class="math inline">S</span>に、値域を<span class="math inline">C \cdot l = L+\setbraces{i}</span>に制限した関数<span class="math inline">S \to L + \setbraces{i}</span>であり、
+<span class="math inline">f_R</span>も同様に<span class="math inline">(\blank \cdot r)</span>の定義域を<span class="math inline">S</span>に、値域を<span class="math inline">C \cdot r = R+\setbraces{i}</span>に制限した関数<span class="math inline">S \to R + \setbraces{i}</span>です。</p>
+<p>逆に、任意の非空集合<span class="math inline">C</span>が<span class="math inline">C = \setbraces{i} + L + R + S</span>と分割されていて、
+関数<span class="math inline">f_L \colon S \to L + \setbraces{i}</span>と<span class="math inline">f_R \colon S \to R + \setbraces{i}</span>が与えられていれば、
+上記のように<span class="math inline">(\blank \cdot l)</span>と<span class="math inline">(\blank \cdot r)</span>を定義して、<span class="math inline">C</span>は弱推移的なCosemigroupになります。</p>
+<h3 id="有限なcosemigroupの数え上げ">有限な<code>Cosemigroup</code>の数え上げ</h3>
+<p>ここまででわかったこと、つまり</p>
+<ul>
+<li>Cosemigroupは、連結なCosemigroupの直和である</li>
+<li>連結なCosemigroup <span class="math inline">C</span>は、<span class="math inline">C = \setbraces{i} + L + R + S</span>という分割と、2つの関数
+<span class="math inline">f_L \colon S \to L + \setbraces{i}</span>と<span class="math inline">f_R \colon S \to R + \setbraces{i}</span>によって表される</li>
+</ul>
+<p>ことを用いて、有限集合上の Cosemigroup の同型類を数えることに挑戦しました。</p>
+<p>まず、連結なCosemigroupを考えてみます。<span class="math inline">|C| \le 3</span>までの連結なCosemigroupは、以下のようにリスト化できます。</p>
+<ul>
+<li><p><span class="math inline">|C| = 1</span>のとき、あり得る連結なCosemigroupの数は1つ</p></li>
+<li><p><span class="math inline">|C| = 2</span>のとき、あり得る連結なCosemigroupの数は3つ</p>
+<p>分割された各集合の大きさを<span class="math inline">|S| = N, |L| = A, |R| = B</span>とおく。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">|C|</span></th>
+<th style="text-align: center;"><span class="math inline">N</span></th>
+<th style="text-align: center;"><span class="math inline">A</span></th>
+<th style="text-align: center;"><span class="math inline">B</span></th>
+<th style="text-align: center;">同型類の数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><span class="math inline">|C| = 3</span>のとき、あり得る連結なCosemigroupの数は8つ</p>
+<p>分割された各集合の大きさを<span class="math inline">|S| = N, |L| = A, |R| = B</span>とおく。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">|C|</span></th>
+<th style="text-align: center;"><span class="math inline">N</span></th>
+<th style="text-align: center;"><span class="math inline">A</span></th>
+<th style="text-align: center;"><span class="math inline">B</span></th>
+<th style="text-align: center;">同型類の数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<p>したがって、要素数3の集合上にあり得るCosemigroupは</p>
+<ul>
+<li>直和<span class="math inline">1 + 1 + 1</span>に分解されるケース： <span class="math inline">1 \times 1 \times 1 = 1</span>通り</li>
+<li>直和<span class="math inline">2 + 1</span>に分解されるケース: <span class="math inline">3 \times 1 = 3</span>通り</li>
+<li>分解されないケース: 8通り</li>
+</ul>
+<p>の合計12通りだとわかります。</p>
+<p>ですが、集合のサイズが大きい場合、上記の表を作るために必要な「与えられた大きさの<span class="math inline">N,A,B</span>を持つ同型類の数」を求めることは難しそうでした。
+<span class="math inline">f_L \colon S \to L + \setbraces{i}</span>と<span class="math inline">f_R \colon S \to R + \setbraces{i}</span>の組をすべて列挙すると<span class="math inline">(A+1)^N \times (B+1)^N</span>個の関数の組が得られますが、
+それらの中には同型なCosemigroupを定めるものもあります。</p>
+<p>この数え上げは、次の問題と同等になります。</p>
+<blockquote>
+<p>非負整数<span class="math inline">A,B,N</span>が与えられる。非負整数からなる<span class="math inline">(A+1) \times (B+1)</span>行列で、全要素の合計が<span class="math inline">N</span>になるもののうち、
+「 <em>1行目と1列目を動かさないような</em> 行と列の並び替えで移り合う行列は等しい」という同一視の下で異なるものの数はいくつか？</p>
+<p>例:</p>
+<p><span class="math inline">(A,B,N)=(1,0,2)</span>のとき、非自明な行と列の並び替えはなく、要素の合計が<span class="math inline">2</span>である<span class="math inline">2\times 1</span>行列、すなわち</p>
+<p><span class="math display">
+  \begin{pmatrix} 2 \\ 0 \end{pmatrix}, \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \begin{pmatrix} 0 \\ 2 \end{pmatrix}
+</span></p>
+<p>の3個になる。</p>
+<p><span class="math inline">(A,B,N)=(2,2,1)</span>のとき、つぎの4パターンになる。（3行目あるいは3列目に唯一の1がくるケースは、行と列の入れ替えで2行目または2列目になる）</p>
+<p><span class="math display">
+  \begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix}
+</span></p>
+<p><span class="math inline">(A,B,N)=(2,2,2)</span>のとき、17パターンになる。</p>
+<p><span class="math display">
+  \begin{align*}
+  &amp;
+  \begin{pmatrix} 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 2 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 2 &amp; 0 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 1 &amp; 1 \\ 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix}, \\
+  &amp;
+  \begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 1 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 2 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 2 &amp; 0 \\ 0 &amp; 0 &amp; 0 \end{pmatrix}, \\
+  &amp;
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 1 \\ 0 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{pmatrix},
+  \begin{pmatrix} 0 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 0 &amp; 1 &amp; 0 \end{pmatrix}
+  \end{align*}
+</span></p>
+</blockquote>
+<p>この問題は、私の知識では<del>お手上げでした。</del></p>
+<p>（この記事をアップロードする直前になってから解決の糸口は見つかったのですが、
+まだ明確に理解しきれていないので本記事では「難しそう」としておきます！）</p>
+<h2 id="cosemigroupがhaskellにおいてどう重要なのか">CosemigroupがHaskellにおいてどう重要なのか？</h2>
+<p>この<code>Cosemigroup</code>というもの、Haskellにおいてなんの役に立つのでしょうか？
+正直なことを言うと私には思いつかないのですが、<code>Cosemigroup</code>を考えると<code>Applicative</code>についての知識が深まります。</p>
+<p>「<code>pure</code>の無い<code>Applicative</code>」である、<a href="https://hackage.haskell.org/package/semigroupoids-5.3.7/docs/Data-Functor-Apply.html#g:2">Apply</a>という型クラスがあります。
+以下に<code>Apply</code>の定義を引用します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Apply</span> f <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;!&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
+<p>いま、「ある型<code>C</code>からの関数<code>(-&gt;) C</code>」と同型な関手<code>F</code>を考えます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">C</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (f <span class="op">.</span> ca)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Apply</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">F</span> cab <span class="op">&lt;!&gt;</span> <span class="dt">F</span> ca <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<p><code>F</code>に対して可能なあらゆる<code>(&lt;!&gt;)</code>の実装は、どれも<code>C -&gt; (C,C)</code>という型の関数と一対一に対応します。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">comultToApply ::</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)) <span class="ot">-&gt;</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>comultToApply comult' (<span class="dt">F</span> cab) (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (\c <span class="ot">-&gt;</span> <span class="kw">case</span> comult c <span class="kw">of</span> (cl, cr) <span class="ot">-&gt;</span> (cab cl) (ca cr))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ot">applyToComult ::</span> (<span class="kw">forall</span> a b<span class="op">.</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b) <span class="ot">-&gt;</span> <span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>applyToComult apply <span class="ot">=</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> pass <span class="ot">=</span> <span class="dt">F</span> (<span class="fu">id</span><span class="ot"> ::</span> <span class="dt">C</span> <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">F</span> comult' <span class="ot">=</span> <span class="fu">fmap</span> (,) pass <span class="ot">`apply`</span> pass</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>     <span class="kw">in</span> comult'</span></code></pre></div>
+<p>更に、<code>F</code>が<code>Apply</code>則を満たすことと、<code>C</code>が<code>Cosemigroup</code>則を満たすことは、
+上記の対応のもとで同値になります。</p>
+<p>すなわち、<code>Cosemigroup</code>は、<code>F a = C -&gt; a</code>という形をした関手の、あらゆる<code>Apply</code>のインスタンスを説明しているのです！</p>
+<p>更に、より馴染み深い<code>Applicative</code>に対しても、近いことが言えます。
+以下の形をした関手<code>G</code>を考えます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">G</span> a <span class="ot">=</span> <span class="dt">One</span> a <span class="op">|</span> <span class="dt">Fn</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">G</span> <span class="kw">where</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">One</span> a) <span class="ot">=</span> <span class="dt">One</span> (f a)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">Fn</span> ca) <span class="ot">=</span> <span class="dt">Fn</span> (f <span class="op">.</span> ca)</span></code></pre></div>
+<p>ここで更に、<code>G</code>が<code>Applicative</code>のインスタンスを持ち、<code>pure = One</code>であるとします。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">G</span> <span class="kw">where</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pure</span> <span class="ot">=</span> <span class="dt">One</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<p>このとき、<code>&lt;*&gt;</code>の定義としてありえるケースのうち、
+<code>Fn _ &lt;*&gt; Fn _</code>以外は<code>Applicative</code>則から以下のように決まります。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">One</span> x <span class="op">&lt;*&gt;</span> y <span class="ot">=</span> <span class="fu">fmap</span> x y</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">One</span> y <span class="ot">=</span> <span class="dt">Fn</span> (\c <span class="ot">-&gt;</span> cx c y)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<p>更に、一部の例外を除いて、<code>Fn cx &lt;*&gt; Fn cy</code>の右辺は必ず<code>Fn _</code>という形になります。
+このとき、<code>Apply</code>に対して行ったのと同様にして、
+<code>Applicative G</code>としてあり得る全てのインスタンスのうち<code>pure = One</code>であるものは、<code>Cosemigroup C</code>のあり得るインスタンスと1対1に対応します。</p>
+<details>
+<summary>
+「例外を除いて」の証明
+</summary>
+<p><a href="2021-01-01-faccat2.html">以前の記事</a>で述べたことの系なのですが、より直接的に示すこともできます。</p>
+<p><code>Fn cx &lt;*&gt; Fn cy = One _</code>となっているとします。
+このような<code>&lt;*&gt;</code>としてありえる実装は、ある<code>c1, c2 :: C</code>が存在して、</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="dt">One</span> (cx c1 (cy c2))</span></code></pre></div>
+<p>というものに限られます。ここで、</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dt">Fn</span><span class="ot"> const      ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>)<span class="ot"> ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> ())</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())<span class="ot"> ::</span> <span class="dt">G</span> ()</span></code></pre></div>
+<p>とおきます。</p>
+<p><code>Applicative</code>則から、<code>x &lt;*&gt; (y &lt;*&gt; z) = (.) &lt;*&gt; x &lt;*&gt; y &lt;*&gt; z</code>です。
+これらの両辺を計算すると、</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;*&gt;</span> (y <span class="op">&lt;*&gt;</span> z)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> (<span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> <span class="fu">id</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> (<span class="fu">const</span> <span class="fu">id</span> c1 (<span class="fu">const</span> () c2))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">const</span> <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">id</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>(<span class="op">.</span>) <span class="op">&lt;*&gt;</span> x <span class="op">&lt;*&gt;</span> y <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> ((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) c1 (<span class="fu">const</span> <span class="fu">id</span> c2)) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> ((<span class="op">.</span>) (<span class="fu">const</span> c1) <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1 <span class="op">.</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> c1)</span></code></pre></div>
+<p>となり、<code>id = const c1 :: C -&gt; C</code>であることがわかります。
+これが可能なのは<code>C</code>型の値がすべて<code>c1</code>と等しいとき、すなわち<code>C</code>が<code>()</code>と同型なときに限ります。</p>
+したがって、<code>C</code>が<code>()</code>に同型である場合という例外を除いて、
+<code>Fn cx &lt;*&gt; Fn cy</code>の右辺は<code>One _</code>になる可能性が無く、かならず<code>Fn _</code>の形になります。
+</details>
+<details>
+<summary>
+余談
+</summary>
+<p><code>pure = One</code>であること、という条件は省くことができません。
+例えば、<code>C = Bool</code>とすると、<code>G a</code>は「長さ1または2のリスト」とみなすことができますが、
+<code>pure a = Fn (const a)</code>とし、<code>&lt;*&gt;</code>を<code>ZipList</code>のように定義すると、<code>Applicative</code>則を満たすことができます。</p>
+また、<code>Monad</code>から<code>pure</code>(+<code>return</code>)を省いた<code>Bind</code>という型クラスに対しても、
+<code>Bind F</code>のインスタンスは<code>Cosemigroup C</code>のインスタンスと1対1に対応します。
+しかし、これを<code>Monad</code>に対してうまく行くように修正することは、<code>Apply -&gt; Applicative</code>の場合と違ってできません。
+</details>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>「集合」は「型」とは違うものなのですが、一応そこには踏み込みません。この記事のメインは有限集合上のCosemigroupについてなので、
+あまり気にしなくてもよいはずです。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>より正確な表現をするならば、次のようになります：「生成元の集合<span class="math inline">\setbraces{l,r}</span>から<span class="math inline">M</span>への自然な写像は単射になっており、この写像によって<span class="math inline">\setbraces{l,r}</span>を<span class="math inline">M</span>の部分集合とみなすことができます。<span class="math inline">M</span>のそれ以外の元は<span class="math inline">1</span>と<span class="math inline">l \cdot r</span>に限ります。」<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>普通、モノイドが集合に作用する方法には「右から作用する」と「左から作用する」の両方を考えますが、<span class="math inline">M</span>は可換モノイドになっており両者は一致します。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>弱推移的という用語は、参考文献（<a href="https://www.researchgate.net/publication/45912502_A_Theory_of_Transformation_Monoids_Combinatorics_and_Representation_Theory">A Theory of Transformation Monoids: Combinatorics and Representation Theory</a>）におけるweakly transitiveの定義をもとにしました。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p><span class="math inline">M</span>のモノイド演算はべき等であり、任意の<span class="math inline">a\in M</span>について、<span class="math inline">x</span>が<span class="math inline">a</span>による作用の値域に入ることと<span class="math inline">x = x \cdot a</span>であることは同値な条件です。
+したがって、
+<span class="math inline">C \cdot l \cap C \cdot r = \setbraces{ x \mid x \in C, x = x \cdot l, x = x \cdot r} = \setbraces{ x \mid x \in C, x = x \cdot l = x \cdot r = x \cdot l\cdot r} \subseteq C \cdot l\cdot r</span>
+となります。
+逆に、<span class="math inline">x=x \cdot l\cdot r</span>ならば<span class="math inline">x \cdot a = x \cdot l\cdot r \cdot a = x \cdot l\cdot r = x</span>が成り立つことから<span class="math inline">C \cdot l\cdot r \subseteq C \cdot a</span>なので、
+これらを組み合わせて<span class="math inline">C\cdot l \cap C \cdot r = C \cdot l\cdot r</span>が言えます。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
