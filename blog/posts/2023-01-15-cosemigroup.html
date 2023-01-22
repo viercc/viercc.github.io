@@ -38,6 +38,8 @@
                 <li>Posted on 2023-01-22</li>
             
             
+                <li>Last modified on 2023-01-23</li>
+            
             
             
         </ul>
@@ -46,8 +48,9 @@
         <!-- tex macros -->
 <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\id{\mathrm{id}}  \gdef\assoc{\mathrm{assoc}}  \gdef\comult{\mathrm{comult}}  \gdef\comp{\circ}  \gdef\setbraces#1{\left\{{#1}\right\}}  \gdef\blank{-}</span></p>
 <h2 id="cosemigroup-semigroupの双対"><code>Cosemigroup</code>: <code>Semigroup</code>の双対</h2>
+<p>この記事では、半群(Semigroup)の双対と考えられる、Cosemigroupという概念について考えていきます。</p>
 <h3 id="cosemigroupのアイデアと定義"><code>Cosemigroup</code>のアイデアと定義</h3>
-<p>Haskellでの半群(<code>Semigroup</code>)の定義は以下のようになっていました。
+<p>Haskellでの半群の定義は以下のようになっていました。
 （半群およびモノイドについては既知とします。）</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Semigroup</span> a <span class="kw">where</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- | Semigroup則: @(&lt;&gt;)@ は以下の結合法則を満たす</span></span>
