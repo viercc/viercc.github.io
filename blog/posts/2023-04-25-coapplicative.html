@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Applicativeの双対</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Applicativeの双対</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2023-05-16</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <!-- tex macros -->
+<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\Hask{\mathrm{\mathbf{Hask}}}  \gdef\Vect{\mathrm{\mathbf{Vect}}}  \gdef\Mon{\mathrm{\mathbf{Mon}}}  \gdef\id{\mathrm{id}}  \gdef\map{\mathrm{map}}  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}  \gdef\mathcode#1{\raisebox{-0.25em}{\colorbox{eeeeee}{\tt {#1}}}}  \gdef\ihom{\operatorname*{hom}}  \gdef\hombr#1#2{\left\lbrack {#1},{#2} \right\rbrack}  \gdef\blank{\mathord{-}}  \gdef\blank2{\mathord{=}}</span></p>
+<p>この記事は以前に公開したGistのまとめ直し<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>です。</p>
+<h2 id="comonadがあるならcoapplicativeは無いのか">「<code>Comonad</code>があるなら<code>Coapplicative</code>は無いのか？」</h2>
+<p><a href="https://hackage.haskell.org/package/comonad">Comonad</a>という型クラスを知れば「<code>Comonad</code>があるなら<code>Coapplicative</code>は無いのか？」
+という素朴な疑問が出てくることは自然な流れのようです。</p>
+<p>「<code>Coapplicative</code>」すなわち「<code>Applicative</code>の双対」という名前から考えられる型クラスはなんだろうか？
+それには便利な利用法があるだろうか？という検討をしたHaskellerは何人もいたようです。私が見つけたものを挙げると、
+（実質的には重複したものを除いて、）以下の3箇所でそれぞれ異なる<code>Coapplicative</code>の考案がされていました。</p>
+<p><em>注意</em>: このリストを作るに際して、時系列あるいは各アイデアの初出などは確認しておりません。</p>
+<ol type="1">
+<li><p><a href="https://www.haskellforall.com/2021/10/co-applicative-programming-style.html">Co-Applicative programming style (Haskell for all, by Gabriella Gonzalez</a></p>
+<ul>
+<li><p>ここではcontravariantパッケージにある<a href="https://hackage.haskell.org/package/contravariant-1.4/docs/Data-Functor-Contravariant-Divisible.html#t:Divisible">Divisible</a>がco-applicativeに相当するのだ、と紹介されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="ot">=&gt;</span> <span class="dt">Divisible</span> f <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    divide ::</span> (a <span class="ot">-&gt;</span> (b,c)) <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c <span class="ot">-&gt;</span> f a</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    conquer ::</span> f a</span></code></pre></div></li>
+</ul></li>
+<li><p><a href="https://old.reddit.com/r/haskell/comments/qsrmq/coapplicative_functor/?sort=confidence">Reddit post</a></p>
+<ul>
+<li><p><code>Coapplicative</code>に相当するものは何か？という議論がr/haskellでもありました。OP（投稿者）は</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Poster (u/tailcalled) proposed</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Coapplicative</span> f <span class="kw">where</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">　copure ::</span> f a <span class="ot">-&gt;</span> a</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">　cozip ::</span> f (<span class="dt">Either</span> a b) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f a) (f b)</span></code></pre></div>
+<p>と定義して考えています。コメントでは、また別の定義として</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Comment by u/camcann</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Contravariant</span> f) <span class="ot">=&gt;</span> <span class="dt">Inapplicative</span> f <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    nil ::</span> f <span class="dt">Void</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    contrazip ::</span> (f a, f b) <span class="ot">-&gt;</span> f (<span class="dt">Either</span> a b)</span></code></pre></div>
+<p>も提案されました。この<code>Inapplicative</code>はcontravariantの<a href="https://hackage.haskell.org/package/contravariant-1.4/docs/Data-Functor-Contravariant-Divisible.html#t:Decidable">Decidable</a>と同等です。</p></li>
+</ul></li>
+<li><p><a href="https://cstheory.stackexchange.com/questions/16241/is-there-a-concept-of-something-like-co-applicative-functors-sitting-between-com">Is there a concept of something like co-applicative functors sitting between comonads and functors? - StackOverflow</a></p>
+<p>ベストアンサーは、<code>CoApplicative</code>と<code>CoMonoidal</code>を以下のように定義し、それらが<code>Comonad</code>と関係しないことを説明しています。つまり、質問者が想像したような、「<code>Comonad</code>と<code>Functor</code>の間にある型クラス」にはならない、としました。</p>
+<p>2つの異なる定義を考えているのは、<code>Applicative</code>と<code>Monoidal</code>は<em>偶然にも</em>同じ型クラスを定義しているが、
+そのアイデアは異なるから、それぞれの双対は一致するとは限らない、としているためです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    pure  ::</span> a <span class="ot">-&gt;</span> f a</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (f a <span class="ot">-&gt;</span> f b)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Monoidal</span> f <span class="kw">where</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- equivalent to Applicative</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    unit ::</span> () <span class="ot">-&gt;</span> f ()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">    zip  ::</span> (f a, f b) <span class="ot">-&gt;</span> f (a,b)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoApplicative</span> f <span class="kw">where</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ot">    copure ::</span> f a <span class="ot">-&gt;</span> a</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    coap   ::</span> (f a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> f (a <span class="ot">-&gt;</span> b)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- NOT equivalent to CoApplicative</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span></code></pre></div>
+<p>別の回答者は以下の <code>Decisive</code> を挙げています。
+残念ながら、参照先として書かれたリンクは切れており、詳細はよくわかりませんでした。</p>
+<ul>
+<li>http://sneezy.cs.nott.ac.uk/fplunch/weblog/?p=69</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Decisive</span> f <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    nogood ::</span> f <span class="dt">Void</span> <span class="ot">-&gt;</span> <span class="dt">Void</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    orwell ::</span> f (<span class="dt">Either</span> s t) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f s) (f t)</span></code></pre></div>
+<p>（この型クラスは2. でも挙げられていました。）</p></li>
+</ol>
+<h2 id="違いを整理する">違いを整理する</h2>
+<p>参考にしたStackOverflowの回答者も言っているように、<code>Applicative</code>にはいろいろな定義の仕方があり、それによって双対がどんな定義になるのかが変わります。また、定義のどこを変更することを「双対」と呼んでいるのかもさまざまです。</p>
+<p><code>Applicative</code>には、以下の3通りの同値な定義を与えることができます。</p>
+<ul>
+<li><code>Functor</code>たちの圏において、<a href="https://hackage.haskell.org/package/kan-extensions-5.2.5/docs/Data-Functor-Day.html">Day</a>を対象のモノイド積とみなしたときの<em>モノイド対象</em>のこと</li>
+<li><em>Laxモノイダル関手</em> <span class="math inline">(\Hask, \mathcode{(,)}) \to (\Hask, \mathcode{(,)})</span> のこと</li>
+<li><em>Lax閉関手</em> <span class="math inline">(\Hask, \mathcode{-&gt;}) \to (\Hask, \mathcode{-&gt;})</span> のこと</li>
+</ul>
+<p>上記の「<code>Applicative</code>の双対の候補」たちが<code>Applicative</code>をどんな抽象化だと考え、何を変更したのかを、これらの定義をもとに検討します。</p>
+<h3 id="applicativeを関手圏のモノイド対象と見たとき"><code>Applicative</code>を関手圏のモノイド対象と見たとき</h3>
+<p><code>Applicative</code>を関手圏のモノイド対象とみなすことについては、<a href="./2020-08-07-monoid.html">過去の記事</a>でも取りあげています。
+この過去記事で紹介しているように、1. や 2. で”Coapplicative”と呼ばれているcontravariantパッケージの<code>Divisible</code>クラスと<code>Decidable</code>クラスは、<code>Contravariant</code>たちのなす関手圏において、適切なモノイド積を考えたときのモノイド対象になっていました。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>Divisible</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">どのモノイド圏か</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>Decidable</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">どのモノイド圏か</td>
+</tr>
+</tbody>
+</table>
+<p>また、手前味噌ですが、私は以前”モノイドの双対”といえばコモノイドだろうという発想から、<code>Functor</code>の圏において<code>Day</code>をモノイド積としたときの<em>コモノイド</em>対象についても検討しました。Haskellでの定義だけざっと書くと、以下のような型クラスです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Day</span> f g x <span class="kw">where</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Day</span><span class="ot"> ::</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> <span class="dt">Day</span> f g x</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Comonad</span> f <span class="ot">=&gt;</span> <span class="dt">Comonoid</span> f <span class="kw">where</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    copure ::</span> f a <span class="ot">-&gt;</span> a</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    comult ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span></code></pre></div>
+<p>詳細はこちらをどうぞ: <a href="https://github.com/viercc/functor-monad/blob/31c637b020aa0abfe69f6fcccae248f05e66c469/functor-monad/src/Data/Functor/Day/Comonoid.hs">Data.Functor.Day.Comonoid</a></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>Comonoid</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">同じモノイド圏のコモノイド対象にする</td>
+</tr>
+</tbody>
+</table>
+<h3 id="applicativeをlaxモノイダル関手と見たとき"><code>Applicative</code>をlaxモノイダル関手と見たとき</h3>
+<p>Laxモノイダル関手<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>とは、モノイド圏<span class="math inline">(C,\otimes_C)</span>から<span class="math inline">(D,\otimes_D)</span>への関手<span class="math inline">F</span>で、モノイド圏としての構造を保つ自然変換<code>unit, mult</code>を持つようなものです。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><span class="math display">
+\begin{align*}
+  &amp; \mathrm{unit} \mathrel{\colon} I_D \to F(I_C) \\
+  &amp; \mathrm{mult} \mathrel{\colon} F(a) \mathrel{\otimes_D} F(b) \to F(a \otimes_C b)
+\end{align*}
+</span></p>
+<p>さらなる条件として、この<code>unit, mult</code>がどちらも自然な同型でもある関手を、強モノイダル関手といいます。</p>
+<p>Laxモノイダル関手の双対版として、oplaxモノイダル関手というものもあります。これは、<code>unit, mult</code>の代わりに、射の向きを逆にしたもの、すなわち</p>
+<p><span class="math display">
+\begin{align*}
+  &amp; \mathrm{opunit} \mathrel{\colon} F(I_C) \to I_D \\
+  &amp; \mathrm{opmult} \mathrel{\colon} F(a \otimes_C b) \to F(a) \mathrel{\otimes_D} F(b) 
+\end{align*}
+</span></p>
+<p>を持つという条件を満たす関手のことを指します。例えば、強モノイダル関手は<code>unit, mult</code>がそれぞれ同型なのでその逆射があり、これによって強モノイダル関手はoplaxモノイダル関手でもあります。</p>
+<p>StackOverflowの回答で挙げられた<code>CoMonoidal</code>クラスは、
+上記のlaxモノイダル関手をoplaxモノイダル関手に読み替えて得られます。</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 32%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>CoMonoidal</code></td>
+<td style="text-align: center;">laxモノイダル関手<span class="math inline">(\Hask, \mathcode{(,)}) \to (\Hask, \mathcode{(,)})</span></td>
+<td style="text-align: center;">laxをoplaxに</td>
+</tr>
+</tbody>
+</table>
+<p>余談ですが、この<code>CoMonoidal</code>は「つまらない」クラスです。任意の<code>Functor f</code>は以下のように<code>CoMonoidal</code>になります。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    counit <span class="ot">=</span> <span class="fu">const</span> ()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    cozip fab <span class="ot">=</span> (<span class="fu">fst</span> <span class="op">&lt;$&gt;</span> fab, <span class="fu">snd</span> <span class="op">&lt;$&gt;</span> fab)</span></code></pre></div>
+<p>更に、（oplaxモノイダル関手と見るならば満たされるべき）<code>CoMonoidal</code>則によって、
+任意の<code>CoMonoidal</code>はこの実装と一致しなければならないことが示せます。</p>
+<p>また、詳細のわからなかった<code>Decisive</code>型クラスも、メソッドの型だけを見れば、oplaxモノイダル関手<span class="math inline">(\Hask, \mathcode{Either}) \to (\Hask,\mathcode{Either})</span>に相当します。</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 32%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>Decisive</code></td>
+<td style="text-align: center;">laxモノイダル関手<span class="math inline">(\Hask, \mathcode{(,)}) \to (\Hask, \mathcode{(,)})</span></td>
+<td style="text-align: center;">laxをoplaxに、モノイド積を<code>(,)</code>から<code>Either</code>に</td>
+</tr>
+</tbody>
+</table>
+<h3 id="謎のcoapplicative">謎の<code>CoApplicative</code></h3>
+<p>⚠<strong>このセクションは自分が勉強したばかりの内容が含まれていて、間違いが含まれるかもしれません！</strong></p>
+<p>3.の<code>CoApplicative</code>は、<code>Applicative</code>の<code>(&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b</code>を、
+「関数型<code>(-&gt;)</code>に<code>Functor f</code>を分配する」というように読んだ上で、その逆方向の<code>coap :: (f a -&gt; f b) -&gt; f (a -&gt; b)</code>を持つ型クラスを考えていると見ることができます。</p>
+<p>「関数型<code>(-&gt;)</code>に<code>Functor f</code>を分配することができる」という性質を一般化したものには、lax閉関手というものがあるようです。そこで、“oplax”閉関手というものがあって、<code>CoApplicative</code>となるだろうか？と考えたくなります。しかし、<strong>「oplax閉関手」というものが明確に定義されたことはなさそう</strong>であり、うまく行きそうな定義を考えるのも簡単ではなさそうでした。</p>
+<p>より詳しく説明すると、<em>閉関手</em>(<em>closed functor</em>) <a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>とは、<em>閉圏</em>(<em>closed category</em>)<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>の構造を保つ関手です。ちょうど、モノイダル関手がモノイド圏の構造を保つ関手であるようなものです。</p>
+<p>ここで、<em>閉圏</em>とは、大まかに言えば内部ホム関手<span class="math inline">\ihom \colon \op{C} \times C \to C</span>を持つ圏のことです。特に、<a href="https://ncatlab.org/nlab/show/closed+monoidal+category">モノイド閉圏</a>は閉圏になります。</p>
+<p>モノイダル関手と同様に、閉関手にもlax閉関手と強閉関手(strong closed functor)の区別が考えられます。</p>
+<p><code>Applicative</code>は、lax閉関手<span class="math inline">(\Hask, \ihom = \mathcode{(-&gt;)}) \to (\Hask, \ihom = \mathcode{(-&gt;)})</span> と見なすこともできます。<span class="math inline">(\Hask, \mathcode{(,)}, \mathcode{(-&gt;)})</span>はモノイド閉圏であることに加えて、
+モノイド閉圏からモノイド閉圏への関手<span class="math inline">F</span>がlaxモノイダル関手であることとlax閉関手であることは同値だからです。</p>
+<p>一方で、先述したように、“oplax閉関手”なるものがあるのかどうかすら、私にはわかりませんでした。
+結局、3.の<code>CoApplicative</code>は「“oplax閉関手”かもしれない、謎の何か」としか言いようがありません。</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 32%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>CoApplicative</code></td>
+<td style="text-align: center;">lax閉関手<span class="math inline">(\Hask, \mathcode{(-&gt;)}) \to (\Hask, \mathcode{(-&gt;)})</span></td>
+<td style="text-align: center;">(もしかすると)oplax閉関手(？)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="まとめ">まとめ</h3>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 32%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;"><code>Applicative</code>は</th>
+<th style="text-align: center;">変更点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>Divisible</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">どのモノイド圏か</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>Decidable</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">どのモノイド圏か</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>Comonoid</code></td>
+<td style="text-align: center;">モノイド対象</td>
+<td style="text-align: center;">同じモノイド圏のコモノイド対象にする</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>CoMonoidal</code></td>
+<td style="text-align: center;">laxモノイダル関手<span class="math inline">(\Hask, \mathcode{(,)}) \to (\Hask, \mathcode{(,)})</span></td>
+<td style="text-align: center;">laxをoplaxに</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>Decisive</code></td>
+<td style="text-align: center;">laxモノイダル関手<span class="math inline">(\Hask, \mathcode{(,)}) \to (\Hask, \mathcode{(,)})</span></td>
+<td style="text-align: center;">laxをoplaxに、モノイド積を<code>(,)</code>から<code>Either</code>に</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>CoApplicative</code></td>
+<td style="text-align: center;">lax閉関手<span class="math inline">(\Hask, \mathcode{(-&gt;)}) \to (\Hask, \mathcode{(-&gt;)})</span></td>
+<td style="text-align: center;">(もしかすると)oplax閉関手(？)</td>
+</tr>
+</tbody>
+</table>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://gist.github.com/viercc/af7a1ad114c2101a0a2983a37673cf26">https://gist.github.com/viercc/af7a1ad114c2101a0a2983a37673cf26</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>https://ncatlab.org/nlab/show/monoidal+functor<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a href="./2018-12-29-about-align.html">かなり前</a>に触れました。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>https://ncatlab.org/nlab/show/closed+functor<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p>https://ncatlab.org/nlab/show/closed+category<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
