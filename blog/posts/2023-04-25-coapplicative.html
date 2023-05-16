@@ -144,8 +144,8 @@
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Day</span><span class="ot"> ::</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> <span class="dt">Day</span> f g x</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Comonad</span> f <span class="ot">=&gt;</span> <span class="dt">Comonoid</span> f <span class="kw">where</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    copure ::</span> f a <span class="ot">-&gt;</span> a</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    comult ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span></code></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">--  extract :: f a -&gt; a</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    coapply ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span></code></pre></div>
 <p>詳細はこちらをどうぞ: <a href="https://github.com/viercc/functor-monad/blob/31c637b020aa0abfe69f6fcccae248f05e66c469/functor-monad/src/Data/Functor/Day/Comonoid.hs">Data.Functor.Day.Comonoid</a></p>
 <table>
 <thead>
