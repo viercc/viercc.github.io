@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 【誰か教えて】謎構造・「射の分割」ができる圏</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css" integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.js" integrity="sha384-zDIgORxjImEWftZXZpWLs2l57fMX9B3yWFPN5Ecabe211Hm5ZG/OIz2b07DYPUcH" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>【誰か教えて】謎構造・「射の分割」ができる圏</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2023-06-02</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\id{\mathrm{id}}  \gdef\map{\mathrm{map}}  \gdef\blank{\mathord{-}}  \gdef\dom{\mathrm{dom}}  \gdef\cod{\mathrm{cod}}</span></p>
+<h2 id="射の分割ができる圏">「射の分割」ができる圏</h2>
+<p>次のような条件を満たす小圏<span class="math inline">C</span>について調べている。</p>
+<ul>
+<li><p><span class="math inline">C</span>の対象の集合を<span class="math inline">C_0</span>、射の集合を<span class="math inline">C_1</span>とする。
+<span class="math inline">C</span>のホムセットを<span class="math inline">C_1(a,b)</span>と書く。</p></li>
+<li><p>射のうち始域が<span class="math inline">a</span>であるものを集めた集合を<span class="math inline">C_1(a) = \bigcup_{b} C_1(a,b)</span>と書くことにする。</p></li>
+<li><p>対象の集合<span class="math inline">C_0</span>は可換モノイドになっている。</p>
+<ul>
+<li>対象<span class="math inline">0 \in C_0</span>を持つ。（これは圏としての始対象や零対象の意味<em>ではない</em>。）</li>
+<li><span class="math inline">C</span>の対象の集合は結合的な2項演算<span class="math inline">(+):C_0\times C_0 \to C_0</span>を持つ。</li>
+<li>この2項演算は<span class="math inline">0</span>を単位元とする: <span class="math inline">a + 0 = 0 + a = a</span></li>
+<li>この2項演算は可換である: <span class="math inline">a + b = b + a</span></li>
+<li>ただし、<span class="math inline">C</span>が<em>モノイド圏になることまでは要求しない</em>。<span class="math inline">+</span>が関手のような性質を持ったりする必要はない。</li>
+</ul></li>
+<li><p><span class="math inline">a,b</span>を任意の対象とする。<span class="math inline">a + b</span>を始域とする射<span class="math inline">t \in C_1(a + b)</span>へ射<span class="math inline">\frac{a}{a,b}t\in C_1(a)</span>を対応させる演算<span class="math inline">\frac{a}{a,b}(\blank)\colon C_1(a + b)\to C_1(a)</span>を持つ。この演算（の族）を<em>射の分割</em>と呼ぶことにする。</p>
+<ul>
+<li><p>可換性から、<span class="math inline">\frac{b}{b,a}(\blank)\colon C_1(a+b)\to C_1(b)</span>である。</p></li>
+<li><p>射の分割は<span class="math inline">C_0</span>のモノイド演算と次の意味で整合的であることを要求する。</p>
+<ul>
+<li>任意の<span class="math inline">t\in C_1(a) = C_1(a + 0)</span>に対して、<span class="math inline">\frac{a}{a,0}t = t</span></li>
+<li>任意の<span class="math inline">a,b,c \in C_0</span>と<span class="math inline">t \in C_1(a + b + c)</span>に対して、<span class="math inline">\frac{a}{a,b+c}t = \frac{a}{a,b}\left(\frac{a+b}{a+b,c}t\right)</span></li>
+</ul></li>
+</ul></li>
+<li><p>次の性質を満足するような射の分割（を持つ圏）に特に興味がある。これらの性質を満たすものを仮に”properな”射の分割（を持つ圏）と呼ぶことにする。</p>
+<ul>
+<li><p><span class="math inline">C_1(0) = C_1(0,0)</span>、すなわち<span class="math inline">0</span>からそれ以外の対象への射は存在しない。</p></li>
+<li><p>恒等射の分割は恒等射である。すなわち次式が成り立つ。</p>
+<p><span class="math display">
+  \begin{equation*}
+    \frac{a}{a,b}\id_{a+b} = \id_a
+  \end{equation*}
+</span></p></li>
+<li><p>終域が<span class="math inline">c</span>である射<span class="math inline">t \in C_1(a+b,c)</span>を次のように分割したとする。</p>
+<p><span class="math display">
+  \begin{align*}
+    t_a &amp;= \frac{a}{a,b}t \in C_1(a)\\
+    t_b &amp;= \frac{b}{b,a}t \in C_1(b)
+  \end{align*}
+</span></p>
+<p>このとき、<span class="math inline">t_a</span>と<span class="math inline">t_b</span>の終域がどの対象になるかは決まっていない。（<span class="math inline">a,b,c</span>によって決まることさえ保証しなくてよい。）しかし、それらの終域をモノイド演算で足し合わせると<span class="math inline">c</span>に戻ることは要求する。</p>
+<p><span class="math display">
+  \begin{equation*}
+    \cod(t_a) + \cod(t_b) = \cod(t) = c
+  \end{equation*}
+</span></p></li>
+<li><p>以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
+<p><span class="math display">
+  \begin{CD}
+    {a+b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d 
+  \end{CD}
+</span></p>
+<p>このとき、以下の等式が成り立つ必要がある。</p>
+<p><span class="math display">
+  \begin{equation*}
+　　　　\frac{a}{a,b}\left(t;u\right) = \left(\frac{a}{a,b}t\right); \left(\frac{c_a}{c_a,c_b}u\right)
+  \end{equation*}
+</span></p>
+<p>ただし、<span class="math inline">c_a, c_b</span>は<span class="math inline">t</span>の射の分割それぞれの終域とする。</p>
+<p><span class="math display">
+  \begin{align*}
+    c_a &amp;= \cod\left(\frac{a}{a,b}t\right) \\
+    c_b &amp;= \cod\left(\frac{b}{b,a}t\right)
+  \end{align*}
+</span></p>
+<p>前項で要求した性質より<span class="math inline">c_a + c_b = c</span>であるため、<span class="math inline">c</span>を始域とする射<span class="math inline">u</span>を<span class="math inline">c_a,c_b</span>で分割することができる。</p></li>
+</ul></li>
+</ul>
+<h2 id="なぜこんなものを考えているのか">なぜこんなものを考えているのか</h2>
+<p>最近考えていることの一つに、多項式<code>Comonad</code>が小圏と対応すること<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>がある。ここで、<code>Comonad</code>に加えて<code>Applicative</code>のような演算<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>をサポートする型クラス<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#t:ComonadApply">ComonadApply</a>を考えてみる。<code>Comonad</code>と小圏の対応を通じて<code>Applicative</code>の演算を小圏での表現に送り込むと、「対象の集合<span class="math inline">C_0</span>の(関手的ではない)モノイド演算」「射の分割」ができる。また、以下のように<code>Comonad</code>の演算と<code>Applicative</code>の演算が両立することを要求するならば、それは「射の分割」に対するさらなる性質の要求と読み替えることができる。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>extract (<span class="fu">pure</span> a)    <span class="ot">=</span> a   <span class="co">-- free theorem</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>duplicate (<span class="fu">pure</span> a)  <span class="ot">=</span> <span class="fu">pure</span> (<span class="fu">pure</span> a)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>extract (x <span class="op">&lt;*&gt;</span> y)   <span class="ot">=</span> extract x (extract y)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>duplicate (x <span class="op">&lt;*&gt;</span> y) <span class="ot">=</span> (<span class="op">&lt;*&gt;</span>) <span class="op">&lt;$&gt;</span> duplicate x <span class="op">&lt;*&gt;</span> duplicate y</span></code></pre></div>
+<p>これを単純のため、可換な<code>Applicative</code>に限って考えて得たものが、上記の「射の分割」の定義である。
+（可換に限らなくてもできるが、書き下すのが非常に面倒）
+“properな”射の分割の定義は、この<code>Comonad</code>の演算と<code>Applicative</code>の演算が両立する条件を翻訳したものである。</p>
+<p><code>Applicative</code>の構造をあわせもつ<code>Comonad</code>については<a href="https://www.sciencedirect.com/science/article/pii/S1571066108003435?via%3Dihub">この論文</a>を大いに参考にしている。</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>Daniel Ahman and Tarmo Uustalu “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><code>ComonadApply</code>は<code>pure</code>を除いている。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
