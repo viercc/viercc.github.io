@@ -32,7 +32,7 @@
                 <li>Posted on 2018-12-10</li>
             
             
-                <li>Last modified on 2021-06-26</li>
+                <li>Last modified on 2023-08-19</li>
             
             
             
@@ -43,7 +43,7 @@
 <h2 id="lambdaboxの概要">LambdaBoxの概要</h2>
 <p>まずはHello worldをご覧ください。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/samples/hello.png" alt="LambdaBoxでのHello Worldプログラム" /><figcaption aria-hidden="true">LambdaBoxでのHello Worldプログラム</figcaption>
+<img src="../images/lambdabox/hello.png" alt="LambdaBoxでのHello Worldプログラム" /><figcaption aria-hidden="true">LambdaBoxでのHello Worldプログラム</figcaption>
 </figure>
 <p>見ての通り、LambdaBoxのプログラムは<strong>画像</strong>です。この画像には白(#FFFFFF)・黒(#000000)・緑の3色が使われていますが、プログラムとして意味を持つのは「黒(#000000)か、そうでないか」だけです。
 それ以外の色の違いは無視されます。（緑色は、これを利用して「コメント」を書き込むために使っています。）</p>
@@ -101,19 +101,16 @@
 <p>前処理は書いてあるそのままなので、次節より2.から順に解説します。</p>
 <h3 id="画像を線lineの集合に変換">画像を線(Line)の集合に変換</h3>
 <p>線(Line)は、ここでは、「垂直または水平に2個以上連続した黒のピクセル」と定義します。
-この処理では、画像を、それに含まれるすべての線の集合に変換します。ただし、他の線に完全に含まれてしまうような線は省略します。例えば、</p>
-<pre><code>□□■■■■□□</code></pre>
-<p>という領域に、線は1つだけあると数えます。次のようには数え<strong>ません</strong>。</p>
-<pre><code>□□■■■■□□
-　　←ーー→
-　　←ー→
-　　　←ー→
-　　←→
-　　　←→
-　　　　←→</code></pre>
+この処理では、画像を、それに含まれるすべての線の集まりに変換します。このとき、可能な限り長い連続したピクセルを1つの線にまとめます。例えば、
+6個まで連続した黒のピクセルは、一本の長さ6の線です。</p>
+<pre><code>__######__
+  &lt;----&gt;</code></pre>
+<p>次のようには複数本には数えません。</p>
+<pre><code>__######__
+  &lt;-&gt;&lt;-&gt;</code></pre>
 <p>次の画像は5本の線の集合で表されます。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-lines.png" alt="画像を線の集合に変換する例" /><figcaption aria-hidden="true">画像を線の集合に変換する例</figcaption>
+<img src="../images/lambdabox/explain-lines.png" alt="画像を線の集合に変換する例" /><figcaption aria-hidden="true">画像を線の集合に変換する例</figcaption>
 </figure>
 <h3 id="線lineの集合を箱boxとワイヤwireの集合に分割">線(Line)の集合を箱(Box)とワイヤ(Wire)の集合に分割</h3>
 <p>2つの線がどちらかの端点で接している場合、それらの線を接続されているとみなします。2つの線が交差している場合は、接続されていないものとします。</p>
@@ -122,11 +119,11 @@
 その各連結成分がワイヤ(Wire)になります。ただし、3本以上の線からなるループを含むワイヤがあってはいけません。</p>
 <p>次の画像は2本のワイヤから構成されています。交差している線は接続されていないことに注意です。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire.png" alt="ワイヤ2本の例" /><figcaption aria-hidden="true">ワイヤ2本の例</figcaption>
+<img src="../images/lambdabox/explain-wire.png" alt="ワイヤ2本の例" /><figcaption aria-hidden="true">ワイヤ2本の例</figcaption>
 </figure>
 <p>また、次の画像は2本のワイヤと2個の箱から構成されています。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/explain-wire2.png" alt="ワイヤと箱の例" /><figcaption aria-hidden="true">ワイヤと箱の例</figcaption>
+<img src="../images/lambdabox/explain-wire2.png" alt="ワイヤと箱の例" /><figcaption aria-hidden="true">ワイヤと箱の例</figcaption>
 </figure>
 <h3 id="箱とワイヤの集合を中間言語へ変換する">箱とワイヤの集合を中間言語へ変換する</h3>
 <p>まず、各箱と各ワイヤに、一意な識別子を割り振ります。</p>
@@ -175,7 +172,7 @@ x_r2 = t_boxid;
 </ul>
 <p>例えば、次の画像は2つの箱と2つのワイヤからなります。</p>
 <figure>
-<img src="https://gitlab.com/viercc/LambdaBox/raw/master/doc-img/const.png" alt="const関数" /><figcaption aria-hidden="true">const関数</figcaption>
+<img src="../images/lambdabox/const.png" alt="const関数" /><figcaption aria-hidden="true">const関数</figcaption>
 </figure>
 <p>それぞれ</p>
 <ul>
