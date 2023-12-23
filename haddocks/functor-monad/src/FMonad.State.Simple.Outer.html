@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE BlockArguments #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FMonad.State.Simple.Outer</span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier">StateT</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#flift"><span class="hs-identifier">flift</span></a></span><span class="hs-special">,</span><span> </span><span>
+</span><span id="line-13"></span><span>   </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#fromAdjointT"><span class="hs-identifier">fromAdjointT</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#toAdjointT"><span class="hs-identifier">toAdjointT</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span>   </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#State"><span class="hs-identifier">State</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>   </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#state"><span class="hs-identifier">state</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#runState"><span class="hs-identifier">runState</span></a></span><span class="hs-special">,</span><span> </span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Identity</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">IdentityT</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Trans.Env</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Reader</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Tuple</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">swap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coerce</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.html"><span class="hs-identifier">FMonad</span></a></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.Adjoint.html"><span class="hs-identifier">FMonad.Adjoint</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">newtype</span><span> </span><span id="StateT"><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span></span><span> </span><span id="local-6989586621679118134"><span class="annot"><a href="#local-6989586621679118134"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span id="local-6989586621679118135"><span class="annot"><a href="#local-6989586621679118135"><span class="hs-identifier hs-type">mm</span></a></span></span><span> </span><span id="local-6989586621679118136"><span class="annot"><a href="#local-6989586621679118136"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679118137"><span class="annot"><a href="#local-6989586621679118137"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="StateT"><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runStateT"><span class="annot"><span class="annottext">forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+StateT s0 mm x a -&gt; s0 -&gt; mm (EnvT s0 x) a
+</span><a href="FMonad.State.Simple.Outer.html#runStateT"><span class="hs-identifier hs-var hs-var">runStateT</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679118134"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679118135"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">EnvT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118134"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118136"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679118137"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-29"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679118276"><span class="annot"><span class="annottext">(forall (g :: * -&gt; *). Functor g =&gt; Functor (StateT s0 mm g)) =&gt;
+(forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+ (Functor g, Functor h) =&gt;
+ (g ~&gt; h) -&gt; StateT s0 mm g x -&gt; StateT s0 mm h x)
+-&gt; FFunctor (StateT s0 mm)
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FFunctor mm, Functor g) =&gt;
+Functor (StateT s0 mm g)
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor mm, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s0 mm g x -&gt; StateT s0 mm h x
+forall (g :: * -&gt; *). Functor g =&gt; Functor (StateT s0 mm g)
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s0 mm g x -&gt; StateT s0 mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *).
+(forall (g :: * -&gt; *). Functor g =&gt; Functor (ff g)) =&gt;
+(forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+ (Functor g, Functor h) =&gt;
+ (g ~&gt; h) -&gt; ff g x -&gt; ff h x)
+-&gt; FFunctor ff
+$cffmap :: forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor mm, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s0 mm g x -&gt; StateT s0 mm h x
+ffmap :: forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s0 mm g x -&gt; StateT s0 mm h x
+</span><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">FFunctor</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679118296"><span id="local-6989586621679118303"><span class="annot"><span class="annottext">FFunctor (StateT s0 mm)
+FFunctor (StateT s0 mm) =&gt;
+(forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s0 mm g)
+-&gt; (forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+    (Functor g, Functor h) =&gt;
+    (g ~&gt; StateT s0 mm h) -&gt; StateT s0 mm g a -&gt; StateT s0 mm h a)
+-&gt; FMonad (StateT s0 mm)
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *).
+FMonad mm =&gt;
+FFunctor (StateT s0 mm)
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad mm, Functor g) =&gt;
+g ~&gt; StateT s0 mm g
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) a.
+(FMonad mm, Functor g, Functor h) =&gt;
+(g ~&gt; StateT s0 mm h) -&gt; StateT s0 mm g a -&gt; StateT s0 mm h a
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s0 mm g
+forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; StateT s0 mm h) -&gt; StateT s0 mm g a -&gt; StateT s0 mm h a
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *).
+FFunctor ff =&gt;
+(forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; ff g)
+-&gt; (forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+    (Functor g, Functor h) =&gt;
+    (g ~&gt; ff h) -&gt; ff g a -&gt; ff h a)
+-&gt; FMonad ff
+$cfpure :: forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad mm, Functor g) =&gt;
+g ~&gt; StateT s0 mm g
+fpure :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s0 mm g
+$cfbind :: forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) a.
+(FMonad mm, Functor g, Functor h) =&gt;
+(g ~&gt; StateT s0 mm h) -&gt; StateT s0 mm g a -&gt; StateT s0 mm h a
+fbind :: forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; StateT s0 mm h) -&gt; StateT s0 mm g a -&gt; StateT s0 mm h a
+</span><a href="FMonad.html#FMonad"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FMonad</span></a></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">EnvT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118134"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ReaderT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118134"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679118135"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">type</span><span> </span><span id="State"><span class="annot"><a href="FMonad.State.Simple.Outer.html#State"><span class="hs-identifier hs-var">State</span></a></span></span><span> </span><span id="local-6989586621679118314"><span class="annot"><a href="#local-6989586621679118314"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118314"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IdentityT</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span id="local-6989586621679118318"><span id="local-6989586621679118323"><span class="hs-keyword">deriving</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679118194"><span id="local-6989586621679118195"><span id="local-6989586621679118196"><span class="annot"><a href="#local-6989586621679118194"><span class="hs-keyword hs-type hs-type hs-type">stock</span></a></span></span></span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118194"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679118195"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118196"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118194"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118195"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span id="local-6989586621679118197"><span id="local-6989586621679118198"><span id="local-6989586621679118199"><span class="annot"><a href="FMonad.State.Simple.Outer.html#fromAdjointT"><span class="hs-identifier hs-type">fromAdjointT</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">EnvT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118197"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ReaderT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118197"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679118198"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118199"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118197"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118198"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118199"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-36"></span><span id="fromAdjointT"><span class="annot"><span class="annottext">fromAdjointT :: forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+AdjointT (EnvT s0) (ReaderT s0) mm x x -&gt; StateT s0 mm x x
+</span><a href="FMonad.State.Simple.Outer.html#fromAdjointT"><span class="hs-identifier hs-var hs-var">fromAdjointT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>  </span><span class="annot"><span class="annottext">AdjointT (EnvT s0) (ReaderT s0) mm x x -&gt; StateT s0 mm x x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span id="local-6989586621679118205"><span id="local-6989586621679118206"><span id="local-6989586621679118207"><span class="annot"><a href="FMonad.State.Simple.Outer.html#toAdjointT"><span class="hs-identifier hs-type">toAdjointT</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118205"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118206"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118207"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">EnvT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118205"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ReaderT</span></span><span> </span><span class="annot"><a href="#local-6989586621679118205"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679118206"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118207"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-39"></span><span id="toAdjointT"><span class="annot"><span class="annottext">toAdjointT :: forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+StateT s0 mm x x -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x
+</span><a href="FMonad.State.Simple.Outer.html#toAdjointT"><span class="hs-identifier hs-var hs-var">toAdjointT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">StateT s0 mm x x -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span id="local-6989586621679118212"><span id="local-6989586621679118213"><span id="local-6989586621679118214"><span class="annot"><a href="FMonad.State.Simple.Outer.html#flift"><span class="hs-identifier hs-type">flift</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118212"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679118213"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679118212"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118213"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118214"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118212"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118213"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-43"></span><span id="flift"><span class="annot"><span class="annottext">flift :: forall (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) s0.
+(FFunctor mm, Functor x) =&gt;
+mm x ~&gt; StateT s0 mm x
+</span><a href="FMonad.State.Simple.Outer.html#flift"><span class="hs-identifier hs-var hs-var">flift</span></a></span></span><span> </span><span id="local-6989586621679118337"><span class="annot"><span class="annottext">mm x x
+</span><a href="#local-6989586621679118337"><span class="hs-identifier hs-var">mm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(s0 -&gt; mm (EnvT s0 x) x) -&gt; StateT s0 mm x x
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+(s0 -&gt; mm (EnvT s0 x) a) -&gt; StateT s0 mm x a
+</span><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span><span> </span><span class="annot"><span class="annottext">((s0 -&gt; mm (EnvT s0 x) x) -&gt; StateT s0 mm x x)
+-&gt; (s0 -&gt; mm (EnvT s0 x) x) -&gt; StateT s0 mm x x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679118338"><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118338"><span class="hs-identifier hs-var">s0</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(x ~&gt; EnvT s0 x) -&gt; mm x x -&gt; mm (EnvT s0 x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s0 -&gt; x x -&gt; EnvT s0 x x
+forall e (w :: * -&gt; *) a. e -&gt; w a -&gt; EnvT e w a
+</span><span class="hs-identifier hs-var">EnvT</span></span><span> </span><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118338"><span class="hs-identifier hs-var">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">mm x x
+</span><a href="#local-6989586621679118337"><span class="hs-identifier hs-var">mm</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><a href="FMonad.State.Simple.Outer.html#state"><span class="hs-identifier hs-type">state</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679118228"><span class="annot"><a href="#local-6989586621679118228"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span id="local-6989586621679118227"><span class="annot"><a href="#local-6989586621679118227"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679118226"><span class="annot"><a href="#local-6989586621679118226"><span class="hs-identifier hs-type">mm</span></a></span></span><span> </span><span id="local-6989586621679118229"><span class="annot"><a href="#local-6989586621679118229"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118226"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679118227"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679118228"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679118227"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118229"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679118228"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118228"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118226"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118227"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118229"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-46"></span><span id="state"><span class="annot"><span class="annottext">state :: forall s0 (x :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) a.
+(FMonad mm, Functor x) =&gt;
+(s0 -&gt; (x a, s0)) -&gt; StateT s0 mm x a
+</span><a href="FMonad.State.Simple.Outer.html#state"><span class="hs-identifier hs-var hs-var">state</span></a></span></span><span> </span><span id="local-6989586621679118345"><span class="annot"><span class="annottext">s0 -&gt; (x a, s0)
+</span><a href="#local-6989586621679118345"><span class="hs-identifier hs-var">stateX</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(s0 -&gt; mm (EnvT s0 x) a) -&gt; StateT s0 mm x a
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+(s0 -&gt; mm (EnvT s0 x) a) -&gt; StateT s0 mm x a
+</span><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679118346"><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118346"><span class="hs-identifier hs-var">s0</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679118347"><span class="annot"><span class="annottext">x a
+</span><a href="#local-6989586621679118347"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679118348"><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118348"><span class="hs-identifier hs-var">s0'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">s0 -&gt; (x a, s0)
+</span><a href="#local-6989586621679118345"><span class="hs-identifier hs-var">stateX</span></a></span><span> </span><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118346"><span class="hs-identifier hs-var">s0</span></a></span><span>
+</span><span id="line-48"></span><span>     </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">EnvT s0 x a -&gt; mm (EnvT s0 x) a
+EnvT s0 x ~&gt; mm (EnvT s0 x)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; mm g
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad ff, Functor g) =&gt;
+g ~&gt; ff g
+</span><a href="FMonad.html#fpure"><span class="hs-identifier hs-var">fpure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s0 -&gt; x a -&gt; EnvT s0 x a
+forall e (w :: * -&gt; *) a. e -&gt; w a -&gt; EnvT e w a
+</span><span class="hs-identifier hs-var">EnvT</span></span><span> </span><span class="annot"><span class="annottext">s0
+</span><a href="#local-6989586621679118348"><span class="hs-identifier hs-var">s0'</span></a></span><span> </span><span class="annot"><span class="annottext">x a
+</span><a href="#local-6989586621679118347"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="FMonad.State.Simple.Outer.html#runState"><span class="hs-identifier hs-type">runState</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679118234"><span class="annot"><a href="#local-6989586621679118234"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span id="local-6989586621679118235"><span class="annot"><a href="#local-6989586621679118235"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679118236"><span class="annot"><a href="#local-6989586621679118236"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#State"><span class="hs-identifier hs-type">State</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118234"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118235"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118236"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679118234"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679118235"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679118236"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679118234"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span id="runState"><span class="annot"><span class="annottext">runState :: forall s0 (x :: * -&gt; *) a. State s0 x a -&gt; s0 -&gt; (x a, s0)
+</span><a href="FMonad.State.Simple.Outer.html#runState"><span class="hs-identifier hs-var hs-var">runState</span></a></span></span><span> </span><span id="local-6989586621679118350"><span class="annot"><span class="annottext">State s0 x a
+</span><a href="#local-6989586621679118350"><span class="hs-identifier hs-var">stateX</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(s0, x a) -&gt; (x a, s0)
+forall a b. (a, b) -&gt; (b, a)
+</span><span class="hs-identifier hs-var">swap</span></span><span> </span><span class="annot"><span class="annottext">((s0, x a) -&gt; (x a, s0)) -&gt; (s0 -&gt; (s0, x a)) -&gt; s0 -&gt; (x a, s0)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">EnvT s0 x a -&gt; (s0, x a)
+forall e (w :: * -&gt; *) a. EnvT e w a -&gt; (e, w a)
+</span><span class="hs-identifier hs-var">runEnvT</span></span><span> </span><span class="annot"><span class="annottext">(EnvT s0 x a -&gt; (s0, x a))
+-&gt; (s0 -&gt; EnvT s0 x a) -&gt; s0 -&gt; (s0, x a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">IdentityT (EnvT s0 x) a -&gt; EnvT s0 x a
+forall {k} (f :: k -&gt; *) (a :: k). IdentityT f a -&gt; f a
+</span><span class="hs-identifier hs-var">runIdentityT</span></span><span> </span><span class="annot"><span class="annottext">(IdentityT (EnvT s0 x) a -&gt; EnvT s0 x a)
+-&gt; (s0 -&gt; IdentityT (EnvT s0 x) a) -&gt; s0 -&gt; EnvT s0 x a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">State s0 x a -&gt; s0 -&gt; IdentityT (EnvT s0 x) a
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+StateT s0 mm x a -&gt; s0 -&gt; mm (EnvT s0 x) a
+</span><a href="FMonad.State.Simple.Outer.html#runStateT"><span class="hs-identifier hs-var">runStateT</span></a></span><span> </span><span class="annot"><span class="annottext">State s0 x a
+</span><a href="#local-6989586621679118350"><span class="hs-identifier hs-var">stateX</span></a></span></pre></body></html>

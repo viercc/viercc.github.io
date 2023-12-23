@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Functor.Precompose</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Type</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Alternative</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">join</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Comonad</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Eq1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Ord1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Compose</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Compose</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.html"><span class="hs-identifier">FMonad</span></a></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FComonad.html"><span class="hs-identifier">FComonad</span></a></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><span class="hs-comment">-- | Single-kinded type alias of Compose</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">(:.:)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">type</span><span> </span><span id="%3A.%3A"><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-var">(:.:)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-comment">-- | Flipped-order Compose.</span><span>
+</span><span id="line-29"></span><span class="hs-comment">--</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- When @f@ is a @Monad@, @Precompose f@ is a 'FMonad' in the similar way 'Compose' is.</span><span>
+</span><span id="line-31"></span><span class="hs-comment">--</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- The only difference is @Precompose f@ composes @f@ to the right (_pre_compose)</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- compared to @Compose f@ which composes to the left (_post_compose).</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679113379"><span id="local-6989586621679113380"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113379"><span class="hs-identifier hs-type">j</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679113380"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113380"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679113379"><span class="hs-identifier hs-type">j</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span></span></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">newtype</span><span> </span><span id="Precompose"><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span></span><span> </span><span id="local-6989586621679113381"><span class="annot"><a href="#local-6989586621679113381"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679113382"><span class="annot"><a href="#local-6989586621679113382"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679113383"><span class="annot"><a href="#local-6989586621679113383"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Precompose"><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getPrecompose"><span class="annot"><span class="annottext">forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var hs-var">getPrecompose</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679113382"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113381"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113383"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679113621"><span id="local-6989586621679113626"><span id="local-6989586621679113630"><span class="annot"><span class="annottext">Int -&gt; Precompose f g a -&gt; ShowS
+[Precompose f g a] -&gt; ShowS
+Precompose f g a -&gt; String
+(Int -&gt; Precompose f g a -&gt; ShowS)
+-&gt; (Precompose f g a -&gt; String)
+-&gt; ([Precompose f g a] -&gt; ShowS)
+-&gt; Show (Precompose f g a)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+Int -&gt; Precompose f g a -&gt; ShowS
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+[Precompose f g a] -&gt; ShowS
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+Precompose f g a -&gt; String
+$cshowsPrec :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+Int -&gt; Precompose f g a -&gt; ShowS
+showsPrec :: Int -&gt; Precompose f g a -&gt; ShowS
+$cshow :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+Precompose f g a -&gt; String
+show :: Precompose f g a -&gt; String
+$cshowList :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Show (g (f a)) =&gt;
+[Precompose f g a] -&gt; ShowS
+showList :: [Precompose f g a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679113635"><span id="local-6989586621679113639"><span id="local-6989586621679113642"><span id="local-6989586621679113651"><span class="annot"><span class="annottext">ReadPrec [Precompose f g a]
+ReadPrec (Precompose f g a)
+Int -&gt; ReadS (Precompose f g a)
+ReadS [Precompose f g a]
+(Int -&gt; ReadS (Precompose f g a))
+-&gt; ReadS [Precompose f g a]
+-&gt; ReadPrec (Precompose f g a)
+-&gt; ReadPrec [Precompose f g a]
+-&gt; Read (Precompose f g a)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadPrec [Precompose f g a]
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadPrec (Precompose f g a)
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+Int -&gt; ReadS (Precompose f g a)
+forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadS [Precompose f g a]
+$creadsPrec :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+Int -&gt; ReadS (Precompose f g a)
+readsPrec :: Int -&gt; ReadS (Precompose f g a)
+$creadList :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadS [Precompose f g a]
+readList :: ReadS [Precompose f g a]
+$creadPrec :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadPrec (Precompose f g a)
+readPrec :: ReadPrec (Precompose f g a)
+$creadListPrec :: forall k j (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Read (g (f a)) =&gt;
+ReadPrec [Precompose f g a]
+readListPrec :: ReadPrec [Precompose f g a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679113657"><span id="local-6989586621679113661"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Precompose f g a -&gt; Precompose f g b)
+-&gt; (forall a b. a -&gt; Precompose f g b -&gt; Precompose f g a)
+-&gt; Functor (Precompose f g)
+forall a b. a -&gt; Precompose f g b -&gt; Precompose f g a
+forall a b. (a -&gt; b) -&gt; Precompose f g a -&gt; Precompose f g b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Functor g, Functor f) =&gt;
+a -&gt; Precompose f g b -&gt; Precompose f g a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Functor g, Functor f) =&gt;
+(a -&gt; b) -&gt; Precompose f g a -&gt; Precompose f g b
+$cfmap :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Functor g, Functor f) =&gt;
+(a -&gt; b) -&gt; Precompose f g a -&gt; Precompose f g b
+fmap :: forall a b. (a -&gt; b) -&gt; Precompose f g a -&gt; Precompose f g b
+$c&lt;$ :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Functor g, Functor f) =&gt;
+a -&gt; Precompose f g b -&gt; Precompose f g a
+&lt;$ :: forall a b. a -&gt; Precompose f g b -&gt; Precompose f g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679113669"><span id="local-6989586621679113675"><span id="local-6989586621679113682"><span id="local-6989586621679113687"><span id="local-6989586621679113691"><span id="local-6989586621679113694"><span id="local-6989586621679113697"><span id="local-6989586621679113700"><span id="local-6989586621679113703"><span id="local-6989586621679113706"><span id="local-6989586621679113709"><span id="local-6989586621679113713"><span id="local-6989586621679113716"><span id="local-6989586621679113721"><span id="local-6989586621679113726"><span id="local-6989586621679113731"><span id="local-6989586621679113736"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Precompose f g m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Precompose f g a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Precompose f g a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a)
+-&gt; (forall a. Precompose f g a -&gt; [a])
+-&gt; (forall a. Precompose f g a -&gt; Bool)
+-&gt; (forall a. Precompose f g a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Precompose f g a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Precompose f g a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Precompose f g a -&gt; a)
+-&gt; (forall a. Num a =&gt; Precompose f g a -&gt; a)
+-&gt; (forall a. Num a =&gt; Precompose f g a -&gt; a)
+-&gt; Foldable (Precompose f g)
+forall a. Eq a =&gt; a -&gt; Precompose f g a -&gt; Bool
+forall a. Num a =&gt; Precompose f g a -&gt; a
+forall a. Ord a =&gt; Precompose f g a -&gt; a
+forall m. Monoid m =&gt; Precompose f g m -&gt; m
+forall a. Precompose f g a -&gt; Bool
+forall a. Precompose f g a -&gt; Int
+forall a. Precompose f g a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Precompose f g a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Eq a) =&gt;
+a -&gt; Precompose f g a -&gt; Bool
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Num a) =&gt;
+Precompose f g a -&gt; a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Ord a) =&gt;
+Precompose f g a -&gt; a
+forall (f :: * -&gt; *) (g :: * -&gt; *) m.
+(Foldable g, Foldable f, Monoid m) =&gt;
+Precompose f g m -&gt; m
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; Bool
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; Int
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; [a]
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+forall (f :: * -&gt; *) (g :: * -&gt; *) m a.
+(Foldable g, Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Precompose f g a -&gt; m
+forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+(Foldable g, Foldable f) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+$cfold :: forall (f :: * -&gt; *) (g :: * -&gt; *) m.
+(Foldable g, Foldable f, Monoid m) =&gt;
+Precompose f g m -&gt; m
+fold :: forall m. Monoid m =&gt; Precompose f g m -&gt; m
+$cfoldMap :: forall (f :: * -&gt; *) (g :: * -&gt; *) m a.
+(Foldable g, Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Precompose f g a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Precompose f g a -&gt; m
+$cfoldMap' :: forall (f :: * -&gt; *) (g :: * -&gt; *) m a.
+(Foldable g, Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Precompose f g a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Precompose f g a -&gt; m
+$cfoldr :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+$cfoldr' :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+$cfoldl :: forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+(Foldable g, Foldable f) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+$cfoldl' :: forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+(Foldable g, Foldable f) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Precompose f g a -&gt; b
+$cfoldr1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+$cfoldl1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+(a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Precompose f g a -&gt; a
+$ctoList :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; [a]
+toList :: forall a. Precompose f g a -&gt; [a]
+$cnull :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; Bool
+null :: forall a. Precompose f g a -&gt; Bool
+$clength :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f) =&gt;
+Precompose f g a -&gt; Int
+length :: forall a. Precompose f g a -&gt; Int
+$celem :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Eq a) =&gt;
+a -&gt; Precompose f g a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; Precompose f g a -&gt; Bool
+$cmaximum :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Ord a) =&gt;
+Precompose f g a -&gt; a
+maximum :: forall a. Ord a =&gt; Precompose f g a -&gt; a
+$cminimum :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Ord a) =&gt;
+Precompose f g a -&gt; a
+minimum :: forall a. Ord a =&gt; Precompose f g a -&gt; a
+$csum :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Num a) =&gt;
+Precompose f g a -&gt; a
+sum :: forall a. Num a =&gt; Precompose f g a -&gt; a
+$cproduct :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(Foldable g, Foldable f, Num a) =&gt;
+Precompose f g a -&gt; a
+product :: forall a. Num a =&gt; Precompose f g a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span id="local-6989586621679113752"><span id="local-6989586621679113761"><span id="local-6989586621679113767"><span id="local-6989586621679113772"><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679113469"><span id="local-6989586621679113470"><span class="annot"><a href="#local-6989586621679113469"><span class="hs-keyword hs-type hs-type">stock</span></a></span></span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679113469"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679113470"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113469"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113470"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span id="local-6989586621679113784"><span id="local-6989586621679113790"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679113488"><span id="local-6989586621679113489"><span id="local-6989586621679113490"><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113489"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113488"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679113490"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-43"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113488"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113489"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679113490"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113488"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113489"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113490"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span id="local-6989586621679113810"><span id="local-6989586621679113816"><span id="local-6989586621679113821"><span id="local-6989586621679113826"><span id="local-6989586621679113831"><span id="local-6989586621679113836"><span id="local-6989586621679113841"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679113503"><span id="local-6989586621679113504"><span id="local-6989586621679113505"><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113504"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113503"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679113505"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113503"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113504"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679113505"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113503"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113504"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113505"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span id="local-6989586621679113864"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679113514"><span id="local-6989586621679113515"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113515"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113514"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113514"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113515"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113514"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113515"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span id="local-6989586621679113879"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679113524"><span id="local-6989586621679113525"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113525"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113524"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113524"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="annot"><a href="#local-6989586621679113525"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113524"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113525"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span id="local-6989586621679113892"><span id="local-6989586621679113897"><span id="local-6989586621679113901"><span id="local-6989586621679113905"><span id="local-6989586621679113909"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679113550"><span id="local-6989586621679113551"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113551"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113550"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679113550"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679113551"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113550"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113551"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span id="local-6989586621679113920"><span id="local-6989586621679113925"><span id="local-6989586621679113929"><span id="local-6989586621679113933"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679113565"><span id="local-6989586621679113566"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113566"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#%3A.%3A"><span class="hs-operator hs-type">:.:</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113565"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679113565"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679113566"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113565"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113566"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679113576"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679113576"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113576"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>  </span><span id="local-6989586621679113947"><span class="annot"><span class="annottext">ffmap :: forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Precompose f g x -&gt; Precompose f h x
+</span><a href="#local-6989586621679113947"><span class="hs-identifier hs-var hs-var hs-var hs-var">ffmap</span></a></span></span><span> </span><span id="local-6989586621679113949"><span class="annot"><span class="annottext">g ~&gt; h
+</span><a href="#local-6989586621679113949"><span class="hs-identifier hs-var">gh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">h (f x) -&gt; Precompose f h x
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(h (f x) -&gt; Precompose f h x)
+-&gt; (Precompose f g x -&gt; h (f x))
+-&gt; Precompose f g x
+-&gt; Precompose f h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g (f x) -&gt; h (f x)
+g ~&gt; h
+</span><a href="#local-6989586621679113949"><span class="hs-identifier hs-var">gh</span></a></span><span> </span><span class="annot"><span class="annottext">(g (f x) -&gt; h (f x))
+-&gt; (Precompose f g x -&gt; g (f x)) -&gt; Precompose f g x -&gt; h (f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f g x -&gt; g (f x)
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var">getPrecompose</span></a></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679113591"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679113591"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113591"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-74"></span><span>  </span><span id="local-6989586621679113964"><span class="annot"><span class="annottext">fpure :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Precompose f g
+</span><a href="#local-6989586621679113964"><span class="hs-identifier hs-var hs-var hs-var hs-var">fpure</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">g (f x) -&gt; Precompose f g x
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(g (f x) -&gt; Precompose f g x)
+-&gt; (g x -&gt; g (f x)) -&gt; g x -&gt; Precompose f g x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(x -&gt; f x) -&gt; g x -&gt; g (f x)
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; f x
+forall a. a -&gt; f a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span>
+</span><span id="line-75"></span><span>  </span><span id="local-6989586621679113970"><span class="annot"><span class="annottext">fbind :: forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; Precompose f h) -&gt; Precompose f g a -&gt; Precompose f h a
+</span><a href="#local-6989586621679113970"><span class="hs-identifier hs-var hs-var hs-var hs-var">fbind</span></a></span></span><span> </span><span id="local-6989586621679113972"><span class="annot"><span class="annottext">g ~&gt; Precompose f h
+</span><a href="#local-6989586621679113972"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">h (f a) -&gt; Precompose f h a
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(h (f a) -&gt; Precompose f h a)
+-&gt; (Precompose f g a -&gt; h (f a))
+-&gt; Precompose f g a
+-&gt; Precompose f h a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f (f a) -&gt; f a) -&gt; h (f (f a)) -&gt; h (f a)
+forall a b. (a -&gt; b) -&gt; h a -&gt; h b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f (f a) -&gt; f a
+forall (m :: * -&gt; *) a. Monad m =&gt; m (m a) -&gt; m a
+</span><span class="hs-identifier hs-var">join</span></span><span> </span><span class="annot"><span class="annottext">(h (f (f a)) -&gt; h (f a))
+-&gt; (Precompose f g a -&gt; h (f (f a))) -&gt; Precompose f g a -&gt; h (f a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f h (f a) -&gt; h (f (f a))
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var">getPrecompose</span></a></span><span> </span><span class="annot"><span class="annottext">(Precompose f h (f a) -&gt; h (f (f a)))
+-&gt; (Precompose f g a -&gt; Precompose f h (f a))
+-&gt; Precompose f g a
+-&gt; h (f (f a))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g (f a) -&gt; Precompose f h (f a)
+g ~&gt; Precompose f h
+</span><a href="#local-6989586621679113972"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(g (f a) -&gt; Precompose f h (f a))
+-&gt; (Precompose f g a -&gt; g (f a))
+-&gt; Precompose f g a
+-&gt; Precompose f h (f a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f g a -&gt; g (f a)
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var">getPrecompose</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679113608"><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679113608"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FComonad.html#FComonad"><span class="hs-identifier hs-type">FComonad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113608"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679113985"><span class="annot"><span class="annottext">fextract :: forall (g :: * -&gt; *). Functor g =&gt; Precompose f g ~&gt; g
+</span><a href="#local-6989586621679113985"><span class="hs-identifier hs-var hs-var hs-var hs-var">fextract</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f x -&gt; x) -&gt; g (f x) -&gt; g x
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; x
+forall a. f a -&gt; a
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">(g (f x) -&gt; g x)
+-&gt; (Precompose f g x -&gt; g (f x)) -&gt; Precompose f g x -&gt; g x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f g x -&gt; g (f x)
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var">getPrecompose</span></a></span><span>
+</span><span id="line-79"></span><span>  </span><span id="local-6989586621679113992"><span class="annot"><span class="annottext">fextend :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(Precompose f g ~&gt; h) -&gt; Precompose f g ~&gt; Precompose f h
+</span><a href="#local-6989586621679113992"><span class="hs-identifier hs-var hs-var hs-var hs-var">fextend</span></a></span></span><span> </span><span id="local-6989586621679113994"><span class="annot"><span class="annottext">Precompose f g ~&gt; h
+</span><a href="#local-6989586621679113994"><span class="hs-identifier hs-var">tr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">h (f x) -&gt; Precompose f h x
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(h (f x) -&gt; Precompose f h x)
+-&gt; (Precompose f g x -&gt; h (f x))
+-&gt; Precompose f g x
+-&gt; Precompose f h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f g (f x) -&gt; h (f x)
+Precompose f g ~&gt; h
+</span><a href="#local-6989586621679113994"><span class="hs-identifier hs-var">tr</span></a></span><span> </span><span class="annot"><span class="annottext">(Precompose f g (f x) -&gt; h (f x))
+-&gt; (Precompose f g x -&gt; Precompose f g (f x))
+-&gt; Precompose f g x
+-&gt; h (f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g (f (f x)) -&gt; Precompose f g (f x)
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(g (f (f x)) -&gt; Precompose f g (f x))
+-&gt; (Precompose f g x -&gt; g (f (f x)))
+-&gt; Precompose f g x
+-&gt; Precompose f g (f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; f (f x)) -&gt; g (f x) -&gt; g (f (f x))
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; f (f x)
+forall a. f a -&gt; f (f a)
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; w (w a)
+</span><span class="hs-identifier hs-var">duplicate</span></span><span> </span><span class="annot"><span class="annottext">(g (f x) -&gt; g (f (f x)))
+-&gt; (Precompose f g x -&gt; g (f x)) -&gt; Precompose f g x -&gt; g (f (f x))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Precompose f g x -&gt; g (f x)
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+Precompose f g a -&gt; g (f a)
+</span><a href="Data.Functor.Precompose.html#getPrecompose"><span class="hs-identifier hs-var">getPrecompose</span></a></span></pre></body></html>

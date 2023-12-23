@@ -1,0 +1,600 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE BlockArguments #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FMonad.State.Day</span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier">StateT</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>   </span><span class="annot"><a href="FMonad.State.Day.html#flift"><span class="hs-identifier">flift</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>   </span><span class="annot"><a href="FMonad.State.Day.html#toOuter"><span class="hs-identifier">toOuter</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#fromOuter"><span class="hs-identifier">fromOuter</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#toInner"><span class="hs-identifier">toInner</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#fromInner"><span class="hs-identifier">fromInner</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>   </span><span>
+</span><span id="line-14"></span><span>   </span><span class="annot"><a href="FMonad.State.Day.html#State"><span class="hs-identifier">State</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#state"><span class="hs-identifier">state</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#state_"><span class="hs-identifier">state_</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#get"><span class="hs-identifier">get</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#put"><span class="hs-identifier">put</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>   </span><span class="annot"><a href="FMonad.State.Day.html#runState"><span class="hs-identifier">runState</span></a></span><span>
+</span><span id="line-16"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Identity</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Day</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">day</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day.Curried</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Curried</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Curried</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day.Comonoid</span></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.html"><span class="hs-identifier">FMonad</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.Adjoint.html"><span class="hs-identifier">FMonad.Adjoint</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FStrong.html"><span class="hs-identifier">FStrong</span></a></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Inner.html"><span class="hs-identifier">FMonad.State.Simple.Inner</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Simple.Inner</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html"><span class="hs-identifier">FMonad.State.Simple.Outer</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Simple.Outer</span></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Functor.Day.Extra.html"><span class="hs-identifier">Data.Functor.Day.Extra</span></a></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coerce</span></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Identity</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&amp;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">newtype</span><span> </span><span id="StateT"><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span></span><span> </span><span id="local-6989586621679119371"><span class="annot"><a href="#local-6989586621679119371"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679119372"><span class="annot"><a href="#local-6989586621679119372"><span class="hs-identifier hs-type">mm</span></a></span></span><span> </span><span id="local-6989586621679119373"><span class="annot"><a href="#local-6989586621679119373"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679119374"><span class="annot"><a href="#local-6989586621679119374"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="StateT"><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runStateT"><span class="annot"><span class="annottext">forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+StateT s mm x a -&gt; forall r. s (a -&gt; r) -&gt; mm (Day s x) r
+</span><a href="FMonad.State.Day.html#runStateT"><span class="hs-identifier hs-var hs-var">runStateT</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679119376"><span class="annot"><a href="#local-6989586621679119376"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679119371"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679119374"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119376"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119372"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119371"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119373"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119376"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-36"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span id="local-6989586621679119666"><span id="local-6989586621679119668"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; StateT s mm x a -&gt; StateT s mm x b)
+-&gt; (forall a b. a -&gt; StateT s mm x b -&gt; StateT s mm x a)
+-&gt; Functor (StateT s mm x)
+forall a b. a -&gt; StateT s mm x b -&gt; StateT s mm x a
+forall a b. (a -&gt; b) -&gt; StateT s mm x a -&gt; StateT s mm x b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a b.
+Functor s =&gt;
+a -&gt; StateT s mm x b -&gt; StateT s mm x a
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a b.
+Functor s =&gt;
+(a -&gt; b) -&gt; StateT s mm x a -&gt; StateT s mm x b
+$cfmap :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a b.
+Functor s =&gt;
+(a -&gt; b) -&gt; StateT s mm x a -&gt; StateT s mm x b
+fmap :: forall a b. (a -&gt; b) -&gt; StateT s mm x a -&gt; StateT s mm x b
+$c&lt;$ :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a b.
+Functor s =&gt;
+a -&gt; StateT s mm x b -&gt; StateT s mm x a
+&lt;$ :: forall a b. a -&gt; StateT s mm x b -&gt; StateT s mm x a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
+</span><span id="line-37"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679119680"><span class="annot"><span class="annottext">(forall (g :: * -&gt; *). Functor g =&gt; Functor (StateT s mm g)) =&gt;
+(forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+ (Functor g, Functor h) =&gt;
+ (g ~&gt; h) -&gt; StateT s mm g x -&gt; StateT s mm h x)
+-&gt; FFunctor (StateT s mm)
+forall (g :: * -&gt; *). Functor g =&gt; Functor (StateT s mm g)
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s mm g x -&gt; StateT s mm h x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FFunctor mm, Functor s, Functor g) =&gt;
+Functor (StateT s mm g)
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *)
+       (h :: * -&gt; *) x.
+(FFunctor mm, Functor s, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s mm g x -&gt; StateT s mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *).
+(forall (g :: * -&gt; *). Functor g =&gt; Functor (ff g)) =&gt;
+(forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+ (Functor g, Functor h) =&gt;
+ (g ~&gt; h) -&gt; ff g x -&gt; ff h x)
+-&gt; FFunctor ff
+$cffmap :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *)
+       (h :: * -&gt; *) x.
+(FFunctor mm, Functor s, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s mm g x -&gt; StateT s mm h x
+ffmap :: forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; StateT s mm g x -&gt; StateT s mm h x
+</span><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">FFunctor</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119700"><span id="local-6989586621679119707"><span class="annot"><span class="annottext">FFunctor (StateT s mm)
+FFunctor (StateT s mm) =&gt;
+(forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s mm g)
+-&gt; (forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+    (Functor g, Functor h) =&gt;
+    (g ~&gt; StateT s mm h) -&gt; StateT s mm g a -&gt; StateT s mm h a)
+-&gt; FMonad (StateT s mm)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s mm g
+forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; StateT s mm h) -&gt; StateT s mm g a -&gt; StateT s mm h a
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *).
+(Functor s, FMonad mm) =&gt;
+FFunctor (StateT s mm)
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(Functor s, FMonad mm, Functor g) =&gt;
+g ~&gt; StateT s mm g
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *)
+       (h :: * -&gt; *) a.
+(Functor s, FMonad mm, Functor g, Functor h) =&gt;
+(g ~&gt; StateT s mm h) -&gt; StateT s mm g a -&gt; StateT s mm h a
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *).
+FFunctor ff =&gt;
+(forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; ff g)
+-&gt; (forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+    (Functor g, Functor h) =&gt;
+    (g ~&gt; ff h) -&gt; ff g a -&gt; ff h a)
+-&gt; FMonad ff
+$cfpure :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(Functor s, FMonad mm, Functor g) =&gt;
+g ~&gt; StateT s mm g
+fpure :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s mm g
+$cfbind :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *)
+       (h :: * -&gt; *) a.
+(Functor s, FMonad mm, Functor g, Functor h) =&gt;
+(g ~&gt; StateT s mm h) -&gt; StateT s mm g a -&gt; StateT s mm h a
+fbind :: forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; StateT s mm h) -&gt; StateT s mm g a -&gt; StateT s mm h a
+</span><a href="FMonad.html#FMonad"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FMonad</span></a></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119371"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Curried</span></span><span> </span><span class="annot"><a href="#local-6989586621679119371"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119372"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span id="local-6989586621679119433"><span id="local-6989586621679119434"><span id="local-6989586621679119435"><span class="annot"><a href="FMonad.State.Day.html#toAdjointT"><span class="hs-identifier hs-type">toAdjointT</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119433"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119434"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119435"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119433"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Curried</span></span><span> </span><span class="annot"><a href="#local-6989586621679119433"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119434"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119435"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-40"></span><span id="toAdjointT"><span class="annot"><span class="annottext">toAdjointT :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+StateT s mm x x -&gt; AdjointT (Day s) (Curried s) mm x x
+</span><a href="FMonad.State.Day.html#toAdjointT"><span class="hs-identifier hs-var hs-var">toAdjointT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">StateT s mm x x -&gt; AdjointT (Day s) (Curried s) mm x x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span id="local-6989586621679119441"><span id="local-6989586621679119442"><span id="local-6989586621679119443"><span class="annot"><a href="FMonad.State.Day.html#fromAdjointT"><span class="hs-identifier hs-type">fromAdjointT</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119441"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Curried</span></span><span> </span><span class="annot"><a href="#local-6989586621679119441"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119442"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119443"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119441"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119442"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119443"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-43"></span><span id="fromAdjointT"><span class="annot"><span class="annottext">fromAdjointT :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+AdjointT (Day s) (Curried s) mm x x -&gt; StateT s mm x x
+</span><a href="FMonad.State.Day.html#fromAdjointT"><span class="hs-identifier hs-var hs-var">fromAdjointT</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AdjointT (Day s) (Curried s) mm x x -&gt; StateT s mm x x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span id="local-6989586621679119448"><span id="local-6989586621679119449"><span id="local-6989586621679119451"><span class="annot"><a href="FMonad.State.Day.html#flift"><span class="hs-identifier hs-type">flift</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119448"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119449"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119451"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119449"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119451"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119448"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119449"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119451"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-47"></span><span id="flift"><span class="annot"><span class="annottext">flift :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *).
+(Functor s, FStrong mm, Functor x) =&gt;
+mm x ~&gt; StateT s mm x
+</span><a href="FMonad.State.Day.html#flift"><span class="hs-identifier hs-var hs-var">flift</span></a></span></span><span> </span><span id="local-6989586621679119725"><span class="annot"><span class="annottext">mm x x
+</span><a href="#local-6989586621679119725"><span class="hs-identifier hs-var">mm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. s (x -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+(forall r. s (a -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. s (x -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x x)
+-&gt; (forall r. s (x -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679119728"><span class="annot"><span class="annottext">s (x -&gt; r)
+</span><a href="#local-6989586621679119728"><span class="hs-identifier hs-var">sf</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day s (mm x) r -&gt; mm (Day s x) r
+Day s (mm x) ~&gt; mm (Day s x)
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (h :: * -&gt; *) (g :: * -&gt; *).
+(FStrong ff, Functor h) =&gt;
+Day g (ff h) ~&gt; ff (Day g h)
+</span><a href="FStrong.html#fstrength%27"><span class="hs-identifier hs-var">fstrength'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s (x -&gt; r) -&gt; mm x x -&gt; Day s (mm x) r
+forall (f :: * -&gt; *) a b (g :: * -&gt; *).
+f (a -&gt; b) -&gt; g a -&gt; Day f g b
+</span><span class="hs-identifier hs-var">day</span></span><span> </span><span class="annot"><span class="annottext">s (x -&gt; r)
+</span><a href="#local-6989586621679119728"><span class="hs-identifier hs-var">sf</span></a></span><span> </span><span class="annot"><span class="annottext">mm x x
+</span><a href="#local-6989586621679119725"><span class="hs-identifier hs-var">mm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span id="local-6989586621679119467"><span id="local-6989586621679119468"><span id="local-6989586621679119469"><span class="annot"><a href="FMonad.State.Day.html#toOuter"><span class="hs-identifier hs-type">toOuter</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119467"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119468"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119469"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119468"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119467"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">Simple.Outer.StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119469"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119468"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119467"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-50"></span><span id="toOuter"><span class="annot"><span class="annottext">toOuter :: forall (x :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) s0.
+(Functor x, FFunctor mm) =&gt;
+StateT ((,) s0) mm x ~&gt; StateT s0 mm x
+</span><a href="FMonad.State.Day.html#toOuter"><span class="hs-identifier hs-var hs-var">toOuter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AdjointT (EnvT s0) (ReaderT s0) mm x x -&gt; StateT s0 mm x x
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x1 :: * -&gt; *) x2.
+AdjointT (EnvT s0) (ReaderT s0) mm x1 x2 -&gt; StateT s0 mm x1 x2
+</span><a href="FMonad.State.Simple.Outer.html#fromAdjointT"><span class="hs-identifier hs-var">Simple.Outer.fromAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (EnvT s0) (ReaderT s0) mm x x -&gt; StateT s0 mm x x)
+-&gt; (StateT ((,) s0) mm x x
+    -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x)
+-&gt; StateT ((,) s0) mm x x
+-&gt; StateT s0 mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ReaderT s0 (mm (EnvT s0 x)) x
+-&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x
+forall {k} {k1} {k2} {k3} (ff :: k -&gt; k1) (uu :: k2 -&gt; k3 -&gt; *)
+       (mm :: k1 -&gt; k2) (g :: k) (x :: k3).
+uu (mm (ff g)) x -&gt; AdjointT ff uu mm g x
+</span><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(ReaderT s0 (mm (EnvT s0 x)) x
+ -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x)
+-&gt; (StateT ((,) s0) mm x x -&gt; ReaderT s0 (mm (EnvT s0 x)) x)
+-&gt; StateT ((,) s0) mm x x
+-&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(mm (Day ((,) s0) x) ~&gt; mm (EnvT s0 x))
+-&gt; ReaderT s0 (mm (Day ((,) s0) x)) x
+-&gt; ReaderT s0 (mm (EnvT s0 x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ReaderT s0 g x -&gt; ReaderT s0 h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Day ((,) s0) x ~&gt; EnvT s0 x)
+-&gt; mm (Day ((,) s0) x) x -&gt; mm (EnvT s0 x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">Day ((,) s0) x x -&gt; EnvT s0 x x
+Day ((,) s0) x ~&gt; EnvT s0 x
+forall (f :: * -&gt; *) s0. Functor f =&gt; Day ((,) s0) f ~&gt; EnvT s0 f
+</span><a href="Data.Functor.Day.Extra.html#dayToEnv"><span class="hs-identifier hs-var">dayToEnv</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ReaderT s0 (mm (Day ((,) s0) x)) x
+ -&gt; ReaderT s0 (mm (EnvT s0 x)) x)
+-&gt; (StateT ((,) s0) mm x x -&gt; ReaderT s0 (mm (Day ((,) s0) x)) x)
+-&gt; StateT ((,) s0) mm x x
+-&gt; ReaderT s0 (mm (EnvT s0 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Curried ((,) s0) (mm (Day ((,) s0) x)) x
+-&gt; ReaderT s0 (mm (Day ((,) s0) x)) x
+forall s0 (f :: * -&gt; *) x. Curried ((,) s0) f x -&gt; ReaderT s0 f x
+</span><a href="Data.Functor.Day.Extra.html#curriedToReader"><span class="hs-identifier hs-var">curriedToReader</span></a></span><span> </span><span class="annot"><span class="annottext">(Curried ((,) s0) (mm (Day ((,) s0) x)) x
+ -&gt; ReaderT s0 (mm (Day ((,) s0) x)) x)
+-&gt; (StateT ((,) s0) mm x x
+    -&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x)
+-&gt; StateT ((,) s0) mm x x
+-&gt; ReaderT s0 (mm (Day ((,) s0) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+-&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x
+forall {k1} {k2} {k3} {k4} (ff :: k1 -&gt; k2) (uu :: k3 -&gt; k4 -&gt; *)
+       (mm :: k2 -&gt; k3) (g :: k1) (x :: k4).
+AdjointT ff uu mm g x -&gt; uu (mm (ff g)) x
+</span><a href="FMonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+ -&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x)
+-&gt; (StateT ((,) s0) mm x x
+    -&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x)
+-&gt; StateT ((,) s0) mm x x
+-&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">StateT ((,) s0) mm x x
+-&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+StateT s mm x x -&gt; AdjointT (Day s) (Curried s) mm x x
+</span><a href="FMonad.State.Day.html#toAdjointT"><span class="hs-identifier hs-var">toAdjointT</span></a></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span id="local-6989586621679119514"><span id="local-6989586621679119515"><span id="local-6989586621679119516"><span class="annot"><a href="FMonad.State.Day.html#fromOuter"><span class="hs-identifier hs-type">fromOuter</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119514"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119515"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Outer.html#StateT"><span class="hs-identifier hs-type">Simple.Outer.StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119516"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119515"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119514"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119516"><span class="hs-identifier hs-type">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119515"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119514"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-53"></span><span id="fromOuter"><span class="annot"><span class="annottext">fromOuter :: forall (x :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) s0.
+(Functor x, FFunctor mm) =&gt;
+StateT s0 mm x ~&gt; StateT ((,) s0) mm x
+</span><a href="FMonad.State.Day.html#fromOuter"><span class="hs-identifier hs-var hs-var">fromOuter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+-&gt; StateT ((,) s0) mm x x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+AdjointT (Day s) (Curried s) mm x x -&gt; StateT s mm x x
+</span><a href="FMonad.State.Day.html#fromAdjointT"><span class="hs-identifier hs-var">fromAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+ -&gt; StateT ((,) s0) mm x x)
+-&gt; (StateT s0 mm x x
+    -&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x)
+-&gt; StateT s0 mm x x
+-&gt; StateT ((,) s0) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Curried ((,) s0) (mm (Day ((,) s0) x)) x
+-&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+forall {k} {k1} {k2} {k3} (ff :: k -&gt; k1) (uu :: k2 -&gt; k3 -&gt; *)
+       (mm :: k1 -&gt; k2) (g :: k) (x :: k3).
+uu (mm (ff g)) x -&gt; AdjointT ff uu mm g x
+</span><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(Curried ((,) s0) (mm (Day ((,) s0) x)) x
+ -&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x)
+-&gt; (StateT s0 mm x x -&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x)
+-&gt; StateT s0 mm x x
+-&gt; AdjointT (Day ((,) s0)) (Curried ((,) s0)) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(mm (EnvT s0 x) ~&gt; mm (Day ((,) s0) x))
+-&gt; Curried ((,) s0) (mm (EnvT s0 x)) x
+-&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Curried ((,) s0) g x -&gt; Curried ((,) s0) h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(EnvT s0 x ~&gt; Day ((,) s0) x)
+-&gt; mm (EnvT s0 x) x -&gt; mm (Day ((,) s0) x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">EnvT s0 x x -&gt; Day ((,) s0) x x
+EnvT s0 x ~&gt; Day ((,) s0) x
+forall s0 (f :: * -&gt; *) x. EnvT s0 f x -&gt; Day ((,) s0) f x
+</span><a href="Data.Functor.Day.Extra.html#envToDay"><span class="hs-identifier hs-var">envToDay</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Curried ((,) s0) (mm (EnvT s0 x)) x
+ -&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x)
+-&gt; (StateT s0 mm x x -&gt; Curried ((,) s0) (mm (EnvT s0 x)) x)
+-&gt; StateT s0 mm x x
+-&gt; Curried ((,) s0) (mm (Day ((,) s0) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ReaderT s0 (mm (EnvT s0 x)) x
+-&gt; Curried ((,) s0) (mm (EnvT s0 x)) x
+ReaderT s0 (mm (EnvT s0 x)) ~&gt; Curried ((,) s0) (mm (EnvT s0 x))
+forall (f :: * -&gt; *) s0.
+Functor f =&gt;
+ReaderT s0 f ~&gt; Curried ((,) s0) f
+</span><a href="Data.Functor.Day.Extra.html#readerToCurried"><span class="hs-identifier hs-var">readerToCurried</span></a></span><span> </span><span class="annot"><span class="annottext">(ReaderT s0 (mm (EnvT s0 x)) x
+ -&gt; Curried ((,) s0) (mm (EnvT s0 x)) x)
+-&gt; (StateT s0 mm x x -&gt; ReaderT s0 (mm (EnvT s0 x)) x)
+-&gt; StateT s0 mm x x
+-&gt; Curried ((,) s0) (mm (EnvT s0 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT (EnvT s0) (ReaderT s0) mm x x
+-&gt; ReaderT s0 (mm (EnvT s0 x)) x
+forall {k1} {k2} {k3} {k4} (ff :: k1 -&gt; k2) (uu :: k3 -&gt; k4 -&gt; *)
+       (mm :: k2 -&gt; k3) (g :: k1) (x :: k4).
+AdjointT ff uu mm g x -&gt; uu (mm (ff g)) x
+</span><a href="FMonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (EnvT s0) (ReaderT s0) mm x x
+ -&gt; ReaderT s0 (mm (EnvT s0 x)) x)
+-&gt; (StateT s0 mm x x -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x)
+-&gt; StateT s0 mm x x
+-&gt; ReaderT s0 (mm (EnvT s0 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">StateT s0 mm x x -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x x
+forall s0 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x1 :: * -&gt; *) x2.
+StateT s0 mm x1 x2 -&gt; AdjointT (EnvT s0) (ReaderT s0) mm x1 x2
+</span><a href="FMonad.State.Simple.Outer.html#toAdjointT"><span class="hs-identifier hs-var">Simple.Outer.toAdjointT</span></a></span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span id="local-6989586621679119533"><span id="local-6989586621679119534"><span id="local-6989586621679119535"><span class="annot"><a href="FMonad.State.Day.html#toInner"><span class="hs-identifier hs-type">toInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119533"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119534"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-glyph">-&gt;</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119535"><span class="hs-identifier hs-type">s1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119534"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119533"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Simple.Inner.html#StateT"><span class="hs-identifier hs-type">Simple.Inner.StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119535"><span class="hs-identifier hs-type">s1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119534"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119533"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-56"></span><span id="toInner"><span class="annot"><span class="annottext">toInner :: forall (x :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) s1.
+(Functor x, FFunctor mm) =&gt;
+StateT ((-&gt;) s1) mm x ~&gt; StateT s1 mm x
+</span><a href="FMonad.State.Day.html#toInner"><span class="hs-identifier hs-var hs-var">toInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AdjointT (TracedT s1) (WriterT s1) mm x x -&gt; StateT s1 mm x x
+forall s1 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x1 :: * -&gt; *) x2.
+AdjointT (TracedT s1) (WriterT s1) mm x1 x2 -&gt; StateT s1 mm x1 x2
+</span><a href="FMonad.State.Simple.Inner.html#fromAdjointT"><span class="hs-identifier hs-var">Simple.Inner.fromAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (TracedT s1) (WriterT s1) mm x x -&gt; StateT s1 mm x x)
+-&gt; (StateT ((-&gt;) s1) mm x x
+    -&gt; AdjointT (TracedT s1) (WriterT s1) mm x x)
+-&gt; StateT ((-&gt;) s1) mm x x
+-&gt; StateT s1 mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">WriterT s1 (mm (TracedT s1 x)) x
+-&gt; AdjointT (TracedT s1) (WriterT s1) mm x x
+forall {k} {k1} {k2} {k3} (ff :: k -&gt; k1) (uu :: k2 -&gt; k3 -&gt; *)
+       (mm :: k1 -&gt; k2) (g :: k) (x :: k3).
+uu (mm (ff g)) x -&gt; AdjointT ff uu mm g x
+</span><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(WriterT s1 (mm (TracedT s1 x)) x
+ -&gt; AdjointT (TracedT s1) (WriterT s1) mm x x)
+-&gt; (StateT ((-&gt;) s1) mm x x -&gt; WriterT s1 (mm (TracedT s1 x)) x)
+-&gt; StateT ((-&gt;) s1) mm x x
+-&gt; AdjointT (TracedT s1) (WriterT s1) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(mm (Day ((-&gt;) s1) x) ~&gt; mm (TracedT s1 x))
+-&gt; WriterT s1 (mm (Day ((-&gt;) s1) x)) x
+-&gt; WriterT s1 (mm (TracedT s1 x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; WriterT s1 g x -&gt; WriterT s1 h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Day ((-&gt;) s1) x ~&gt; TracedT s1 x)
+-&gt; mm (Day ((-&gt;) s1) x) x -&gt; mm (TracedT s1 x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">Day ((-&gt;) s1) x x -&gt; TracedT s1 x x
+Day ((-&gt;) s1) x ~&gt; TracedT s1 x
+forall (f :: * -&gt; *) s1.
+Functor f =&gt;
+Day ((-&gt;) s1) f ~&gt; TracedT s1 f
+</span><a href="Data.Functor.Day.Extra.html#dayToTraced"><span class="hs-identifier hs-var">dayToTraced</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(WriterT s1 (mm (Day ((-&gt;) s1) x)) x
+ -&gt; WriterT s1 (mm (TracedT s1 x)) x)
+-&gt; (StateT ((-&gt;) s1) mm x x -&gt; WriterT s1 (mm (Day ((-&gt;) s1) x)) x)
+-&gt; StateT ((-&gt;) s1) mm x x
+-&gt; WriterT s1 (mm (TracedT s1 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+-&gt; WriterT s1 (mm (Day ((-&gt;) s1) x)) x
+forall s1 (f :: * -&gt; *) x. Curried ((-&gt;) s1) f x -&gt; WriterT s1 f x
+</span><a href="Data.Functor.Day.Extra.html#curriedToWriter"><span class="hs-identifier hs-var">curriedToWriter</span></a></span><span> </span><span class="annot"><span class="annottext">(Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+ -&gt; WriterT s1 (mm (Day ((-&gt;) s1) x)) x)
+-&gt; (StateT ((-&gt;) s1) mm x x
+    -&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x)
+-&gt; StateT ((-&gt;) s1) mm x x
+-&gt; WriterT s1 (mm (Day ((-&gt;) s1) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+-&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+forall {k1} {k2} {k3} {k4} (ff :: k1 -&gt; k2) (uu :: k3 -&gt; k4 -&gt; *)
+       (mm :: k2 -&gt; k3) (g :: k1) (x :: k4).
+AdjointT ff uu mm g x -&gt; uu (mm (ff g)) x
+</span><a href="FMonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+ -&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x)
+-&gt; (StateT ((-&gt;) s1) mm x x
+    -&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x)
+-&gt; StateT ((-&gt;) s1) mm x x
+-&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">StateT ((-&gt;) s1) mm x x
+-&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+StateT s mm x x -&gt; AdjointT (Day s) (Curried s) mm x x
+</span><a href="FMonad.State.Day.html#toAdjointT"><span class="hs-identifier hs-var">toAdjointT</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span id="local-6989586621679119557"><span id="local-6989586621679119558"><span id="local-6989586621679119559"><span class="annot"><a href="FMonad.State.Day.html#fromInner"><span class="hs-identifier hs-type">fromInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119557"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119558"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Simple.Inner.html#StateT"><span class="hs-identifier hs-type">Simple.Inner.StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119559"><span class="hs-identifier hs-type">s1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119558"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119557"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-glyph">-&gt;</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119559"><span class="hs-identifier hs-type">s1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679119558"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119557"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-59"></span><span id="fromInner"><span class="annot"><span class="annottext">fromInner :: forall (x :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) s1.
+(Functor x, FFunctor mm) =&gt;
+StateT s1 mm x ~&gt; StateT ((-&gt;) s1) mm x
+</span><a href="FMonad.State.Day.html#fromInner"><span class="hs-identifier hs-var hs-var">fromInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+-&gt; StateT ((-&gt;) s1) mm x x
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) x.
+AdjointT (Day s) (Curried s) mm x x -&gt; StateT s mm x x
+</span><a href="FMonad.State.Day.html#fromAdjointT"><span class="hs-identifier hs-var">fromAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+ -&gt; StateT ((-&gt;) s1) mm x x)
+-&gt; (StateT s1 mm x x
+    -&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x)
+-&gt; StateT s1 mm x x
+-&gt; StateT ((-&gt;) s1) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+-&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+forall {k} {k1} {k2} {k3} (ff :: k -&gt; k1) (uu :: k2 -&gt; k3 -&gt; *)
+       (mm :: k1 -&gt; k2) (g :: k) (x :: k3).
+uu (mm (ff g)) x -&gt; AdjointT ff uu mm g x
+</span><a href="FMonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+ -&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x)
+-&gt; (StateT s1 mm x x -&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x)
+-&gt; StateT s1 mm x x
+-&gt; AdjointT (Day ((-&gt;) s1)) (Curried ((-&gt;) s1)) mm x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(mm (TracedT s1 x) ~&gt; mm (Day ((-&gt;) s1) x))
+-&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x)) x
+-&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Curried ((-&gt;) s1) g x -&gt; Curried ((-&gt;) s1) h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TracedT s1 x ~&gt; Day ((-&gt;) s1) x)
+-&gt; mm (TracedT s1 x) x -&gt; mm (Day ((-&gt;) s1) x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">TracedT s1 x x -&gt; Day ((-&gt;) s1) x x
+TracedT s1 x ~&gt; Day ((-&gt;) s1) x
+forall s1 (f :: * -&gt; *) x. TracedT s1 f x -&gt; Day ((-&gt;) s1) f x
+</span><a href="Data.Functor.Day.Extra.html#tracedToDay"><span class="hs-identifier hs-var">tracedToDay</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Curried ((-&gt;) s1) (mm (TracedT s1 x)) x
+ -&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x)
+-&gt; (StateT s1 mm x x -&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x)) x)
+-&gt; StateT s1 mm x x
+-&gt; Curried ((-&gt;) s1) (mm (Day ((-&gt;) s1) x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">WriterT s1 (mm (TracedT s1 x)) x
+-&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x)) x
+WriterT s1 (mm (TracedT s1 x))
+~&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x))
+forall (f :: * -&gt; *) s1.
+Functor f =&gt;
+WriterT s1 f ~&gt; Curried ((-&gt;) s1) f
+</span><a href="Data.Functor.Day.Extra.html#writerToCurried"><span class="hs-identifier hs-var">writerToCurried</span></a></span><span> </span><span class="annot"><span class="annottext">(WriterT s1 (mm (TracedT s1 x)) x
+ -&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x)) x)
+-&gt; (StateT s1 mm x x -&gt; WriterT s1 (mm (TracedT s1 x)) x)
+-&gt; StateT s1 mm x x
+-&gt; Curried ((-&gt;) s1) (mm (TracedT s1 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT (TracedT s1) (WriterT s1) mm x x
+-&gt; WriterT s1 (mm (TracedT s1 x)) x
+forall {k1} {k2} {k3} {k4} (ff :: k1 -&gt; k2) (uu :: k3 -&gt; k4 -&gt; *)
+       (mm :: k2 -&gt; k3) (g :: k1) (x :: k4).
+AdjointT ff uu mm g x -&gt; uu (mm (ff g)) x
+</span><a href="FMonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT (TracedT s1) (WriterT s1) mm x x
+ -&gt; WriterT s1 (mm (TracedT s1 x)) x)
+-&gt; (StateT s1 mm x x -&gt; AdjointT (TracedT s1) (WriterT s1) mm x x)
+-&gt; StateT s1 mm x x
+-&gt; WriterT s1 (mm (TracedT s1 x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">StateT s1 mm x x -&gt; AdjointT (TracedT s1) (WriterT s1) mm x x
+forall s1 (mm :: (* -&gt; *) -&gt; * -&gt; *) (x1 :: * -&gt; *) x2.
+StateT s1 mm x1 x2 -&gt; AdjointT (TracedT s1) (WriterT s1) mm x1 x2
+</span><a href="FMonad.State.Simple.Inner.html#toAdjointT"><span class="hs-identifier hs-var">Simple.Inner.toAdjointT</span></a></span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">type</span><span> </span><span id="State"><span class="annot"><a href="FMonad.State.Day.html#State"><span class="hs-identifier hs-var">State</span></a></span></span><span> </span><span id="local-6989586621679119804"><span class="annot"><a href="#local-6989586621679119804"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IdentityT</span></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span id="local-6989586621679119576"><span id="local-6989586621679119577"><span id="local-6989586621679119578"><span id="local-6989586621679119580"><span class="annot"><a href="FMonad.State.Day.html#state"><span class="hs-identifier hs-type">state</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119576"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679119579"><span class="annot"><a href="#local-6989586621679119579"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679119577"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679119578"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119579"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119577"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119580"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119579"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119577"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119576"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119580"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119578"><span class="hs-identifier hs-type">a</span></a></span></span></span></span></span><span>
+</span><span id="line-66"></span><span id="state"><span class="annot"><span class="annottext">state :: forall (mm :: (* -&gt; *) -&gt; * -&gt; *) (s :: * -&gt; *) a (x :: * -&gt; *).
+FMonad mm =&gt;
+(forall r. s (a -&gt; r) -&gt; Day s x r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#state"><span class="hs-identifier hs-var hs-var">state</span></a></span></span><span> </span><span id="local-6989586621679119806"><span class="annot"><span class="annottext">forall r. s (a -&gt; r) -&gt; Day s x r
+</span><a href="#local-6989586621679119806"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. s (a -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x a
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+(forall r. s (a -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-var">StateT</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. s (a -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x a)
+-&gt; (forall r. s (a -&gt; r) -&gt; mm (Day s x) r) -&gt; StateT s mm x a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679119809"><span class="annot"><span class="annottext">s (a -&gt; r)
+</span><a href="#local-6989586621679119809"><span class="hs-identifier hs-var">sar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day s x r -&gt; mm (Day s x) r
+Day s x ~&gt; mm (Day s x)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; mm g
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad ff, Functor g) =&gt;
+g ~&gt; ff g
+</span><a href="FMonad.html#fpure"><span class="hs-identifier hs-var">fpure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s (a -&gt; r) -&gt; Day s x r
+forall r. s (a -&gt; r) -&gt; Day s x r
+</span><a href="#local-6989586621679119806"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">s (a -&gt; r)
+</span><a href="#local-6989586621679119809"><span class="hs-identifier hs-var">sar</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span id="local-6989586621679119586"><span id="local-6989586621679119587"><span id="local-6989586621679119589"><span id="local-6989586621679119590"><span class="annot"><a href="FMonad.State.Day.html#state_"><span class="hs-identifier hs-type">state_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679119586"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119587"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679119588"><span class="annot"><a href="#local-6989586621679119588"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679119586"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119588"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679119586"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119588"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679119589"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119590"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119586"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119587"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119589"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119590"><span class="hs-identifier hs-type">a</span></a></span></span></span></span></span><span>
+</span><span id="line-71"></span><span id="state_"><span class="annot"><span class="annottext">state_ :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+(Functor s, FMonad mm) =&gt;
+(forall b. s b -&gt; (s b, x a)) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#state_"><span class="hs-identifier hs-var hs-var">state_</span></a></span></span><span> </span><span id="local-6989586621679119814"><span class="annot"><span class="annottext">forall b. s b -&gt; (s b, x a)
+</span><a href="#local-6989586621679119814"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. s (a -&gt; r) -&gt; Day s x r) -&gt; StateT s mm x a
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) (s :: * -&gt; *) a (x :: * -&gt; *).
+FMonad mm =&gt;
+(forall r. s (a -&gt; r) -&gt; Day s x r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#state"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(s (a -&gt; r) -&gt; x a -&gt; Day s x r) -&gt; (s (a -&gt; r), x a) -&gt; Day s x r
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><span class="hs-identifier hs-var">uncurry</span></span><span> </span><span class="annot"><span class="annottext">s (a -&gt; r) -&gt; x a -&gt; Day s x r
+forall (f :: * -&gt; *) a b (g :: * -&gt; *).
+f (a -&gt; b) -&gt; g a -&gt; Day f g b
+</span><span class="hs-identifier hs-var">day</span></span><span> </span><span class="annot"><span class="annottext">((s (a -&gt; r), x a) -&gt; Day s x r)
+-&gt; (s (a -&gt; r) -&gt; (s (a -&gt; r), x a)) -&gt; s (a -&gt; r) -&gt; Day s x r
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">s (a -&gt; r) -&gt; (s (a -&gt; r), x a)
+forall b. s b -&gt; (s b, x a)
+</span><a href="#local-6989586621679119814"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span id="local-6989586621679119599"><span id="local-6989586621679119601"><span class="annot"><a href="FMonad.State.Day.html#get"><span class="hs-identifier hs-type">get</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679119599"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119601"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119599"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119601"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119599"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-74"></span><span id="get"><span class="annot"><span class="annottext">get :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *).
+(Comonoid s, FMonad mm) =&gt;
+StateT s mm s ()
+</span><a href="FMonad.State.Day.html#get"><span class="hs-identifier hs-var hs-var">get</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. s (() -&gt; r) -&gt; Day s s r) -&gt; StateT s mm s ()
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) (s :: * -&gt; *) a (x :: * -&gt; *).
+FMonad mm =&gt;
+(forall r. s (a -&gt; r) -&gt; Day s x r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#state"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((() -&gt; r) -&gt; r) -&gt; Day s s (() -&gt; r) -&gt; Day s s r
+forall a b. (a -&gt; b) -&gt; Day s s a -&gt; Day s s b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(() -&gt; r) -&gt; () -&gt; r
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Day s s (() -&gt; r) -&gt; Day s s r)
+-&gt; (s (() -&gt; r) -&gt; Day s s (() -&gt; r)) -&gt; s (() -&gt; r) -&gt; Day s s r
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">s (() -&gt; r) -&gt; Day s s (() -&gt; r)
+forall a. s a -&gt; Day s s a
+forall (f :: * -&gt; *) a. Comonoid f =&gt; f a -&gt; Day f f a
+</span><span class="hs-identifier hs-var">coapply</span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span id="local-6989586621679119607"><span id="local-6989586621679119609"><span id="local-6989586621679119610"><span class="annot"><a href="FMonad.State.Day.html#put"><span class="hs-identifier hs-type">put</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679119607"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119609"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119607"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119610"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#StateT"><span class="hs-identifier hs-type">StateT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119607"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119609"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span> </span><span class="annot"><a href="#local-6989586621679119610"><span class="hs-identifier hs-type">a</span></a></span></span></span></span><span>
+</span><span id="line-77"></span><span id="put"><span class="annot"><span class="annottext">put :: forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) a.
+(Comonad s, FMonad mm) =&gt;
+s a -&gt; StateT s mm Identity a
+</span><a href="FMonad.State.Day.html#put"><span class="hs-identifier hs-var hs-var">put</span></a></span></span><span> </span><span id="local-6989586621679119825"><span class="annot"><span class="annottext">s a
+</span><a href="#local-6989586621679119825"><span class="hs-identifier hs-var">sa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. s (a -&gt; r) -&gt; Day s Identity r)
+-&gt; StateT s mm Identity a
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) (s :: * -&gt; *) a (x :: * -&gt; *).
+FMonad mm =&gt;
+(forall r. s (a -&gt; r) -&gt; Day s x r) -&gt; StateT s mm x a
+</span><a href="FMonad.State.Day.html#state"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679119827"><span class="annot"><span class="annottext">s (a -&gt; r)
+</span><a href="#local-6989586621679119827"><span class="hs-identifier hs-var">sar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">s a
+-&gt; Identity (a -&gt; r) -&gt; (a -&gt; (a -&gt; r) -&gt; r) -&gt; Day s Identity r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b c.
+f b -&gt; g c -&gt; (b -&gt; c -&gt; a) -&gt; Day f g a
+</span><span class="hs-identifier hs-var">Day</span></span><span> </span><span class="annot"><span class="annottext">s a
+</span><a href="#local-6989586621679119825"><span class="hs-identifier hs-var">sa</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; r) -&gt; Identity (a -&gt; r)
+forall a. a -&gt; Identity a
+</span><span class="hs-identifier hs-var">Identity</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s (a -&gt; r) -&gt; a -&gt; r
+forall a. s a -&gt; a
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">s (a -&gt; r)
+</span><a href="#local-6989586621679119827"><span class="hs-identifier hs-var">sar</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; (a -&gt; r) -&gt; r
+forall a b. a -&gt; (a -&gt; b) -&gt; b
+</span><span class="hs-operator hs-var">(&amp;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span id="local-6989586621679119626"><span id="local-6989586621679119627"><span id="local-6989586621679119628"><span id="local-6989586621679119630"><span class="annot"><a href="FMonad.State.Day.html#runState"><span class="hs-identifier hs-type">runState</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FMonad.State.Day.html#State"><span class="hs-identifier hs-type">State</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119626"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119627"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119628"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119626"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679119628"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679119630"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679119626"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119627"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679119630"><span class="hs-identifier hs-type">r</span></a></span></span></span></span></span><span>
+</span><span id="line-80"></span><span id="runState"><span class="annot"><span class="annottext">runState :: forall (s :: * -&gt; *) (x :: * -&gt; *) a r.
+State s x a -&gt; s (a -&gt; r) -&gt; Day s x r
+</span><a href="FMonad.State.Day.html#runState"><span class="hs-identifier hs-var hs-var">runState</span></a></span></span><span> </span><span id="local-6989586621679119831"><span class="annot"><span class="annottext">State s x a
+</span><a href="#local-6989586621679119831"><span class="hs-identifier hs-var">sx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IdentityT (Day s x) r -&gt; Day s x r
+forall {k} (f :: k -&gt; *) (a :: k). IdentityT f a -&gt; f a
+</span><span class="hs-identifier hs-var">runIdentityT</span></span><span> </span><span class="annot"><span class="annottext">(IdentityT (Day s x) r -&gt; Day s x r)
+-&gt; (s (a -&gt; r) -&gt; IdentityT (Day s x) r) -&gt; s (a -&gt; r) -&gt; Day s x r
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">State s x a -&gt; forall r. s (a -&gt; r) -&gt; IdentityT (Day s x) r
+forall (s :: * -&gt; *) (mm :: (* -&gt; *) -&gt; * -&gt; *) (x :: * -&gt; *) a.
+StateT s mm x a -&gt; forall r. s (a -&gt; r) -&gt; mm (Day s x) r
+</span><a href="FMonad.State.Day.html#runStateT"><span class="hs-identifier hs-var">runStateT</span></a></span><span> </span><span class="annot"><span class="annottext">State s x a
+</span><a href="#local-6989586621679119831"><span class="hs-identifier hs-var">sx</span></a></span><span>
+</span><span id="line-81"></span></pre></body></html>

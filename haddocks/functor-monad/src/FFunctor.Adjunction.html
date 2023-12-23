@@ -1,0 +1,760 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ExistentialQuantification #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE InstanceSigs #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE TypeApplications #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-10"></span><span class="hs-pragma">{-# LANGUAGE FunctionalDependencies #-}</span><span>
+</span><span id="line-11"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-12"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-13"></span><span class="hs-pragma">{-# LANGUAGE BlockArguments #-}</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FFunctor.Adjunction</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier">Adjunction</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">coerce</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Coercible</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Constraint</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Identity</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day.Curried</span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Kan.Lan</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Kan.Ran</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html"><span class="hs-identifier">Data.Functor.Precompose</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier">Precompose</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Compose</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Compose</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor.Sum</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Bi</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor.Product</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Bi</span></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Data.Bifunctor.Product.Extra.html"><span class="hs-identifier">Data.Bifunctor.Product.Extra</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Bi</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Adjunction</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Reader</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Writer</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.State.Lazy</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Trans.Env</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Trans.Traced</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Trans.Store</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Rank1</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.html"><span class="hs-identifier">FFunctor</span></a></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html"><span class="hs-identifier">FFunctor.FCompose</span></a></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier">FCompose</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | An adjunction between \(\mathrm{Hask}^{\mathrm{Hask}}\) and \(\mathrm{Hask}^{\mathrm{Hask}}\).</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Constraint</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">class</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Adjunction"><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-var">Adjunction</span></a></span></span><span> </span><span id="local-6989586621679113997"><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679113998"><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-pragma">{-# MINIMAL</span><span> </span><span class="hs-pragma">(</span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-pragma hs-type">unit</span></a></span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-pragma hs-type">counit</span></a></span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">|</span><span> </span><span class="hs-pragma">(</span><span class="annot"><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-pragma hs-type">leftAdjunct</span></a></span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-pragma hs-type">rightAdjunct</span></a></span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-48"></span><span>    </span><span id="unit"><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114001"><span class="annot"><a href="#local-6989586621679114001"><span class="hs-identifier hs-type">g</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114001"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114001"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114001"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679114358"><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var">unit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ff g ~&gt; ff g) -&gt; g ~&gt; uu (ff g)
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var">leftAdjunct</span></a></span><span> </span><span class="annot"><span class="annottext">ff g x -&gt; ff g x
+forall a. a -&gt; a
+ff g ~&gt; ff g
+</span><span class="hs-identifier hs-var">id</span></span></span><span>
+</span><span id="line-50"></span><span>    </span><span id="counit"><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114011"><span class="annot"><a href="#local-6989586621679114011"><span class="hs-identifier hs-type">g</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114011"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114011"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114011"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679114367"><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var">counit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(uu g ~&gt; uu g) -&gt; ff (uu g) ~&gt; g
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span class="annot"><span class="annottext">uu g x -&gt; uu g x
+forall a. a -&gt; a
+uu g ~&gt; uu g
+</span><span class="hs-identifier hs-var">id</span></span></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span>    </span><span id="leftAdjunct"><span class="annot"><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-type">leftAdjunct</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114007"><span class="annot"><a href="#local-6989586621679114007"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679114008"><span class="annot"><a href="#local-6989586621679114008"><span class="hs-identifier hs-type">h</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114007"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114008"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114007"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114008"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114007"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114008"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679114374"><span class="annot"><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var hs-var">leftAdjunct</span></a></span><span> </span><span id="local-6989586621679114385"><span class="annot"><span class="annottext">ff g ~&gt; h
+</span><a href="#local-6989586621679114385"><span class="hs-identifier hs-var">ffg_h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ff g ~&gt; h) -&gt; uu (ff g) x -&gt; uu h x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; uu g x -&gt; uu h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">ff g x -&gt; h x
+ff g ~&gt; h
+</span><a href="#local-6989586621679114385"><span class="hs-identifier hs-var">ffg_h</span></a></span><span> </span><span class="annot"><span class="annottext">(uu (ff g) x -&gt; uu h x) -&gt; (g x -&gt; uu (ff g) x) -&gt; g x -&gt; uu h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; uu (ff g) x
+g ~&gt; uu (ff g)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; uu (ff g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span></span><span>
+</span><span id="line-55"></span><span>    </span><span id="rightAdjunct"><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-type">rightAdjunct</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114014"><span class="annot"><a href="#local-6989586621679114014"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679114015"><span class="annot"><a href="#local-6989586621679114015"><span class="hs-identifier hs-type">h</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114014"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114015"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114014"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679113998"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114015"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679113997"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114014"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114015"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621679114388"><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var hs-var">rightAdjunct</span></a></span><span> </span><span id="local-6989586621679114399"><span class="annot"><span class="annottext">g ~&gt; uu h
+</span><a href="#local-6989586621679114399"><span class="hs-identifier hs-var">g_uuh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (uu h) x -&gt; h x
+ff (uu h) ~&gt; h
+forall (g :: * -&gt; *). Functor g =&gt; ff (uu g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (uu h) x -&gt; h x) -&gt; (ff g x -&gt; ff (uu h) x) -&gt; ff g x -&gt; h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(g ~&gt; uu h) -&gt; ff g x -&gt; ff (uu h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">g x -&gt; uu h x
+g ~&gt; uu h
+</span><a href="#local-6989586621679114399"><span class="hs-identifier hs-var">g_uuh</span></a></span></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="annot"><a href="FFunctor.Adjunction.html#natCoerce"><span class="hs-identifier hs-type">natCoerce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114032"><span class="annot"><a href="#local-6989586621679114032"><span class="hs-identifier hs-type">f'</span></a></span></span><span> </span><span id="local-6989586621679114033"><span class="annot"><a href="#local-6989586621679114033"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679114034"><span class="annot"><a href="#local-6989586621679114034"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679114035"><span class="annot"><a href="#local-6989586621679114035"><span class="hs-identifier hs-type">g'</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="annot"><a href="#local-6989586621679114032"><span class="hs-identifier hs-type">f'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114033"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="annot"><a href="#local-6989586621679114034"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114035"><span class="hs-identifier hs-type">g'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114033"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114034"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114032"><span class="hs-identifier hs-type">f'</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114035"><span class="hs-identifier hs-type">g'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span id="natCoerce"><span class="annot"><span class="annottext">natCoerce :: forall {k} (f' :: k -&gt; *) (f :: k -&gt; *) (g :: k -&gt; *)
+       (g' :: k -&gt; *).
+(Coercible f' f, Coercible g g') =&gt;
+(f ~&gt; g) -&gt; f' ~&gt; g'
+</span><a href="FFunctor.Adjunction.html#natCoerce"><span class="hs-identifier hs-var hs-var">natCoerce</span></a></span></span><span> </span><span id="local-6989586621679114405"><span class="annot"><span class="annottext">f ~&gt; g
+</span><a href="#local-6989586621679114405"><span class="hs-identifier hs-var">fg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="#local-6989586621679114406"><span class="hs-identifier hs-type">f'g'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114045"><span class="annot"><a href="#local-6989586621679114045"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679114032"><span class="hs-identifier hs-type">f'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114045"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114035"><span class="hs-identifier hs-type">g'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114045"><span class="hs-identifier hs-type">x</span></a></span><span>
+</span><span id="line-61"></span><span>        </span><span id="local-6989586621679114406"><span class="annot"><span class="annottext">f'g' :: forall (x :: k). f' x -&gt; g' x
+</span><a href="#local-6989586621679114406"><span class="hs-identifier hs-var hs-var">f'g'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f x -&gt; g x) -&gt; f' x -&gt; g' x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f ~&gt; g
+</span><a href="#local-6989586621679114405"><span class="hs-identifier hs-var">fg</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679114045"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">f' x -&gt; g' x
+forall (x :: k). f' x -&gt; g' x
+</span><a href="#local-6989586621679114406"><span class="hs-identifier hs-var">f'g'</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IdentityT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IdentityT</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-65"></span><span>    </span><span id="local-6989586621679114421"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; IdentityT (IdentityT g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">g x -&gt; IdentityT (IdentityT g) x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679114424"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; IdentityT (IdentityT g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IdentityT (IdentityT g) x -&gt; g x
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621679114429"><span class="annot"><span class="annottext">leftAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(IdentityT g ~&gt; h) -&gt; g ~&gt; IdentityT h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">leftAdjunct</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(IdentityT g ~&gt; h) -&gt; g x -&gt; IdentityT h x
+(IdentityT g ~&gt; h) -&gt; g ~&gt; IdentityT h
+forall {k} (f' :: k -&gt; *) (f :: k -&gt; *) (g :: k -&gt; *)
+       (g' :: k -&gt; *).
+(Coercible f' f, Coercible g g') =&gt;
+(f ~&gt; g) -&gt; f' ~&gt; g'
+</span><a href="FFunctor.Adjunction.html#natCoerce"><span class="hs-identifier hs-var">natCoerce</span></a></span><span> </span><span>
+</span><span id="line-68"></span><span>    </span><span id="local-6989586621679114434"><span class="annot"><span class="annottext">rightAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; IdentityT h) -&gt; IdentityT g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">rightAdjunct</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(g ~&gt; IdentityT h) -&gt; IdentityT g x -&gt; h x
+(g ~&gt; IdentityT h) -&gt; IdentityT g ~&gt; h
+forall {k} (f' :: k -&gt; *) (f :: k -&gt; *) (g :: k -&gt; *)
+       (g' :: k -&gt; *).
+(Coercible f' f, Coercible g g') =&gt;
+(f ~&gt; g) -&gt; f' ~&gt; g'
+</span><a href="FFunctor.Adjunction.html#natCoerce"><span class="hs-identifier hs-var">natCoerce</span></a></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114062"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114062"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span class="annot"><a href="#local-6989586621679114062"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Curried</span></span><span> </span><span class="annot"><a href="#local-6989586621679114062"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>    </span><span id="local-6989586621679114448"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Curried f (Day f g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">g x -&gt; Curried f (Day f g) x
+forall (g :: * -&gt; *) a (f :: * -&gt; *). g a -&gt; Curried f (Day f g) a
+</span><span class="hs-identifier hs-var">unapplied</span></span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679114452"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; Day f (Curried f g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day f (Curried f g) x -&gt; g x
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Functor f =&gt;
+Day f (Curried f g) a -&gt; g a
+</span><span class="hs-identifier hs-var">applied</span></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679114456"><span class="annot"><span class="annottext">leftAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(Day f g ~&gt; h) -&gt; g ~&gt; Curried f h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">leftAdjunct</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall x. Day f g x -&gt; h x) -&gt; g x -&gt; Curried f h x
+forall (g :: * -&gt; *) (k :: * -&gt; *) (h :: * -&gt; *) a.
+(forall x. Day g k x -&gt; h x) -&gt; k a -&gt; Curried g h a
+</span><span class="hs-identifier hs-var">toCurried</span></span><span>
+</span><span id="line-75"></span><span>    </span><span id="local-6989586621679114461"><span class="annot"><span class="annottext">rightAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; Curried f h) -&gt; Day f g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">rightAdjunct</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. g a -&gt; Curried f h a) -&gt; Day f g x -&gt; h x
+forall (f :: * -&gt; *) (k :: * -&gt; *) (h :: * -&gt; *) b.
+Functor f =&gt;
+(forall a. k a -&gt; Curried f h a) -&gt; Day f k b -&gt; h b
+</span><span class="hs-identifier hs-var">fromCurried</span></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114097"><span id="local-6989586621679114473"><span id="local-6989586621679114481"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Lan</span></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114487"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114487"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114487"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Lan</span></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114487"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679114491"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Precompose f (Lan f g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114492"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114492"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Lan f g (f x) -&gt; Precompose f (Lan f g) x
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="annot"><span class="annottext">(Lan f g (f x) -&gt; Precompose f (Lan f g) x)
+-&gt; Lan f g (f x) -&gt; Precompose f (Lan f g) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; f x) -&gt; g x -&gt; Lan f g (f x)
+forall {k} (g :: k -&gt; *) (b :: k) a (h :: k -&gt; *).
+(g b -&gt; a) -&gt; h b -&gt; Lan g h a
+</span><span class="hs-identifier hs-var">Lan</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; f x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114492"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-80"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114495"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114495"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Lan</span></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114097"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114495"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114495"><span class="hs-identifier hs-type">g</span></a></span></span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679114499"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; Lan f (Precompose f g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Lan</span></span><span> </span><span id="local-6989586621679114501"><span class="annot"><span class="annottext">f b -&gt; x
+</span><a href="#local-6989586621679114501"><span class="hs-identifier hs-var">unF</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span id="local-6989586621679114502"><span class="annot"><span class="annottext">g (f b)
+</span><a href="#local-6989586621679114502"><span class="hs-identifier hs-var">gf</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f b -&gt; x) -&gt; g (f b) -&gt; g x
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f b -&gt; x
+</span><a href="#local-6989586621679114501"><span class="hs-identifier hs-var">unF</span></a></span><span> </span><span class="annot"><span class="annottext">g (f b)
+</span><a href="#local-6989586621679114502"><span class="hs-identifier hs-var">gf</span></a></span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114128"><span id="local-6989586621679114512"><span id="local-6989586621679114520"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ran</span></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114526"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114526"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114526"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ran</span></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114526"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-comment">-- g ~&gt; Ran f (g :.: f)</span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-comment">-- &#8704;x. g x -&gt; (&#8704;y. (x -&gt; f y) -&gt; g (f y))</span><span>
+</span><span id="line-87"></span><span>    </span><span id="local-6989586621679114530"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Ran f (Precompose f g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114531"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114531"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall b. (x -&gt; f b) -&gt; Precompose f g b)
+-&gt; Ran f (Precompose f g) x
+forall {k} (g :: k -&gt; *) (h :: k -&gt; *) a.
+(forall (b :: k). (a -&gt; g b) -&gt; h b) -&gt; Ran g h a
+</span><span class="hs-identifier hs-var">Ran</span></span><span> </span><span class="annot"><span class="annottext">((forall b. (x -&gt; f b) -&gt; Precompose f g b)
+ -&gt; Ran f (Precompose f g) x)
+-&gt; (forall b. (x -&gt; f b) -&gt; Precompose f g b)
+-&gt; Ran f (Precompose f g) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679114534"><span class="annot"><span class="annottext">x -&gt; f b
+</span><a href="#local-6989586621679114534"><span class="hs-identifier hs-var">toF</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">g (f b) -&gt; Precompose f g b
+forall j k (f :: j -&gt; k) (g :: k -&gt; *) (a :: j).
+g (f a) -&gt; Precompose f g a
+</span><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-var">Precompose</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(x -&gt; f b) -&gt; g x -&gt; g (f b)
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; f b
+</span><a href="#local-6989586621679114534"><span class="hs-identifier hs-var">toF</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114531"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114535"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114535"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ran</span></span><span> </span><span class="annot"><a href="#local-6989586621679114128"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114535"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114535"><span class="hs-identifier hs-type">g</span></a></span></span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-comment">-- Ran f g :.: f ~&gt; g</span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-comment">-- &#8704;x. (&#8704;y. (f x -&gt; f y) -&gt; g y) -&gt; g x</span><span>
+</span><span id="line-92"></span><span>    </span><span id="local-6989586621679114539"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; Precompose f (Ran f g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Precompose.html#Precompose"><span class="hs-identifier hs-type">Precompose</span></a></span><span> </span><span id="local-6989586621679114540"><span class="annot"><span class="annottext">Ran f g (f x)
+</span><a href="#local-6989586621679114540"><span class="hs-identifier hs-var">ffg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ran f g (f x) -&gt; forall b. (f x -&gt; f b) -&gt; g b
+forall {k} (g :: k -&gt; *) (h :: k -&gt; *) a.
+Ran g h a -&gt; forall (b :: k). (a -&gt; g b) -&gt; h b
+</span><span class="hs-identifier hs-var">runRan</span></span><span> </span><span class="annot"><span class="annottext">Ran f g (f x)
+</span><a href="#local-6989586621679114540"><span class="hs-identifier hs-var">ffg</span></a></span><span> </span><span class="annot"><span class="annottext">f x -&gt; f x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114153"><span id="local-6989586621679114154"><span id="local-6989586621679114155"><span id="local-6989586621679114156"><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-95"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114562"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114562"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114562"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114562"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-96"></span><span>    </span><span id="local-6989586621679114576"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *).
+Functor g =&gt;
+g ~&gt; FCompose vv uu (FCompose ff gg g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ff (gg h) ~&gt; FCompose ff gg h)
+-&gt; FCompose vv uu (ff (gg h)) x
+-&gt; FCompose vv uu (FCompose ff gg h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; FCompose vv uu g x -&gt; FCompose vv uu h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">ff (gg h) x -&gt; FCompose ff gg h x
+ff (gg h) ~&gt; FCompose ff gg h
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+ff (gg h) x -&gt; FCompose ff gg h x
+</span><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(FCompose vv uu (ff (gg h)) x
+ -&gt; FCompose vv uu (FCompose ff gg h) x)
+-&gt; (h x -&gt; FCompose vv uu (ff (gg h)) x)
+-&gt; h x
+-&gt; FCompose vv uu (FCompose ff gg h) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">vv (uu (ff (gg h))) x -&gt; FCompose vv uu (ff (gg h)) x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+ff (gg h) x -&gt; FCompose ff gg h x
+</span><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(vv (uu (ff (gg h))) x -&gt; FCompose vv uu (ff (gg h)) x)
+-&gt; (h x -&gt; vv (uu (ff (gg h))) x)
+-&gt; h x
+-&gt; FCompose vv uu (ff (gg h)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(gg h ~&gt; uu (ff (gg h))) -&gt; vv (gg h) x -&gt; vv (uu (ff (gg h))) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; vv g x -&gt; vv h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">gg h x -&gt; uu (ff (gg h)) x
+gg h ~&gt; uu (ff (gg h))
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; uu (ff g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">(vv (gg h) x -&gt; vv (uu (ff (gg h))) x)
+-&gt; (h x -&gt; vv (gg h) x) -&gt; h x -&gt; vv (uu (ff (gg h))) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">h x -&gt; vv (gg h) x
+h ~&gt; vv (gg h)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; vv (gg g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114580"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114580"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114580"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114580"><span class="hs-identifier hs-type">h</span></a></span></span><span>
+</span><span id="line-99"></span><span>    </span><span id="local-6989586621679114594"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *).
+Functor g =&gt;
+FCompose ff gg (FCompose vv uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (uu h) x -&gt; h x
+ff (uu h) ~&gt; h
+forall (g :: * -&gt; *). Functor g =&gt; ff (uu g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (uu h) x -&gt; h x)
+-&gt; (FCompose ff gg (FCompose vv uu h) x -&gt; ff (uu h) x)
+-&gt; FCompose ff gg (FCompose vv uu h) x
+-&gt; h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(gg (vv (uu h)) ~&gt; uu h) -&gt; ff (gg (vv (uu h))) x -&gt; ff (uu h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">gg (vv (uu h)) x -&gt; uu h x
+gg (vv (uu h)) ~&gt; uu h
+forall (g :: * -&gt; *). Functor g =&gt; gg (vv g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (gg (vv (uu h))) x -&gt; ff (uu h) x)
+-&gt; (FCompose ff gg (FCompose vv uu h) x -&gt; ff (gg (vv (uu h))) x)
+-&gt; FCompose ff gg (FCompose vv uu h) x
+-&gt; ff (uu h) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">FCompose ff gg (vv (uu h)) x -&gt; ff (gg (vv (uu h))) x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var">getFCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(FCompose ff gg (vv (uu h)) x -&gt; ff (gg (vv (uu h))) x)
+-&gt; (FCompose ff gg (FCompose vv uu h) x
+    -&gt; FCompose ff gg (vv (uu h)) x)
+-&gt; FCompose ff gg (FCompose vv uu h) x
+-&gt; ff (gg (vv (uu h))) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(FCompose vv uu h ~&gt; vv (uu h))
+-&gt; FCompose ff gg (FCompose vv uu h) x
+-&gt; FCompose ff gg (vv (uu h)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; FCompose ff gg g x -&gt; FCompose ff gg h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">FCompose vv uu h x -&gt; vv (uu h) x
+FCompose vv uu h ~&gt; vv (uu h)
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var">getFCompose</span></a></span><span>
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-type">leftAdjunct</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679114598"><span class="annot"><a href="#local-6989586621679114598"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span id="local-6989586621679114599"><span class="annot"><a href="#local-6989586621679114599"><span class="hs-identifier hs-type">k</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114598"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114599"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>      </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114598"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114599"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114598"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114599"><span class="hs-identifier hs-type">k</span></a></span><span>
+</span><span id="line-103"></span><span>    </span><span id="local-6989586621679114609"><span class="annot"><span class="annottext">leftAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(FCompose ff gg g ~&gt; h) -&gt; g ~&gt; FCompose vv uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">leftAdjunct</span></a></span></span><span> </span><span id="local-6989586621679114610"><span class="annot"><span class="annottext">FCompose ff gg h ~&gt; k
+</span><a href="#local-6989586621679114610"><span class="hs-identifier hs-var">lefty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">vv (uu k) x -&gt; FCompose vv uu k x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+ff (gg h) x -&gt; FCompose ff gg h x
+</span><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(vv (uu k) x -&gt; FCompose vv uu k x)
+-&gt; (h x -&gt; vv (uu k) x) -&gt; h x -&gt; FCompose vv uu k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(gg h ~&gt; uu k) -&gt; h ~&gt; vv (uu k)
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(gg g ~&gt; h) -&gt; g ~&gt; vv h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var">leftAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ff (gg h) ~&gt; k) -&gt; gg h ~&gt; uu k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var">leftAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FCompose ff gg h x -&gt; k x
+FCompose ff gg h ~&gt; k
+</span><a href="#local-6989586621679114610"><span class="hs-identifier hs-var">lefty</span></a></span><span> </span><span class="annot"><span class="annottext">(FCompose ff gg h x -&gt; k x)
+-&gt; (ff (gg h) x -&gt; FCompose ff gg h x) -&gt; ff (gg h) x -&gt; k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ff (gg h) x -&gt; FCompose ff gg h x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+ff (gg h) x -&gt; FCompose ff gg h x
+</span><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-type">rightAdjunct</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114614"><span id="local-6989586621679114615"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114614"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114615"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>      </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114614"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114156"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114154"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114615"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114153"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114155"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114614"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114615"><span class="hs-identifier hs-type">k</span></a></span></span></span><span>
+</span><span id="line-107"></span><span>    </span><span id="local-6989586621679114625"><span class="annot"><span class="annottext">rightAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; FCompose vv uu h) -&gt; FCompose ff gg g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">rightAdjunct</span></a></span></span><span> </span><span id="local-6989586621679114626"><span class="annot"><span class="annottext">h ~&gt; FCompose vv uu k
+</span><a href="#local-6989586621679114626"><span class="hs-identifier hs-var">righty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(gg h ~&gt; uu k) -&gt; ff (gg h) ~&gt; k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(h ~&gt; vv (uu k)) -&gt; gg h ~&gt; uu k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; vv h) -&gt; gg g ~&gt; h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FCompose vv uu k x -&gt; vv (uu k) x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var">getFCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(FCompose vv uu k x -&gt; vv (uu k) x)
+-&gt; (h x -&gt; FCompose vv uu k x) -&gt; h x -&gt; vv (uu k) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">h x -&gt; FCompose vv uu k x
+h ~&gt; FCompose vv uu k
+</span><a href="#local-6989586621679114626"><span class="hs-identifier hs-var">righty</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ff (gg h) x -&gt; k x)
+-&gt; (FCompose ff gg h x -&gt; ff (gg h) x) -&gt; FCompose ff gg h x -&gt; k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">FCompose ff gg h x -&gt; ff (gg h) x
+forall (ff :: FF) (gg :: FF) (h :: * -&gt; *) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var">getFCompose</span></a></span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114202"><span id="local-6989586621679114203"><span id="local-6989586621679114204"><span id="local-6989586621679114205"><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.Sum</span></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.Product</span></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-110"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114651"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114651"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>      </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114651"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bi.Product</span></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.Sum</span></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114651"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621679114668"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Product uu vv (Sum ff gg g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114669"><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114669"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">uu (Sum ff gg h) x
+-&gt; vv (Sum ff gg h) x -&gt; Product uu vv (Sum ff gg h) x
+forall {k} {k1} (f :: k -&gt; k1 -&gt; *) (g :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+f a b -&gt; g a b -&gt; Product f g a b
+</span><span class="hs-identifier hs-var">Bi.Pair</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ff h ~&gt; Sum ff gg h) -&gt; uu (ff h) x -&gt; uu (Sum ff gg h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; uu g x -&gt; uu h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">ff h x -&gt; Sum ff gg h x
+ff h ~&gt; Sum ff gg h
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+p a b -&gt; Sum p q a b
+</span><span class="hs-identifier hs-var">Bi.L2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">h x -&gt; uu (ff h) x
+h ~&gt; uu (ff h)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; uu (ff g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114669"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(gg h ~&gt; Sum ff gg h) -&gt; vv (gg h) x -&gt; vv (Sum ff gg h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; vv g x -&gt; vv h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">gg h x -&gt; Sum ff gg h x
+gg h ~&gt; Sum ff gg h
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+q a b -&gt; Sum p q a b
+</span><span class="hs-identifier hs-var">Bi.R2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">h x -&gt; vv (gg h) x
+h ~&gt; vv (gg h)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; vv (gg g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114669"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114673"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114673"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>      </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bi.Sum</span></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.Product</span></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114673"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114673"><span class="hs-identifier hs-type">h</span></a></span></span><span>
+</span><span id="line-116"></span><span>    </span><span id="local-6989586621679114690"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; Sum ff gg (Product uu vv g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.L2</span></span><span> </span><span id="local-6989586621679114691"><span class="annot"><span class="annottext">ff (Product uu vv h) x
+</span><a href="#local-6989586621679114691"><span class="hs-identifier hs-var">ffP</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (uu h) x -&gt; h x
+ff (uu h) ~&gt; h
+forall (g :: * -&gt; *). Functor g =&gt; ff (uu g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Product uu vv h ~&gt; uu h) -&gt; ff (Product uu vv h) x -&gt; ff (uu h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">Product uu vv h x -&gt; uu h x
+Product uu vv h ~&gt; uu h
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+Product p q a b -&gt; p a b
+</span><a href="Data.Bifunctor.Product.Extra.html#proj1"><span class="hs-identifier hs-var">Bi.proj1</span></a></span><span> </span><span class="annot"><span class="annottext">ff (Product uu vv h) x
+</span><a href="#local-6989586621679114691"><span class="hs-identifier hs-var">ffP</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.R2</span></span><span> </span><span id="local-6989586621679114693"><span class="annot"><span class="annottext">gg (Product uu vv h) x
+</span><a href="#local-6989586621679114693"><span class="hs-identifier hs-var">ggP</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">gg (vv h) x -&gt; h x
+gg (vv h) ~&gt; h
+forall (g :: * -&gt; *). Functor g =&gt; gg (vv g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Product uu vv h ~&gt; vv h) -&gt; gg (Product uu vv h) x -&gt; gg (vv h) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; gg g x -&gt; gg h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">Product uu vv h x -&gt; vv h x
+Product uu vv h ~&gt; vv h
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+Product p q a b -&gt; q a b
+</span><a href="Data.Bifunctor.Product.Extra.html#proj2"><span class="hs-identifier hs-var">Bi.proj2</span></a></span><span> </span><span class="annot"><span class="annottext">gg (Product uu vv h) x
+</span><a href="#local-6989586621679114693"><span class="hs-identifier hs-var">ggP</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-type">leftAdjunct</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114695"><span id="local-6989586621679114696"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114695"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114696"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.Sum</span></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114695"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114696"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114695"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bi.Product</span></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114696"><span class="hs-identifier hs-type">k</span></a></span></span></span><span>
+</span><span id="line-120"></span><span>    </span><span id="local-6989586621679114709"><span class="annot"><span class="annottext">leftAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(Sum ff gg g ~&gt; h) -&gt; g ~&gt; Product uu vv h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">leftAdjunct</span></a></span></span><span> </span><span id="local-6989586621679114710"><span class="annot"><span class="annottext">Sum ff gg h ~&gt; k
+</span><a href="#local-6989586621679114710"><span class="hs-identifier hs-var">lefty</span></a></span></span><span> </span><span id="local-6989586621679114711"><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114711"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">uu k x -&gt; vv k x -&gt; Product uu vv k x
+forall {k} {k1} (f :: k -&gt; k1 -&gt; *) (g :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+f a b -&gt; g a b -&gt; Product f g a b
+</span><span class="hs-identifier hs-var">Bi.Pair</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ff h ~&gt; k) -&gt; h ~&gt; uu k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var">leftAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sum ff gg h x -&gt; k x
+Sum ff gg h ~&gt; k
+</span><a href="#local-6989586621679114710"><span class="hs-identifier hs-var">lefty</span></a></span><span> </span><span class="annot"><span class="annottext">(Sum ff gg h x -&gt; k x)
+-&gt; (ff h x -&gt; Sum ff gg h x) -&gt; ff h x -&gt; k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ff h x -&gt; Sum ff gg h x
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+p a b -&gt; Sum p q a b
+</span><span class="hs-identifier hs-var">Bi.L2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114711"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(gg h ~&gt; k) -&gt; h ~&gt; vv k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(gg g ~&gt; h) -&gt; g ~&gt; vv h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; g ~&gt; uu h
+</span><a href="FFunctor.Adjunction.html#leftAdjunct"><span class="hs-identifier hs-var">leftAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sum ff gg h x -&gt; k x
+Sum ff gg h ~&gt; k
+</span><a href="#local-6989586621679114710"><span class="hs-identifier hs-var">lefty</span></a></span><span> </span><span class="annot"><span class="annottext">(Sum ff gg h x -&gt; k x)
+-&gt; (gg h x -&gt; Sum ff gg h x) -&gt; gg h x -&gt; k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">gg h x -&gt; Sum ff gg h x
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+q a b -&gt; Sum p q a b
+</span><span class="hs-identifier hs-var">Bi.R2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">h x
+</span><a href="#local-6989586621679114711"><span class="hs-identifier hs-var">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-type">rightAdjunct</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114712"><span id="local-6989586621679114713"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114712"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114713"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679114712"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bi.Product</span></span><span> </span><span class="annot"><a href="#local-6989586621679114203"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114205"><span class="hs-identifier hs-type">vv</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114713"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bi.Sum</span></span><span> </span><span class="annot"><a href="#local-6989586621679114202"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114204"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114712"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114713"><span class="hs-identifier hs-type">k</span></a></span></span></span><span>
+</span><span id="line-123"></span><span>    </span><span id="local-6989586621679114726"><span class="annot"><span class="annottext">rightAdjunct :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; Product uu vv h) -&gt; Sum ff gg g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var hs-var hs-var hs-var">rightAdjunct</span></a></span></span><span> </span><span id="local-6989586621679114727"><span class="annot"><span class="annottext">h ~&gt; Product uu vv k
+</span><a href="#local-6989586621679114727"><span class="hs-identifier hs-var">righty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.L2</span></span><span> </span><span id="local-6989586621679114728"><span class="annot"><span class="annottext">ff h x
+</span><a href="#local-6989586621679114728"><span class="hs-identifier hs-var">ff</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(h ~&gt; uu k) -&gt; ff h ~&gt; k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Product uu vv k x -&gt; uu k x
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+Product p q a b -&gt; p a b
+</span><a href="Data.Bifunctor.Product.Extra.html#proj1"><span class="hs-identifier hs-var">Bi.proj1</span></a></span><span> </span><span class="annot"><span class="annottext">(Product uu vv k x -&gt; uu k x)
+-&gt; (h x -&gt; Product uu vv k x) -&gt; h x -&gt; uu k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">h x -&gt; Product uu vv k x
+h ~&gt; Product uu vv k
+</span><a href="#local-6989586621679114727"><span class="hs-identifier hs-var">righty</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ff h x
+</span><a href="#local-6989586621679114728"><span class="hs-identifier hs-var">ff</span></a></span><span>
+</span><span id="line-124"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span id="local-6989586621679114729"><span class="annot"><span class="annottext">h ~&gt; Product uu vv k
+</span><a href="#local-6989586621679114729"><span class="hs-identifier hs-var">righty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bi.R2</span></span><span> </span><span id="local-6989586621679114730"><span class="annot"><span class="annottext">gg h x
+</span><a href="#local-6989586621679114730"><span class="hs-identifier hs-var">gg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(h ~&gt; vv k) -&gt; gg h ~&gt; k
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(g ~&gt; vv h) -&gt; gg g ~&gt; h
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(Adjunction ff uu, Functor g, Functor h) =&gt;
+(g ~&gt; uu h) -&gt; ff g ~&gt; h
+</span><a href="FFunctor.Adjunction.html#rightAdjunct"><span class="hs-identifier hs-var">rightAdjunct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Product uu vv k x -&gt; vv k x
+forall {k} {k1} (p :: k -&gt; k1 -&gt; *) (q :: k -&gt; k1 -&gt; *) (a :: k)
+       (b :: k1).
+Product p q a b -&gt; q a b
+</span><a href="Data.Bifunctor.Product.Extra.html#proj2"><span class="hs-identifier hs-var">Bi.proj2</span></a></span><span> </span><span class="annot"><span class="annottext">(Product uu vv k x -&gt; vv k x)
+-&gt; (h x -&gt; Product uu vv k x) -&gt; h x -&gt; vv k x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">h x -&gt; Product uu vv k x
+h ~&gt; Product uu vv k
+</span><a href="#local-6989586621679114729"><span class="hs-identifier hs-var">righty</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">gg h x
+</span><a href="#local-6989586621679114730"><span class="hs-identifier hs-var">gg</span></a></span><span>
+</span><span id="line-125"></span><span>
+</span><span id="line-126"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114277"><span id="local-6989586621679114278"><span id="local-6989586621679114742"><span id="local-6989586621679114750"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.Adjunction</span></span><span> </span><span class="annot"><a href="#local-6989586621679114277"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114278"><span class="hs-identifier hs-type">u</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114277"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114278"><span class="hs-identifier hs-type">u</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-127"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114762"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114762"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679114762"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114278"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114277"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114762"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-128"></span><span>    </span><span id="local-6989586621679114768"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Compose u (Compose f g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114769"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114769"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">u (Compose f g x) -&gt; Compose u (Compose f g) x
+forall {k} {k1} (f :: k -&gt; *) (g :: k1 -&gt; k) (a :: k1).
+f (g a) -&gt; Compose f g a
+</span><span class="hs-identifier hs-var">Compose</span></span><span> </span><span class="annot"><span class="annottext">(u (Compose f g x) -&gt; Compose u (Compose f g) x)
+-&gt; (u (f (g x)) -&gt; u (Compose f g x))
+-&gt; u (f (g x))
+-&gt; Compose u (Compose f g) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f (g x) -&gt; Compose f g x) -&gt; u (f (g x)) -&gt; u (Compose f g x)
+forall a b. (a -&gt; b) -&gt; u a -&gt; u b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f (g x) -&gt; Compose f g x
+forall {k} {k1} (f :: k -&gt; *) (g :: k1 -&gt; k) (a :: k1).
+f (g a) -&gt; Compose f g a
+</span><span class="hs-identifier hs-var">Compose</span></span><span> </span><span class="annot"><span class="annottext">(u (f (g x)) -&gt; Compose u (Compose f g) x)
+-&gt; u (f (g x)) -&gt; Compose u (Compose f g) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; u (f (g x))
+forall a. a -&gt; u (f a)
+forall (f :: * -&gt; *) (u :: * -&gt; *) a.
+Adjunction f u =&gt;
+a -&gt; u (f a)
+</span><span class="hs-identifier hs-var">Rank1.unit</span></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114769"><span class="hs-identifier hs-var">gx</span></a></span><span>
+</span><span id="line-129"></span><span>    </span><span class="annot"><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-type">counit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679114772"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679114772"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114277"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Compose</span></span><span> </span><span class="annot"><a href="#local-6989586621679114278"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114772"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679114772"><span class="hs-identifier hs-type">g</span></a></span></span><span>
+</span><span id="line-130"></span><span>    </span><span id="local-6989586621679114778"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; Compose f (Compose u g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f (u (g x)) -&gt; g x
+forall a. f (u a) -&gt; a
+forall (f :: * -&gt; *) (u :: * -&gt; *) a.
+Adjunction f u =&gt;
+f (u a) -&gt; a
+</span><span class="hs-identifier hs-var">Rank1.counit</span></span><span> </span><span class="annot"><span class="annottext">(f (u (g x)) -&gt; g x)
+-&gt; (Compose f (Compose u g) x -&gt; f (u (g x)))
+-&gt; Compose f (Compose u g) x
+-&gt; g x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Compose u g x -&gt; u (g x)) -&gt; f (Compose u g x) -&gt; f (u (g x))
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Compose u g x -&gt; u (g x)
+forall {k1} {k2} (f :: k1 -&gt; *) (g :: k2 -&gt; k1) (a :: k2).
+Compose f g a -&gt; f (g a)
+</span><span class="hs-identifier hs-var">getCompose</span></span><span> </span><span class="annot"><span class="annottext">(f (Compose u g x) -&gt; f (u (g x)))
+-&gt; (Compose f (Compose u g) x -&gt; f (Compose u g x))
+-&gt; Compose f (Compose u g) x
+-&gt; f (u (g x))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Compose f (Compose u g) x -&gt; f (Compose u g x)
+forall {k1} {k2} (f :: k1 -&gt; *) (g :: k2 -&gt; k1) (a :: k2).
+Compose f g a -&gt; f (g a)
+</span><span class="hs-identifier hs-var">getCompose</span></span><span>
+</span><span id="line-131"></span><span>
+</span><span id="line-132"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114304"><span id="local-6989586621679114790"><span id="local-6989586621679114798"><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.EnvT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114304"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.ReaderT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114304"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-133"></span><span>    </span><span id="local-6989586621679114805"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; ReaderT e (EnvT e g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114806"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114806"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(e -&gt; EnvT e g x) -&gt; ReaderT e (EnvT e g) x
+forall r (m :: * -&gt; *) a. (r -&gt; m a) -&gt; ReaderT r m a
+</span><span class="hs-identifier hs-var">Rank1.ReaderT</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679114808"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679114808"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">e -&gt; g x -&gt; EnvT e g x
+forall e (w :: * -&gt; *) a. e -&gt; w a -&gt; EnvT e w a
+</span><span class="hs-identifier hs-var">Rank1.EnvT</span></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679114808"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114806"><span class="hs-identifier hs-var">gx</span></a></span><span>
+</span><span id="line-134"></span><span>    </span><span id="local-6989586621679114811"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; EnvT e (ReaderT e g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.EnvT</span></span><span> </span><span id="local-6989586621679114812"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679114812"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.ReaderT</span></span><span> </span><span id="local-6989586621679114813"><span class="annot"><span class="annottext">e -&gt; g x
+</span><a href="#local-6989586621679114813"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">e -&gt; g x
+</span><a href="#local-6989586621679114813"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679114812"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-135"></span><span>
+</span><span id="line-136"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114322"><span id="local-6989586621679114823"><span id="local-6989586621679114831"><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.TracedT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114322"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.WriterT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114322"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-137"></span><span>    </span><span id="local-6989586621679114839"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; WriterT m (TracedT m g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114840"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114840"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TracedT m g (x, m) -&gt; WriterT m (TracedT m g) x
+forall w (m :: * -&gt; *) a. m (a, w) -&gt; WriterT w m a
+</span><span class="hs-identifier hs-var">Rank1.WriterT</span></span><span> </span><span class="annot"><span class="annottext">(TracedT m g (x, m) -&gt; WriterT m (TracedT m g) x)
+-&gt; TracedT m g (x, m) -&gt; WriterT m (TracedT m g) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">g (m -&gt; (x, m)) -&gt; TracedT m g (x, m)
+forall m (w :: * -&gt; *) a. w (m -&gt; a) -&gt; TracedT m w a
+</span><span class="hs-identifier hs-var">Rank1.TracedT</span></span><span> </span><span class="annot"><span class="annottext">(g (m -&gt; (x, m)) -&gt; TracedT m g (x, m))
+-&gt; g (m -&gt; (x, m)) -&gt; TracedT m g (x, m)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(x -&gt; m -&gt; (x, m)) -&gt; g x -&gt; g (m -&gt; (x, m))
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114840"><span class="hs-identifier hs-var">gx</span></a></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span>    </span><span id="local-6989586621679114845"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; TracedT m (WriterT m g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.TracedT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.WriterT</span></span><span> </span><span id="local-6989586621679114846"><span class="annot"><span class="annottext">g (m -&gt; x, m)
+</span><a href="#local-6989586621679114846"><span class="hs-identifier hs-var">gwx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((m -&gt; x, m) -&gt; x) -&gt; g (m -&gt; x, m) -&gt; g x
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679114847"><span class="annot"><span class="annottext">m -&gt; x
+</span><a href="#local-6989586621679114847"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679114848"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679114848"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m -&gt; x
+</span><a href="#local-6989586621679114847"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679114848"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">g (m -&gt; x, m)
+</span><a href="#local-6989586621679114846"><span class="hs-identifier hs-var">gwx</span></a></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679114340"><span id="local-6989586621679114858"><span id="local-6989586621679114866"><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.StoreT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114340"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.StateT</span></span><span> </span><span class="annot"><a href="#local-6989586621679114340"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-142"></span><span>    </span><span id="local-6989586621679114874"><span class="annot"><span class="annottext">unit :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; StateT s (StoreT s g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var hs-var hs-var hs-var">unit</span></a></span></span><span> </span><span id="local-6989586621679114875"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114875"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(s -&gt; StoreT s g (x, s)) -&gt; StateT s (StoreT s g) x
+forall s (m :: * -&gt; *) a. (s -&gt; m (a, s)) -&gt; StateT s m a
+</span><span class="hs-identifier hs-var">Rank1.StateT</span></span><span> </span><span class="annot"><span class="annottext">((s -&gt; StoreT s g (x, s)) -&gt; StateT s (StoreT s g) x)
+-&gt; (s -&gt; StoreT s g (x, s)) -&gt; StateT s (StoreT s g) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">g (s -&gt; (x, s)) -&gt; s -&gt; StoreT s g (x, s)
+forall s (w :: * -&gt; *) a. w (s -&gt; a) -&gt; s -&gt; StoreT s w a
+</span><span class="hs-identifier hs-var">Rank1.StoreT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(x -&gt; s -&gt; (x, s)) -&gt; g x -&gt; g (s -&gt; (x, s))
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679114875"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>    </span><span id="local-6989586621679114880"><span class="annot"><span class="annottext">counit :: forall (g :: * -&gt; *). Functor g =&gt; StoreT s (StateT s g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var hs-var hs-var hs-var">counit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.StoreT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rank1.StateT</span></span><span> </span><span id="local-6989586621679114881"><span class="annot"><span class="annottext">s -&gt; g (s -&gt; x, s)
+</span><a href="#local-6989586621679114881"><span class="hs-identifier hs-var">state</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679114882"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679114882"><span class="hs-identifier hs-var">s0</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((s -&gt; x, s) -&gt; x) -&gt; g (s -&gt; x, s) -&gt; g x
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679114883"><span class="annot"><span class="annottext">s -&gt; x
+</span><a href="#local-6989586621679114883"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679114884"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679114884"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">s -&gt; x
+</span><a href="#local-6989586621679114883"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679114884"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s -&gt; g (s -&gt; x, s)
+</span><a href="#local-6989586621679114881"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679114882"><span class="hs-identifier hs-var">s0</span></a></span><span class="hs-special">)</span></pre></body></html>
