@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Functor.Internal.Mutual</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">newtype</span><span> </span><span id="Mutual"><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-var">Mutual</span></a></span></span><span> </span><span id="local-6989586621679079102"><span class="annot"><a href="#local-6989586621679079102"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679079103"><span class="annot"><a href="#local-6989586621679079103"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679079104"><span class="annot"><a href="#local-6989586621679079104"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679079105"><span class="annot"><a href="#local-6989586621679079105"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Mutual"><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-var">Mutual</span></a></span></span><span> </span><span class="hs-special">{</span><span id="runMutual"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
+Mutual p m n a -&gt; m (p a (Mutual p n m a))
+</span><a href="Control.Functor.Internal.Mutual.html#runMutual"><span class="hs-identifier hs-var hs-var">runMutual</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679079103"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079102"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-type">Mutual</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079102"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079104"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079103"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079105"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079120"><span id="local-6989586621679079121"><span id="local-6989586621679079122"><span id="local-6989586621679079179"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079120"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079121"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079122"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-type">Mutual</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079120"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079121"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079122"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>  </span><span id="local-6989586621679079186"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Mutual p m n a -&gt; Mutual p m n b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679079187"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079187"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m (p b (Mutual p n m b)) -&gt; Mutual p m n b
+forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
+m (p a (Mutual p n m a)) -&gt; Mutual p m n a
+</span><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-var">Mutual</span></a></span><span> </span><span class="annot"><span class="annottext">(m (p b (Mutual p n m b)) -&gt; Mutual p m n b)
+-&gt; (Mutual p m n a -&gt; m (p b (Mutual p n m b)))
+-&gt; Mutual p m n a
+-&gt; Mutual p m n b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(p a (Mutual p n m a) -&gt; p b (Mutual p n m b))
+-&gt; m (p a (Mutual p n m a)) -&gt; m (p b (Mutual p n m b))
+forall a b. (a -&gt; b) -&gt; m a -&gt; m b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b)
+-&gt; (Mutual p n m a -&gt; Mutual p n m b)
+-&gt; p a (Mutual p n m a)
+-&gt; p b (Mutual p n m b)
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079187"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; Mutual p n m a -&gt; Mutual p n m b
+forall a b. (a -&gt; b) -&gt; Mutual p n m a -&gt; Mutual p n m b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079187"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(m (p a (Mutual p n m a)) -&gt; m (p b (Mutual p n m b)))
+-&gt; (Mutual p m n a -&gt; m (p a (Mutual p n m a)))
+-&gt; Mutual p m n a
+-&gt; m (p b (Mutual p n m b))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mutual p m n a -&gt; m (p a (Mutual p n m a))
+forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
+Mutual p m n a -&gt; m (p a (Mutual p n m a))
+</span><a href="Control.Functor.Internal.Mutual.html#runMutual"><span class="hs-identifier hs-var">runMutual</span></a></span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span id="local-6989586621679079133"><span id="local-6989586621679079134"><span id="local-6989586621679079137"><span id="local-6989586621679079139"><span id="local-6989586621679079141"><span class="annot"><a href="Control.Functor.Internal.Mutual.html#foldMutual"><span class="hs-identifier hs-type">foldMutual</span></a></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079133"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079135"><span class="annot"><a href="#local-6989586621679079135"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679079136"><span class="annot"><a href="#local-6989586621679079136"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079135"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079135"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079133"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079136"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079136"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079136"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079138"><span class="annot"><a href="#local-6989586621679079138"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079137"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079138"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079138"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079140"><span class="annot"><a href="#local-6989586621679079140"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079139"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079140"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079140"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-type">Mutual</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079133"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079137"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079139"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079141"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079134"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079141"><span class="hs-identifier hs-type">c</span></a></span></span></span></span></span></span><span>
+</span><span id="line-17"></span><span id="foldMutual"><span class="annot"><span class="annottext">foldMutual :: forall (p :: * -&gt; * -&gt; *) (t :: * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *)
+       c.
+Bifunctor p =&gt;
+(forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b)
+-&gt; (forall a. m a -&gt; t a)
+-&gt; (forall a. n a -&gt; t a)
+-&gt; Mutual p m n c
+-&gt; t c
+</span><a href="Control.Functor.Internal.Mutual.html#foldMutual"><span class="hs-identifier hs-var hs-var">foldMutual</span></a></span></span><span> </span><span id="local-6989586621679079194"><span class="annot"><span class="annottext">forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b
+</span><a href="#local-6989586621679079194"><span class="hs-identifier hs-var">bind</span></a></span></span><span> </span><span id="local-6989586621679079195"><span class="annot"><span class="annottext">forall a. m a -&gt; t a
+</span><a href="#local-6989586621679079195"><span class="hs-identifier hs-var">mt</span></a></span></span><span> </span><span id="local-6989586621679079196"><span class="annot"><span class="annottext">forall a. n a -&gt; t a
+</span><a href="#local-6989586621679079196"><span class="hs-identifier hs-var">nt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t (p c (Mutual p n m c))
+-&gt; (p c (Mutual p n m c) -&gt; p c (t c)) -&gt; t c
+forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b
+</span><a href="#local-6989586621679079194"><span class="hs-operator hs-var">`bind`</span></a></span><span> </span><span class="annot"><span class="annottext">(Mutual p n m c -&gt; t c) -&gt; p c (Mutual p n m c) -&gt; p c (t c)
+forall b c a. (b -&gt; c) -&gt; p a b -&gt; p a c
+forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; p a b -&gt; p a c
+</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b)
+-&gt; (forall a. n a -&gt; t a)
+-&gt; (forall a. m a -&gt; t a)
+-&gt; Mutual p n m c
+-&gt; t c
+forall (p :: * -&gt; * -&gt; *) (t :: * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *)
+       c.
+Bifunctor p =&gt;
+(forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b)
+-&gt; (forall a. m a -&gt; t a)
+-&gt; (forall a. n a -&gt; t a)
+-&gt; Mutual p m n c
+-&gt; t c
+</span><a href="Control.Functor.Internal.Mutual.html#foldMutual"><span class="hs-identifier hs-var">foldMutual</span></a></span><span> </span><span class="annot"><span class="annottext">t a -&gt; (a -&gt; p b (t b)) -&gt; t b
+forall a b. t a -&gt; (a -&gt; p b (t b)) -&gt; t b
+</span><a href="#local-6989586621679079194"><span class="hs-identifier hs-var">bind</span></a></span><span> </span><span class="annot"><span class="annottext">n a -&gt; t a
+forall a. n a -&gt; t a
+</span><a href="#local-6989586621679079196"><span class="hs-identifier hs-var">nt</span></a></span><span> </span><span class="annot"><span class="annottext">m a -&gt; t a
+forall a. m a -&gt; t a
+</span><a href="#local-6989586621679079195"><span class="hs-identifier hs-var">mt</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(t (p c (Mutual p n m c)) -&gt; t c)
+-&gt; (Mutual p m n c -&gt; t (p c (Mutual p n m c)))
+-&gt; Mutual p m n c
+-&gt; t c
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">m (p c (Mutual p n m c)) -&gt; t (p c (Mutual p n m c))
+forall a. m a -&gt; t a
+</span><a href="#local-6989586621679079195"><span class="hs-identifier hs-var">mt</span></a></span><span> </span><span class="annot"><span class="annottext">(m (p c (Mutual p n m c)) -&gt; t (p c (Mutual p n m c)))
+-&gt; (Mutual p m n c -&gt; m (p c (Mutual p n m c)))
+-&gt; Mutual p m n c
+-&gt; t (p c (Mutual p n m c))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mutual p m n c -&gt; m (p c (Mutual p n m c))
+forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
+Mutual p m n a -&gt; m (p a (Mutual p n m a))
+</span><a href="Control.Functor.Internal.Mutual.html#runMutual"><span class="hs-identifier hs-var">runMutual</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span id="local-6989586621679079154"><span id="local-6989586621679079156"><span id="local-6989586621679079159"><span id="local-6989586621679079161"><span id="local-6989586621679079162"><span class="annot"><a href="Control.Functor.Internal.Mutual.html#unfoldMutual"><span class="hs-identifier hs-type">unfoldMutual</span></a></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079154"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079155"><span class="annot"><a href="#local-6989586621679079155"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679079157"><span class="annot"><a href="#local-6989586621679079157"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079154"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079155"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079155"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079157"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079155"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079157"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079158"><span class="annot"><a href="#local-6989586621679079158"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079158"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079159"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079158"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079160"><span class="annot"><a href="#local-6989586621679079160"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079160"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079161"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079160"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079156"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079162"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-type">Mutual</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079154"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079159"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079161"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079162"><span class="hs-identifier hs-type">c</span></a></span></span></span></span></span></span><span>
+</span><span id="line-25"></span><span id="unfoldMutual"><span class="annot"><span class="annottext">unfoldMutual :: forall (p :: * -&gt; * -&gt; *) (s :: * -&gt; *) (w :: * -&gt; *) (v :: * -&gt; *)
+       c.
+Bifunctor p =&gt;
+(forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b)
+-&gt; (forall a. s a -&gt; w a)
+-&gt; (forall a. s a -&gt; v a)
+-&gt; s c
+-&gt; Mutual p w v c
+</span><a href="Control.Functor.Internal.Mutual.html#unfoldMutual"><span class="hs-identifier hs-var hs-var">unfoldMutual</span></a></span></span><span> </span><span id="local-6989586621679079202"><span class="annot"><span class="annottext">forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b
+</span><a href="#local-6989586621679079202"><span class="hs-identifier hs-var">ext</span></a></span></span><span> </span><span id="local-6989586621679079203"><span class="annot"><span class="annottext">forall a. s a -&gt; w a
+</span><a href="#local-6989586621679079203"><span class="hs-identifier hs-var">sw</span></a></span></span><span> </span><span id="local-6989586621679079204"><span class="annot"><span class="annottext">forall a. s a -&gt; v a
+</span><a href="#local-6989586621679079204"><span class="hs-identifier hs-var">sv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">w (p c (Mutual p v w c)) -&gt; Mutual p w v c
+forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
+m (p a (Mutual p n m a)) -&gt; Mutual p m n a
+</span><a href="Control.Functor.Internal.Mutual.html#Mutual"><span class="hs-identifier hs-var">Mutual</span></a></span><span> </span><span class="annot"><span class="annottext">(w (p c (Mutual p v w c)) -&gt; Mutual p w v c)
+-&gt; (s c -&gt; w (p c (Mutual p v w c))) -&gt; s c -&gt; Mutual p w v c
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">s (p c (Mutual p v w c)) -&gt; w (p c (Mutual p v w c))
+forall a. s a -&gt; w a
+</span><a href="#local-6989586621679079203"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">(s (p c (Mutual p v w c)) -&gt; w (p c (Mutual p v w c)))
+-&gt; (s c -&gt; s (p c (Mutual p v w c)))
+-&gt; s c
+-&gt; w (p c (Mutual p v w c))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(p c (s c) -&gt; p c (Mutual p v w c))
+-&gt; s c -&gt; s (p c (Mutual p v w c))
+forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b
+</span><a href="#local-6989586621679079202"><span class="hs-identifier hs-var">ext</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(s c -&gt; Mutual p v w c) -&gt; p c (s c) -&gt; p c (Mutual p v w c)
+forall b c a. (b -&gt; c) -&gt; p a b -&gt; p a c
+forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; p a b -&gt; p a c
+</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b)
+-&gt; (forall a. s a -&gt; v a)
+-&gt; (forall a. s a -&gt; w a)
+-&gt; s c
+-&gt; Mutual p v w c
+forall (p :: * -&gt; * -&gt; *) (s :: * -&gt; *) (w :: * -&gt; *) (v :: * -&gt; *)
+       c.
+Bifunctor p =&gt;
+(forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b)
+-&gt; (forall a. s a -&gt; w a)
+-&gt; (forall a. s a -&gt; v a)
+-&gt; s c
+-&gt; Mutual p w v c
+</span><a href="Control.Functor.Internal.Mutual.html#unfoldMutual"><span class="hs-identifier hs-var">unfoldMutual</span></a></span><span> </span><span class="annot"><span class="annottext">(p a (s a) -&gt; b) -&gt; s a -&gt; s b
+forall a b. (p a (s a) -&gt; b) -&gt; s a -&gt; s b
+</span><a href="#local-6989586621679079202"><span class="hs-identifier hs-var">ext</span></a></span><span> </span><span class="annot"><span class="annottext">s a -&gt; v a
+forall a. s a -&gt; v a
+</span><a href="#local-6989586621679079204"><span class="hs-identifier hs-var">sv</span></a></span><span> </span><span class="annot"><span class="annottext">s a -&gt; w a
+forall a. s a -&gt; w a
+</span><a href="#local-6989586621679079203"><span class="hs-identifier hs-var">sw</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span></pre></body></html>

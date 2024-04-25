@@ -1,0 +1,549 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.List.TwoOrMore</span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier">TwoOrMore</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#twoOrMore"><span class="hs-identifier">twoOrMore</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toNonEmpty</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NonEmpty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NonEmpty</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(:|)</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Foldable1</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Bind</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Alt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Alt</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html"><span class="hs-identifier">Control.Monad.Isolated</span></a></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html"><span class="hs-identifier">Control.Monad.Ideal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Ideal.html#MonadIdeal"><span class="hs-identifier">MonadIdeal</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html#impureBindDefault"><span class="hs-identifier">impureBindDefault</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html#Ideal"><span class="hs-identifier">Ideal</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html#runIdeal"><span class="hs-identifier">runIdeal</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">data</span><span> </span><span id="TwoOrMore"><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span></span><span> </span><span id="local-6989586621679081630"><span class="annot"><a href="#local-6989586621679081630"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TwoOrMore"><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679081630"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081630"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679081630"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081712"><span id="local-6989586621679081720"><span id="local-6989586621679081724"><span class="annot"><span class="annottext">Int -&gt; TwoOrMore a -&gt; ShowS
+[TwoOrMore a] -&gt; ShowS
+TwoOrMore a -&gt; String
+(Int -&gt; TwoOrMore a -&gt; ShowS)
+-&gt; (TwoOrMore a -&gt; String)
+-&gt; ([TwoOrMore a] -&gt; ShowS)
+-&gt; Show (TwoOrMore a)
+forall a. Show a =&gt; Int -&gt; TwoOrMore a -&gt; ShowS
+forall a. Show a =&gt; [TwoOrMore a] -&gt; ShowS
+forall a. Show a =&gt; TwoOrMore a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; TwoOrMore a -&gt; ShowS
+showsPrec :: Int -&gt; TwoOrMore a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; TwoOrMore a -&gt; String
+show :: TwoOrMore a -&gt; String
+$cshowList :: forall a. Show a =&gt; [TwoOrMore a] -&gt; ShowS
+showList :: [TwoOrMore a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081729"><span id="local-6989586621679081733"><span id="local-6989586621679081736"><span id="local-6989586621679081748"><span class="annot"><span class="annottext">ReadPrec [TwoOrMore a]
+ReadPrec (TwoOrMore a)
+Int -&gt; ReadS (TwoOrMore a)
+ReadS [TwoOrMore a]
+(Int -&gt; ReadS (TwoOrMore a))
+-&gt; ReadS [TwoOrMore a]
+-&gt; ReadPrec (TwoOrMore a)
+-&gt; ReadPrec [TwoOrMore a]
+-&gt; Read (TwoOrMore a)
+forall a. Read a =&gt; ReadPrec [TwoOrMore a]
+forall a. Read a =&gt; ReadPrec (TwoOrMore a)
+forall a. Read a =&gt; Int -&gt; ReadS (TwoOrMore a)
+forall a. Read a =&gt; ReadS [TwoOrMore a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (TwoOrMore a)
+readsPrec :: Int -&gt; ReadS (TwoOrMore a)
+$creadList :: forall a. Read a =&gt; ReadS [TwoOrMore a]
+readList :: ReadS [TwoOrMore a]
+$creadPrec :: forall a. Read a =&gt; ReadPrec (TwoOrMore a)
+readPrec :: ReadPrec (TwoOrMore a)
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [TwoOrMore a]
+readListPrec :: ReadPrec [TwoOrMore a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081753"><span id="local-6989586621679081759"><span class="annot"><span class="annottext">TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+(TwoOrMore a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; Bool) -&gt; Eq (TwoOrMore a)
+forall a. Eq a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+== :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+/= :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081768"><span id="local-6989586621679081774"><span id="local-6989586621679081779"><span id="local-6989586621679081783"><span id="local-6989586621679081786"><span id="local-6989586621679081789"><span id="local-6989586621679081792"><span class="annot"><span class="annottext">Eq (TwoOrMore a)
+Eq (TwoOrMore a) =&gt;
+(TwoOrMore a -&gt; TwoOrMore a -&gt; Ordering)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a)
+-&gt; (TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a)
+-&gt; Ord (TwoOrMore a)
+TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+TwoOrMore a -&gt; TwoOrMore a -&gt; Ordering
+TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (TwoOrMore a)
+forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Ordering
+forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+$ccompare :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Ordering
+compare :: TwoOrMore a -&gt; TwoOrMore a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+&lt; :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+&lt;= :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+&gt; :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+&gt;= :: TwoOrMore a -&gt; TwoOrMore a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+max :: TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+$cmin :: forall a. Ord a =&gt; TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+min :: TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081797"><span id="local-6989586621679081801"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b)
+-&gt; (forall a b. a -&gt; TwoOrMore b -&gt; TwoOrMore a)
+-&gt; Functor TwoOrMore
+forall a b. a -&gt; TwoOrMore b -&gt; TwoOrMore a
+forall a b. (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+fmap :: forall a b. (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+$c&lt;$ :: forall a b. a -&gt; TwoOrMore b -&gt; TwoOrMore a
+&lt;$ :: forall a b. a -&gt; TwoOrMore b -&gt; TwoOrMore a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081806"><span id="local-6989586621679081812"><span id="local-6989586621679081820"><span id="local-6989586621679081825"><span id="local-6989586621679081828"><span id="local-6989586621679081831"><span id="local-6989586621679081834"><span id="local-6989586621679081837"><span id="local-6989586621679081840"><span id="local-6989586621679081843"><span id="local-6989586621679081846"><span id="local-6989586621679081848"><span id="local-6989586621679081851"><span id="local-6989586621679081856"><span id="local-6989586621679081861"><span id="local-6989586621679081866"><span id="local-6989586621679081871"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; TwoOrMore m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a)
+-&gt; (forall a. TwoOrMore a -&gt; [a])
+-&gt; (forall a. TwoOrMore a -&gt; Bool)
+-&gt; (forall a. TwoOrMore a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; TwoOrMore a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; TwoOrMore a -&gt; a)
+-&gt; (forall a. Ord a =&gt; TwoOrMore a -&gt; a)
+-&gt; (forall a. Num a =&gt; TwoOrMore a -&gt; a)
+-&gt; (forall a. Num a =&gt; TwoOrMore a -&gt; a)
+-&gt; Foldable TwoOrMore
+forall a. Eq a =&gt; a -&gt; TwoOrMore a -&gt; Bool
+forall a. Num a =&gt; TwoOrMore a -&gt; a
+forall a. Ord a =&gt; TwoOrMore a -&gt; a
+forall m. Monoid m =&gt; TwoOrMore m -&gt; m
+forall a. TwoOrMore a -&gt; Bool
+forall a. TwoOrMore a -&gt; Int
+forall a. TwoOrMore a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; TwoOrMore m -&gt; m
+fold :: forall m. Monoid m =&gt; TwoOrMore m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; TwoOrMore a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; TwoOrMore a -&gt; a
+$ctoList :: forall a. TwoOrMore a -&gt; [a]
+toList :: forall a. TwoOrMore a -&gt; [a]
+$cnull :: forall a. TwoOrMore a -&gt; Bool
+null :: forall a. TwoOrMore a -&gt; Bool
+$clength :: forall a. TwoOrMore a -&gt; Int
+length :: forall a. TwoOrMore a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; TwoOrMore a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; TwoOrMore a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; TwoOrMore a -&gt; a
+maximum :: forall a. Ord a =&gt; TwoOrMore a -&gt; a
+$cminimum :: forall a. Ord a =&gt; TwoOrMore a -&gt; a
+minimum :: forall a. Ord a =&gt; TwoOrMore a -&gt; a
+$csum :: forall a. Num a =&gt; TwoOrMore a -&gt; a
+sum :: forall a. Num a =&gt; TwoOrMore a -&gt; a
+$cproduct :: forall a. Num a =&gt; TwoOrMore a -&gt; a
+product :: forall a. Num a =&gt; TwoOrMore a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081881"><span id="local-6989586621679081889"><span id="local-6989586621679081895"><span id="local-6989586621679081900"><span class="annot"><span class="annottext">Functor TwoOrMore
+Foldable TwoOrMore
+(Functor TwoOrMore, Foldable TwoOrMore) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; TwoOrMore a -&gt; f (TwoOrMore b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    TwoOrMore (f a) -&gt; f (TwoOrMore a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; TwoOrMore a -&gt; m (TwoOrMore b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    TwoOrMore (m a) -&gt; m (TwoOrMore a))
+-&gt; Traversable TwoOrMore
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a.
+Monad m =&gt;
+TwoOrMore (m a) -&gt; m (TwoOrMore a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+TwoOrMore (f a) -&gt; f (TwoOrMore a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; TwoOrMore a -&gt; m (TwoOrMore b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; TwoOrMore a -&gt; f (TwoOrMore b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; TwoOrMore a -&gt; f (TwoOrMore b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; TwoOrMore a -&gt; f (TwoOrMore b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+TwoOrMore (f a) -&gt; f (TwoOrMore a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+TwoOrMore (f a) -&gt; f (TwoOrMore a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; TwoOrMore a -&gt; m (TwoOrMore b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; TwoOrMore a -&gt; m (TwoOrMore b)
+$csequence :: forall (m :: * -&gt; *) a.
+Monad m =&gt;
+TwoOrMore (m a) -&gt; m (TwoOrMore a)
+sequence :: forall (m :: * -&gt; *) a.
+Monad m =&gt;
+TwoOrMore (m a) -&gt; m (TwoOrMore a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081908"><span id="local-6989586621679081915"><span id="local-6989586621679081921"><span id="local-6989586621679081926"><span id="local-6989586621679081931"><span id="local-6989586621679081934"><span id="local-6989586621679081937"><span id="local-6989586621679081940"><span id="local-6989586621679081943"><span id="local-6989586621679081946"><span class="annot"><span class="hs-identifier hs-type">Foldable1</span></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>  </span><span id="local-6989586621679081954"><span class="annot"><span class="annottext">foldMap1 :: forall m a. Semigroup m =&gt; (a -&gt; m) -&gt; TwoOrMore a -&gt; m
+</span><a href="#local-6989586621679081954"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap1</span></a></span></span><span> </span><span id="local-6989586621679081956"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679081956"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679081957"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081957"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679081958"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081958"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679081959"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081959"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679081956"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081957"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">m -&gt; m -&gt; m
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; NonEmpty a -&gt; m
+forall m a. Semigroup m =&gt; (a -&gt; m) -&gt; NonEmpty a -&gt; m
+forall (t :: * -&gt; *) m a.
+(Foldable1 t, Semigroup m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap1</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679081956"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081958"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; NonEmpty a
+forall a. a -&gt; [a] -&gt; NonEmpty a
+</span><span class="hs-operator hs-var">:|</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081959"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>  </span><span id="local-6989586621679081960"><span class="annot"><span class="annottext">toNonEmpty :: forall a. TwoOrMore a -&gt; NonEmpty a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toNonEmpty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679081961"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679081962"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081962"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679081963"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081963"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; NonEmpty a
+forall a. a -&gt; [a] -&gt; NonEmpty a
+</span><span class="hs-operator hs-var">:|</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081962"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081963"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679081626"><span class="annot"><a href="Data.List.TwoOrMore.html#twoOrMore"><span class="hs-identifier hs-type">twoOrMore</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><a href="#local-6989586621679081626"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679081626"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081626"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-22"></span><span id="twoOrMore"><span class="annot"><span class="annottext">twoOrMore :: forall a. NonEmpty a -&gt; Either a (TwoOrMore a)
+</span><a href="Data.List.TwoOrMore.html#twoOrMore"><span class="hs-identifier hs-var hs-var">twoOrMore</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081964"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081964"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span id="local-6989586621679081965"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081965"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081965"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a (TwoOrMore a)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081964"><span class="hs-identifier hs-var">a1</span></a></span><span>
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621679081966"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081966"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679081967"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081967"><span class="hs-identifier hs-var">as'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; Either a (TwoOrMore a)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081964"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081966"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081967"><span class="hs-identifier hs-var">as'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081634"><span id="local-6989586621679081970"><span id="local-6989586621679081974"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081634"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679081980"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081980"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679081981"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081981"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679081982"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081982"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679081983"><span class="annot"><span class="annottext">&lt;&gt; :: TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679081984"><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679081984"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081980"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081981"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081982"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; [a]
+forall a. TwoOrMore a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679081984"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679081989"><span id="local-6989586621679081993"><span id="local-6989586621679081996"><span class="annot"><span class="hs-identifier hs-type">Apply</span></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082002"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082002"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679082003"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082003"><span class="hs-identifier hs-var">x2</span></a></span></span><span> </span><span id="local-6989586621679082004"><span class="annot"><span class="annottext">[a -&gt; b]
+</span><a href="#local-6989586621679082004"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679082005"><span class="annot"><span class="annottext">&lt;.&gt; :: forall a b. TwoOrMore (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082005"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;.&gt;</span></a></span></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082007"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082007"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679082008"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082008"><span class="hs-identifier hs-var">y2</span></a></span></span><span> </span><span id="local-6989586621679082009"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082009"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; [b] -&gt; TwoOrMore b
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082002"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082007"><span class="hs-identifier hs-var">y1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082002"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082008"><span class="hs-identifier hs-var">y2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; [a] -&gt; [b]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082002"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082009"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [b]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082003"><span class="hs-identifier hs-var">x2</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; [a -&gt; b] -&gt; [a -&gt; b]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a -&gt; b]
+</span><a href="#local-6989586621679082004"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">[a -&gt; b] -&gt; [a] -&gt; [b]
+forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082007"><span class="hs-identifier hs-var">y1</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082008"><span class="hs-identifier hs-var">y2</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082009"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082014"><span id="local-6989586621679082020"><span class="annot"><span class="hs-identifier hs-type">Alt</span></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679082026"><span class="annot"><span class="annottext">&lt;!&gt; :: forall a. TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+</span><a href="#local-6989586621679082026"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;!&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; TwoOrMore a -&gt; TwoOrMore a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(&lt;&gt;)</span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="annot"><span class="hs-comment">-- | @(&gt;&gt;-) = flip foldMap1@</span></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082032"><span class="annot"><span class="hs-identifier hs-type">Bind</span></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082039"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082039"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679082040"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082040"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679082041"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082041"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679082042"><span class="annot"><span class="annottext">&gt;&gt;- :: forall a b. TwoOrMore a -&gt; (a -&gt; TwoOrMore b) -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082042"><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;-</span></a></span></span><span> </span><span id="local-6989586621679082044"><span class="annot"><span class="annottext">a -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082044"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082044"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082039"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-38"></span><span>    </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082045"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082045"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span id="local-6989586621679082046"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082046"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span id="local-6989586621679082047"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082047"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; [b] -&gt; TwoOrMore b
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082045"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082046"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; TwoOrMore b) -&gt; [b] -&gt; TwoOrMore b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082047"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [b]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082040"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082041"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore b -&gt; [b]
+forall a. TwoOrMore a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(TwoOrMore b -&gt; [b]) -&gt; (a -&gt; TwoOrMore b) -&gt; a -&gt; [b]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082044"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679082056"><span class="annot"><span class="annottext">impureBind :: forall a b.
+TwoOrMore a -&gt; (a -&gt; Unite TwoOrMore b) -&gt; Unite TwoOrMore b
+</span><a href="#local-6989586621679082056"><span class="hs-identifier hs-var hs-var hs-var hs-var">impureBind</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; (a -&gt; Unite TwoOrMore b) -&gt; Unite TwoOrMore b
+forall (m :: * -&gt; *) a b.
+MonadIdeal m =&gt;
+m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
+</span><a href="Control.Monad.Ideal.html#impureBindDefault"><span class="hs-identifier hs-var">impureBindDefault</span></a></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @Ideal TwoOrMore ~ NonEmpty@</span></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html#MonadIdeal"><span class="hs-identifier hs-type">MonadIdeal</span></a></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679082064"><span class="annot"><span class="annottext">idealBind :: forall a b. TwoOrMore a -&gt; (a -&gt; Ideal TwoOrMore b) -&gt; TwoOrMore b
+</span><a href="#local-6989586621679082064"><span class="hs-identifier hs-var hs-var hs-var hs-var">idealBind</span></a></span></span><span> </span><span id="local-6989586621679082066"><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082066"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679082067"><span class="annot"><span class="annottext">a -&gt; Ideal TwoOrMore b
+</span><a href="#local-6989586621679082067"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; (a -&gt; NonEmpty b) -&gt; TwoOrMore b
+forall a b. TwoOrMore a -&gt; (a -&gt; NonEmpty b) -&gt; TwoOrMore b
+</span><a href="Data.List.TwoOrMore.html#bindNonEmpty"><span class="hs-identifier hs-var">bindNonEmpty</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082066"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ideal TwoOrMore b -&gt; NonEmpty b
+forall a. Ideal TwoOrMore a -&gt; NonEmpty a
+</span><a href="Data.List.TwoOrMore.html#idealToNonEmpty"><span class="hs-identifier hs-var">idealToNonEmpty</span></a></span><span> </span><span class="annot"><span class="annottext">(Ideal TwoOrMore b -&gt; NonEmpty b)
+-&gt; (a -&gt; Ideal TwoOrMore b) -&gt; a -&gt; NonEmpty b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Ideal TwoOrMore b
+</span><a href="#local-6989586621679082067"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span id="local-6989586621679081693"><span class="annot"><a href="Data.List.TwoOrMore.html#idealToNonEmpty"><span class="hs-identifier hs-type">idealToNonEmpty</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Control.Monad.Ideal.html#Ideal"><span class="hs-identifier hs-type">Ideal</span></a></span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081693"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><a href="#local-6989586621679081693"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-48"></span><span id="idealToNonEmpty"><span class="annot"><span class="annottext">idealToNonEmpty :: forall a. Ideal TwoOrMore a -&gt; NonEmpty a
+</span><a href="Data.List.TwoOrMore.html#idealToNonEmpty"><span class="hs-identifier hs-var hs-var">idealToNonEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; NonEmpty a)
+-&gt; (TwoOrMore a -&gt; NonEmpty a)
+-&gt; Either a (TwoOrMore a)
+-&gt; NonEmpty a
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NonEmpty a
+forall a. a -&gt; NonEmpty a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; NonEmpty a
+forall a. TwoOrMore a -&gt; NonEmpty a
+forall (t :: * -&gt; *) a. Foldable1 t =&gt; t a -&gt; NonEmpty a
+</span><span class="hs-identifier hs-var">toNonEmpty</span></span><span> </span><span class="annot"><span class="annottext">(Either a (TwoOrMore a) -&gt; NonEmpty a)
+-&gt; (Ideal TwoOrMore a -&gt; Either a (TwoOrMore a))
+-&gt; Ideal TwoOrMore a
+-&gt; NonEmpty a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Ideal TwoOrMore a -&gt; Either a (TwoOrMore a)
+forall (m :: * -&gt; *) a. Ideal m a -&gt; Either a (m a)
+</span><a href="Control.Monad.Ideal.html#runIdeal"><span class="hs-identifier hs-var">runIdeal</span></a></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span id="local-6989586621679081691"><span id="local-6989586621679081692"><span class="annot"><a href="Data.List.TwoOrMore.html#bindNonEmpty"><span class="hs-identifier hs-type">bindNonEmpty</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081691"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679081691"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><a href="#local-6989586621679081692"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081692"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-51"></span><span id="bindNonEmpty"><span class="annot"><span class="annottext">bindNonEmpty :: forall a b. TwoOrMore a -&gt; (a -&gt; NonEmpty b) -&gt; TwoOrMore b
+</span><a href="Data.List.TwoOrMore.html#bindNonEmpty"><span class="hs-identifier hs-var hs-var">bindNonEmpty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082082"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082082"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679082083"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082083"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679082084"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082084"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679082085"><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082082"><span class="hs-identifier hs-var">a1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082083"><span class="hs-identifier hs-var">a2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679082086"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082086"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082087"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082087"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; [b] -&gt; TwoOrMore b
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082086"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082087"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; TwoOrMore b) -&gt; [b] -&gt; TwoOrMore b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082084"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty b -&gt; [b]
+forall a. NonEmpty a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(NonEmpty b -&gt; [b]) -&gt; (a -&gt; NonEmpty b) -&gt; a -&gt; [b]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679082088"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082088"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082089"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082089"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span id="local-6989586621679082090"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082090"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; [b] -&gt; TwoOrMore b
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082088"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082089"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; TwoOrMore b) -&gt; [b] -&gt; TwoOrMore b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082090"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [b]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082084"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty b -&gt; [b]
+forall a. NonEmpty a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(NonEmpty b -&gt; [b]) -&gt; (a -&gt; NonEmpty b) -&gt; a -&gt; [b]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679082091"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082091"><span class="hs-identifier hs-var">b1</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span id="local-6989586621679082092"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082092"><span class="hs-identifier hs-var">b2</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679082093"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082093"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082094"><span class="annot"><span class="annottext">NonEmpty b
+</span><a href="#local-6989586621679082094"><span class="hs-identifier hs-var">bs'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; [b] -&gt; TwoOrMore b
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082091"><span class="hs-identifier hs-var">b1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679082092"><span class="hs-identifier hs-var">b2</span></a></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; TwoOrMore b) -&gt; [b] -&gt; TwoOrMore b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679082093"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [b]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty b -&gt; [b]
+forall a. NonEmpty a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty b
+</span><a href="#local-6989586621679082094"><span class="hs-identifier hs-var">bs'</span></a></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [b]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082084"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty b -&gt; [b]
+forall a. NonEmpty a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(NonEmpty b -&gt; [b]) -&gt; (a -&gt; NonEmpty b) -&gt; a -&gt; [b]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NonEmpty b
+</span><a href="#local-6989586621679082085"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span></pre></body></html>

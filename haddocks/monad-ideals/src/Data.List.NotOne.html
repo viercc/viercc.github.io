@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.List.NotOne</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mapMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Bind</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Plus</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Alt</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Plus</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html"><span class="hs-identifier">Control.Monad.Isolated</span></a></span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.List.TwoOrMore.html"><span class="hs-identifier">Data.List.TwoOrMore</span></a></span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="annot"><span class="hs-comment">-- | List sans singleton</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">data</span><span> </span><span id="NotOne"><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-var">NotOne</span></a></span></span><span> </span><span id="local-6989586621679082164"><span class="annot"><a href="#local-6989586621679082164"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Zero"><span class="annot"><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Multiple"><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082164"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082235"><span id="local-6989586621679082241"><span id="local-6989586621679082245"><span class="annot"><span class="annottext">Int -&gt; NotOne a -&gt; ShowS
+[NotOne a] -&gt; ShowS
+NotOne a -&gt; String
+(Int -&gt; NotOne a -&gt; ShowS)
+-&gt; (NotOne a -&gt; String) -&gt; ([NotOne a] -&gt; ShowS) -&gt; Show (NotOne a)
+forall a. Show a =&gt; Int -&gt; NotOne a -&gt; ShowS
+forall a. Show a =&gt; [NotOne a] -&gt; ShowS
+forall a. Show a =&gt; NotOne a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; NotOne a -&gt; ShowS
+showsPrec :: Int -&gt; NotOne a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; NotOne a -&gt; String
+show :: NotOne a -&gt; String
+$cshowList :: forall a. Show a =&gt; [NotOne a] -&gt; ShowS
+showList :: [NotOne a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082250"><span id="local-6989586621679082254"><span id="local-6989586621679082257"><span id="local-6989586621679082267"><span class="annot"><span class="annottext">ReadPrec [NotOne a]
+ReadPrec (NotOne a)
+Int -&gt; ReadS (NotOne a)
+ReadS [NotOne a]
+(Int -&gt; ReadS (NotOne a))
+-&gt; ReadS [NotOne a]
+-&gt; ReadPrec (NotOne a)
+-&gt; ReadPrec [NotOne a]
+-&gt; Read (NotOne a)
+forall a. Read a =&gt; ReadPrec [NotOne a]
+forall a. Read a =&gt; ReadPrec (NotOne a)
+forall a. Read a =&gt; Int -&gt; ReadS (NotOne a)
+forall a. Read a =&gt; ReadS [NotOne a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (NotOne a)
+readsPrec :: Int -&gt; ReadS (NotOne a)
+$creadList :: forall a. Read a =&gt; ReadS [NotOne a]
+readList :: ReadS [NotOne a]
+$creadPrec :: forall a. Read a =&gt; ReadPrec (NotOne a)
+readPrec :: ReadPrec (NotOne a)
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [NotOne a]
+readListPrec :: ReadPrec [NotOne a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082272"><span id="local-6989586621679082276"><span class="annot"><span class="annottext">NotOne a -&gt; NotOne a -&gt; Bool
+(NotOne a -&gt; NotOne a -&gt; Bool)
+-&gt; (NotOne a -&gt; NotOne a -&gt; Bool) -&gt; Eq (NotOne a)
+forall a. Eq a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+== :: NotOne a -&gt; NotOne a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+/= :: NotOne a -&gt; NotOne a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082285"><span id="local-6989586621679082289"><span id="local-6989586621679082292"><span id="local-6989586621679082296"><span id="local-6989586621679082299"><span id="local-6989586621679082302"><span id="local-6989586621679082305"><span class="annot"><span class="annottext">Eq (NotOne a)
+Eq (NotOne a) =&gt;
+(NotOne a -&gt; NotOne a -&gt; Ordering)
+-&gt; (NotOne a -&gt; NotOne a -&gt; Bool)
+-&gt; (NotOne a -&gt; NotOne a -&gt; Bool)
+-&gt; (NotOne a -&gt; NotOne a -&gt; Bool)
+-&gt; (NotOne a -&gt; NotOne a -&gt; Bool)
+-&gt; (NotOne a -&gt; NotOne a -&gt; NotOne a)
+-&gt; (NotOne a -&gt; NotOne a -&gt; NotOne a)
+-&gt; Ord (NotOne a)
+NotOne a -&gt; NotOne a -&gt; Bool
+NotOne a -&gt; NotOne a -&gt; Ordering
+NotOne a -&gt; NotOne a -&gt; NotOne a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (NotOne a)
+forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Ordering
+forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; NotOne a
+$ccompare :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Ordering
+compare :: NotOne a -&gt; NotOne a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+&lt; :: NotOne a -&gt; NotOne a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+&lt;= :: NotOne a -&gt; NotOne a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+&gt; :: NotOne a -&gt; NotOne a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; Bool
+&gt;= :: NotOne a -&gt; NotOne a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; NotOne a
+max :: NotOne a -&gt; NotOne a -&gt; NotOne a
+$cmin :: forall a. Ord a =&gt; NotOne a -&gt; NotOne a -&gt; NotOne a
+min :: NotOne a -&gt; NotOne a -&gt; NotOne a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082310"><span id="local-6989586621679082314"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; NotOne a -&gt; NotOne b)
+-&gt; (forall a b. a -&gt; NotOne b -&gt; NotOne a) -&gt; Functor NotOne
+forall a b. a -&gt; NotOne b -&gt; NotOne a
+forall a b. (a -&gt; b) -&gt; NotOne a -&gt; NotOne b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; NotOne a -&gt; NotOne b
+fmap :: forall a b. (a -&gt; b) -&gt; NotOne a -&gt; NotOne b
+$c&lt;$ :: forall a b. a -&gt; NotOne b -&gt; NotOne a
+&lt;$ :: forall a b. a -&gt; NotOne b -&gt; NotOne a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082319"><span id="local-6989586621679082325"><span id="local-6989586621679082332"><span id="local-6989586621679082337"><span id="local-6989586621679082340"><span id="local-6989586621679082343"><span id="local-6989586621679082346"><span id="local-6989586621679082349"><span id="local-6989586621679082352"><span id="local-6989586621679082355"><span id="local-6989586621679082358"><span id="local-6989586621679082361"><span id="local-6989586621679082364"><span id="local-6989586621679082369"><span id="local-6989586621679082374"><span id="local-6989586621679082379"><span id="local-6989586621679082384"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; NotOne m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a)
+-&gt; (forall a. NotOne a -&gt; [a])
+-&gt; (forall a. NotOne a -&gt; Bool)
+-&gt; (forall a. NotOne a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; NotOne a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; NotOne a -&gt; a)
+-&gt; (forall a. Ord a =&gt; NotOne a -&gt; a)
+-&gt; (forall a. Num a =&gt; NotOne a -&gt; a)
+-&gt; (forall a. Num a =&gt; NotOne a -&gt; a)
+-&gt; Foldable NotOne
+forall a. Eq a =&gt; a -&gt; NotOne a -&gt; Bool
+forall a. Num a =&gt; NotOne a -&gt; a
+forall a. Ord a =&gt; NotOne a -&gt; a
+forall m. Monoid m =&gt; NotOne m -&gt; m
+forall a. NotOne a -&gt; Bool
+forall a. NotOne a -&gt; Int
+forall a. NotOne a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; NotOne m -&gt; m
+fold :: forall m. Monoid m =&gt; NotOne m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NotOne a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NotOne a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; NotOne a -&gt; a
+$ctoList :: forall a. NotOne a -&gt; [a]
+toList :: forall a. NotOne a -&gt; [a]
+$cnull :: forall a. NotOne a -&gt; Bool
+null :: forall a. NotOne a -&gt; Bool
+$clength :: forall a. NotOne a -&gt; Int
+length :: forall a. NotOne a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; NotOne a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; NotOne a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; NotOne a -&gt; a
+maximum :: forall a. Ord a =&gt; NotOne a -&gt; a
+$cminimum :: forall a. Ord a =&gt; NotOne a -&gt; a
+minimum :: forall a. Ord a =&gt; NotOne a -&gt; a
+$csum :: forall a. Num a =&gt; NotOne a -&gt; a
+sum :: forall a. Num a =&gt; NotOne a -&gt; a
+$cproduct :: forall a. Num a =&gt; NotOne a -&gt; a
+product :: forall a. Num a =&gt; NotOne a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082394"><span id="local-6989586621679082403"><span id="local-6989586621679082409"><span id="local-6989586621679082414"><span class="annot"><span class="annottext">Functor NotOne
+Foldable NotOne
+(Functor NotOne, Foldable NotOne) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; NotOne a -&gt; f (NotOne b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    NotOne (f a) -&gt; f (NotOne a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; NotOne a -&gt; m (NotOne b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    NotOne (m a) -&gt; m (NotOne a))
+-&gt; Traversable NotOne
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; NotOne (m a) -&gt; m (NotOne a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+NotOne (f a) -&gt; f (NotOne a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; NotOne a -&gt; m (NotOne b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; NotOne a -&gt; f (NotOne b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; NotOne a -&gt; f (NotOne b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; NotOne a -&gt; f (NotOne b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+NotOne (f a) -&gt; f (NotOne a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+NotOne (f a) -&gt; f (NotOne a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; NotOne a -&gt; m (NotOne b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; NotOne a -&gt; m (NotOne b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; NotOne (m a) -&gt; m (NotOne a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; NotOne (m a) -&gt; m (NotOne a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span id="local-6989586621679082160"><span class="annot"><a href="Data.List.NotOne.html#notOne"><span class="hs-identifier hs-type">notOne</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679082160"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679082160"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082160"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-18"></span><span id="notOne"><span class="annot"><span class="annottext">notOne :: forall a. [a] -&gt; Either a (NotOne a)
+</span><a href="Data.List.NotOne.html#notOne"><span class="hs-identifier hs-var hs-var">notOne</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a -&gt; Either a (NotOne a)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-19"></span><span class="annot"><a href="Data.List.NotOne.html#notOne"><span class="hs-identifier hs-var">notOne</span></a></span><span> </span><span class="hs-special">[</span><span id="local-6989586621679082421"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082421"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a (NotOne a)
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082421"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Data.List.NotOne.html#notOne"><span class="hs-identifier hs-var">notOne</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082422"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082422"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679082423"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082423"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679082424"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082424"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a -&gt; Either a (NotOne a)
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(NotOne a -&gt; Either a (NotOne a))
+-&gt; (TwoOrMore a -&gt; NotOne a) -&gt; TwoOrMore a -&gt; Either a (NotOne a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; NotOne a
+forall a. TwoOrMore a -&gt; NotOne a
+</span><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span><span> </span><span class="annot"><span class="annottext">(TwoOrMore a -&gt; Either a (NotOne a))
+-&gt; TwoOrMore a -&gt; Either a (NotOne a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082422"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082423"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082424"><span class="hs-keyword hs-var">as</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span id="local-6989586621679082173"><span class="annot"><a href="Data.List.NotOne.html#getMultiple"><span class="hs-identifier hs-type">getMultiple</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082173"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082173"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-23"></span><span id="getMultiple"><span class="annot"><span class="annottext">getMultiple :: forall a. NotOne a -&gt; Maybe (TwoOrMore a)
+</span><a href="Data.List.NotOne.html#getMultiple"><span class="hs-identifier hs-var hs-var">getMultiple</span></a></span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (TwoOrMore a)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="Data.List.NotOne.html#getMultiple"><span class="hs-identifier hs-var">getMultiple</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span id="local-6989586621679082428"><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082428"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; Maybe (TwoOrMore a)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082428"><span class="hs-keyword hs-var">as</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082180"><span id="local-6989586621679082431"><span id="local-6989586621679082435"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082180"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span id="local-6989586621679082441"><span class="annot"><span class="annottext">&lt;&gt; :: NotOne a -&gt; NotOne a -&gt; NotOne a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679082442"><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082442"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082442"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-type">TwoOrMore</span></a></span><span> </span><span id="local-6989586621679082443"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082443"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679082444"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082444"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679082445"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082445"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span id="local-6989586621679082446"><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082446"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore a -&gt; NotOne a
+forall a. TwoOrMore a -&gt; NotOne a
+</span><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span><span> </span><span class="annot"><span class="annottext">(TwoOrMore a -&gt; NotOne a) -&gt; TwoOrMore a -&gt; NotOne a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082443"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679082444"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679082445"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">NotOne a -&gt; [a]
+forall a. NotOne a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082446"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082184"><span id="local-6989586621679082451"><span id="local-6989586621679082455"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082184"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-31"></span><span>  </span><span id="local-6989586621679082458"><span class="annot"><span class="annottext">mempty :: NotOne a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082463"><span id="local-6989586621679082467"><span id="local-6989586621679082470"><span class="annot"><span class="hs-identifier hs-type">Apply</span></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><span class="annottext">NotOne (a -&gt; b)
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span id="local-6989586621679082475"><span class="annot"><span class="annottext">&lt;.&gt; :: forall a b. NotOne (a -&gt; b) -&gt; NotOne a -&gt; NotOne b
+</span><a href="#local-6989586621679082475"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;.&gt;</span></a></span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne b
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore (a -&gt; b)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;.&gt;</span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne b
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-36"></span><span>  </span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span id="local-6989586621679082477"><span class="annot"><span class="annottext">TwoOrMore (a -&gt; b)
+</span><a href="#local-6989586621679082477"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;.&gt;</span></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span id="local-6989586621679082478"><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082478"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TwoOrMore b -&gt; NotOne b
+forall a. TwoOrMore a -&gt; NotOne a
+</span><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TwoOrMore (a -&gt; b)
+</span><a href="#local-6989586621679082477"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+forall a b. TwoOrMore (a -&gt; b) -&gt; TwoOrMore a -&gt; TwoOrMore b
+forall (f :: * -&gt; *) a b. Apply f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;.&gt;</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082478"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082483"><span id="local-6989586621679082489"><span class="annot"><span class="hs-identifier hs-type">Alt</span></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679082495"><span class="annot"><span class="annottext">&lt;!&gt; :: forall a. NotOne a -&gt; NotOne a -&gt; NotOne a
+</span><a href="#local-6989586621679082495"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;!&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a -&gt; NotOne a -&gt; NotOne a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(&lt;&gt;)</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plus</span></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679082503"><span class="annot"><span class="annottext">zero :: forall a. NotOne a
+</span><a href="#local-6989586621679082503"><span class="hs-identifier hs-var hs-var hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne a
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | @(&gt;&gt;-) = flip foldMap@</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082509"><span class="annot"><span class="hs-identifier hs-type">Bind</span></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>  </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span id="local-6989586621679082516"><span class="annot"><span class="annottext">&gt;&gt;- :: forall a b. NotOne a -&gt; (a -&gt; NotOne b) -&gt; NotOne b
+</span><a href="#local-6989586621679082516"><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;-</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NotOne b
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NotOne b
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="annot"><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-type">Multiple</span></a></span><span> </span><span id="local-6989586621679082518"><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082518"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&gt;&gt;-</span></span><span> </span><span id="local-6989586621679082519"><span class="annot"><span class="annottext">a -&gt; NotOne b
+</span><a href="#local-6989586621679082519"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Maybe (TwoOrMore b)) -&gt; [a] -&gt; [TwoOrMore b]
+forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NotOne b -&gt; Maybe (TwoOrMore b)
+forall a. NotOne a -&gt; Maybe (TwoOrMore a)
+</span><a href="Data.List.NotOne.html#getMultiple"><span class="hs-identifier hs-var">getMultiple</span></a></span><span> </span><span class="annot"><span class="annottext">(NotOne b -&gt; Maybe (TwoOrMore b))
+-&gt; (a -&gt; NotOne b) -&gt; a -&gt; Maybe (TwoOrMore b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; NotOne b
+</span><a href="#local-6989586621679082519"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TwoOrMore a -&gt; [a]
+forall a. TwoOrMore a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore a
+</span><a href="#local-6989586621679082518"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NotOne b
+forall a. NotOne a
+</span><a href="Data.List.NotOne.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">[</span><span id="local-6989586621679082520"><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082520"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TwoOrMore b -&gt; NotOne b
+forall a. TwoOrMore a -&gt; NotOne a
+</span><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082520"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679082521"><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082521"><span class="hs-identifier hs-var">bs1</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679082522"><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082522"><span class="hs-identifier hs-var">bs2</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679082523"><span class="annot"><span class="annottext">[TwoOrMore b]
+</span><a href="#local-6989586621679082523"><span class="hs-identifier hs-var">bss</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TwoOrMore b -&gt; NotOne b
+forall a. TwoOrMore a -&gt; NotOne a
+</span><a href="Data.List.NotOne.html#Multiple"><span class="hs-identifier hs-var">Multiple</span></a></span><span> </span><span class="annot"><span class="annottext">(TwoOrMore b -&gt; NotOne b) -&gt; TwoOrMore b -&gt; NotOne b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">TwoOrMore (TwoOrMore b) -&gt; TwoOrMore b
+forall a. TwoOrMore (TwoOrMore a) -&gt; TwoOrMore a
+forall (m :: * -&gt; *) a. Bind m =&gt; m (m a) -&gt; m a
+</span><span class="hs-identifier hs-var">join</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TwoOrMore b
+-&gt; TwoOrMore b -&gt; [TwoOrMore b] -&gt; TwoOrMore (TwoOrMore b)
+forall a. a -&gt; a -&gt; [a] -&gt; TwoOrMore a
+</span><a href="Data.List.TwoOrMore.html#TwoOrMore"><span class="hs-identifier hs-var">TwoOrMore</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082521"><span class="hs-identifier hs-var">bs1</span></a></span><span> </span><span class="annot"><span class="annottext">TwoOrMore b
+</span><a href="#local-6989586621679082522"><span class="hs-identifier hs-var">bs2</span></a></span><span> </span><span class="annot"><span class="annottext">[TwoOrMore b]
+</span><a href="#local-6989586621679082523"><span class="hs-identifier hs-var">bss</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="Data.List.NotOne.html#NotOne"><span class="hs-identifier hs-type">NotOne</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679082535"><span class="annot"><span class="annottext">impureBind :: forall a b. NotOne a -&gt; (a -&gt; Unite NotOne b) -&gt; Unite NotOne b
+</span><a href="#local-6989586621679082535"><span class="hs-identifier hs-var hs-var hs-var hs-var">impureBind</span></a></span></span><span> </span><span id="local-6989586621679082537"><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082537"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span id="local-6989586621679082538"><span class="annot"><span class="annottext">a -&gt; Unite NotOne b
+</span><a href="#local-6989586621679082538"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (NotOne b) -&gt; Unite NotOne b
+forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
+</span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (NotOne b) -&gt; Unite NotOne b)
+-&gt; ([b] -&gt; Either b (NotOne b)) -&gt; [b] -&gt; Unite NotOne b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; Either b (NotOne b)
+forall a. [a] -&gt; Either a (NotOne a)
+</span><a href="Data.List.NotOne.html#notOne"><span class="hs-identifier hs-var">notOne</span></a></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; Unite NotOne b) -&gt; [b] -&gt; Unite NotOne b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NotOne a -&gt; [a]
+forall a. NotOne a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">NotOne a
+</span><a href="#local-6989586621679082537"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Unite NotOne b -&gt; [b]
+forall a. Unite NotOne a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(Unite NotOne b -&gt; [b]) -&gt; (a -&gt; Unite NotOne b) -&gt; a -&gt; [b]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite NotOne b
+</span><a href="#local-6989586621679082538"><span class="hs-identifier hs-var">k</span></a></span></pre></body></html>
