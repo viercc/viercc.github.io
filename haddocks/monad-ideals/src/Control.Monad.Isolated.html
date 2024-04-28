@@ -1,23 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
-</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Monad.Isolated</span><span class="hs-special">(</span><span>
-</span><span id="line-3"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Impure part isolated from a Monad</span></span><span>
-</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier">Isolated</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
-</span><span id="line-5"></span><span>
-</span><span id="line-6"></span><span>  </span><span class="annot"><span class="hs-comment">-- * (Re)Unite a Monad from pure and impure parts</span></span><span>
-</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier">Unite</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
-</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier">hoistUnite</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-9"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-10"></span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Bind</span></span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Traversable</span></span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Foldable</span></span><span>
-</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span>
-</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">WrappedMonad</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-17"></span><span>
-</span><span id="line-18"></span><span class="hs-keyword">newtype</span><span> </span><span id="Unite"><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span></span><span> </span><span id="local-6989586621679079620"><span class="annot"><a href="#local-6989586621679079620"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679079621"><span class="annot"><a href="#local-6989586621679079621"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Unite"><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runUnite"><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
-</span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var hs-var">runUnite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679079621"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079620"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079621"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679079853"><span id="local-6989586621679079859"><span id="local-6989586621679079863"><span class="annot"><span class="annottext">Int -&gt; Unite f a -&gt; ShowS
+</span><span id="line-2"></span><span class="hs-comment">-----------------------------------------------------------------------------</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- Module      :  Control.Monad.Isolated</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- Copyright   :  (C) 2008 Edward Kmett, (C) 2024 Koji Miyazato</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- License     :  BSD-style (see the file LICENSE)</span><span>
+</span><span id="line-7"></span><span class="hs-comment">--</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Maintainer  :  Koji Miyazato &lt;viercc@gmail.com&gt;</span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- Stability   :  experimental</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- Portability :  portable</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Monad.Isolated</span><span class="hs-special">(</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Impure part isolated from a Monad</span></span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier">Isolated</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-comment">-- * (Re)Unite a Monad from pure and impure parts</span></span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier">Unite</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier">hoistUnite</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Bind</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Traversable</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Foldable</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">WrappedMonad</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">newtype</span><span> </span><span id="Unite"><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span></span><span> </span><span id="local-6989586621679079943"><span class="annot"><a href="#local-6989586621679079943"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679079944"><span class="annot"><a href="#local-6989586621679079944"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Unite"><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runUnite"><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
+</span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var hs-var">runUnite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679079944"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079943"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079944"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080176"><span id="local-6989586621679080182"><span id="local-6989586621679080186"><span class="annot"><span class="annottext">Int -&gt; Unite f a -&gt; ShowS
 [Unite f a] -&gt; ShowS
 Unite f a -&gt; String
 (Int -&gt; Unite f a -&gt; ShowS)
@@ -43,7 +52,7 @@ $cshowList :: forall (f :: * -&gt; *) a.
 (Show a, Show (f a)) =&gt;
 [Unite f a] -&gt; ShowS
 showList :: [Unite f a] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679079869"><span id="local-6989586621679079873"><span id="local-6989586621679079876"><span id="local-6989586621679079886"><span class="annot"><span class="annottext">ReadPrec [Unite f a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080192"><span id="local-6989586621679080196"><span id="local-6989586621679080199"><span id="local-6989586621679080209"><span class="annot"><span class="annottext">ReadPrec [Unite f a]
 ReadPrec (Unite f a)
 Int -&gt; ReadS (Unite f a)
 ReadS [Unite f a]
@@ -79,7 +88,7 @@ $creadListPrec :: forall (f :: * -&gt; *) a.
 (Read a, Read (f a)) =&gt;
 ReadPrec [Unite f a]
 readListPrec :: ReadPrec [Unite f a]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679079892"><span id="local-6989586621679079897"><span class="annot"><span class="annottext">Unite f a -&gt; Unite f a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080215"><span id="local-6989586621679080220"><span class="annot"><span class="annottext">Unite f a -&gt; Unite f a -&gt; Bool
 (Unite f a -&gt; Unite f a -&gt; Bool)
 -&gt; (Unite f a -&gt; Unite f a -&gt; Bool) -&gt; Eq (Unite f a)
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -94,7 +103,7 @@ $c/= :: forall (f :: * -&gt; *) a.
 (Eq a, Eq (f a)) =&gt;
 Unite f a -&gt; Unite f a -&gt; Bool
 /= :: Unite f a -&gt; Unite f a -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679079909"><span id="local-6989586621679079914"><span id="local-6989586621679079918"><span id="local-6989586621679079922"><span id="local-6989586621679079926"><span id="local-6989586621679079930"><span id="local-6989586621679079934"><span class="annot"><span class="annottext">Eq (Unite f a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080232"><span id="local-6989586621679080237"><span id="local-6989586621679080241"><span id="local-6989586621679080245"><span id="local-6989586621679080249"><span id="local-6989586621679080253"><span id="local-6989586621679080257"><span class="annot"><span class="annottext">Eq (Unite f a)
 Eq (Unite f a) =&gt;
 (Unite f a -&gt; Unite f a -&gt; Ordering)
 -&gt; (Unite f a -&gt; Unite f a -&gt; Bool)
@@ -156,12 +165,12 @@ $cmin :: forall (f :: * -&gt; *) a.
 Unite f a -&gt; Unite f a -&gt; Unite f a
 min :: Unite f a -&gt; Unite f a -&gt; Unite f a
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span id="local-6989586621679079659"><span id="local-6989586621679079661"><span id="local-6989586621679079662"><span class="annot"><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier hs-type">hoistUnite</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079660"><span class="annot"><a href="#local-6989586621679079660"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079659"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079660"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079661"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079660"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079659"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079662"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079661"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079662"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
-</span><span id="line-22"></span><span id="hoistUnite"><span class="annot"><span class="annottext">hoistUnite :: forall (f :: * -&gt; *) (g :: * -&gt; *) b.
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span id="local-6989586621679079982"><span id="local-6989586621679079984"><span id="local-6989586621679079985"><span class="annot"><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier hs-type">hoistUnite</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679079983"><span class="annot"><a href="#local-6989586621679079983"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679079982"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079983"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679079984"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079983"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079982"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079985"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079984"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079985"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
+</span><span id="line-31"></span><span id="hoistUnite"><span class="annot"><span class="annottext">hoistUnite :: forall (f :: * -&gt; *) (g :: * -&gt; *) b.
 (forall a. f a -&gt; g a) -&gt; Unite f b -&gt; Unite g b
-</span><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier hs-var hs-var">hoistUnite</span></a></span></span><span> </span><span id="local-6989586621679079942"><span class="annot"><span class="annottext">forall a. f a -&gt; g a
-</span><a href="#local-6989586621679079942"><span class="hs-identifier hs-var">fg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (g b) -&gt; Unite g b
+</span><a href="Control.Monad.Isolated.html#hoistUnite"><span class="hs-identifier hs-var hs-var">hoistUnite</span></a></span></span><span> </span><span id="local-6989586621679080265"><span class="annot"><span class="annottext">forall a. f a -&gt; g a
+</span><a href="#local-6989586621679080265"><span class="hs-identifier hs-var">fg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (g b) -&gt; Unite g b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
 </span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
 -&gt; (Unite f b -&gt; Either b (g b)) -&gt; Unite f b -&gt; Unite g b
@@ -171,17 +180,17 @@ forall a b. (a -&gt; b) -&gt; Either b a -&gt; Either b b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f b -&gt; g b
 forall a. f a -&gt; g a
-</span><a href="#local-6989586621679079942"><span class="hs-identifier hs-var">fg</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (f b) -&gt; Either b (g b))
+</span><a href="#local-6989586621679080265"><span class="hs-identifier hs-var">fg</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (f b) -&gt; Either b (g b))
 -&gt; (Unite f b -&gt; Either b (f b)) -&gt; Unite f b -&gt; Either b (g b)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite f b -&gt; Either b (f b)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079676"><span id="local-6989586621679079947"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079676"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079676"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-25"></span><span>  </span><span id="local-6989586621679079954"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Unite g a -&gt; Unite g b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679079955"><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679079955"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (g b) -&gt; Unite g b
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079999"><span id="local-6989586621679080270"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079999"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079999"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679080277"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Unite g a -&gt; Unite g b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679080278"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679080278"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (g b) -&gt; Unite g b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
 </span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
 -&gt; (Unite g a -&gt; Either b (g b)) -&gt; Unite g a -&gt; Unite g b
@@ -192,61 +201,61 @@ forall (p :: * -&gt; * -&gt; *) a b c d.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
 </span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679079955"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; g a -&gt; g b
+</span><a href="#local-6989586621679080278"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; g a -&gt; g b
 forall a b. (a -&gt; b) -&gt; g a -&gt; g b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679079955"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; Either b (g b))
+</span><a href="#local-6989586621679080278"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; Either b (g b))
 -&gt; (Unite g a -&gt; Either a (g a)) -&gt; Unite g a -&gt; Either b (g b)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite g a -&gt; Either a (g a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-26"></span><span>
-</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079708"><span id="local-6989586621679079959"><span id="local-6989586621679079966"><span id="local-6989586621679079971"><span id="local-6989586621679079974"><span id="local-6989586621679079977"><span id="local-6989586621679079980"><span id="local-6989586621679079983"><span id="local-6989586621679079986"><span id="local-6989586621679079989"><span id="local-6989586621679079992"><span id="local-6989586621679079995"><span id="local-6989586621679079998"><span id="local-6989586621679080003"><span id="local-6989586621679080008"><span id="local-6989586621679080013"><span id="local-6989586621679080018"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679079708"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079708"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>  </span><span id="local-6989586621679080026"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unite g a -&gt; m
-</span><a href="#local-6989586621679080026"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap</span></a></span></span><span> </span><span id="local-6989586621679080028"><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080028"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; (g a -&gt; m) -&gt; Either a (g a) -&gt; m
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080031"><span id="local-6989586621679080282"><span id="local-6989586621679080289"><span id="local-6989586621679080294"><span id="local-6989586621679080297"><span id="local-6989586621679080300"><span id="local-6989586621679080303"><span id="local-6989586621679080306"><span id="local-6989586621679080309"><span id="local-6989586621679080312"><span id="local-6989586621679080315"><span id="local-6989586621679080318"><span id="local-6989586621679080321"><span id="local-6989586621679080326"><span id="local-6989586621679080331"><span id="local-6989586621679080336"><span id="local-6989586621679080341"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679080031"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080031"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679080349"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unite g a -&gt; m
+</span><a href="#local-6989586621679080349"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap</span></a></span></span><span> </span><span id="local-6989586621679080351"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679080351"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; (g a -&gt; m) -&gt; Either a (g a) -&gt; m
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080028"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; g a -&gt; m
+</span><a href="#local-6989586621679080351"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; g a -&gt; m
 forall m a. Monoid m =&gt; (a -&gt; m) -&gt; g a -&gt; m
 forall (t :: * -&gt; *) m a.
 (Foldable t, Monoid m) =&gt;
 (a -&gt; m) -&gt; t a -&gt; m
 </span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080028"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; m)
+</span><a href="#local-6989586621679080351"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; m)
 -&gt; (Unite g a -&gt; Either a (g a)) -&gt; Unite g a -&gt; m
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite g a -&gt; Either a (g a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-29"></span><span>
-</span><span id="line-30"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079731"><span id="local-6989586621679080035"><span id="local-6989586621679080042"><span id="local-6989586621679080047"><span id="local-6989586621679080050"><span id="local-6989586621679080055"><span id="local-6989586621679080060"><span id="local-6989586621679080063"><span id="local-6989586621679080066"><span id="local-6989586621679080069"><span id="local-6989586621679080072"><span id="local-6989586621679080075"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable1</span></span><span> </span><span class="annot"><a href="#local-6989586621679079731"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079731"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-31"></span><span>  </span><span id="local-6989586621679080082"><span class="annot"><span class="annottext">foldMap1 :: forall m a. Semigroup m =&gt; (a -&gt; m) -&gt; Unite g a -&gt; m
-</span><a href="#local-6989586621679080082"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap1</span></a></span></span><span> </span><span id="local-6989586621679080084"><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080084"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; (g a -&gt; m) -&gt; Either a (g a) -&gt; m
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080054"><span id="local-6989586621679080358"><span id="local-6989586621679080365"><span id="local-6989586621679080370"><span id="local-6989586621679080373"><span id="local-6989586621679080378"><span id="local-6989586621679080383"><span id="local-6989586621679080386"><span id="local-6989586621679080389"><span id="local-6989586621679080392"><span id="local-6989586621679080395"><span id="local-6989586621679080398"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable1</span></span><span> </span><span class="annot"><a href="#local-6989586621679080054"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080054"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679080405"><span class="annot"><span class="annottext">foldMap1 :: forall m a. Semigroup m =&gt; (a -&gt; m) -&gt; Unite g a -&gt; m
+</span><a href="#local-6989586621679080405"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap1</span></a></span></span><span> </span><span id="local-6989586621679080407"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679080407"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; (g a -&gt; m) -&gt; Either a (g a) -&gt; m
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080084"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; g a -&gt; m
+</span><a href="#local-6989586621679080407"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; g a -&gt; m
 forall m a. Semigroup m =&gt; (a -&gt; m) -&gt; g a -&gt; m
 forall (t :: * -&gt; *) m a.
 (Foldable1 t, Semigroup m) =&gt;
 (a -&gt; m) -&gt; t a -&gt; m
 </span><span class="hs-identifier hs-var">foldMap1</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
-</span><a href="#local-6989586621679080084"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; m)
+</span><a href="#local-6989586621679080407"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; m)
 -&gt; (Unite g a -&gt; Either a (g a)) -&gt; Unite g a -&gt; m
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite g a -&gt; Either a (g a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079749"><span id="local-6989586621679080094"><span id="local-6989586621679080100"><span id="local-6989586621679080105"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679079749"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079749"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-34"></span><span>  </span><span id="local-6989586621679080120"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080072"><span id="local-6989586621679080417"><span id="local-6989586621679080423"><span id="local-6989586621679080428"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679080072"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080072"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679080443"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; Unite g a -&gt; f (Unite g b)
-</span><a href="#local-6989586621679080120"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679080122"><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080122"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
+</span><a href="#local-6989586621679080443"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679080445"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679080445"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
 -&gt; f (Either b (g b)) -&gt; f (Unite g b)
 forall a b. (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -269,7 +278,7 @@ forall a b. a -&gt; Either a b
 -&gt; (a -&gt; f b) -&gt; a -&gt; f (Either b (g b))
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080122"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g b -&gt; Either b (g b)) -&gt; f (g b) -&gt; f (Either b (g b))
+</span><a href="#local-6989586621679080445"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g b -&gt; Either b (g b)) -&gt; f (g b) -&gt; f (Either b (g b))
 forall a b. (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">g b -&gt; Either b (g b)
@@ -285,19 +294,19 @@ forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; g a -&gt; f (g b)
 </span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080122"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; f (Either b (g b)))
+</span><a href="#local-6989586621679080445"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; f (Either b (g b)))
 -&gt; (Unite g a -&gt; Either a (g a)) -&gt; Unite g a -&gt; f (Either b (g b))
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite g a -&gt; Either a (g a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-35"></span><span>
-</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079766"><span id="local-6989586621679080132"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable1</span></span><span> </span><span class="annot"><a href="#local-6989586621679079766"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079766"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-37"></span><span>  </span><span id="local-6989586621679080148"><span class="annot"><span class="annottext">traverse1 :: forall (f :: * -&gt; *) a b.
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080089"><span id="local-6989586621679080455"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable1</span></span><span> </span><span class="annot"><a href="#local-6989586621679080089"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080089"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679080471"><span class="annot"><span class="annottext">traverse1 :: forall (f :: * -&gt; *) a b.
 Apply f =&gt;
 (a -&gt; f b) -&gt; Unite g a -&gt; f (Unite g b)
-</span><a href="#local-6989586621679080148"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse1</span></a></span></span><span> </span><span id="local-6989586621679080150"><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080150"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
+</span><a href="#local-6989586621679080471"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse1</span></a></span></span><span> </span><span id="local-6989586621679080473"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679080473"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either b (g b) -&gt; Unite g b)
 -&gt; f (Either b (g b)) -&gt; f (Unite g b)
 forall a b. (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -320,7 +329,7 @@ forall a b. a -&gt; Either a b
 -&gt; (a -&gt; f b) -&gt; a -&gt; f (Either b (g b))
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080150"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g b -&gt; Either b (g b)) -&gt; f (g b) -&gt; f (Either b (g b))
+</span><a href="#local-6989586621679080473"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g b -&gt; Either b (g b)) -&gt; f (g b) -&gt; f (Either b (g b))
 forall a b. (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">g b -&gt; Either b (g b)
@@ -334,108 +343,108 @@ forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (a -&gt; f b) -&gt; t a -&gt; f (t b)
 forall (f :: * -&gt; *) a b. Apply f =&gt; (a -&gt; f b) -&gt; g a -&gt; f (g b)
 </span><span class="hs-identifier hs-var">traverse1</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
-</span><a href="#local-6989586621679080150"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; f (Either b (g b)))
+</span><a href="#local-6989586621679080473"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either a (g a) -&gt; f (Either b (g b)))
 -&gt; (Unite g a -&gt; Either a (g a)) -&gt; Unite g a -&gt; f (Either b (g b))
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unite g a -&gt; Either a (g a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span>
-</span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="hs-comment">-- | @Isolated m@ is a @Functor@ which can be thought of as an impure part of a @Monad@.</span><span>
-</span><span id="line-40"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-41"></span><span class="hs-comment">-- ==== Examples</span><span>
-</span><span id="line-42"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-43"></span><span class="hs-comment">-- - 'Proxy' is @Isolated@ by being same to the 'Nothing' part of the 'Maybe' monad.</span><span>
-</span><span id="line-44"></span><span class="hs-comment">--</span><span>
-</span><span id="line-45"></span><span class="hs-comment">-- - 'Data.List.NotOne.NotOne' is @Isolated@ by being the list monad ('[]') minus singleton lists,</span><span>
-</span><span id="line-46"></span><span class="hs-comment">--   the 'pure' part of the list monad.</span><span>
-</span><span id="line-47"></span><span class="hs-comment">--</span><span>
-</span><span id="line-48"></span><span class="hs-comment">-- ==== Non-example</span><span>
-</span><span id="line-49"></span><span class="hs-comment">--</span><span>
-</span><span id="line-50"></span><span class="hs-comment">-- Not every @Monad@ can be isolated its pure and impure parts as the sum of functors.</span><span>
-</span><span id="line-51"></span><span class="hs-comment">-- For example, the reader monad cannot be written as a sum of two functors.</span><span>
-</span><span id="line-52"></span><span class="hs-comment">--</span><span>
-</span><span id="line-53"></span><span class="hs-comment">-- ==== Laws</span><span>
-</span><span id="line-54"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-55"></span><span class="hs-comment">-- 'impureBind' must be implemented so that the @Monad (Unite m)@ instance derived from</span><span>
-</span><span id="line-56"></span><span class="hs-comment">-- it is lawful.</span><span>
-</span><span id="line-57"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-58"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-59"></span><span class="hs-comment">-- return a = Unite (Left a)</span><span>
-</span><span id="line-60"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-61"></span><span class="hs-comment">-- Unite (Left a) &gt;&gt;= k = k a</span><span>
-</span><span id="line-62"></span><span class="hs-comment">-- Unite (Right ma) &gt;&gt;= k = ma \`impureBind\` k</span><span>
-</span><span id="line-63"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-64"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-65"></span><span class="hs-comment">-- Translating the @Monad@ laws on @Unite m@ in terms of @impureBind@,</span><span>
-</span><span id="line-66"></span><span class="hs-comment">-- the following equations are the @Isolated@ laws on its own.</span><span>
-</span><span id="line-67"></span><span class="hs-comment">--</span><span>
-</span><span id="line-68"></span><span class="hs-comment">-- - (Right identity)</span><span>
-</span><span id="line-69"></span><span class="hs-comment">--</span><span>
-</span><span id="line-70"></span><span class="hs-comment">--     @</span><span>
-</span><span id="line-71"></span><span class="hs-comment">--     ma \`impureBind\` Unite . Left === Unite (Right ma)</span><span>
-</span><span id="line-72"></span><span class="hs-comment">--     @</span><span>
-</span><span id="line-73"></span><span class="hs-comment">--</span><span>
-</span><span id="line-74"></span><span class="hs-comment">-- - (Associativity)</span><span>
-</span><span id="line-75"></span><span class="hs-comment">--</span><span>
-</span><span id="line-76"></span><span class="hs-comment">--     @</span><span>
-</span><span id="line-77"></span><span class="hs-comment">--     (ma \`impureBind\` f) \`impureBind\` g === ma `impureBind` \a -&gt; either g (\`impureBind\` g) (runUnite fa)</span><span>
-</span><span id="line-78"></span><span class="hs-comment">--     @</span><span>
-</span><span id="line-79"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Isolated"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-var">Isolated</span></a></span></span><span> </span><span id="local-6989586621679079771"><span class="annot"><a href="#local-6989586621679079771"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-80"></span><span>  </span><span id="impureBind"><span class="annot"><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-identifier hs-type">impureBind</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679079813"><span id="local-6989586621679079814"><span class="annot"><a href="#local-6989586621679079771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079813"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079813"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079814"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079814"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
-</span><span id="line-81"></span><span>
-</span><span id="line-82"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">1</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-type">`impureBind`</span></a></span><span>
-</span><span id="line-83"></span><span>
-</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079783"><span id="local-6989586621679080160"><span id="local-6989586621679080164"><span id="local-6989586621679080167"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079783"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Apply</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079783"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-85"></span><span>  </span><span id="local-6989586621679080172"><span class="annot"><span class="annottext">&lt;.&gt; :: forall a b. Unite m (a -&gt; b) -&gt; Unite m a -&gt; Unite m b
-</span><a href="#local-6989586621679080172"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;.&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m (a -&gt; b) -&gt; Unite m a -&gt; Unite m b
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-comment">-- | @Isolated m0@ is a @Functor@ which can be thought of as an impure part of a @Monad@.</span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-50"></span><span class="hs-comment">-- ==== Examples</span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- - 'Proxy' is @Isolated@ by being same to the 'Nothing' part of the 'Maybe' monad.</span><span>
+</span><span id="line-53"></span><span class="hs-comment">--</span><span>
+</span><span id="line-54"></span><span class="hs-comment">-- - 'Data.List.NotOne.NotOne' is @Isolated@ by being the list monad ('[]') minus singleton lists,</span><span>
+</span><span id="line-55"></span><span class="hs-comment">--   the 'pure' part of the list monad.</span><span>
+</span><span id="line-56"></span><span class="hs-comment">--</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- ==== Non-example</span><span>
+</span><span id="line-58"></span><span class="hs-comment">--</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- Not every @Monad@ can be isolated its pure and impure parts as the sum of functors.</span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- For example, the reader monad cannot be written as a sum of two functors.</span><span>
+</span><span id="line-61"></span><span class="hs-comment">--</span><span>
+</span><span id="line-62"></span><span class="hs-comment">-- ==== Laws</span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- 'impureBind' must be implemented so that the @Monad (Unite m0)@ instance derived from</span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- it is lawful.</span><span>
+</span><span id="line-66"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-68"></span><span class="hs-comment">-- return a = Unite (Left a)</span><span>
+</span><span id="line-69"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-70"></span><span class="hs-comment">-- Unite (Left a) &gt;&gt;= k = k a</span><span>
+</span><span id="line-71"></span><span class="hs-comment">-- Unite (Right ma) &gt;&gt;= k = ma \`impureBind\` k</span><span>
+</span><span id="line-72"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-73"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- Translating the @Monad@ laws on @Unite m0@ in terms of @impureBind@,</span><span>
+</span><span id="line-75"></span><span class="hs-comment">-- the following equations are the @Isolated@ laws on its own.</span><span>
+</span><span id="line-76"></span><span class="hs-comment">--</span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- - (Right identity)</span><span>
+</span><span id="line-78"></span><span class="hs-comment">--</span><span>
+</span><span id="line-79"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-80"></span><span class="hs-comment">--     ma \`impureBind\` Unite . Left === Unite (Right ma)</span><span>
+</span><span id="line-81"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-82"></span><span class="hs-comment">--</span><span>
+</span><span id="line-83"></span><span class="hs-comment">-- - (Associativity)</span><span>
+</span><span id="line-84"></span><span class="hs-comment">--</span><span>
+</span><span id="line-85"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-86"></span><span class="hs-comment">--     (ma \`impureBind\` f) \`impureBind\` g === ma `impureBind` \a -&gt; either g (\`impureBind\` g) (runUnite fa)</span><span>
+</span><span id="line-87"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-88"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Isolated"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-var">Isolated</span></a></span></span><span> </span><span id="local-6989586621679080094"><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">m0</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>  </span><span id="impureBind"><span class="annot"><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-identifier hs-type">impureBind</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679080136"><span id="local-6989586621679080137"><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080136"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679080136"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080137"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080137"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">1</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-type">`impureBind`</span></a></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080106"><span id="local-6989586621679080483"><span id="local-6989586621679080487"><span id="local-6989586621679080490"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080106"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Apply</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080106"><span class="hs-identifier hs-type">m0</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-94"></span><span>  </span><span id="local-6989586621679080495"><span class="annot"><span class="annottext">&lt;.&gt; :: forall a b. Unite m0 (a -&gt; b) -&gt; Unite m0 a -&gt; Unite m0 b
+</span><a href="#local-6989586621679080495"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;.&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m0 (a -&gt; b) -&gt; Unite m0 a -&gt; Unite m0 b
 forall (f :: * -&gt; *) a b. Bind f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">apDefault</span></span><span>
-</span><span id="line-86"></span><span>
-</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079802"><span id="local-6989586621679080182"><span id="local-6989586621679080186"><span id="local-6989586621679080189"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079802"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079802"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621679080192"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Unite m a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either a (m a) -&gt; Unite m a
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080125"><span id="local-6989586621679080505"><span id="local-6989586621679080509"><span id="local-6989586621679080512"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080125"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080125"><span class="hs-identifier hs-type">m0</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>  </span><span id="local-6989586621679080515"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Unite m0 a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either a (m0 a) -&gt; Unite m0 a
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
-</span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either a (m a) -&gt; Unite m a)
--&gt; (a -&gt; Either a (m a)) -&gt; a -&gt; Unite m a
+</span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either a (m0 a) -&gt; Unite m0 a)
+-&gt; (a -&gt; Either a (m0 a)) -&gt; a -&gt; Unite m0 a
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a (m a)
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a (m0 a)
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span>
-</span><span id="line-89"></span><span>  </span><span id="local-6989586621679080194"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Unite m (a -&gt; b) -&gt; Unite m a -&gt; Unite m b
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m (a -&gt; b) -&gt; Unite m a -&gt; Unite m b
-forall a b. Unite m (a -&gt; b) -&gt; Unite m a -&gt; Unite m b
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621679080517"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Unite m0 (a -&gt; b) -&gt; Unite m0 a -&gt; Unite m0 b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m0 (a -&gt; b) -&gt; Unite m0 a -&gt; Unite m0 b
+forall a b. Unite m0 (a -&gt; b) -&gt; Unite m0 a -&gt; Unite m0 b
 forall (f :: * -&gt; *) a b. Apply f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">(&lt;.&gt;)</span></span><span>
-</span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079785"><span id="local-6989586621679080200"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079785"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079785"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-92"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080204"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080204"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080205"><span class="annot"><span class="annottext">&gt;&gt;- :: forall a b. Unite m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-</span><a href="#local-6989586621679080205"><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;-</span></a></span></span><span> </span><span id="local-6989586621679080207"><span class="annot"><span class="annottext">a -&gt; Unite m b
-</span><a href="#local-6989586621679080207"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite m b
-</span><a href="#local-6989586621679080207"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080204"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-93"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679080208"><span class="annot"><span class="annottext">m a
-</span><a href="#local-6989586621679080208"><span class="hs-identifier hs-var">ma</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-var">&gt;&gt;-</span></span><span> </span><span id="local-6989586621679080209"><span class="annot"><span class="annottext">a -&gt; Unite m b
-</span><a href="#local-6989586621679080209"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m a
-</span><a href="#local-6989586621679080208"><span class="hs-identifier hs-var">ma</span></a></span><span> </span><span class="annot"><span class="annottext">m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-forall a b. m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-forall (m :: * -&gt; *) a b.
-Isolated m =&gt;
-m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var">`impureBind`</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite m b
-</span><a href="#local-6989586621679080209"><span class="hs-identifier hs-var">k</span></a></span><span>
-</span><span id="line-94"></span><span>
-</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079822"><span id="local-6989586621679080215"><span id="local-6989586621679080219"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079822"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079822"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-96"></span><span>  </span><span id="local-6989586621679080223"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Unite m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&gt;&gt;=)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
-forall a b. Unite m a -&gt; (a -&gt; Unite m b) -&gt; Unite m b
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080108"><span id="local-6989586621679080523"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080108"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080108"><span class="hs-identifier hs-type">m0</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080527"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080527"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080528"><span class="annot"><span class="annottext">&gt;&gt;- :: forall a b. Unite m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+</span><a href="#local-6989586621679080528"><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;-</span></a></span></span><span> </span><span id="local-6989586621679080530"><span class="annot"><span class="annottext">a -&gt; Unite m0 b
+</span><a href="#local-6989586621679080530"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite m0 b
+</span><a href="#local-6989586621679080530"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080527"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679080531"><span class="annot"><span class="annottext">m0 a
+</span><a href="#local-6989586621679080531"><span class="hs-identifier hs-var">ma</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-var">&gt;&gt;-</span></span><span> </span><span id="local-6989586621679080532"><span class="annot"><span class="annottext">a -&gt; Unite m0 b
+</span><a href="#local-6989586621679080532"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m0 a
+</span><a href="#local-6989586621679080531"><span class="hs-identifier hs-var">ma</span></a></span><span> </span><span class="annot"><span class="annottext">m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+forall a b. m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+forall (m0 :: * -&gt; *) a b.
+Isolated m0 =&gt;
+m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var">`impureBind`</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite m0 b
+</span><a href="#local-6989586621679080532"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080145"><span id="local-6989586621679080538"><span id="local-6989586621679080542"><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080145"><span class="hs-identifier hs-type">m0</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-type">Unite</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080145"><span class="hs-identifier hs-type">m0</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-105"></span><span>  </span><span id="local-6989586621679080546"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Unite m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&gt;&gt;=)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Unite m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+forall a b. Unite m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
 forall (m :: * -&gt; *) a b. Bind m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span class="hs-operator hs-var">(&gt;&gt;-)</span></span><span>
-</span><span id="line-97"></span><span>
-</span><span id="line-98"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-99"></span><span>  </span><span class="annot"><span class="annottext">Proxy a
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679080230"><span class="annot"><span class="annottext">impureBind :: forall a b. Proxy a -&gt; (a -&gt; Unite Proxy b) -&gt; Unite Proxy b
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-108"></span><span>  </span><span class="annot"><span class="annottext">Proxy a
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679080553"><span class="annot"><span class="annottext">impureBind :: forall a b. Proxy a -&gt; (a -&gt; Unite Proxy b) -&gt; Unite Proxy b
 </span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var hs-var hs-var hs-var">`impureBind`</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Unite Proxy b
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (Proxy b) -&gt; Unite Proxy b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
@@ -444,45 +453,45 @@ forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">Proxy b
 forall {k} (t :: k). Proxy t
 </span><span class="hs-identifier hs-var">Proxy</span></span><span class="hs-special">)</span><span>
-</span><span id="line-100"></span><span>
-</span><span id="line-101"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079832"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679079832"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679079832"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-102"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679080238"><span class="annot"><span class="annottext">s
-</span><a href="#local-6989586621679080238"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080239"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080239"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080240"><span class="annot"><span class="annottext">impureBind :: forall a b. (s, a) -&gt; (a -&gt; Unite ((,) s) b) -&gt; Unite ((,) s) b
-</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var hs-var hs-var hs-var">`impureBind`</span></a></span></span><span> </span><span id="local-6989586621679080241"><span class="annot"><span class="annottext">a -&gt; Unite ((,) s) b
-</span><a href="#local-6989586621679080241"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite ((,) s) b -&gt; Either b (s, b)
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080155"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679080155"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679080155"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679080561"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679080561"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080562"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080562"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679080563"><span class="annot"><span class="annottext">impureBind :: forall a b. (s, a) -&gt; (a -&gt; Unite ((,) s) b) -&gt; Unite ((,) s) b
+</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var hs-var hs-var hs-var">`impureBind`</span></a></span></span><span> </span><span id="local-6989586621679080564"><span class="annot"><span class="annottext">a -&gt; Unite ((,) s) b
+</span><a href="#local-6989586621679080564"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite ((,) s) b -&gt; Either b (s, b)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Unite ((,) s) b
-</span><a href="#local-6989586621679080241"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080239"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-103"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080242"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080242"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either b (s, b) -&gt; Unite ((,) s) b
+</span><a href="#local-6989586621679080564"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080562"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-112"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080565"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679080565"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either b (s, b) -&gt; Unite ((,) s) b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
 </span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(s, b) -&gt; Either b (s, b)
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s
-</span><a href="#local-6989586621679080238"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080242"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-104"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080243"><span class="annot"><span class="annottext">s
-</span><a href="#local-6989586621679080243"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080244"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080244"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either b (s, b) -&gt; Unite ((,) s) b
+</span><a href="#local-6989586621679080561"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679080565"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679080566"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679080566"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679080567"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679080567"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either b (s, b) -&gt; Unite ((,) s) b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
 </span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(s, b) -&gt; Either b (s, b)
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s
-</span><a href="#local-6989586621679080238"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">s -&gt; s -&gt; s
+</span><a href="#local-6989586621679080561"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">s -&gt; s -&gt; s
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">s
-</span><a href="#local-6989586621679080243"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080244"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-105"></span><span>
-</span><span id="line-106"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079838"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679079838"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">WrappedMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679079838"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-107"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">WrapMonad</span></span><span> </span><span id="local-6989586621679080256"><span class="annot"><span class="annottext">m a
-</span><a href="#local-6989586621679080256"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span id="local-6989586621679080257"><span class="annot"><span class="annottext">impureBind :: forall a b.
+</span><a href="#local-6989586621679080566"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679080567"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080161"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679080161"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Control.Monad.Isolated.html#Isolated"><span class="hs-identifier hs-type">Isolated</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">WrappedMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679080161"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-116"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">WrapMonad</span></span><span> </span><span id="local-6989586621679080579"><span class="annot"><span class="annottext">m a
+</span><a href="#local-6989586621679080579"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span id="local-6989586621679080580"><span class="annot"><span class="annottext">impureBind :: forall a b.
 WrappedMonad m a
 -&gt; (a -&gt; Unite (WrappedMonad m) b) -&gt; Unite (WrappedMonad m) b
-</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var hs-var hs-var hs-var">`impureBind`</span></a></span></span><span> </span><span id="local-6989586621679080258"><span class="annot"><span class="annottext">a -&gt; Unite (WrappedMonad m) b
-</span><a href="#local-6989586621679080258"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (WrappedMonad m b) -&gt; Unite (WrappedMonad m) b
+</span><a href="Control.Monad.Isolated.html#impureBind"><span class="hs-operator hs-var hs-var hs-var hs-var">`impureBind`</span></a></span></span><span> </span><span id="local-6989586621679080581"><span class="annot"><span class="annottext">a -&gt; Unite (WrappedMonad m) b
+</span><a href="#local-6989586621679080581"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either b (WrappedMonad m b) -&gt; Unite (WrappedMonad m) b
 forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
 </span><a href="Control.Monad.Isolated.html#Unite"><span class="hs-identifier hs-var">Unite</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b (WrappedMonad m b) -&gt; Unite (WrappedMonad m) b)
 -&gt; (m b -&gt; Either b (WrappedMonad m b))
@@ -500,23 +509,23 @@ forall (m :: * -&gt; *) a. m a -&gt; WrappedMonad m a
 -&gt; m b -&gt; Unite (WrappedMonad m) b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">m a
-</span><a href="#local-6989586621679080256"><span class="hs-identifier hs-var">ma</span></a></span><span> </span><span class="annot"><span class="annottext">m a -&gt; (a -&gt; m b) -&gt; m b
+</span><a href="#local-6989586621679080579"><span class="hs-identifier hs-var">ma</span></a></span><span> </span><span class="annot"><span class="annottext">m a -&gt; (a -&gt; m b) -&gt; m b
 forall a b. m a -&gt; (a -&gt; m b) -&gt; m b
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
-</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679080259"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080259"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-108"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (WrappedMonad m) b -&gt; Either b (WrappedMonad m b)
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679080582"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080582"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (WrappedMonad m) b -&gt; Either b (WrappedMonad m b)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
 </span><a href="Control.Monad.Isolated.html#runUnite"><span class="hs-identifier hs-var">runUnite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Unite (WrappedMonad m) b
-</span><a href="#local-6989586621679080258"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679080259"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-109"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080260"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080260"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; m b
+</span><a href="#local-6989586621679080581"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679080582"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-118"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679080583"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679080583"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; m b
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679080260"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-110"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">WrapMonad</span></span><span> </span><span id="local-6989586621679080261"><span class="annot"><span class="annottext">m b
-</span><a href="#local-6989586621679080261"><span class="hs-identifier hs-var">mb</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m b
-</span><a href="#local-6989586621679080261"><span class="hs-identifier hs-var">mb</span></a></span><span>
-</span><span id="line-111"></span></pre></body></html>
+</span><a href="#local-6989586621679080583"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-119"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">WrapMonad</span></span><span> </span><span id="local-6989586621679080584"><span class="annot"><span class="annottext">m b
+</span><a href="#local-6989586621679080584"><span class="hs-identifier hs-var">mb</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m b
+</span><a href="#local-6989586621679080584"><span class="hs-identifier hs-var">mb</span></a></span><span>
+</span><span id="line-120"></span></pre></body></html>
