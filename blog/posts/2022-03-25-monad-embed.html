@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -106,18 +107,21 @@
 <p>から得られます。<code>Free</code>と<code>FreeT</code>の普遍性はそれぞれ</p>
 <dl>
 <dt><code>Free</code>の普遍性</dt>
-<dd><code>Free f</code>からモナド<code>T</code>への準同型<code>tr :: Free f x -&gt; T x</code>は、
+<dd>
+<code>Free f</code>からモナド<code>T</code>への準同型<code>tr :: Free f x -&gt; T x</code>は、
 自然変換<code>h :: f x -&gt; T x</code>と一対一に対応する
 </dd>
 <dt><code>FreeT</code>の普遍性</dt>
-<dd><code>FreeT f m</code>からモナド<code>T</code>への準同型<code>tr :: FreeT f m x -&gt; T x</code>は、
+<dd>
+<code>FreeT f m</code>からモナド<code>T</code>への準同型<code>tr :: FreeT f m x -&gt; T x</code>は、
 準同型<code>tr1 :: m x -&gt; T x</code>と自然変換<code>h :: f x -&gt; T x</code>との組<code>(tr1, h)</code>と一対一に対応する
 </dd>
 </dl>
 <p>でしたが、ここで<code>FreeT</code>の普遍性に対して<code>Free</code>の普遍性を使うと</p>
 <dl>
 <dt><code>FreeT</code>の普遍性(余積ver.)</dt>
-<dd><code>FreeT f m</code>は<code>m</code>と<code>Free f</code>との余積である。
+<dd>
+<code>FreeT f m</code>は<code>m</code>と<code>Free f</code>との余積である。
 すなわち、<code>FreeT f m</code>からモナド<code>T</code>への準同型<code>tr :: FreeT f m x -&gt; T x</code>は、
 準同型<code>tr1 :: m x -&gt; T x</code>と準同型<code>tr2 :: Free f x -&gt; T x</code>の組<code>(tr1, tr2)</code>と一対一に対応する
 </dd>
@@ -172,7 +176,8 @@
 <p><code>x</code>を任意の<code>RP a</code>型の値としたとき、<code>refill (rp x) cond</code>を以下のように計算することができます。</p>
 <dl>
 <dt>(Eq1)</dt>
-<dd><div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) cond <span class="ot">=</span></span>
+<dd>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) cond <span class="ot">=</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> <span class="fu">fmap</span> <span class="dt">Just</span> (x i) <span class="kw">else</span> <span class="dt">Just</span> <span class="dt">Nothing</span></span></code></pre></div>
 </dd>
 </dl>
@@ -207,7 +212,8 @@
 <p>同様に、<code>mask (rp x) cond</code>も計算すると以下のようになります。</p>
 <dl>
 <dt>(Eq2)</dt>
-<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) cond <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
+<dd>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask (rp x) cond <span class="ot">=</span> rp <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> x i <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
 </dd>
 </dl>
 <details>
@@ -236,7 +242,8 @@
 <p>(Eq1)を用いて<code>refill (rp x) (isJust . x)</code>を計算すると、次の(Eq3)を得ます。</p>
 <dl>
 <dt>(Eq3)</dt>
-<dd><pre><code>refill (rp x) (isJust . x) = r x</code></pre>
+<dd>
+<pre><code>refill (rp x) (isJust . x) = r x</code></pre>
 </dd>
 </dl>
 <details>
@@ -258,7 +265,8 @@
 <p>(Eq3)により、次のことがわかります。</p>
 <dl>
 <dt>(Lemma1) <code>rp</code>によって<code>zero</code>に写るのは<code>const Nothing</code>のみ</dt>
-<dd><code>rp x = zero</code> ⇒ <code>x = const Nothing</code>
+<dd>
+<code>rp x = zero</code> ⇒ <code>x = const Nothing</code>
 </dd>
 </dl>
 <details>
@@ -276,7 +284,8 @@
 <p>次に、以下の事実を示します。</p>
 <dl>
 <dt>(Lemma2)</dt>
-<dd><code>mask (rp x) cond = zero</code> ⇒ <code>(\i -&gt; cond i &amp;&amp; isJust x i) = const False</code>
+<dd>
+<code>mask (rp x) cond = zero</code> ⇒ <code>(\i -&gt; cond i &amp;&amp; isJust x i) = const False</code>
 </dd>
 </dl>
 <details>
@@ -295,7 +304,8 @@
 <p>これらを用いれば、<code>refill . rp</code>が単射であること、結果として<code>rp</code>も単射であることを証明できます<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
 <dl>
 <dt><code>refill . rp</code>の単射性</dt>
-<dd>任意の<code>x,y :: RP a</code>に対して、
+<dd>
+任意の<code>x,y :: RP a</code>に対して、
 <code>refill (rp x) = refill (rp y)</code>ならば<code>x = y</code>
 </dd>
 </dl>
@@ -374,10 +384,10 @@
 <p>ここでの「“次数”<code>n</code>のコンストラクタが写される先のコンストラクタの”次数”がぴったり<code>n</code>に一致する」
 を厳密に述べるための概念がEquifibered自然変換というものです<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。
 このブログの次回の記事でそれを説明しようと思います。</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>ここでの余積の定義は、一般の圏における余積をモナドとモナド準同型からなる圏に
+<li id="fn1"><p>ここでの余積の定義は、一般の圏における余積をモナドとモナド準同型からなる圏に
 特殊化したものです。そのため、一般の圏における「余積は存在すれば同型を除いて一意」
 という証明がそのまま通用します。</p>
 <p>モナド<code>L, M</code>の余積として、モナド<code>LM, LM'</code>があったとします。
@@ -393,10 +403,10 @@
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> coprod lift1'<span class="ot"> lift2' ::</span> <span class="dt">LM</span> <span class="op">~&gt;</span> <span class="dt">LM'</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> coprod' lift1<span class="ot"> lift2  ::</span> <span class="dt">LM'</span> <span class="op">~&gt;</span> <span class="dt">LM</span></span></code></pre></div>
 <p>とおくと、普遍性から<code>f</code>と<code>g</code>は互いに逆であることが示せます。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p><code>f</code>が単射である⇔「任意の<code>x,y</code>に対して<code>f x = f y</code>⇒<code>x = y</code>」と定義します。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>一般に、<code>f . g</code>が単射ならば<code>g</code>も単射です。
+<li id="fn2"><p><code>f</code>が単射である⇔「任意の<code>x,y</code>に対して<code>f x = f y</code>⇒<code>x = y</code>」と定義します。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>一般に、<code>f . g</code>が単射ならば<code>g</code>も単射です。
 ∵ <code>g x = g y</code> ⇒ <code>f (g x) = f (g y)</code> かつ <code>f (g x) = f (g y)</code> ⇒ <code>x = y</code><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>正確には、「私がこの概念を厳密化したものを探し求めて本やネットを漁っていたら、最近になってようやく見つけた用語」
+<li id="fn4"><p>正確には、「私がこの概念を厳密化したものを探し求めて本やネットを漁っていたら、最近になってようやく見つけた用語」
 がEquifibered自然変換です。</p>
 <p>なので、「より適切な概念があるよ」などのご指摘がございましたら教えていただけると嬉しいです。
 （加えて、どんなコメントでも元より大歓迎です。メール <a href="mailto:viercc@gmail.com" class="email">viercc@gmail.com</a> またはtwitter <span class="citation" data-cites="viercc">@viercc</span> まで！）<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>

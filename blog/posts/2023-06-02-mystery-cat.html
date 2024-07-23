@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -43,7 +44,12 @@
         </ul>
     </section>
     <section>
-        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\id{\mathrm{id}}  \gdef\map{\mathrm{map}}  \gdef\blank{\mathord{-}}  \gdef\dom{\mathrm{dom}}  \gdef\cod{\mathrm{cod}}</span></p>
+        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\id{\mathrm{id}}
+  \gdef\map{\mathrm{map}}
+  \gdef\blank{\mathord{-}}
+  \gdef\dom{\mathrm{dom}}
+  \gdef\cod{\mathrm{cod}}</span></p>
 <h2 id="射の分割ができる圏">「射の分割」ができる圏</h2>
 <p>次のような条件を満たす小圏<span class="math inline">C</span>について調べている。</p>
 <ul>
@@ -121,11 +127,11 @@
 （可換に限らなくてもできるが、書き下すのが非常に面倒）
 “properな”射の分割の定義は、この<code>Comonad</code>の演算と<code>Applicative</code>の演算が両立する条件を翻訳したものである。</p>
 <p><code>Applicative</code>の構造をあわせもつ<code>Comonad</code>については<a href="https://www.sciencedirect.com/science/article/pii/S1571066108003435?via%3Dihub">この論文</a>を大いに参考にしている。</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>Daniel Ahman and Tarmo Uustalu “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p><code>ComonadApply</code>は<code>pure</code>を除いている。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Daniel Ahman and Tarmo Uustalu “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><code>ComonadApply</code>は<code>pure</code>を除いている。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>

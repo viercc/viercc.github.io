@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -46,7 +47,13 @@
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\Hask{\mathrm{\mathbf{Hask}}}  \gdef\Vect{\mathrm{\mathbf{Vect}}}  \gdef\Mon{\mathrm{\mathbf{Mon}}}  \gdef\id{\mathrm{id}}  \gdef\map{\mathrm{map}}  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}</span></p>
+<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Hask{\mathrm{\mathbf{Hask}}}
+  \gdef\Vect{\mathrm{\mathbf{Vect}}}
+  \gdef\Mon{\mathrm{\mathbf{Mon}}}
+  \gdef\id{\mathrm{id}}
+  \gdef\map{\mathrm{map}}
+  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}</span></p>
 <p>前回まで、各種モナド/モナド変換子を理解するために、
 ストリング図という武器を使っていくつものモナドを見てきました。</p>
 <ul>
@@ -355,16 +362,16 @@ Haskellでプログラムとして定義した圏でも、<code>Functor</code>�
 <code>length'</code>のような”ジェネリックだけど自然じゃない変換”になっていないか、
 注意を払う必要があります。</p>
 <h2 id="つづく">つづく</h2>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>実はならないのだけれど、無限ループや<code>undefined</code>のような停止しないことがある式に関係してのことなので、多目に見てください<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>残念ながら<code>Filterable</code>や同等の型クラスを提供するライブラリは統一されずに複数あって、これは私が好きなやつです<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p><a href="http://ecee.colorado.edu/ecen5533/fall11/reading/free.pdf">Theorems for free!</a>, Wadler 1989</p>
+<li id="fn1"><p>実はならないのだけれど、無限ループや<code>undefined</code>のような停止しないことがある式に関係してのことなので、多目に見てください<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>残念ながら<code>Filterable</code>や同等の型クラスを提供するライブラリは統一されずに複数あって、これは私が好きなやつです<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="http://ecee.colorado.edu/ecen5533/fall11/reading/free.pdf">Theorems for free!</a>, Wadler 1989</p>
 <p>単純型付きラムダ計算で”任意の型aについて・・・という型が付く項はこんな性質を満たして・・・”
 という類の定理があって、Haskellの型システムはこの性質(parametricity)を崩さないように
 設計されています。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>ただし、<code>Functor f, Functor g</code>がきちんと<code>Functor</code>則を満たしている場合に限ります<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>ただし、<code>Functor f, Functor g</code>がきちんと<code>Functor</code>則を満たしている場合に限ります<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>

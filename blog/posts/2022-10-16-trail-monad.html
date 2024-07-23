@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -284,16 +285,16 @@
 <div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">T</span> f a <span class="ot">=</span> a <span class="op">:&lt;</span> <span class="dt">Maybe</span> (f (<span class="dt">T</span> f a))</span></code></pre></div>
 <p>この<code>Monad</code>、私は全く見たことがなかったので<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>、<code>T</code>という味気ない一文字の代わりに<code>Efreet</code>という名前を勝手に付けて<a href="https://twitter.com/viercc/status/1578363588754165760">twitterでやいのやいのしていました</a>。
 この型は<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#t:Comonad">Comonad</a>にもなっているので、ちょっと面白かったんですよね。</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>理論的には面白いモナドなんですが、実用する機会は無いと言っていいと思います。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>どれも事実上同じモナドを実装しています。実装方法の違いによる性能差はあるかもしれませんが私は検証していません。パッケージ間の主な違いはモナドを使いやすくするAPIです。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>Monadとしての同型ではなく、<code>ListT m</code>のモナド演算と<code>FreeT f m</code>のモナド演算に直接の関係はありません。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>同じになっていることの証明はhandwaveさせて下さい。ごめんなさい・・・<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5" role="doc-endnote"><p>freeパッケージにも”Free Applicative Transformer”と呼ばれているもの（<a href="https://hackage.haskell.org/package/free-5.1.9/docs/Control-Applicative-Trans-Free.html">Control.Applicative.Trans.Free</a>）
+<li id="fn1"><p>理論的には面白いモナドなんですが、実用する機会は無いと言っていいと思います。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>どれも事実上同じモナドを実装しています。実装方法の違いによる性能差はあるかもしれませんが私は検証していません。パッケージ間の主な違いはモナドを使いやすくするAPIです。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Monadとしての同型ではなく、<code>ListT m</code>のモナド演算と<code>FreeT f m</code>のモナド演算に直接の関係はありません。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>同じになっていることの証明はhandwaveさせて下さい。ごめんなさい・・・<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>freeパッケージにも”Free Applicative Transformer”と呼ばれているもの（<a href="https://hackage.haskell.org/package/free-5.1.9/docs/Control-Applicative-Trans-Free.html">Control.Applicative.Trans.Free</a>）
 が含まれますが、それとは異なります。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6" role="doc-endnote"><p>Twitterで”ちょっと違うけど似ているMonadを使ったことがあるよ”と教えていただきました(<a href="https://twitter.com/KyleDavidE/status/1578414051537088512">twitter</a>)。この違いがどの程度影響しているのか等、自分はまだよく解っていませんので、理解が進んだらまた紹介するかもしれません。<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Twitterで”ちょっと違うけど似ているMonadを使ったことがあるよ”と教えていただきました(<a href="https://twitter.com/KyleDavidE/status/1578414051537088512">twitter</a>)。この違いがどの程度影響しているのか等、自分はまだよく解っていませんので、理解が進んだらまた紹介するかもしれません。<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>

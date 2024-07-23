@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -46,7 +47,13 @@
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\id{\mathrm{id}}  \gdef\assoc{\mathrm{assoc}}  \gdef\comult{\mathrm{comult}}  \gdef\comp{\circ}  \gdef\setbraces#1{\left\{{#1}\right\}}  \gdef\blank{-}</span></p>
+<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\id{\mathrm{id}}
+  \gdef\assoc{\mathrm{assoc}}
+  \gdef\comult{\mathrm{comult}}
+  \gdef\comp{\circ}
+  \gdef\setbraces#1{\left\{{#1}\right\}}
+  \gdef\blank{-}</span></p>
 <h2 id="cosemigroup-semigroupの双対"><code>Cosemigroup</code>: <code>Semigroup</code>の双対</h2>
 <p>この記事では、半群(Semigroup)の双対と考えられる、Cosemigroupという概念について考えていきます。</p>
 <h3 id="cosemigroupのアイデアと定義"><code>Cosemigroup</code>のアイデアと定義</h3>
@@ -75,7 +82,8 @@
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>assoc (a,(b,c)) <span class="ot">=</span> ((a,b),c)</span></code></pre></div>
 <p>これがなぜ「結合法則」の逆であるのかは、データの流れを図にしてみると一目瞭然です。</p>
 <figure>
-<img src="../images/cosemigroup/semigroup-and-cosemigroup.png" alt="Semigroup・Cosemigroupとそれらの法則" /><figcaption aria-hidden="true">Semigroup・Cosemigroupとそれらの法則</figcaption>
+<img src="../images/cosemigroup/semigroup-and-cosemigroup.png" alt="Semigroup・Cosemigroupとそれらの法則" />
+<figcaption aria-hidden="true">Semigroup・Cosemigroupとそれらの法則</figcaption>
 </figure>
 <p>以降はHaskellでの表現を離れて、単に数学的なものとしてのCosemigroupを考えます。
 更に言えば、
@@ -83,7 +91,8 @@
 <p>次のように集合<span class="math inline">C</span>上のCosemigroupを定義します。</p>
 <dl>
 <dt>Cosemigroupの定義（やや煩雑）</dt>
-<dd>集合<span class="math inline">C</span>がCosemigroupであるとは、<span class="math inline">C</span>について関数<span class="math inline">\comult\colon C \to C \times C</span>が定義されていて、
+<dd>
+集合<span class="math inline">C</span>がCosemigroupであるとは、<span class="math inline">C</span>について関数<span class="math inline">\comult\colon C \to C \times C</span>が定義されていて、
 <span class="math display">
 \begin{equation}
 \left( \comult \times \id \right) \comp \comult = \assoc \comp \left( \id \times \comult \right) \comp \comult
@@ -97,7 +106,8 @@
 <span class="math inline">\comult(x) = \left(x\cdot l, x\cdot r \right)</span>となるような2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times \setbraces{l,r} \to C</span>を代わりに用いることにします。</p>
 <dl>
 <dt>Cosemigroupの定義</dt>
-<dd>2つの異なる元からなる集合<span class="math inline">\setbraces{l,r}</span>をとって固定する。集合<span class="math inline">C</span>がCosemigroupであることを、2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times \setbraces{l,r} \to C</span>があり、3つの等式
+<dd>
+2つの異なる元からなる集合<span class="math inline">\setbraces{l,r}</span>をとって固定する。集合<span class="math inline">C</span>がCosemigroupであることを、2項演算<span class="math inline">(\blank \cdot \blank) \colon C \times \setbraces{l,r} \to C</span>があり、3つの等式
 <span class="math display">
 \begin{align}
   (x \cdot l) \cdot l = x \cdot l \\
@@ -118,7 +128,8 @@
 <p><span class="math inline">C</span>がCosemigroupであることは、<span class="math inline">C</span>が<span class="math inline">M</span>による作用<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>をもつことと同値になります。</p>
 <dl>
 <dt>Cosemigroupの定義（<span class="math inline">M</span>-作用版）</dt>
-<dd><span class="math inline">M</span>を上記のモノイドとする。集合<span class="math inline">C</span>がCosemigroupであることを、<span class="math inline">C</span>が<span class="math inline">M</span>-集合であること、
+<dd>
+<span class="math inline">M</span>を上記のモノイドとする。集合<span class="math inline">C</span>がCosemigroupであることを、<span class="math inline">C</span>が<span class="math inline">M</span>-集合であること、
 すなわち<span class="math inline">M</span>の作用をもつことと定義する。
 </dd>
 </dl>
@@ -170,14 +181,16 @@
 そのようなものを「弱推移的なCosemigroup」と呼ぶことにします<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
 <dl>
 <dt>定義</dt>
-<dd>Cosemigroup <span class="math inline">C</span>が弱推移的なCosemigroupである ⇔ <span class="math inline">C \cdot l\cdot r = \setbraces{c \cdot l\cdot r \mid c \in C}</span>が1元集合
+<dd>
+Cosemigroup <span class="math inline">C</span>が弱推移的なCosemigroupである ⇔ <span class="math inline">C \cdot l\cdot r = \setbraces{c \cdot l\cdot r \mid c \in C}</span>が1元集合
 </dd>
 </dl>
 <p>ただし、記法の簡便のために、Cosemigroup <span class="math inline">C</span>の部分集合<span class="math inline">X \subseteq C</span>に対して<span class="math inline">X \cdot a</span>と書くと、
 それぞれ集合の各要素に<span class="math inline">a</span>作用させた集合を意味することにしました。</p>
 <dl>
 <dt>（弱推移的ならば直和ではない）</dt>
-<dd>弱推移的なCosemigroupは2つの空でないCosemigroupの直和ではない。
+<dd>
+弱推移的なCosemigroupは2つの空でないCosemigroupの直和ではない。
 </dd>
 </dl>
 <details>
@@ -191,7 +204,8 @@
 <p>どのCosemigroupも、弱推移的なCosemigroupの和として表されます。</p>
 <dl>
 <dt>（弱推移的成分への分解）</dt>
-<dd>どんなCosemigroup<span class="math inline">C</span>も、0個以上の弱推移的なCosemigroupの直和として表すことができる。
+<dd>
+どんなCosemigroup<span class="math inline">C</span>も、0個以上の弱推移的なCosemigroupの直和として表すことができる。
 </dd>
 </dl>
 <details>
@@ -497,15 +511,15 @@
 <code>Bind F</code>のインスタンスは<code>Cosemigroup C</code>のインスタンスと1対1に対応します。
 しかし、これを<code>Monad</code>に対してうまく行くように修正することは、<code>Apply -&gt; Applicative</code>の場合と違ってできません。
 </details>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>「集合」は「型」とは違うものなのですが、一応そこには踏み込みません。この記事のメインは有限集合上のCosemigroupについてなので、
+<li id="fn1"><p>「集合」は「型」とは違うものなのですが、一応そこには踏み込みません。この記事のメインは有限集合上のCosemigroupについてなので、
 あまり気にしなくてもよいはずです。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>より正確な表現をするならば、次のようになります：「生成元の集合<span class="math inline">\setbraces{l,r}</span>から<span class="math inline">M</span>への自然な写像は単射になっており、この写像によって<span class="math inline">\setbraces{l,r}</span>を<span class="math inline">M</span>の部分集合とみなすことができます。<span class="math inline">M</span>のそれ以外の元は<span class="math inline">1</span>と<span class="math inline">l \cdot r</span>に限ります。」<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>普通、モノイドが集合に作用する方法には「右から作用する」と「左から作用する」の両方を考えますが、<span class="math inline">M</span>は可換モノイドになっており両者は一致します。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>弱推移的という用語は、参考文献（<a href="https://www.researchgate.net/publication/45912502_A_Theory_of_Transformation_Monoids_Combinatorics_and_Representation_Theory">A Theory of Transformation Monoids: Combinatorics and Representation Theory</a>）におけるweakly transitiveの定義をもとにしました。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5" role="doc-endnote"><p><span class="math inline">M</span>のモノイド演算はべき等であり、任意の<span class="math inline">a\in M</span>について、<span class="math inline">x</span>が<span class="math inline">a</span>による作用の値域に入ることと<span class="math inline">x = x \cdot a</span>であることは同値な条件です。
+<li id="fn2"><p>より正確な表現をするならば、次のようになります：「生成元の集合<span class="math inline">\setbraces{l,r}</span>から<span class="math inline">M</span>への自然な写像は単射になっており、この写像によって<span class="math inline">\setbraces{l,r}</span>を<span class="math inline">M</span>の部分集合とみなすことができます。<span class="math inline">M</span>のそれ以外の元は<span class="math inline">1</span>と<span class="math inline">l \cdot r</span>に限ります。」<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>普通、モノイドが集合に作用する方法には「右から作用する」と「左から作用する」の両方を考えますが、<span class="math inline">M</span>は可換モノイドになっており両者は一致します。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>弱推移的という用語は、参考文献（<a href="https://www.researchgate.net/publication/45912502_A_Theory_of_Transformation_Monoids_Combinatorics_and_Representation_Theory">A Theory of Transformation Monoids: Combinatorics and Representation Theory</a>）におけるweakly transitiveの定義をもとにしました。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p><span class="math inline">M</span>のモノイド演算はべき等であり、任意の<span class="math inline">a\in M</span>について、<span class="math inline">x</span>が<span class="math inline">a</span>による作用の値域に入ることと<span class="math inline">x = x \cdot a</span>であることは同値な条件です。
 したがって、
 <span class="math inline">C \cdot l \cap C \cdot r = \setbraces{ x \mid x \in C, x = x \cdot l, x = x \cdot r} = \setbraces{ x \mid x \in C, x = x \cdot l = x \cdot r = x \cdot l\cdot r} \subseteq C \cdot l\cdot r</span>
 となります。

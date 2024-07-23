@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -43,7 +44,15 @@
         </ul>
     </section>
     <section>
-        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\Hask{\mathrm{\mathbf{Hask}}}  \gdef\Vect{\mathrm{\mathbf{Vect}}}  \gdef\Mon{\mathrm{\mathbf{Mon}}}  \gdef\id{\mathrm{id}}  \gdef\Id{\mathrm{Id}}  \gdef\map{\mathrm{map}}  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}  \gdef\listof#1{\left\lbrack{#1}\right\rbrack}</span></p>
+        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Hask{\mathrm{\mathbf{Hask}}}
+  \gdef\Vect{\mathrm{\mathbf{Vect}}}
+  \gdef\Mon{\mathrm{\mathbf{Mon}}}
+  \gdef\id{\mathrm{id}}
+  \gdef\Id{\mathrm{Id}}
+  \gdef\map{\mathrm{map}}
+  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}
+  \gdef\listof#1{\left\lbrack{#1}\right\rbrack}</span></p>
 <h2 id="まえがき">まえがき</h2>
 <p>先日、<a href="https://hackage.haskell.org/package/witherable-0.4.1/docs/Witherable.html">Witherable</a>
 という型クラスについての理論的な面からの紹介を、Twitterにて投稿しました<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。
@@ -154,7 +163,8 @@
 どちらを基準にしてもよいのですが、ここでは<code>sequenceA</code>の方で定義されているとしましょう。
 <code>sequenceA</code>は「<code>t</code>と<code>f</code>の合成関手の間の自然変換」という型を持つため、以下のようにストリング図<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>で表現しやすいのです。</p>
 <figure>
-<img src="../images/witherable/traversable.png" alt="sequenceAのストリング図での描き方" /><figcaption aria-hidden="true"><code>sequenceA</code>のストリング図での描き方</figcaption>
+<img src="../images/witherable/traversable.png" alt="sequenceAのストリング図での描き方" />
+<figcaption aria-hidden="true"><code>sequenceA</code>のストリング図での描き方</figcaption>
 </figure>
 <p>図を見やすくするため、この記事を通して、
 ストリング図中では<code>sequenceA</code>のことをギリシャ文字デルタ(<span class="math inline">\delta</span>)一文字で表記することにします。
@@ -193,10 +203,12 @@ Composition
 <a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Functor-Identity.html">Data.Functor.Compose</a>です。</p>
 <p>これをストリング図に描いたものが以下になります。</p>
 <figure>
-<img src="../images/witherable/traversable-laws-1.png" alt="Traversable則NaturalityとIdentity" /><figcaption aria-hidden="true">Traversable則NaturalityとIdentity</figcaption>
+<img src="../images/witherable/traversable-laws-1.png" alt="Traversable則NaturalityとIdentity" />
+<figcaption aria-hidden="true">Traversable則NaturalityとIdentity</figcaption>
 </figure>
 <figure>
-<img src="../images/witherable/traversable-laws-2.png" alt="Traversable則Composition" /><figcaption aria-hidden="true">Traversable則Composition</figcaption>
+<img src="../images/witherable/traversable-laws-2.png" alt="Traversable則Composition" />
+<figcaption aria-hidden="true">Traversable則Composition</figcaption>
 </figure>
 <h2 id="filterableの理論"><code>Filterable</code>の理論</h2>
 <p><code>Filterable</code>は「<code>mapMaybe</code>に似ている関数」をまとめたものでした。
@@ -246,7 +258,8 @@ Composition(合成則)
 </dl>
 <p>これをストリング図に書くと以下のようになります。</p>
 <figure>
-<img src="../images/witherable/filterable.png" alt="catMaybesで表現したFilterable" /><figcaption aria-hidden="true"><code>catMaybes</code>で表現した<code>Filterable</code></figcaption>
+<img src="../images/witherable/filterable.png" alt="catMaybesで表現したFilterable" />
+<figcaption aria-hidden="true"><code>catMaybes</code>で表現した<code>Filterable</code></figcaption>
 </figure>
 <p>ただし、<code>sequenceA</code>を描くときに<span class="math inline">\delta</span>一文字に略したように、
 ストリング図中では次の記法を使うことにします。</p>
@@ -255,7 +268,8 @@ Composition(合成則)
 <li><code>catMaybes :: t (Maybe a) -&gt; t a</code>は、3本の線（上に<span class="math inline">P</span>と<span class="math inline">T</span>、下に<span class="math inline">T</span>）が出ている○で表します。</li>
 </ul>
 <figure>
-<img src="../images/witherable/filterable-laws.png" alt="Filterable則" /><figcaption aria-hidden="true"><code>Filterable</code>則</figcaption>
+<img src="../images/witherable/filterable-laws.png" alt="Filterable則" />
+<figcaption aria-hidden="true"><code>Filterable</code>則</figcaption>
 </figure>
 <h3 id="脱法filterable">脱法<code>Filterable</code></h3>
 <p><code>Filterable</code>則の定式化は単純で理論的にもきれいです<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。しかし、
@@ -411,7 +425,8 @@ Distributivityから（候補1）〜（候補3）が導けるので、
 Distributivityを満たさないような具体例となっています。</p>
 <p>絵も描いておきます。</p>
 <figure>
-<img src="../images/witherable/distributivity.png" alt="Distributivity" /><figcaption aria-hidden="true">Distributivity</figcaption>
+<img src="../images/witherable/distributivity.png" alt="Distributivity" />
+<figcaption aria-hidden="true">Distributivity</figcaption>
 </figure>
 <p>ただし、これまでの略記法</p>
 <ul>
@@ -436,7 +451,8 @@ Distributivityを満たさないような具体例となっています。</p>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>wither f <span class="ot">=</span> ω <span class="op">.</span> <span class="fu">fmap</span> f</span></code></pre></div>
 <p>これをストリング図に描くと以下のようになります。</p>
 <figure>
-<img src="../images/witherable/witherable.png" alt="Witherableの定義" /><figcaption aria-hidden="true">Witherableの定義</figcaption>
+<img src="../images/witherable/witherable.png" alt="Witherableの定義" />
+<figcaption aria-hidden="true">Witherableの定義</figcaption>
 </figure>
 <p><span class="math inline">\omega</span>を使った<code>Witherable</code>則は以下のようになります。</p>
 <dl>
@@ -447,7 +463,8 @@ Naturality(自然性)
 <p>全てのアプリカティブ準同型<code>t</code>に対して</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>  t <span class="op">.</span> ω <span class="ot">=</span> ω <span class="op">.</span> <span class="fu">fmap</span> t</span></code></pre></div>
 <figure>
-<img src="../images/witherable/witherable-naturality.png" alt="Witherable則Naturality" /><figcaption aria-hidden="true">Witherable則Naturality</figcaption>
+<img src="../images/witherable/witherable-naturality.png" alt="Witherable則Naturality" />
+<figcaption aria-hidden="true">Witherable則Naturality</figcaption>
 </figure>
 </dd>
 <dt>
@@ -456,7 +473,8 @@ Identity(単位則)
 <dd>
 <div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>  ω <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Identity</span> <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Just</span> <span class="ot">=</span> <span class="dt">Identity</span></span></code></pre></div>
 <figure>
-<img src="../images/witherable/witherable-identity.png" alt="Witherable則Identity" /><figcaption aria-hidden="true">Witherable則Identity</figcaption>
+<img src="../images/witherable/witherable-identity.png" alt="Witherable則Identity" />
+<figcaption aria-hidden="true">Witherable則Identity</figcaption>
 </figure>
 </dd>
 <dd>
@@ -466,12 +484,14 @@ Composition(合成則)
 <dd>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Compose</span> <span class="op">.</span> <span class="fu">fmap</span> ω <span class="op">.</span> ω <span class="ot">=</span> ω <span class="op">.</span> <span class="fu">fmap</span> (<span class="dt">Compose</span> <span class="op">.</span> <span class="fu">fmap</span> ω_P)</span></code></pre></div>
 <figure>
-<img src="../images/witherable/witherable-composition.png" alt="Witherable則Composition" /><figcaption aria-hidden="true">Witherable則Composition</figcaption>
+<img src="../images/witherable/witherable-composition.png" alt="Witherable則Composition" />
+<figcaption aria-hidden="true">Witherable則Composition</figcaption>
 </figure>
 <p>ただし、<span class="math inline">\omega_P</span>は<code>Maybe</code>に対する<span class="math inline">\omega</span>で、
 以下のように定義される。</p>
 <figure>
-<img src="../images/witherable/witherable-maybe.png" alt="Witherable Maybe" /><figcaption aria-hidden="true">Witherable Maybe</figcaption>
+<img src="../images/witherable/witherable-maybe.png" alt="Witherable Maybe" />
+<figcaption aria-hidden="true">Witherable Maybe</figcaption>
 </figure>
 </dd>
 </dl>
@@ -484,7 +504,8 @@ Composition(合成則)
 <div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ot">catMaybesDefault ::</span> <span class="dt">Witherable</span> t <span class="ot">=&gt;</span> t (<span class="dt">Maybe</span> a) <span class="ot">-&gt;</span> t a</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>catMaybesDefault <span class="ot">=</span> runIdentity <span class="op">.</span> ω <span class="op">.</span> <span class="fu">fmap</span> <span class="dt">Identity</span></span></code></pre></div>
 <figure>
-<img src="../images/witherable/to-filterable.png" alt="WitherableはFilterableの機能を含む" /><figcaption aria-hidden="true">WitherableはFilterableの機能を含む</figcaption>
+<img src="../images/witherable/to-filterable.png" alt="WitherableはFilterableの機能を含む" />
+<figcaption aria-hidden="true">WitherableはFilterableの機能を含む</figcaption>
 </figure>
 <p><code>Filterable</code>則も<code>Witherable</code>則から証明できます。</p>
 <details>
@@ -504,7 +525,8 @@ Composition(合成則)
 <div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sequenceADefault ::</span> (<span class="dt">Witherable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t (f a) <span class="ot">-&gt;</span> f (t a)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>sequenceADefault <span class="ot">=</span> ω <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> <span class="dt">Just</span>)</span></code></pre></div>
 <figure>
-<img src="../images/witherable/to-traversable.png" alt="WitherableはTraversableの機能を含む" /><figcaption aria-hidden="true">WitherableはTraversableの機能を含む</figcaption>
+<img src="../images/witherable/to-traversable.png" alt="WitherableはTraversableの機能を含む" />
+<figcaption aria-hidden="true">WitherableはTraversableの機能を含む</figcaption>
 </figure>
 <details>
 <summary>
@@ -530,7 +552,10 @@ Composition(合成則)
 <summary>
 <code>ω = fmap catMaybes . sequenceA</code>
 </summary>
-<img src="../images/witherable/canonicity.png" title="fig:" alt="Canonicity" />
+<figure>
+<img src="../images/witherable/canonicity.png" alt="Canonicity" />
+<figcaption aria-hidden="true">Canonicity</figcaption>
+</figure>
 </details>
 <p>そして最後に、<code>Witherable</code>から取り出した<code>Filterable</code>と<code>Traversable</code>は、
 Distributivity――先程定義した、「変な」<code>Filterable</code>を除外する法則――を満たすことが証明できます。</p>
@@ -538,7 +563,10 @@ Distributivity――先程定義した、「変な」<code>Filterable</code>を�
 <summary>
 証明
 </summary>
-<img src="../images/witherable/to-distributivity.png" title="fig:" alt="DistributivityはWitherable則から導ける" />
+<figure>
+<img src="../images/witherable/to-distributivity.png" alt="DistributivityはWitherable則から導ける" />
+<figcaption aria-hidden="true">DistributivityはWitherable則から導ける</figcaption>
+</figure>
 </details>
 <p>つまり、<code>Witherable</code>は少なくとも<code>Filterable</code>かつ<code>Traversable</code><strong>かつDistributivityをもつ</strong>ような型クラスです。</p>
 <p><img src="../images/witherable/from-witherable.png" /></p>
@@ -553,27 +581,27 @@ Distributivity――先程定義した、「変な」<code>Filterable</code>を�
 <h2 id="結論">結論</h2>
 <p><code>Witherable</code>は<code>Filterable</code>と<code>Traversable</code>の両方の機能をもち、この2クラスに「脱法<code>Filterable</code>封じの<code>Distributivity</code>則」を合わせたものと同値で、
 それを<code>wither</code>と3つの<code>Witherable</code>則で表したものでした！</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p><a href="https://twitter.com/viercc/status/1445571167591403524">https://twitter.com/viercc/status/1445571167591403524</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>人によっては、副作用のある<code>fmap</code>と言ったら
+<li id="fn1"><p><a href="https://twitter.com/viercc/status/1445571167591403524">https://twitter.com/viercc/status/1445571167591403524</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>人によっては、副作用のある<code>fmap</code>と言ったら
 <a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Traversable.html#v:mapM">mapM</a>の方を思い出すかもしれません。
 実のところ<code>traverse</code>と<code>mapM</code>は兄弟みたいなものです。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span><span class="ot">     ::</span>                  (a <span class="ot">-&gt;</span> b)   <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span>    t b</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">traverse</span><span class="ot"> ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> f (t b)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mapM</span><span class="ot">     ::</span> <span class="dt">Monad</span> m       <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m (t b)</span></code></pre></div>
 <a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></li>
-<li id="fn3" role="doc-endnote"><p><a href="./2021-05-17-string-diagram.html">ストリング図の説明をした過去記事</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p><code>Filterable f</code>は、簡潔に「<code>f</code>は<code>Kleisli Maybe</code>から<code>-&gt;</code>への関手である」
+<li id="fn3"><p><a href="./2021-05-17-string-diagram.html">ストリング図の説明をした過去記事</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><code>Filterable f</code>は、簡潔に「<code>f</code>は<code>Kleisli Maybe</code>から<code>-&gt;</code>への関手である」
 と表現されることもあり、<code>Filterable</code>則は関手の従うべき単位則と合成則を言い直したものに相当します。
 今回の記事とはあまり関係しない論点ですが、過去の投稿で何度か触れております：
 <a href="./2018-12-29-about-align.html">型クラスAlignについて</a>
 <a href="2021-06-24-monads-from-adjunction.html">随伴から作られるMonad(準備編)</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5" role="doc-endnote"><p>某所で議論があり、「うまくいかない」というのは技術的に微妙なポイントなのですが、
+<li id="fn5"><p>某所で議論があり、「うまくいかない」というのは技術的に微妙なポイントなのですが、
 あまり整理されていないかつ口論が混じっている会話なのでリンクはしません<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6" role="doc-endnote"><p><code>Sum</code> は <a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Monoid.html#t:Sum">Data.Monoid</a> にあります<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7" role="doc-endnote"><p><code>Foldable</code>には法則がないので、可能なら<code>Traversable</code>を使いたいのです<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p><code>Sum</code> は <a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Monoid.html#t:Sum">Data.Monoid</a> にあります<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p><code>Foldable</code>には法則がないので、可能なら<code>Traversable</code>を使いたいのです<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>

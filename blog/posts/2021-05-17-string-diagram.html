@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -80,22 +81,26 @@
 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
 <p>自然変換<code>tf :: ∀a. f a -&gt; f' a</code>を、以下の図のように描くことにします。</p>
 <figure>
-<img src="../images/string/1.png" alt="ストリング図" /><figcaption aria-hidden="true">ストリング図</figcaption>
+<img src="../images/string/1.png" alt="ストリング図" />
+<figcaption aria-hidden="true">ストリング図</figcaption>
 </figure>
 <p>図の中で、それぞれの線はある<code>Functor</code>に、線を結ぶ丸が自然変換<code>tf</code>に対応しています。</p>
 <p>“何もしない”自然変換<code>id :: ∀a. f a -&gt; f a</code>は、ただの線で描きます。</p>
 <figure>
-<img src="../images/string/id.png" alt="ストリング図(id)" /><figcaption aria-hidden="true">ストリング図(id)</figcaption>
+<img src="../images/string/id.png" alt="ストリング図(id)" />
+<figcaption aria-hidden="true">ストリング図(id)</figcaption>
 </figure>
 <p>加えて、<code>∀a. f (g a) -&gt; h a</code>のように<code>Functor</code>がネストしているような場合も、
 <code>f (g a)</code>と<code>Compose f g a</code>を同一視して、“<code>Compose f g</code>から<code>h</code>への自然変換”とみなすことにします。
 何段ネストしていてもこれは変わらないことにしましょう。</p>
 <p>このようなネストした<code>Functor</code>間の自然変換は、以下の図のように描くことにします。</p>
 <figure>
-<img src="../images/string/2.png" alt="ストリング図(合成Functor1)" /><figcaption aria-hidden="true">ストリング図(合成Functor1)</figcaption>
+<img src="../images/string/2.png" alt="ストリング図(合成Functor1)" />
+<figcaption aria-hidden="true">ストリング図(合成Functor1)</figcaption>
 </figure>
 <figure>
-<img src="../images/string/3.png" alt="ストリング図(合成Functor2)" /><figcaption aria-hidden="true">ストリング図(合成Functor2)</figcaption>
+<img src="../images/string/3.png" alt="ストリング図(合成Functor2)" />
+<figcaption aria-hidden="true">ストリング図(合成Functor2)</figcaption>
 </figure>
 <p>上に突き出している端がそれぞれ<code>h, g, f</code>なのは、この自然変換が<code>Functor</code>の合成<code>f ∘ g ∘ h</code>を入力にとることを表していて、
 下に突き出している端が<code>q, p</code>なのは、<code>p ∘ q</code>を出力することを表しています。
@@ -104,7 +109,8 @@
 つまり、<code>pure :: ∀a. a -&gt; f a</code>も<code>Identity</code>から<code>f</code>への自然変換とみなして、次の図のように書くことにします。このとき、図でうすく描いたような、<code>Identity</code>を表す線は引かないことにします。
 （これによって後で困ることはありません！）</p>
 <figure>
-<img src="../images/string/pure-and-extract.png" alt="ストリング図(Identityの省略)" /><figcaption aria-hidden="true">ストリング図(Identityの省略)</figcaption>
+<img src="../images/string/pure-and-extract.png" alt="ストリング図(Identityの省略)" />
+<figcaption aria-hidden="true">ストリング図(Identityの省略)</figcaption>
 </figure>
 <p>自然変換どうしは垂直合成する（“縦につなげる”）こともできました。上図の<code>nt</code>と<code>foo</code>は、
 合成して自然変換<code>nt &gt;&gt;&gt; foo :: ∀a. f (g (h a)) -&gt; p a</code>を作ることができます。
@@ -112,7 +118,8 @@
 図を縦につなげて以下のように表します。
 （ここでは、<code>foo . nt</code>のように<code>.</code>を使わず、代わりに<code>&gt;&gt;&gt;</code>で関数の合成を表記することにします。）</p>
 <figure>
-<img src="../images/string/vcomp.png" alt="ストリング図の垂直合成" /><figcaption aria-hidden="true">ストリング図の垂直合成</figcaption>
+<img src="../images/string/vcomp.png" alt="ストリング図の垂直合成" />
+<figcaption aria-hidden="true">ストリング図の垂直合成</figcaption>
 </figure>
 <p>自然変換どうしを水平に合成する（“横にならべる”）こともできます。
 ふたつの自然変換<code>tf :: ∀a. f a -&gt; f' a</code> と <code>tg :: ∀a. g a -&gt; g' a</code>があるとき、<code>tfg :: ∀a. f (g a) -&gt; f' (g' a)</code>
@@ -122,11 +129,13 @@
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> tf <span class="op">&gt;&gt;&gt;</span> <span class="fu">fmap</span> tg</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- どちらも等しい</span></span></code></pre></div>
 <figure>
-<img src="../images/string/hcomp.png" alt="ストリング図の水平合成" /><figcaption aria-hidden="true">ストリング図の水平合成</figcaption>
+<img src="../images/string/hcomp.png" alt="ストリング図の水平合成" />
+<figcaption aria-hidden="true">ストリング図の水平合成</figcaption>
 </figure>
 <p>とくに、<code>id</code>と水平合成する場合が頻出です。</p>
 <figure>
-<img src="../images/string/hcomp-id.png" alt="ストリング図の水平合成（idと）" /><figcaption aria-hidden="true">ストリング図の水平合成（idと）</figcaption>
+<img src="../images/string/hcomp-id.png" alt="ストリング図の水平合成（idと）" />
+<figcaption aria-hidden="true">ストリング図の水平合成（idと）</figcaption>
 </figure>
 <p>例を挙げてみましょう。次のように、<code>catMaybes</code>を
 <code>maybeToList</code>と<code>concat</code>で表したとします。</p>
@@ -139,7 +148,8 @@
 <code>catMaybes</code>の右辺をストリング図で描いてみると次のようになります。
 <code>Maybe</code>と<code>[]</code>の合成順（左から右、Haskellでの記述と<em>逆順</em>）に気をつけてください。</p>
 <figure>
-<img src="../images/string/catmaybes.png" alt="ストリング図の例(catMaybes)" /><figcaption aria-hidden="true">ストリング図の例(catMaybes)</figcaption>
+<img src="../images/string/catmaybes.png" alt="ストリング図の例(catMaybes)" />
+<figcaption aria-hidden="true">ストリング図の例(catMaybes)</figcaption>
 </figure>
 <h2 id="ストリング図でmonad">ストリング図でMonad</h2>
 <p><code>Monad</code>の定義を決めておきます。
@@ -174,14 +184,17 @@
 <ul>
 <li><p>以下の自然変換<code>pure</code>と<code>join</code>があること：</p>
 <figure>
-<img src="../images/string/monad-pure-join.png" alt="pureとjoin" /><figcaption aria-hidden="true">pureとjoin</figcaption>
+<img src="../images/string/monad-pure-join.png" alt="pureとjoin" />
+<figcaption aria-hidden="true">pureとjoin</figcaption>
 </figure></li>
 <li><p>加えて、以下のストリング図の等式が成り立つこと：</p>
 <figure>
-<img src="../images/string/monad-law-unit.png" alt="単位法則" /><figcaption aria-hidden="true">単位法則</figcaption>
+<img src="../images/string/monad-law-unit.png" alt="単位法則" />
+<figcaption aria-hidden="true">単位法則</figcaption>
 </figure>
 <figure>
-<img src="../images/string/monad-law-assoc.png" alt="結合法則" /><figcaption aria-hidden="true">結合法則</figcaption>
+<img src="../images/string/monad-law-assoc.png" alt="結合法則" />
+<figcaption aria-hidden="true">結合法則</figcaption>
 </figure></li>
 </ul>
 <h2 id="ストリング図でstateモナド">ストリング図で<code>State</code>モナド</h2>
@@ -234,11 +247,13 @@
 <p><code>open, close</code>と、<code>State</code>の<code>newtype</code>をつけたり外したりする<code>State, runState</code>はいずれも自然変換
 になっており、以下の通りストリング図に描けます。</p>
 <figure>
-<img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" /><figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
+<img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" />
+<figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
 </figure>
 <p>そして、<code>open</code>と<code>close</code>の間に成り立つ関係は次の図のように描けます。</p>
 <figure>
-<img src="../images/string/state-openclose.png" alt="openとcloseの関係" /><figcaption aria-hidden="true">openとcloseの関係</figcaption>
+<img src="../images/string/state-openclose.png" alt="openとcloseの関係" />
+<figcaption aria-hidden="true">openとcloseの関係</figcaption>
 </figure>
 <p>“曲がった線”をまっすぐに伸ばすことができるという、見た目にわかりやすい関係になっているところがポイントです。</p>
 <div class="sidenote">
@@ -250,14 +265,17 @@
 <p>ここまでの道具を使えば、<code>State</code>のモナド則は図を描いていくだけで証明できます。
 まず、<code>pure</code>と<code>join</code>をストリング図で書きます。</p>
 <figure>
-<img src="../images/string/state-pure-join.png" alt="Stateのpureとjoin" /><figcaption aria-hidden="true">Stateのpureとjoin</figcaption>
+<img src="../images/string/state-pure-join.png" alt="Stateのpureとjoin" />
+<figcaption aria-hidden="true">Stateのpureとjoin</figcaption>
 </figure>
 <p>モナド則は、ストリング図の等式をつかって変形していくことで証明できます。</p>
 <figure>
-<img src="../images/string/state-left-unit.png" alt="Stateのモナド則(左単位法則のみ。右単位法則も左右が入れ替わるだけで同様)" /><figcaption aria-hidden="true">Stateのモナド則(左単位法則のみ。右単位法則も左右が入れ替わるだけで同様)</figcaption>
+<img src="../images/string/state-left-unit.png" alt="Stateのモナド則(左単位法則のみ。右単位法則も左右が入れ替わるだけで同様)" />
+<figcaption aria-hidden="true">Stateのモナド則(左単位法則のみ。右単位法則も左右が入れ替わるだけで同様)</figcaption>
 </figure>
 <figure>
-<img src="../images/string/state-assoc.png" alt="Stateのモナド則(結合法則)" /><figcaption aria-hidden="true">Stateのモナド則(結合法則)</figcaption>
+<img src="../images/string/state-assoc.png" alt="Stateのモナド則(結合法則)" />
+<figcaption aria-hidden="true">Stateのモナド則(結合法則)</figcaption>
 </figure>
     </section>
 </article>

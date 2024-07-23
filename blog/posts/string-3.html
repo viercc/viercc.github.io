@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -121,19 +122,23 @@
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>     <span class="op">&gt;&gt;&gt;</span> <span class="dt">WriterT</span>                  <span class="co">-- m (w, a) -&gt; WriterT w m a</span></span></code></pre></div>
 <p>これをストリング図に描いてみます。</p>
 <figure>
-<img src="../images/string/writer-t.png" alt="WriterTの定義" /><figcaption aria-hidden="true">WriterTの定義</figcaption>
+<img src="../images/string/writer-t.png" alt="WriterTの定義" />
+<figcaption aria-hidden="true">WriterTの定義</figcaption>
 </figure>
 <figure>
-<img src="../images/string/writer-t-pure.png" alt="WriterTのpure" /><figcaption aria-hidden="true">WriterTのpure</figcaption>
+<img src="../images/string/writer-t-pure.png" alt="WriterTのpure" />
+<figcaption aria-hidden="true">WriterTのpure</figcaption>
 </figure>
 <figure>
-<img src="../images/string/writer-t-join.png" alt="WriterTのjoin" /><figcaption aria-hidden="true">WriterTのjoin</figcaption>
+<img src="../images/string/writer-t-join.png" alt="WriterTのjoin" />
+<figcaption aria-hidden="true">WriterTのjoin</figcaption>
 </figure>
 <p>青丸を<code>WriterT w m</code>のモナド演算（<code>pure</code>または<code>join</code>）に当てていて、
 同様に緑丸を<code>Writer</code>モナド、赤丸をモナド<code>m</code>に対応させています。
 また、二つの線が交わるところにある点が<code>swapWM</code>です。</p>
 <figure>
-<img src="../images/string/writer-t-assumption.png" alt="WriterTの構成要素" /><figcaption aria-hidden="true">WriterTの構成要素</figcaption>
+<img src="../images/string/writer-t-assumption.png" alt="WriterTの構成要素" />
+<figcaption aria-hidden="true">WriterTの構成要素</figcaption>
 </figure>
 <p>さて、私達は<code>WriterT</code>を構成する2つのモナド<code>(w,_)</code>と<code>m</code>のモナド演算については
 よくわかっていますが、自然変換<code>swapWM</code>についてはよくわかっていません。
@@ -184,7 +189,8 @@
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> joinT rmrma</span></code></pre></div>
 <p>これをもとにストリング図を描くと、<code>WriterT</code>のものとラベル以外同じものが出来上がります。</p>
 <figure>
-<img src="../images/string/reader-t-all.png" alt="ReaderTの定義" /><figcaption aria-hidden="true">ReaderTの定義</figcaption>
+<img src="../images/string/reader-t-all.png" alt="ReaderTの定義" />
+<figcaption aria-hidden="true">ReaderTの定義</figcaption>
 </figure>
 <h3 id="excepttの場合">ExceptTの場合</h3>
 <p><code>ExceptT</code>も<code>ReaderT</code>や<code>WriterT</code>と”同じ構造”を持っています。
@@ -205,10 +211,17 @@
 <li><p>入れ替えをする自然変換<code>swap ::∀a. n (m a) -&gt; m (n a)</code>を持っている</p></li>
 <li><p><code>swap</code>を使って、<code>pure</code>と<code>join</code>が下図のように定義されている</p>
 <figure>
-<img src="../images/string/monad-compose.png" alt="モナドの合成の一般形" /><figcaption aria-hidden="true">モナドの合成の一般形</figcaption>
+<img src="../images/string/monad-compose.png" alt="モナドの合成の一般形" />
+<figcaption aria-hidden="true">モナドの合成の一般形</figcaption>
 </figure></li>
 </ul>
 <table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 17%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>モナド変換子</th>
@@ -248,26 +261,31 @@
 ストリング図を描いて、どんな条件を満たせばよいのか考えてみます。</p>
 <p>まず、左単位法則から見てみます。</p>
 <figure>
-<img src="../images/string/monad-compose-left-unit.png" alt="モナドの合成、左単位法則" /><figcaption aria-hidden="true">モナドの合成、左単位法則</figcaption>
+<img src="../images/string/monad-compose-left-unit.png" alt="モナドの合成、左単位法則" />
+<figcaption aria-hidden="true">モナドの合成、左単位法則</figcaption>
 </figure>
 <p>ピンク色で強調した部分が<em>成り立っているかどうかわからない</em>等式で、
 それ以外の部分は<code>m</code>,<code>n</code>のモナド則といった、すでに知っている等式です。
 この<em>成り立ってほしい等式(1)</em>は、もっと単純なバージョン（下図右辺）と同値になります。</p>
 <figure>
-<img src="../images/string/swap-left-unit.png" alt="成り立ってほしい等式(1)" /><figcaption aria-hidden="true">成り立ってほしい等式(1)</figcaption>
+<img src="../images/string/swap-left-unit.png" alt="成り立ってほしい等式(1)" />
+<figcaption aria-hidden="true">成り立ってほしい等式(1)</figcaption>
 </figure>
 <p>右単位法則が成り立つ条件から、同様に次の<em>成り立ってほしい等式(2)</em>が出てきます。</p>
 <figure>
-<img src="../images/string/swap-right-unit.png" alt="成り立ってほしい等式(2)" /><figcaption aria-hidden="true">成り立ってほしい等式(2)</figcaption>
+<img src="../images/string/swap-right-unit.png" alt="成り立ってほしい等式(2)" />
+<figcaption aria-hidden="true">成り立ってほしい等式(2)</figcaption>
 </figure>
 <p>最後に結合法則を見てみます。（結合法則が成り立つために成り立ってほしい等式を、
 ピンク色で強調しています。）</p>
 <figure>
-<img src="../images/string/monad-compose-assoc.png" alt="モナドの合成、結合法則" /><figcaption aria-hidden="true">モナドの合成、結合法則</figcaption>
+<img src="../images/string/monad-compose-assoc.png" alt="モナドの合成、結合法則" />
+<figcaption aria-hidden="true">モナドの合成、結合法則</figcaption>
 </figure>
 <p>成り立ってほしい等式だけ取り出せば、次のようになります。</p>
 <figure>
-<img src="../images/string/swap-dist.png" alt="成り立ってほしい等式(3)(4)" /><figcaption aria-hidden="true">成り立ってほしい等式(3)(4)</figcaption>
+<img src="../images/string/swap-dist.png" alt="成り立ってほしい等式(3)(4)" />
+<figcaption aria-hidden="true">成り立ってほしい等式(3)(4)</figcaption>
 </figure>
 <p>これらの等式(1)-(4)を満たすような<code>swap</code>であれば、<code>m ∘ n</code>がモナドになると言えます。
 等式(1)-(4)を、ストリング図からHaskellの式に書き直すと、次のようになります。</p>
@@ -339,17 +357,17 @@
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> (w,b)) <span class="op">$</span> join mmb</span></code></pre></div>
 <p><code>ReaderT</code>も<code>ExceptT</code>も、同じように<code>swapMR</code>、<code>swapEM</code>が分配であることが示せて、
 モナド則を満たすことがわかります。</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>（注意）</p>
+<li id="fn1"><p>（注意）</p>
 <p>「モナド<code>m</code>がモナド<code>n</code>に対する……」において、
 <code>m</code>と<code>n</code>の順番には意味があります。
 <code>swap :: ∀b. n (m b) -&gt; m (n b)</code>があるからといって、逆向きの自然変換
 <code>reverseSwap :: ∀b. m (n b) -&gt; n (m b)</code>があったり、
 それが等式(1)-(4)を満たす保証はまったく無いからです。</p>
 <p>そのため、「モナド<code>m,n</code>の……」のように並列で呼ばないようにしました。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>「分配」という単語は、これが圏論では「分配律(distributive law)」と呼ばれていることから取っています。</p>
+<li id="fn2"><p>「分配」という単語は、これが圏論では「分配律(distributive law)」と呼ばれていることから取っています。</p>
 <p>「分配律」から「律」を落としたのは、モナド則の結合法則などの自然変換の間の等式と混同しないためです。
 等式(1)-(4)を満たすような<code>swap</code>それ自体が「分配律」と呼ばれていて、等式(1)-(4)は「分配律」
 の満たすべき性質（言うなれば「分配律律」）です。</p>

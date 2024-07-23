@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -87,25 +88,30 @@
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>       <span class="op">&gt;&gt;&gt;</span> <span class="dt">StateT</span>            <span class="co">-- :: G s (m (F s a)) -&gt; StateT s m a</span></span></code></pre></div>
 <p>ちょっと複雑になってしまいましたが、ストリング図にこれらの定義を起こしてみましょう。</p>
 <figure>
-<img src="../images/string/state-t-newtype.png" alt="StateTの定義" /><figcaption aria-hidden="true">StateTの定義</figcaption>
+<img src="../images/string/state-t-newtype.png" alt="StateTの定義" />
+<figcaption aria-hidden="true">StateTの定義</figcaption>
 </figure>
 <figure>
-<img src="../images/string/state-t-pure.png" alt="StateTのpure" /><figcaption aria-hidden="true">StateTのpure</figcaption>
+<img src="../images/string/state-t-pure.png" alt="StateTのpure" />
+<figcaption aria-hidden="true">StateTのpure</figcaption>
 </figure>
 <figure>
-<img src="../images/string/state-t-join.png" alt="StateTのjoin" /><figcaption aria-hidden="true">StateTのjoin</figcaption>
+<img src="../images/string/state-t-join.png" alt="StateTのjoin" />
+<figcaption aria-hidden="true">StateTのjoin</figcaption>
 </figure>
 <p>図の中で、変換されるモナド<code>m</code>の<code>pure</code>や<code>join</code>と、
 これから構成する<code>StateT s m</code>の<code>pure</code>や<code>join</code>は、色をつけて区別しています。</p>
 <p>さて、図が煩雑になってきたので、以降はラベルを省いて描いてしまいます。</p>
 <figure>
-<img src="../images/string/terse-notation.png" alt="省略記法" /><figcaption aria-hidden="true">省略記法</figcaption>
+<img src="../images/string/terse-notation.png" alt="省略記法" />
+<figcaption aria-hidden="true">省略記法</figcaption>
 </figure>
 <p>特に、モナドの<code>pure</code>,<code>join</code>は、どちらもラベルのない丸記号○だけで済ますことにします。
 つながっている線の本数が違うため、<code>pure</code>と<code>join</code>の区別をつけるのに困ることはないです。</p>
 <p>この省略記法を使って、<code>StateT</code>のモナドの定義を描き直すと、次のようになります。</p>
 <figure>
-<img src="../images/string/state-t-terse.png" alt="省略記法でのStateTの定義" /><figcaption aria-hidden="true">省略記法でのStateTの定義</figcaption>
+<img src="../images/string/state-t-terse.png" alt="省略記法でのStateTの定義" />
+<figcaption aria-hidden="true">省略記法でのStateTの定義</figcaption>
 </figure>
 <h2 id="statetのモナド則"><code>StateT</code>のモナド則</h2>
 <p><code>StateT s m</code>のモナド則も、<code>State</code>モナド同様に、
@@ -113,19 +119,23 @@
 <p>ここで、モナド<code>m</code>がもつ<code>pure</code>と<code>join</code>（オレンジの丸）は、
 モナド則を満たしていることが前提にできます。</p>
 <figure>
-<img src="../images/string/monad-law-terse-color.png" alt="mのモナド則" /><figcaption aria-hidden="true">mのモナド則</figcaption>
+<img src="../images/string/monad-law-terse-color.png" alt="mのモナド則" />
+<figcaption aria-hidden="true">mのモナド則</figcaption>
 </figure>
 <p>また、前回の記事同様、<code>open</code>と<code>close</code>の関係も使います。</p>
 <figure>
-<img src="../images/string/openclose-terse.png" alt="openとclose" /><figcaption aria-hidden="true">openとclose</figcaption>
+<img src="../images/string/openclose-terse.png" alt="openとclose" />
+<figcaption aria-hidden="true">openとclose</figcaption>
 </figure>
 <p>これらの変形を組み合わせれば、<code>StateT s m</code>のモナド則も、
 図を描いてそれを変形させていくことで証明できます。</p>
 <figure>
-<img src="../images/string/state-t-left-unit.png" alt="StateTのモナド則（左単位法則、右単位法則も同様）" /><figcaption aria-hidden="true">StateTのモナド則（左単位法則、右単位法則も同様）</figcaption>
+<img src="../images/string/state-t-left-unit.png" alt="StateTのモナド則（左単位法則、右単位法則も同様）" />
+<figcaption aria-hidden="true">StateTのモナド則（左単位法則、右単位法則も同様）</figcaption>
 </figure>
 <figure>
-<img src="../images/string/state-t-assoc.png" alt="StateTのモナド則（結合法則）" /><figcaption aria-hidden="true">StateTのモナド則（結合法則）</figcaption>
+<img src="../images/string/state-t-assoc.png" alt="StateTのモナド則（結合法則）" />
+<figcaption aria-hidden="true">StateTのモナド則（結合法則）</figcaption>
 </figure>
 <h2 id="他のモナド変換子は">他のモナド変換子は？</h2>
 <p>ここまで来ると、<code>ReaderT</code>や<code>WriterT</code>、<code>ExceptT</code>といった、他のモナド変換子たちの

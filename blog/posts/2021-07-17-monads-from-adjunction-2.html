@@ -24,6 +24,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -46,7 +47,15 @@
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}  \gdef\Hask{\mathrm{\mathbf{Hask}}}  \gdef\Vect{\mathrm{\mathbf{Vect}}}  \gdef\Mon{\mathrm{\mathbf{Mon}}}  \gdef\id{\mathrm{id}}  \gdef\Id{\mathrm{Id}}  \gdef\map{\mathrm{map}}  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}  \gdef\listof#1{\left\lbrack{#1}\right\rbrack}</span></p>
+<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Hask{\mathrm{\mathbf{Hask}}}
+  \gdef\Vect{\mathrm{\mathbf{Vect}}}
+  \gdef\Mon{\mathrm{\mathbf{Mon}}}
+  \gdef\id{\mathrm{id}}
+  \gdef\Id{\mathrm{Id}}
+  \gdef\map{\mathrm{map}}
+  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}
+  \gdef\listof#1{\left\lbrack{#1}\right\rbrack}</span></p>
 <p><a href="./2021-06-24-monads-from-adjunction.html">前回</a>の続きです。</p>
 <p><code>Functor</code>以外の関手を使って、次のモナドを分析していこうとしていました。</p>
 <ul>
@@ -77,10 +86,12 @@ Haskellでの例を引きながら説明しました。
 恒等関手<code>Identity</code>からふたつの関手の合成<code>G s ∘ F s</code>をつくる自然変換
 <code>open</code>と、逆に<code>F s ∘ G s</code>から<code>Identity</code>を取り出す<code>close</code>を考えるというものでした。</p>
 <figure>
-<img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" /><figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
+<img src="../images/string/state-elements.png" alt="Stateモナドの構成要素" />
+<figcaption aria-hidden="true">Stateモナドの構成要素</figcaption>
 </figure>
 <figure>
-<img src="../images/string/state-openclose.png" alt="openとcloseの関係" /><figcaption aria-hidden="true">openとcloseの関係</figcaption>
+<img src="../images/string/state-openclose.png" alt="openとcloseの関係" />
+<figcaption aria-hidden="true">openとcloseの関係</figcaption>
 </figure>
 <p>さて、モナドを合成関手と見て、特別な自然変換からモナド演算<code>pure, join</code>を導くという手法は、
 <a href="./string-3.html">別の回</a>でもやっています。
@@ -201,11 +212,13 @@ Haskellの式で書くなら、以下の等式になります。</p>
 そして、<span class="math inline">F</span>が圏<span class="math inline">C</span>から圏<span class="math inline">D</span>への関手であったなら、<span class="math inline">F</span>の線の<strong>左側の領域</strong>に「ここは圏<span class="math inline">C</span>である」、
 <strong>右側の領域</strong>に「ここは圏<span class="math inline">D</span>である」と書き込むことで、この関手の型を明示することができます。</p>
 <figure>
-<img src="../images/string/categorical-functor-f.png" alt="CからDへの関手F" /><figcaption aria-hidden="true">CからDへの関手F</figcaption>
+<img src="../images/string/categorical-functor-f.png" alt="CからDへの関手F" />
+<figcaption aria-hidden="true">CからDへの関手F</figcaption>
 </figure>
 <p>同じように、圏<span class="math inline">D</span>から圏<span class="math inline">C</span>への関手<span class="math inline">G</span>も描けます。</p>
 <figure>
-<img src="../images/string/categorical-functor-g.png" alt="DからCへの関手G" /><figcaption aria-hidden="true">DからCへの関手G</figcaption>
+<img src="../images/string/categorical-functor-g.png" alt="DからCへの関手G" />
+<figcaption aria-hidden="true">DからCへの関手G</figcaption>
 </figure>
 <p>（ここでは模様付きで領域に色を塗りましたが、別にそこまでする必要はありません。
 わかり易さのためにラベル付けしているだけであって、無くてもかまわないものです。）</p>
@@ -215,22 +228,27 @@ Haskellの式で書くなら、以下の等式になります。</p>
 この領域に書き込まれる圏の名前は一致しているはずです。
 なので、ひとつの領域には丁度ひとつの圏のラベルが書き込まれます。</p>
 <figure>
-<img src="../images/string/categorical-functor-gf.png" alt="合成関手G∘F" /><figcaption aria-hidden="true">合成関手G∘F</figcaption>
+<img src="../images/string/categorical-functor-gf.png" alt="合成関手G∘F" />
+<figcaption aria-hidden="true">合成関手G∘F</figcaption>
 </figure>
 <p><span class="math inline">F</span>が<span class="math inline">G</span>の左随伴だとします。このとき、自然変換<span class="math inline">\mathrm{unit}, \mathrm{counit}</span>は、
 次のようにストリング図に描かれます。</p>
 <figure>
-<img src="../images/string/adjunction-unit.png" alt="自然変換unit" /><figcaption aria-hidden="true">自然変換unit</figcaption>
+<img src="../images/string/adjunction-unit.png" alt="自然変換unit" />
+<figcaption aria-hidden="true">自然変換unit</figcaption>
 </figure>
 <figure>
-<img src="../images/string/adjunction-counit.png" alt="自然変換counit" /><figcaption aria-hidden="true">自然変換counit</figcaption>
+<img src="../images/string/adjunction-counit.png" alt="自然変換counit" />
+<figcaption aria-hidden="true">自然変換counit</figcaption>
 </figure>
 <p>ジグザグ関係式も、以下のように描けます。</p>
 <figure>
-<img src="../images/string/adjunction-zigzag-1.png" alt="ジグザグ関係式(1)" /><figcaption aria-hidden="true">ジグザグ関係式(1)</figcaption>
+<img src="../images/string/adjunction-zigzag-1.png" alt="ジグザグ関係式(1)" />
+<figcaption aria-hidden="true">ジグザグ関係式(1)</figcaption>
 </figure>
 <figure>
-<img src="../images/string/adjunction-zigzag-2.png" alt="ジグザグ関係式(2)" /><figcaption aria-hidden="true">ジグザグ関係式(2)</figcaption>
+<img src="../images/string/adjunction-zigzag-2.png" alt="ジグザグ関係式(2)" />
+<figcaption aria-hidden="true">ジグザグ関係式(2)</figcaption>
 </figure>
 <h2 id="随伴からcont-rを作る">随伴から<code>Cont r</code>を作る</h2>
 <p><code>State s</code>以外のモナドで、随伴から作られているものの例として、
@@ -266,7 +284,8 @@ Haskellの式で書くなら、以下の等式になります。</p>
 </ul>
 <p>を合成した<code>Cont r = (_ -&gt; r) ∘ (_ -&gt; r)</code>として考えることができます。</p>
 <figure>
-<img src="../images/string/adjunction-cont.png" alt="Cont rは(_ -&gt; r)の合成" /><figcaption aria-hidden="true"><code>Cont r</code>は<code>(_ -&gt; r)</code>の合成</figcaption>
+<img src="../images/string/adjunction-cont.png" alt="Cont rは(_ -&gt; r)の合成" />
+<figcaption aria-hidden="true"><code>Cont r</code>は<code>(_ -&gt; r)</code>の合成</figcaption>
 </figure>
 <p>先程の一般論「関手<span class="math inline">F</span>が関手<span class="math inline">G</span>の左随伴なら、<span class="math inline">G\circ F</span>はモナドである」と、
 <code>Cont r</code>がモナドであることを踏まえると、
@@ -372,7 +391,8 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <p><code>StateT</code>モナド変換子は、関手<code>F s = (s, _)</code>と関手<code>G s = (s -&gt; _)</code>の随伴があるとき、任意のモナド<code>m</code>に対して
 <code>G s ∘ m ∘ F s</code>もモナドになることを原理としていました。</p>
 <figure>
-<img src="../images/string/state-t-terse.png" alt="StateTの構成" /><figcaption aria-hidden="true"><code>StateT</code>の構成</figcaption>
+<img src="../images/string/state-t-terse.png" alt="StateTの構成" />
+<figcaption aria-hidden="true"><code>StateT</code>の構成</figcaption>
 </figure>
 <p>同じことが任意の圏のあいだの随伴でも言えます。上記<span class="math inline">F,G</span>に対して、圏<span class="math inline">D</span>上のモナド<span class="math inline">T</span>があれば、
 <code>StateT</code>の場合とまったく同じようにして<span class="math inline">G\circ T\circ F\colon C\to C</span>が圏<span class="math inline">C</span>上のモナドになります。</p>
@@ -557,15 +577,15 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 <p>つまり、<code>ListT</code>は、ある意味では間違って(wrong)はいなかったのです。
 （もちろん可換なモナドしか使えないというのは”モナド変換子としては”問題で、
 そのために<a href="https://hackage.haskell.org/package/list-t">ListT done right</a>が作られたとも言えます。）</p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p><span class="math inline">\op{C}</span>の射<span class="math inline">f\in \op{C}(a,b)</span>＝<span class="math inline">C</span>の射<span class="math inline">f\in C(b,a)</span>で、<span class="math inline">\op{D}</span>についても同様なので、
+<li id="fn1"><p><span class="math inline">\op{C}</span>の射<span class="math inline">f\in \op{C}(a,b)</span>＝<span class="math inline">C</span>の射<span class="math inline">f\in C(b,a)</span>で、<span class="math inline">\op{D}</span>についても同様なので、
 <span class="math inline">\op{C}</span>から<span class="math inline">D</span>への関手<span class="math inline">F</span>は<span class="math inline">f\in C(b,a)</span>を<span class="math inline">\map_F(f)\in \op{D}(F(b),F(a))</span>に対応させます。
 これはすなわち<span class="math inline">C</span>から<span class="math inline">\op{D}</span>への関手です。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p><span class="math inline">F</span>はよく<em>自由モノイド関手</em>と呼ばれている関手です<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p><span class="math inline">U</span>はよく<em>忘却関手</em>と呼ばれている関手です。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>ここは実は、<code>[a]</code>が無限リストになり得ることを考慮すると破綻しています。
+<li id="fn2"><p><span class="math inline">F</span>はよく<em>自由モノイド関手</em>と呼ばれている関手です<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><span class="math inline">U</span>はよく<em>忘却関手</em>と呼ばれている関手です。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>ここは実は、<code>[a]</code>が無限リストになり得ることを考慮すると破綻しています。
 無限個の積が定義できないモノイドがほとんどなので、これは関数にすらなっていません。</p>
 <p><code>[a]</code>は有限リストの型であると思えば、
 結合法則をリストの長さと同じくらいの回数使うと<code>counit</code>がモノイド準同型であると示せます。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>

@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -175,13 +176,15 @@
 <p>前回の記事では、これらの関数について、以下の等式を証明しました。</p>
 <dl>
 <dt>(Eq3)</dt>
-<dd><div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> r x</span></code></pre></div>
+<dd>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>refill (rp x) (isJust <span class="op">.</span> x) <span class="ot">=</span> r x</span></code></pre></div>
 </dd>
 </dl>
 <p><code>mask</code>は以下のように書くこともできます。</p>
 <dl>
 <dt>(Eq4)</dt>
-<dd><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask y cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span></code></pre></div>
+<dd>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mask y cond <span class="ot">=</span> join <span class="op">.</span> r <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="kw">if</span> cond i <span class="kw">then</span> y <span class="kw">else</span> zero</span></code></pre></div>
 </dd>
 </dl>
 <details>
@@ -301,15 +304,15 @@ equifiberedなモナド準同型<code>r :: (N -&gt; x) -&gt; F x</code>と、単
 これによって、 <code>[x] = 1 + x + x^2 + x^3 + ...</code> は <code>[x] = (1+x)^N + G(x)</code>と書けなければならない。
 この分解が成り立つ<code>N</code>は<code>N=1</code>に限られる。</p></li>
 </ul>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p><code>F a = (N -&gt; a)</code>であるときは、自然変換<code>τ :: F a -&gt; G a</code>がequifiberedならば単射です。
+<li id="fn1"><p><code>F a = (N -&gt; a)</code>であるときは、自然変換<code>τ :: F a -&gt; G a</code>がequifiberedならば単射です。
 一般にはこれは言えません。例えば、<code>F a = (Bool, N -&gt; a), G a = (N -&gt; a)</code>としたとき、
 <code>snd :: F a -&gt; G a</code>はequifiberedになります。
 また、逆も成り立ちません。equifiberedにならない例として挙げた<code>bad'</code>のように、
 単射であってequifiberedでないことがあります。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>この弱い主張の証明を、Twitter上のやりとりで（<a href="https://gist.github.com/viercc/38853067c893f7ad9e0894abb543178b">Gist</a>,
+<li id="fn2"><p>この弱い主張の証明を、Twitter上のやりとりで（<a href="https://gist.github.com/viercc/38853067c893f7ad9e0894abb543178b">Gist</a>,
 <a href="https://gist.github.com/Lysxia/b105bcb2f2ba835012476ab7fe37ae87">@lysxia 氏によるCoqでの形式化</a>）行っていたところ、
 1to100pen 氏本人からより強い主張ができている上記Qiita記事を教えていただきました。</p>
 <p>これが今回の記事の大きなモチベーションになっています。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>

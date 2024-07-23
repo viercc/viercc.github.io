@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -87,7 +88,8 @@ fact Hardship { all b : Barber | working[b.sensei] implies working[b] }
 run {} for exactly 2 Customer, exactly 4 Barber</code></pre>
 <p>この仕様に対して、次の画像のようなモデルを作ってくれます：</p>
 <figure>
-<img src="../images/alloy_example1.png" alt="Alloy Analyzerの出力例" /><figcaption aria-hidden="true">Alloy Analyzerの出力例</figcaption>
+<img src="../images/alloy_example1.png" alt="Alloy Analyzerの出力例" />
+<figcaption aria-hidden="true">Alloy Analyzerの出力例</figcaption>
 </figure>
 <p>Alloy Analyzerは、裏でSATソルバーなどを使って、制約を満たすモデルを見つけてくれます。しかし、重要なことは、「モデルが見つからなかった」ことと「モデルが存在しない」ことが違うということです。サイズの大きいモデルしか無ければ、探している範囲にモデルが無いこともありますし、単に探索に失敗することもあります。その代わり、このソフトは定理自動証明よりはるかに手軽です。</p>
 <p>今回考えていた疑問は、「すべての……という制約を満たす集合と演算は、……という性質を自動的に持つか？」という形でした。もし簡単な反例があるなら、Alloy Analyzerに「……という制約を満たす集合と演算で、……という性質を<strong>持たない</strong>」のモデルを探させて、見つかればそれでよいと考えたわけです。</p>
@@ -129,11 +131,13 @@ pred tangled {
 run tangled for 2 M, 2 E</code></pre>
 <p>見つかったものは・・・</p>
 <figure>
-<img src="../images/alloy_found_counterexample.png" alt="見つかったモデルのグラフによる描写" /><figcaption aria-hidden="true">見つかったモデルのグラフによる描写</figcaption>
+<img src="../images/alloy_found_counterexample.png" alt="見つかったモデルのグラフによる描写" />
+<figcaption aria-hidden="true">見つかったモデルのグラフによる描写</figcaption>
 </figure>
 <p>はい、わかりません。幸い、見やすい表で出すこともできたので大丈夫でした。</p>
 <figure>
-<img src="../images/alloy_found_counterexample_tab.png" alt="表を出したところ" /><figcaption aria-hidden="true">表を出したところ</figcaption>
+<img src="../images/alloy_found_counterexample_tab.png" alt="表を出したところ" />
+<figcaption aria-hidden="true">表を出したところ</figcaption>
 </figure>
     </section>
 </article>

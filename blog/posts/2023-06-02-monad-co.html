@@ -18,6 +18,7 @@
             <nav>
                 <a href="../">Home</a>
                 <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
                 <a href="../contact.html">Contact</a>
                 <a href="../archive.html">Archive</a>
             </nav>
@@ -168,7 +169,7 @@
 <p>このことによって<code>Co NonEmpty</code>はモナドになっています。これがどのようなモナドなのかを<code>Co</code>の定義から考えると中々大変なのですが、<code>StateLike</code>による表現を用いると以下のようになります。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">NonEmpty</span> ()</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> (<span class="dt">NonEmpty</span>リストの長さの集合)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> (1以上の整数の集合) <span class="ot">=</span> <span class="dt">N</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> (<span class="dv">1</span>以上の整数の集合) <span class="ot">=</span> <span class="dt">N</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Move</span> <span class="dt">NonEmpty</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> ∀r<span class="op">.</span> <span class="dt">NonEmpty</span> r <span class="ot">-&gt;</span> r</span>
@@ -189,16 +190,16 @@
 <p><code>Co w</code>という「コモナドから作ったモナド」は、<code>StateLike</code>という<code>State</code>モナドを一般化したような形のモナドになることを大雑把ながら説明しました。</p>
 <p>実は、<code>Comonad</code>のうち、「性質のよい」<code>Functor</code>である多項式<code>Functor</code><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>でもあるものならば、どんな<code>Comonad w</code>も、ある<a href="https://hackage.haskell.org/package/base-4.16.1.0/docs/Control-Category.html">Category</a>のインスタンスを使って表現できる、という先行研究があります。<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
 <p>この<code>Category</code>による表現を使うと、より<code>Co w</code>が<code>State</code>らしく思える<code>Co w</code>の特徴付けができます。これについても書きたかったのですが、説明に必要な事項が多く私が書くことを断念してしまったので、それはいつの日にかやることにしました。<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></p>
-<section class="footnotes" role="doc-endnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>https://twitter.com/viercc/status/1647938927372943360<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>個人的な感想です<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>ほんとうは、単に同型であるだけでなく、具体的に同型を構成して、その同型写像ががモナドとしての同型写像でもあることまで確認しなければいけないのですが、ここでは省略します。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4" role="doc-endnote"><p>ただし、無限リストの存在は無視しています<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5" role="doc-endnote"><p>このブログでは <a href="./2019-12-15-monads-more.html">モナドを見分けるコツ</a>や<a href="./2020-11-25-faccat.html">多項式Applicative Functorの一般論</a> などで使いました。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6" role="doc-endnote"><p>Daniel Ahman and Tarmo Uustalu “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7" role="doc-endnote"><p>本当にやる気がでるのか自信がない<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>https://twitter.com/viercc/status/1647938927372943360<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>個人的な感想です<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>ほんとうは、単に同型であるだけでなく、具体的に同型を構成して、その同型写像ががモナドとしての同型写像でもあることまで確認しなければいけないのですが、ここでは省略します。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>ただし、無限リストの存在は無視しています<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>このブログでは <a href="./2019-12-15-monads-more.html">モナドを見分けるコツ</a>や<a href="./2020-11-25-faccat.html">多項式Applicative Functorの一般論</a> などで使いました。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Daniel Ahman and Tarmo Uustalu “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>本当にやる気がでるのか自信がない<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
