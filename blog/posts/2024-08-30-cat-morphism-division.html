@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 射の分割ができる圏</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>射の分割ができる圏</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2024-08-30</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\CatC{\Cat^\sharp}
+  \gdef\Ob{\mathrm{Ob}}
+  \gdef\Mor{\mathrm{Mor}}
+  \gdef\id{\mathop{\mathrm{id}}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\homset#1#2#3{#1 \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\homsetl#1#2{#1 \left\lbrack {#2} \right\rbrack}
+  \gdef\map{\mathop{\mathrm{map}}}
+  \gdef\divleft#1#2{\frac{{#1}, \_}{{#1}, {#2}}}
+  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}
+  \gdef\setcompre#1#2{\left\lbrace {#1} \middle\vert {#2} \right\rbrace}</span></p>
+<h2 id="背景">背景</h2>
+<p>前回の記事<a href="2023-06-02-mystery-cat.html">謎構造・「射の分割」ができる圏</a><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>で、
+射の分割という演算を備えた圏を定義しました。</p>
+<p>この定義を考えるモチベーションは、
+小さい圏と<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html">Comonad</a>
+が1対1に対応する<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>という事実から、
+<code>Comonad</code>でも<code>Applicative</code>でもある関手<code>f</code>を小さい圏で表現したとき、その<code>Applicative</code>の演算(<code>pure</code>, <code>&lt;*&gt;</code>)が圏においてどんな演算に対応するのか、という疑問です。</p>
+<div class="sidenote">
+<p>「<code>Comonad</code>かつ<code>Applicative</code>」ではないですが、それ近い「<code>Comonad</code>かつ<a href="https://hackage.haskell.org/package/semigroupoids-6.0.1/docs/Data-Functor-Apply.html#g:2">Apply</a>」はcomonadパッケージにて定義されており、
+<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#g:2">ComonadApply</a>という名前が与えられています。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</div>
+<p>さて、前回の記事ではこの構造について<em>謎です</em>とだけ言ったのですが、進展がありました。前記事でいうproperな射の分割をもつ圏は、</p>
+<ul>
+<li>小さい圏を対象、retrofunctorを射として持つ圏<span class="math inline">\CatC</span>において、圏の直積に関するモノイド対象</li>
+</ul>
+<p>であると考えられます。このretrofunctorおよびその圏<span class="math inline">\CatC</span>は<a href="https://toposinstitute.github.io/poly/poly-book.pdf">poly-book.pdf</a>で定義されたものになります。</p>
+<p>このことを説明する記事を書きたいと思ったのですが、まずはその準備として、前記事とは異なる”射の分割を持つ圏”を再定義します。
+定義を変えたい理由は3つあります：</p>
+<ol type="1">
+<li>前記事では横着して可換バージョンだけを定義したが、別にその必要はないこと</li>
+<li>記法の変更がしたいこと</li>
+<li>properでない射の分割について考えたくなくなったのでproperなものだけを指して単に”射の分割を持つ圏”と呼びたいこと</li>
+<li><code>Comonad</code>かつ<code>Apply</code>であるものに対応する、半群に関する射の分割を考えたいこと</li>
+</ol>
+<p>本記事は射の分割を持つ圏の新しい定義を行います。</p>
+<h2 id="射の分割の定義">射の分割の定義</h2>
+<p>局所小圏<span class="math inline">C</span>のホムセットを<span class="math inline">\homset{C}{a}{b}</span>と書くことにします。
+また、各ホムセットはそれぞれ共通部分を持たないとします。すなわち</p>
+<p><span class="math display">
+  \homset{C}{a}{b} \cap \homset{C}{a'}{b'} \neq \emptyset \implies \left( a = a' \wedge b = b' \right)
+</span></p>
+<p>を仮定します。</p>
+<p>小さい圏<span class="math inline">C</span>において、始域が<span class="math inline">a</span>である射を集めた集合を<span class="math inline">\homsetl{C}{a}</span>と書くことにします。
+各ホムセットは共通部分を持たないため、次式が成り立ちます。</p>
+<p><span class="math display">
+  \begin{equation}
+    \begin{split}
+      \homsetl{C}{a}
+        &amp;= \setcompre{t \in \Mor(C)}{\dom t = a} \\
+        &amp;= \biguplus_{b \in \Ob(C)} \homset{C}{a}{b}
+    \end{split}
+  \end{equation}
+</span></p>
+<p><em>射の分割を持つ圏</em> <span class="math inline">C</span>を、小さい圏<span class="math inline">C</span>であって、追加で</p>
+<ul>
+<li><p>対象の集合上の半群演算<span class="math inline">(\cdot) : \Ob(C) \times \Ob(C) \to \Ob(C)</span></p></li>
+<li><p><em>射の分割</em>と呼ばれる、対象の組<span class="math inline">a,b</span>それぞれについて定まる関数の族</p>
+<p><span class="math display">
+  \begin{equation}
+    \divleft{a}{b} : \homsetl{C}{a\cdot b} \to \homsetl{C}{a}
+  \end{equation}
+</span></p>
+<p>および</p>
+<p><span class="math display">
+  \begin{equation}
+    \divright{a}{b} : \homsetl{C}{a\cdot b} \to \homsetl{C}{b}
+  \end{equation}
+</span></p></li>
+</ul>
+<p>を備え、それらが以下の条件をすべて満たすものと定義します。</p>
+<ol type="1">
+<li><p><em>射の分割が半群演算と両立する</em>こと。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b\cdot c}</span>に対して、</p>
+<p><span class="math display">
+ \begin{align}
+   \divleft{a}{b} \left( \divleft{a\cdot b}{c} t \right) &amp;= \divleft{a}{b \cdot c} t \\
+   \divright{b}{c} \left( \divright{a}{b\cdot c} t \right) &amp;= \divright{a \cdot b}{c} t \\
+   \divright{a}{b} \left( \divleft{a\cdot b}{c} t \right)
+     &amp;= \divleft{b}{c} \left( \divright{a}{b\cdot c} t \right)
+ \end{align}
+</span></p></li>
+<li><p><em>射の分割が恒等射を保つ</em>こと。</p>
+<p><span class="math display">
+   \begin{align}
+     \divleft{a}{b} \id_{a\cdot b} &amp;= \id_{a} \\
+     \divright{a}{b} \id_{a\cdot b} &amp;= \id_{b}
+   \end{align}
+ </span></p></li>
+<li><p><em>射の分割が終域を保つ</em>こと。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b}</span>に対して、</p>
+<p><span class="math display">
+   \begin{equation}
+     \cod \left( \divleft{a}{b} t \right) \cdot \cod \left( \divright{a}{b} t \right) = \cod t
+   \end{equation}
+ </span></p></li>
+<li><p><em>射の分割が射の合成を保つ</em>こと。以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
+<p><span class="math display">
+   \begin{CD}
+     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d 
+   \end{CD}
+ </span></p>
+<p>このとき、以下が成り立つ。</p>
+<p><span class="math display">
+   \begin{align}
+　　　　\divleft{a}{b} \left(t;u\right) &amp;= \left(\divleft{a}{b} t\right); \left(\divleft{c_a}{c_b} u\right) \\
+　　　　\divright{a}{b} \left(t;u\right) &amp;= \left(\divright{a}{b} t\right); \left(\divright{c_a}{c_b} u\right)
+   \end{align}
+ </span></p>
+<p>ただし、<span class="math inline">c_a, c_b</span>は<span class="math inline">t</span>の射の分割それぞれの終域とする。</p>
+<p><span class="math display">
+   \begin{align*}
+     c_a &amp;= \cod\left(\divleft{a}{b} t\right) \\
+     c_b &amp;= \cod\left(\divright{a}{b} t\right)
+   \end{align*}
+ </span></p></li>
+</ol>
+<p><em>単位的な</em>射の分割を持つ圏<span class="math inline">C</span>を、射の分割を持つ圏<span class="math inline">C</span>であって、
+対象<span class="math inline">1 : \Ob(C)</span>を持ち、以下の条件を満たすものと定義します。</p>
+<ul>
+<li><p><span class="math inline">1</span>が<span class="math inline">\Ob(C)</span>のなす半群の単位元である（すなわち<span class="math inline">(\Ob(C),1,\cdot)</span>はモノイドである）こと。</p></li>
+<li><p>単位元による分割は「何もしない」こと。</p>
+<p><span class="math display">
+  \begin{align}
+    \divleft{a}{1} t &amp;= t \\\\
+    \divright{1}{b} t &amp;= t
+  \end{align}
+</span></p></li>
+<li><p><span class="math inline">1</span>からそれ以外の対象への射を持たないこと。</p></li>
+</ul>
+<h2 id="射の分割をもつ圏の例">射の分割をもつ圏の例</h2>
+<h3 id="離散圏における射の分割">離散圏における射の分割</h3>
+<p>離散圏<span class="math inline">D</span>において、
+離散圏は恒等射以外を持たないため、「射の分割は恒等射を保つ」という性質から射の分割は完全に固定されており、
+<span class="math inline">\Ob(D)</span>上の半群<span class="math inline">(\cdot)</span>（またはモノイド<span class="math inline">(1,\cdot)</span>）が与えられるだけで
+<span class="math inline">D</span>を射の分割を持つ圏（単位的な射の分割を持つ圏）にすることができます。</p>
+<h3 id="任意の圏の左零分割">任意の圏の左零分割</h3>
+<p>任意の集合は、<span class="math inline">x\cdot y = x</span>という2項演算によって半群とみなすことができます。
+任意の小さい圏<span class="math inline">C</span>も、対象の上にこの2項演算を与え、射の分割を</p>
+<p><span class="math display">
+  \begin{align}
+    \divleft{a}{b} t &amp;= t \\
+    \divright{a}{b} t &amp;= \id_{b}
+  \end{align}
+</span></p>
+<p>とするとこれは前節の条件をすべて満たし、<span class="math inline">C</span>を射の分割を持つ圏にできます。</p>
+<p><span class="math inline">C</span>がひとつの対象とひとつの恒等射のみを持つ圏<span class="math inline">\mathbb{1}</span>でない限り、
+これは単位的な射の分割を持つ圏にはなりません。</p>
+<h3 id="前順序である場合特に結び半束join-semilatticeである場合">前順序である場合、特に結び半束(join-semilattice)である場合</h3>
+<p>任意の前順序を備えた集合<span class="math inline">(X,\sqsubseteq)</span>は小さい圏とみなすことができます。
+この圏の射を<span class="math inline">a\sqsubseteq b</span>なる順序対<span class="math inline">(a,b)</span>で表すことにすると、射の分割は</p>
+<p><span class="math display">
+  \begin{align}
+    \divleft{a}{b} (a\cdot b, c) &amp;= (a, \divleft{a}{b}(c)) \\
+    \divright{a}{b} (a\cdot b, c) &amp;= (b, \divright{a}{b}(c))
+  \end{align}
+</span></p>
+<p>と表されます。ただし、<span class="math inline">\divleft{a}{b}, \divright{a}{b}</span>という記法を多義的に用いて、
+対象を引数にとる関数として用いられている場合は以下のような型を持つ関数であるとします。</p>
+<p><span class="math display">
+  \begin{align}
+    \divleft{a}{b} &amp;: \setcompre{d}{a \cdot b \sqsubseteq d} \to \setcompre{d}{a \sqsubseteq d} \\
+    \divright{a}{b} &amp;: \setcompre{d}{a \cdot b \sqsubseteq d} \to \setcompre{d}{b \sqsubseteq d}
+  \end{align}
+</span></p>
+<p>これらが満たすべき性質は以下のようになります。</p>
+<ol type="1">
+<li><p><em>射の分割が半群演算と両立する</em>こと。<span class="math inline">a\cdot b\cdot c \sqsubseteq d</span>なる<span class="math inline">a,b,c,d</span>に対して、</p>
+<p><span class="math display">
+ \begin{align}
+   \divleft{a}{b} \left( \divleft{a\cdot b}{c} d \right) &amp;= \divleft{a}{b \cdot c} d \\
+   \divright{b}{c} \left( \divright{a}{b\cdot c} d \right) &amp;= \divright{a \cdot b}{c} d \\
+   \divright{a}{b} \left( \divleft{a\cdot b}{c} d \right)
+     &amp;= \divleft{b}{c} \left( \divright{a}{b\cdot c} d \right)
+ \end{align}
+</span></p></li>
+<li><p><em>射の分割が恒等射を保つ</em>こと。</p>
+<p><span class="math display">
+   \begin{align}
+     \divleft{a}{b} (a\cdot b) &amp;= a \\
+     \divright{a}{b} (a\cdot b) &amp;= b
+   \end{align}
+ </span></p></li>
+<li><p><em>射の分割が終域を保つ</em>こと。<span class="math inline">a\cdot b \sqsubseteq c</span>なる<span class="math inline">a,b,c</span>に対して、</p>
+<p><span class="math display">
+   \begin{equation}
+     \left( \divleft{a}{b} c \right) \cdot \left( \divright{a}{b} c \right) = c
+   \end{equation}
+ </span></p></li>
+<li><p><em>射の分割が射の合成を保つ</em>こと。<span class="math inline">a\cdot b \sqsubseteq c \sqsubseteq d</span>なる<span class="math inline">a,b,c,d</span>に対して、</p>
+<p><span class="math display">
+   \begin{align}
+　　　　\divleft{a}{b} d &amp;= \left(\divleft{c_a}{c_b} d\right) \\
+　　　　\divright{a}{b} d &amp;= \left(\divright{c_a}{c_b} d\right)
+   \end{align}
+ </span></p>
+<p>ただし、<span class="math inline">c_a, c_b</span>は以下の通りとする。</p>
+<p><span class="math display">
+   \begin{align*}
+     c_a &amp;= \divleft{a}{b} c \\
+     c_b &amp;= \divright{a}{b} c
+   \end{align*}
+ </span></p></li>
+</ol>
+<p>自分自身これの具体例はいまいち思いついていないのですが、
+前順序集合<span class="math inline">(X,\sqsubseteq)</span>が実際には結び半束である場合、すなわち</p>
+<ul>
+<li><span class="math inline">\sqsubseteq</span>が半順序でもある、すなわち<span class="math inline">x \sqsubseteq y</span>かつ<span class="math inline">y \sqsubseteq x</span>ならば<span class="math inline">x = y</span>である</li>
+<li>結び（2元の最小上界）<span class="math inline">\vee</span>を持つ</li>
+</ul>
+<p>という場合には、次のように射の分割を与えることができます。</p>
+<p>まず、<span class="math inline">\setcompre{d}{a \vee b \sqsubseteq d}</span>は<span class="math inline">\setcompre{d}{a \sqsubseteq d}</span>や<span class="math inline">\setcompre{d}{b \sqsubseteq d}</span>の部分集合です。
+射の分割を定める関数は以下の型をしているので、どちらも包含写像としてみます。</p>
+<p><span class="math display">
+    \begin{align*}
+      \divleft{a}{b} &amp;: \setcompre{d}{a \vee b \sqsubseteq d} \to \setcompre{d}{a \sqsubseteq d} \\
+      \divright{a}{b} &amp;: \setcompre{d}{a \vee b \sqsubseteq d} \to \setcompre{d}{b \sqsubseteq d}
+    \end{align*}
+  </span></p>
+<p>すなわち</p>
+<p><span class="math display">
+    \begin{align*}
+      \divleft{a}{b} c &amp;= c\\
+      \divright{a}{b} c &amp;= c
+    \end{align*}
+  </span></p>
+<p>と定義すると性質1~4を満たします。</p>
+<h2 id="次回予告">次回予告</h2>
+<p>順番は考えていないのですが、</p>
+<ul>
+<li><p>多項式Comonadと小さい圏が対応すること、多項式Comonadの間の準同型が小さい圏の間の関手とは一致しないこと<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p></li>
+<li><p>小さい圏の間のretrofunctorの定義と、多項式Comonadの間の準同型がretrofunctorに対応すること</p>
+<ul>
+<li>参考文献<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>の§7.3</li>
+</ul></li>
+<li><p>圏の積がRetrofunctorを射とする圏<span class="math inline">\CatC</span>における直積であること、
+射の分割を持つ圏<span class="math inline">C</span>が<span class="math inline">\CatC</span>における半群対象であること</p>
+<ul>
+<li>多分まだ書かれてない？</li>
+</ul></li>
+</ul>
+<p>などを解説していきたいと思っています。上2つは実際には参考文献の日本語での再解説でしかないので、
+自分がそれらをうまく書けなかったら「これを読んでね」として一番下だけ書く可能性があります。</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>なんと1年も経ってる・・・<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Daniel Ahman and Tarmo Uustalu, “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Tarmo Uustalu and Varmo Vene, “Comonadic Notions of Computation” https://www.sciencedirect.com/science/article/pii/S1571066108003435<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Daniel Ahman and Tarmo Uustalu, “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Tarmo Uustalu and Varmo Vene, “Comonadic Notions of Computation” https://www.sciencedirect.com/science/article/pii/S1571066108003435<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
