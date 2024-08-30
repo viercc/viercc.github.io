@@ -66,14 +66,15 @@
 <code>Comonad</code>でも<code>Applicative</code>でもある関手<code>f</code>を小さい圏で表現したとき、その<code>Applicative</code>の演算(<code>pure</code>, <code>&lt;*&gt;</code>)が圏においてどんな演算に対応するのか、という疑問です。</p>
 <div class="sidenote">
 <p>「<code>Comonad</code>かつ<code>Applicative</code>」ではないですが、それ近い「<code>Comonad</code>かつ<a href="https://hackage.haskell.org/package/semigroupoids-6.0.1/docs/Data-Functor-Apply.html#g:2">Apply</a>」はcomonadパッケージにて定義されており、
-<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#g:2">ComonadApply</a>という名前が与えられています。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#g:2">ComonadApply</a>という名前が与えられています。
+この型クラスはもともと<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>において”symmetric (semi)monoidal comonad”として形式化されたものがベースになっているようです。</p>
 </div>
 <p>さて、前回の記事ではこの構造について<em>謎です</em>とだけ言ったのですが、進展がありました。前記事でいうproperな射の分割をもつ圏は、</p>
 <ul>
-<li>小さい圏を対象、retrofunctorを射として持つ圏<span class="math inline">\CatC</span>において、圏の直積に関するモノイド対象</li>
+<li>小さい圏を対象、retrofunctorを射として持つ圏<span class="math inline">\CatC</span><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>において、圏の直積に関するモノイド対象</li>
 </ul>
-<p>であると考えられます。このretrofunctorおよびその圏<span class="math inline">\CatC</span>は<a href="https://toposinstitute.github.io/poly/poly-book.pdf">poly-book.pdf</a>で定義されたものになります。</p>
-<p>このことを説明する記事を書きたいと思ったのですが、まずはその準備として、前記事とは異なる”射の分割を持つ圏”を再定義します。
+<p>であると考えられます。
+このことを説明する記事を書きたいと思ったのですが、まずはその準備として、前記事とは異なる”射の分割を持つ圏”を再定義します。
 定義を変えたい理由は4つあります：</p>
 <ol type="1">
 <li>前記事では横着して可換バージョンだけを定義したが、別にその必要はないこと</li>
@@ -274,10 +275,19 @@
 <h2 id="次回予告">次回予告</h2>
 <p>順番は考えていないのですが、</p>
 <ul>
-<li><p>多項式Comonadと小さい圏が対応すること、多項式Comonadの間の準同型が小さい圏の間の関手とは一致しないこと<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p></li>
+<li><p>多項式Comonadと小さい圏が対応すること、多項式Comonadの間の準同型が小さい圏の間の関手とは一致しないこと</p>
+<ul>
+<li>“Directed Containers as Categories.” <a href="https://arxiv.org/abs/1604.01187">https://arxiv.org/abs/1604.01187</a>
+<ul>
+<li>ほぼ完全にこの論文の話</li>
+</ul></li>
+</ul></li>
 <li><p>小さい圏の間のretrofunctorの定義と、多項式Comonadの間の準同型がretrofunctorに対応すること</p>
 <ul>
-<li>参考文献<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>の§7.3</li>
+<li>Nelson Niu and David I. Spivak, “Polynomial Functors: A Mathematical Theory of Interaction,” <a href="https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf">https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf</a>
+<ul>
+<li>Retrofunctorの定義は§7.3</li>
+</ul></li>
 </ul></li>
 <li><p>圏の積がRetrofunctorを射とする圏<span class="math inline">\CatC</span>における直積であること、
 射の分割を持つ圏<span class="math inline">C</span>が<span class="math inline">\CatC</span>における半群対象であること</p>
@@ -287,14 +297,18 @@
 </ul>
 <p>などを解説していきたいと思っています。上2つは実際には参考文献の日本語での再解説でしかないので、
 自分がそれらをうまく書けなかったら「これを読んでね」として一番下だけ書く可能性があります。</p>
+<h2 id="追記">追記</h2>
+<ul>
+<li><strong>2024-08-30</strong> 参考文献がめちゃくちゃだったのを修正</li>
+</ul>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
 <li id="fn1"><p>なんと1年も経ってる・・・<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Daniel Ahman and Tarmo Uustalu, “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Tarmo Uustalu and Varmo Vene, “Comonadic Notions of Computation” https://www.sciencedirect.com/science/article/pii/S1571066108003435<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Daniel Ahman and Tarmo Uustalu, “Directed Containers as Categories.” https://arxiv.org/abs/1604.01187<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Tarmo Uustalu and Varmo Vene, “Comonadic Notions of Computation” https://www.sciencedirect.com/science/article/pii/S1571066108003435<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Daniel Ahman and Tarmo Uustalu, “Directed Containers as Categories.” <a href="https://arxiv.org/abs/1604.01187">https://arxiv.org/abs/1604.01187</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Tarmo Uustalu and Varmo Vene, “Comonadic Notions of Computation” <a href="https://www.sciencedirect.com/science/article/pii/S1571066108003435">https://www.sciencedirect.com/science/article/pii/S1571066108003435</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Nelson Niu and David I. Spivak, “Polynomial Functors: A Mathematical Theory of
+Interaction,” <a href="https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf">https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
