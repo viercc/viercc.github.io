@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 解説: Directed Containers as Categoires</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>解説: Directed Containers as Categoires</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2024-09-06</li>
+            
+            
+                <li>Last modified on 2024-09-15</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <!-- basic set manipulation -->
+<p><span class="math inline">\gdef\id{\mathop{\mathrm{id}}}
+  \gdef\comp{\circ}</span>
+<!-- category theory -->
+<span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\CatC{\Cat^\sharp}
+  \gdef\Ob{\mathrm{Ob}}
+  \gdef\Mor{\mathrm{Mor}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\map{\mathop{\mathrm{map}}}</span>
+<!-- custom notations -->
+<span class="math inline">\gdef\homset#1#2#3{#1 \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\homsetl#1#2{#1 \left\lbrack {#2} \right\rbrack}
+  \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
+  \gdef\Cont{\mathrm{\mathbf{Cont}}}
+  \gdef\contcomp{\lhd}</span></p>
+<p>論文<a href="https://arxiv.org/abs/1604.01187">“Directed Containers as Categories”</a>の解説をします。
+本記事の内容は基本的にこの論文によります。</p>
+<h2 id="コンテナ-多項式-多項式関手-subset-関手">コンテナ <span class="math inline">=</span> 多項式 <span class="math inline">=</span> 多項式関手 <span class="math inline">\subset</span> 関手</h2>
+<h3 id="コンテナと多項式関手">コンテナと多項式関手</h3>
+<p><em>コンテナ</em>（<em>container</em>）とは、集合<span class="math inline">S</span>と<span class="math inline">S</span>で添字付けられた集合族<span class="math inline">P:S \to \Set</span>の組<span class="math inline">(S,P)</span>のことです。
+任意のコンテナ<span class="math inline">(S,P)</span>は、<span class="math inline">\Set</span>上の関手としての解釈<span class="math inline">\asfunctor{S,P}</span>を持ちます。</p>
+<p><span class="math display">
+  \begin{equation}
+    \asfunctor{S,P} : \Set \to \Set
+  \end{equation}
+</span></p>
+<p>集合（すなわち<span class="math inline">\Set</span>の対象）<span class="math inline">X</span>に対して、<span class="math inline">\asfunctor{S,P}X</span>は関数の集合<span class="math inline">(Ps \to X)</span>のすべての<span class="math inline">s</span>についての直和をとった集合です。
+すなわち、以下のような集合です。
+<!-- TODO  「集合の直和」が「ペアを集めた集合」で表される理屈について説明が要るかも --></p>
+<p><span class="math display">
+  \begin{equation}
+    \begin{aligned}
+      \asfunctor{S,P}X &amp;= \sum_{s : S} Ps \to X \\
+       &amp;= \set{ (s,v) | s : S, v : Ps \to X }
+    \end{aligned}
+  \end{equation}
+</span></p>
+<p>関数（すなわち<span class="math inline">\Set</span>の射）<span class="math inline">f : X \to Y</span>に対しては、<span class="math inline">\asfunctor{S,P}f</span>は<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>以下のように定義されます。</p>
+<p><span class="math display">
+  \begin{equation}
+    \begin{aligned}
+      \asfunctor{S,P}f &amp;: \asfunctor{S,P}X \to \asfunctor{S,P}Y \\
+      (\asfunctor{S,P}f)(s,v) &amp;= (s, f \comp v)
+    \end{aligned}
+  \end{equation}
+</span></p>
+<p><em>多項式関手</em>とは、あるコンテナの解釈<span class="math inline">\asfunctor{S,P}</span>と同型になっているような関手のことです。</p>
+<p>コンテナ<span class="math inline">(S,P)</span>から<span class="math inline">(S',P')</span>への<em>コンテナの射</em>（<em>container morphism</em>）を、以下のような型の関数の組<span class="math inline">(t,q)</span>と定めます。</p>
+<p><span class="math display">
+  \begin{align}
+    t &amp;: S \to S' \\
+    q &amp;: \prod_{s : S} P'(t s) \to P s
+  \end{align}
+</span></p>
+<p>これは以下のように図示することができます。</p>
+<p><strong>TODO</strong><img src="../images/stub.svg" /></p>
+<p>コンテナの射<span class="math inline">(t,q)</span>は、多項式関手の間の自然変換<span class="math inline">\asfunctor{t,q}</span>として解釈できます。</p>
+<p><span class="math display">
+  \begin{align}
+    \asfunctor{t,q}_{X} &amp;: \asfunctor{S,P}X \to \asfunctor{S',P'}X \\
+    \asfunctor{t,q}_{X}(s,v) &amp;= (t s, \lambda p'. v (q s p'))
+  \end{align}
+</span></p>
+<p>任意の2つのコンテナ<span class="math inline">(S,P),(S',P')</span>の間のコンテナの射をすべて集めた集合を<span class="math inline">\homset{\Cont}{(S,P)}{(S',P')}</span>とすると、
+その自然変換としての解釈を与える関数<span class="math inline">\asfunctor{-} : \homset{\Cont}{(S,P)}{(S',P')} \to \homset{\Set^{\Set}}{\asfunctor{S,P}}{\asfunctor{S',P'}}</span>
+は全単射になっています<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。これにより、各コンテナを対象、
+射集合を<span class="math inline">\homset{\Cont}{(S,P)}{(S',P')}</span>とした<em>コンテナの圏</em>（<em>category of containers</em>）<span class="math inline">\Cont</span>を定めることができます。
+コンテナの圏における恒等射と射の合成は、
+解釈<span class="math inline">\asfunctor{-}</span>がコンテナの圏から<span class="math inline">\Set</span>上の自己関手の圏<span class="math inline">\Set^{\Set}</span>への関手</p>
+<p><span class="math display">
+  \begin{CD}
+    \Cont @&gt;{\asfunctor{-}}&gt;&gt; \Set^{\Set} 
+  \end{CD}
+</span></p>
+<p>となるように定めます。射において全単射であるため、これは忠実充満関手となります。</p>
+<details>
+<summary>
+具体的には…
+</summary>
+具体的には、コンテナの恒等射は
+<span class="math display">
+  \begin{equation}
+    (\id_S, \lambda s. \id_{Ps}) : (S,P) \to (S,P)
+  \end{equation}
+</span>
+コンテナの射の合成は
+<span class="math display">
+  \begin{equation}
+    \begin{aligned}
+      (t,q) &amp;: (S,P) \to (S',P') \\
+      (u,r) &amp;: (S',P') \to (S'',P'') \\
+      (u,r)\comp (t,q) &amp;= (u \comp t, \lambda s. q s \comp r (t s))
+    \end{aligned}
+  \end{equation}
+</span>
+という定義になります。
+</details>
+<p>実質的に、コンテナは<span class="math inline">\Set</span>上の<strong>多項式関手を集合で表現したもの</strong>といえます。</p>
+<h3 id="コンテナと多項式">コンテナと多項式</h3>
+<p><span class="math inline">\gdef\src{\mathrm{s}}
+  \gdef\tgt{\mathrm{t}}</span></p>
+<p>コンテナと同じものを記述する別の方法として、<em>多項式</em>（<em>polynomial</em>）を考えることができます。
+多項式<span class="math inline">(S,\bar{P},\src)</span>とは、</p>
+<h2 id="多項式コモナド-directedコンテナ-小さい圏">多項式コモナド = Directedコンテナ = 小さい圏</h2>
+<h3 id="コンテナの合成">コンテナの合成</h3>
+<p>多項式関手は合成で閉じています。すなわち、2つのコンテナ<span class="math inline">(S,P)</span><span class="math inline">(T,Q)</span>
+に対して、その解釈<span class="math inline">\asfunctor{S,P}</span>と<span class="math inline">\asfunctor{T,Q}</span>の合成関手は、
+また何らかのコンテナの解釈（と同型）になっています。
+そこで、合成関手に対応するコンテナを、<span class="math inline">(S,P)</span>と<span class="math inline">(T,Q)</span>の<em>合成</em>と呼ぶことにし、
+<span class="math inline">(S,P)\contcomp (T,Q)</span>と表記します。</p>
+<p>コンテナの合成演算子<span class="math inline">\contcomp</span>は、具体的な計算方法を次のように与えることができます。</p>
+<p><span class="math display">
+  \begin{align}
+    U &amp;= \sum_{s : S} Ps \to T \\
+     &amp;= \set{ (s,v) | s : S, v : Ps \to T } \\
+    R(s,v) &amp;= \sum_{p : Ps} Q(vp)
+  \end{align}
+</span></p>
+<p>実際、これを関手として解釈すると、
+<span class="math inline">X</span>に関して自然な同型<span class="math inline">\asfunctor{U,R}X \simeq \asfunctor{S,P}(\asfunctor{T,Q}X)</span>が成り立つことが以下の計算によってわかります。</p>
+<p><span class="math display">
+  \begin{align}
+    \asfunctor{U,R}X
+      &amp;= \sum_{u : U} (Ru \to X) \\
+      &amp;= \sum_{s : S} \sum_{v : Ps \to T} \left( R(s,v) \to X \right) \\
+      &amp;= \sum_{s : S} \sum_{v : Ps \to T} \left( \left( \sum_{p : Ps} Q(vp) \right) \to X \right) \\
+      &amp;\simeq \sum_{s : S} \sum_{v : Ps \to T} \left( \prod_{p : Ps} \left( Q(vp) \to X \right) \right) \\
+      &amp;\simeq \sum_{s : S} \prod_{p : Ps} \left( \sum_{t : T} Qt \to X \right) \\
+      &amp;\simeq \sum_{s : S} Ps \to \left( \sum_{t : T} Qt \to X \right) \\
+      &amp;= \asfunctor{S,P}( \asfunctor{T,Q}X )
+  \end{align}
+</span></p>
+<p>コンテナの合成は、それが関手の合成という（同型を除いて）モノイドになっている演算と
+一致するように定義されているため、それ自身コンテナの圏<span class="math inline">\Cont</span>におけるモノイド積となることができます。
+すなわち、<span class="math inline">\contcomp</span>は（同型を除いて）結合的で、モノイド単位<span class="math inline">(1, \lambda p. 1)</span>をもちます。
+ここで<span class="math inline">1</span>は適当な一元集合です。</p>
+<h3 id="directedコンテナ-多項式コモナド">Directedコンテナ = 多項式コモナド</h3>
+<p>前項で見たように多項式関手は関手の合成で閉じているので、コモナドすなわち関手の合成に関するコモノイドも、
+多項式関手だけからなる<span class="math inline">\Set^{\Set}</span>の部分圏において考えられる概念です。
+コモナド構造を追加でもつ多項式関手を<em>多項式コモナド</em>と呼ぶことにしましょう。
+コモナドとは、以下のような自然変換<span class="math inline">\mathrm{extract}, \mathrm{duplicate}</span>
+をもつ関手<span class="math inline">W</span>であって、それらが適当な等式（コモナド則）を満たすものでした。</p>
+<p><span class="math display">
+  \begin{CD}
+    W @&gt;{\mathrm{extract}}&gt;&gt; \mathrm{Id}
+  \end{CD}
+</span>
+<span class="math display">
+  \begin{CD}
+    W @&gt;{\mathrm{duplicate}}&gt;&gt; W\comp W
+  \end{CD}
+</span></p>
+<p>コンテナは多項式関手と対応し、コンテナの合成は多項式関手の合成と対応することから、
+多項式関手がもつコモナド構造に対応する構造をコンテナに対しても考えることができます。
+そのようなコモナドに対応する構造をもつコンテナは、
+コンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>であって、
+コモナド則と対応する等式を満たすようなものです。</p>
+<p><span class="math display">
+  \begin{CD}
+    (S,P) @&gt;{(e_0,e_1)}&gt;&gt; (1, \lambda p. 1)
+  \end{CD}
+</span>
+<span class="math display">
+  \begin{CD}
+    (S,P) @&gt;{(d_0,d_1)}&gt;&gt; (S,P) \contcomp (S,P)
+  \end{CD}
+</span></p>
+<p>コンテナの射やコンテナの合成の定義を展開すると、<span class="math inline">e_0, e_1, d_0, d_1</span>は以下のような型をもつ関数です。</p>
+<p><span class="math display">
+  \begin{align}
+    e_0 &amp;: S \to 1 \\
+    e_1 &amp;: \prod_{s : S} 1 \to Ps \\
+    d_0 &amp;: S \to S_2 \\
+    d_1 &amp;: \prod_{s : S} P_2(d_0s) \to Ps
+  \end{align}
+</span></p>
+<p>ただし</p>
+<p><span class="math display">
+  \begin{align}
+    S_2 &amp;= \sum_{s : S} \left( Ps \to S \right) \\
+     &amp;= \set{ (s,v) | s : S, v : Ps \to S } \\
+    P_2 \left( (s,v) : S_2 \right) &amp;= \sum_{p : Ps} P(vp) 
+  \end{align}
+</span></p>
+<p>です。</p>
+<p>ここで更に、コンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>
+が多項式コモナドを定めていることを考慮に入れると、<span class="math inline">\pi_1(d_0s) = s</span>となること、
+すなわち<span class="math inline">d_0</span>は適当な関数<span class="math inline">d_0' : \prod_{s : S} Ps \to S</span>を使って</p>
+<p><span class="math display">
+  \begin{equation}
+    d_0s = (s, d_0's)
+  \end{equation}
+</span></p>
+<p>と書けることがわかり、これを代入すると<span class="math inline">d_1</span>の型は以下のように整理できます。</p>
+<p><span class="math display">
+  \begin{align}
+    d_1 &amp;: \prod_{s : S} P_2(d_0s) \to Ps \\
+    &amp;= \prod_{s : S} P_2(s, d_0's) \to Ps \\
+    &amp;= \prod_{s : S} \left( \sum_{p : Ps} P(d_0'sp) \right) \to Ps \\
+    &amp;\simeq \prod_{s : S} \prod_{p : Ps} P(d_0'sp) \to Ps
+  \end{align}
+</span></p>
+<p><span class="math inline">\gdef\rootpos{o}
+  \gdef\nextshape{\darr}
+  \gdef\posplus{\oplus}</span></p>
+<p>総合すると、<span class="math inline">(e_0, e_1, d_0, d_1)</span>と等価なDirectedコンテナの表現として、
+以下の3つの演算子<span class="math inline">(\rootpos, \nextshape, \posplus)</span>を用いることができます。</p>
+<p><span class="math display">
+  \begin{align}
+    \rootpos_{(-)} &amp;: \prod_{s : S} Ps \\
+    (- \nextshape -) &amp;: \prod_{s : S} Ps \to S \\
+    (- \posplus_{(-)} -) &amp;: \prod_{s : S} \prod_{p : Ps} P(s \nextshape p) \to Ps
+  \end{align}
+</span></p>
+<p>ここで</p>
+<p><span class="math display">
+  \begin{align}
+    e_1 s &amp;= \lambda \_. \rootpos_s \\
+    d_0 s &amp;= (s, \lambda (p : Ps). s \nextshape p) \\
+    d_1 s (p_1 : Ps) (p_2 : P(s \nextshape p)) &amp;= p_1 \posplus_{s} p_2
+  \end{align}
+</span></p>
+<p>です。更に、記述を簡潔にするため、
+文脈から推測できる場合には<span class="math inline">\rootpos_s</span>と<span class="math inline">\posplus_s</span>の添字<span class="math inline">s</span>を省略できることにします。</p>
+<p>3つの演算子<span class="math inline">(\rootpos, \nextshape, \posplus)</span>から得られるコンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>
+がコモナド則を満たすことは、以下の5本の等式が成り立つことと同値になります。</p>
+<p><span class="math display">
+  \begin{equation}
+    \begin{aligned}
+      s \nextshape \rootpos &amp;= s \\
+      s \nextshape (p \posplus p') &amp;= \left(s \nextshape p\right) \nextshape p' \\
+      p \posplus o &amp;= p \\
+      o \posplus p &amp;= p \\
+      \left(p \posplus p' \right) \posplus p'' &amp;= p \posplus \left(p' \posplus p'' \right)
+    \end{aligned}
+  \end{equation}
+</span></p>
+<details>
+量化を明示し、添字を省略しないと以下のようになります。
+<span class="math display">
+  \begin{equation}
+    \begin{alignedat}{2}
+      \forall s.&amp;&amp; s \nextshape \rootpos_s &amp;= s \\
+      \forall s (p : Ps) (p' :: P(s \nextshape p)).&amp;&amp; s \nextshape (p \posplus p') &amp;= \left(s \nextshape p\right) \nextshape p' \\
+      \forall s (p : Ps).&amp;&amp; p \posplus_s \rootpos_{s\nextshape p} &amp;= p \\
+      \forall s (p : Ps).&amp;&amp; \rootpos_s \posplus_s p &amp;= p \\
+      \forall s (p : Ps)
+        \left(p' : P(s \nextshape p)\right)
+        \left(p'' : P ((s \nextshape p) \nextshape p')\right).&amp;&amp;
+        \left(p \posplus_s p' \right) \posplus_s p'' &amp;= p \posplus_s \left(p' \posplus_{(s \nextshape p)} p'' \right)
+    \end{alignedat}
+  \end{equation}
+</span>
+ここで、4番目の等式左辺の<span class="math inline">p</span>の箇所に期待される型は<span class="math inline">P(s \nextshape \rootpos_s)</span>ですが、
+1番目の等式より<span class="math inline">p : Ps</span>を渡すことができています。同様に、
+5番目の等式左辺の<span class="math inline">p''</span>に期待される型は<span class="math inline">P(s\nextshape(p\posplus_s p'))</span>ですが、
+2番目の等式より<span class="math inline">p'' : P ((s \nextshape p) \nextshape p')</span>を渡すことができています。
+</details>
+<p><em>Directedコンテナ</em>を、この5つの等式を満たすような<span class="math inline">(\rootpos, \nextshape, \posplus)</span>を備えたコンテナ<span class="math inline">(S,P)</span>
+と定義します。すなわち、<strong>Directedコンテナは多項式コモナドをコンテナの言葉で記述したもの</strong>です。</p>
+<p>ここで更に、Directedコンテナを記述するデータは小さい圏を記述するデータ</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Haskellでいうなら<code>Functor</code> <span class="math inline">\asfunctor{S,P}</span>における<code>fmap f</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>というより、コンテナの射はそうなるべく定義されています<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
