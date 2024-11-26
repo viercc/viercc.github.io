@@ -37,10 +37,8 @@
     <section class="header">
         <ul class="metadata_display_list">
             
-                <li>Posted on 2024-09-06</li>
+                <li>Posted on 2024-11-26</li>
             
-            
-                <li>Last modified on 2024-09-15</li>
             
             
             
@@ -49,10 +47,16 @@
     <section>
         <!-- basic set manipulation -->
 <p><span class="math inline">\gdef\id{\mathop{\mathrm{id}}}
-  \gdef\comp{\circ}</span>
+  \gdef\comp{\circ}
+  \gdef\placeholder{{-}}
+  \gdef\setsum{\operatorname{\Sigma}\!}
+  \gdef\setprod{\operatorname{\Pi}\!}</span>
 <!-- category theory -->
 <span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\Functors#1{\mathrm{\mathbf{Fun}}\left({#1}\right)}
+  \gdef\Monads#1{\mathrm{\mathbf{Monads}}\left({#1}\right)}
+  \gdef\Comonads#1{\mathrm{\mathbf{Comonads}}\left({#1}\right)}
   \gdef\CatC{\Cat^\sharp}
   \gdef\Ob{\mathrm{Ob}}
   \gdef\Mor{\mathrm{Mor}}
@@ -64,48 +68,158 @@
   \gdef\homsetl#1#2{#1 \left\lbrack {#2} \right\rbrack}
   \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
   \gdef\Cont{\mathrm{\mathbf{Cont}}}
+  \gdef\Poly{\mathrm{\mathbf{Poly}}}
+  \gdef\PolyFunctor#1{\mathrm{\mathbf{PFun}}\left({#1}\right)}
   \gdef\contcomp{\lhd}</span></p>
 <p>論文<a href="https://arxiv.org/abs/1604.01187">“Directed Containers as Categories”</a>の解説をします。
 本記事の内容は基本的にこの論文によります。</p>
-<h2 id="コンテナ-多項式-多項式関手-subset-関手">コンテナ <span class="math inline">=</span> 多項式 <span class="math inline">=</span> 多項式関手 <span class="math inline">\subset</span> 関手</h2>
-<h3 id="コンテナと多項式関手">コンテナと多項式関手</h3>
-<p><em>コンテナ</em>（<em>container</em>）とは、集合<span class="math inline">S</span>と<span class="math inline">S</span>で添字付けられた集合族<span class="math inline">P:S \to \Set</span>の組<span class="math inline">(S,P)</span>のことです。
-任意のコンテナ<span class="math inline">(S,P)</span>は、<span class="math inline">\Set</span>上の関手としての解釈<span class="math inline">\asfunctor{S,P}</span>を持ちます。</p>
-<p><span class="math display">
-  \begin{equation}
-    \asfunctor{S,P} : \Set \to \Set
-  \end{equation}
-</span></p>
-<p>集合（すなわち<span class="math inline">\Set</span>の対象）<span class="math inline">X</span>に対して、<span class="math inline">\asfunctor{S,P}X</span>は関数の集合<span class="math inline">(Ps \to X)</span>のすべての<span class="math inline">s</span>についての直和をとった集合です。
-すなわち、以下のような集合です。
-<!-- TODO  「集合の直和」が「ペアを集めた集合」で表される理屈について説明が要るかも --></p>
-<p><span class="math display">
-  \begin{equation}
-    \begin{aligned}
-      \asfunctor{S,P}X &amp;= \sum_{s : S} Ps \to X \\
-       &amp;= \set{ (s,v) | s : S, v : Ps \to X }
-    \end{aligned}
-  \end{equation}
-</span></p>
-<p>関数（すなわち<span class="math inline">\Set</span>の射）<span class="math inline">f : X \to Y</span>に対しては、<span class="math inline">\asfunctor{S,P}f</span>は<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>以下のように定義されます。</p>
-<p><span class="math display">
-  \begin{equation}
-    \begin{aligned}
-      \asfunctor{S,P}f &amp;: \asfunctor{S,P}X \to \asfunctor{S,P}Y \\
-      (\asfunctor{S,P}f)(s,v) &amp;= (s, f \comp v)
-    \end{aligned}
-  \end{equation}
-</span></p>
-<p><em>多項式関手</em>とは、あるコンテナの解釈<span class="math inline">\asfunctor{S,P}</span>と同型になっているような関手のことです。</p>
-<p>コンテナ<span class="math inline">(S,P)</span>から<span class="math inline">(S',P')</span>への<em>コンテナの射</em>（<em>container morphism</em>）を、以下のような型の関数の組<span class="math inline">(t,q)</span>と定めます。</p>
+<h2 id="多項式関手-コンテナ-多項式">多項式関手 <span class="math inline">=</span> コンテナ <span class="math inline">=</span> 多項式</h2>
+<h3 id="多項式関手">多項式関手</h3>
+<p>このブログでは既に何度か多項式関手というものを取り扱っています。
+しかし、一貫した定義を使っていたわけではなく、また今回解説する論文とも微妙に定義が異なるため、
+まずは定義から始めます。</p>
+<ul>
+<li><a href="./2019-12-15-monads-more.html">モナドを見分けるコツ</a></li>
+<li><a href="./2020-11-25-faccat.html">多項式Applicative Functorの一般論</a></li>
+</ul>
+<p>この論文では「集合の圏<span class="math inline">\Set</span>上の多項式関手」というものを扱っています。
+まず、表現可能関手というものを定義します。</p>
+<dl>
+<dt><span class="math inline">\Set</span>上の表現可能関手</dt>
+<dd>
+集合の圏<span class="math inline">\Set</span>からそれ自身への関手<span class="math inline">R : \Set \to \Set</span>が表現可能関手である
+<span class="math inline">\Leftrightarrow</span>
+ある集合<span class="math inline">A</span>が存在して、<span class="math inline">R</span>は<span class="math inline">\Set(A,\placeholder)</span>と表される関手と同型である
+</dd>
+</dl>
+<p>Haskell的に言うならば、関数の型<code>(a -&gt; b)</code>へ引数の型を部分適用した<code>(-&gt;) a</code>という<code>Functor</code>や、
+適当な型<code>X</code>を選べば<code>(-&gt;) X</code>と同型になるような<code>Functor</code>が表現可能関手です。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmap</span> f g <span class="ot">=</span> f <span class="op">.</span> g</span></code></pre></div>
+<p>例えば、以下の<code>IntFun</code>は<code>(-&gt;) Int</code>と同型なので表現可能関手です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">IntFun</span> b <span class="ot">=</span> <span class="dt">MkIntFun</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> b)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">IntFun</span> <span class="kw">where</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmap</span> f (<span class="dt">MkIntFun</span> g) <span class="ot">=</span> <span class="dt">MkIntFun</span> (f <span class="op">.</span> g)</span></code></pre></div>
+<p>また、「パラメータの型<code>b</code>をn個だけ集めた型」も表現可能関手です。
+なぜなら、「『値の種類がちょうどn個の型』を引数にとる関数」と同型だからです。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Vec2</span> b <span class="ot">=</span> <span class="dt">V2</span> b b</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Vec2</span> <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmap</span> f (<span class="dt">V2</span> x1 x2) <span class="ot">=</span> <span class="dt">V2</span> (f x1) (f x2)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Vec2は表現可能関手</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ot">vec2Rep ::</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Vec2</span> b</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>vec2Rep f <span class="ot">=</span> <span class="dt">V2</span> (f <span class="dt">False</span>) (f <span class="dt">True</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ot">vec2Rep' ::</span> <span class="dt">Vec2</span> b <span class="ot">-&gt;</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> b)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>vec2Rep' (<span class="dt">V2</span> x0 x1) <span class="ot">=</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  \x <span class="ot">-&gt;</span> <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">False</span> <span class="ot">-&gt;</span> x0</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">True</span> <span class="ot">-&gt;</span> x1</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- (ここでBoolはちょうど2種類の値をとる型の代表例として使っており、</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- 値が2種類ならばBool以外のどんな型でもよい)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">-- Vec3 なども同様に表現可能関手</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Vec3</span> b <span class="ot">=</span> <span class="dt">V3</span> b b b</span></code></pre></div>
+<p>特別なケースとして、<a href="https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Functor-Identity.html">Identity</a>と
+<a href="https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Proxy.html">Proxy</a>はそれぞれ
+「値が1つだけの型<code>()</code>」「値がない型<code>Void</code>」からの関数に同型なため、
+表現可能関手です。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Identity</span> b <span class="ot">=</span> <span class="dt">Identity</span> b</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">identityRep ::</span> (() <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Identity</span> b</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>identityRep f <span class="ot">=</span> <span class="dt">Identity</span> (f ())</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">identityRep' ::</span> <span class="dt">Identity</span> b <span class="ot">-&gt;</span> (() <span class="ot">-&gt;</span> b)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>identityRep' (<span class="dt">Identity</span> x) <span class="ot">=</span> <span class="fu">const</span> x</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Proxy</span> b <span class="ot">=</span> <span class="dt">Proxy</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ot">proxyRep ::</span> (<span class="dt">Void</span> <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Proxy</span> b</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>proxyRep _ <span class="ot">=</span> <span class="dt">Proxy</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ot">proxyRep' ::</span> <span class="dt">Proxy</span> b <span class="ot">-&gt;</span> (<span class="dt">Void</span> <span class="ot">-&gt;</span> b)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>proxyRep' <span class="dt">Proxy</span> <span class="ot">=</span> absurd</span></code></pre></div>
+<p>多項式関手は、表現可能関手を使って次のように定義されます。</p>
+<dl>
+<dt><span class="math inline">\Set</span>上の多項式関手</dt>
+<dd>
+集合の圏<span class="math inline">\Set</span>からそれ自身への関手<span class="math inline">F : \Set \to \Set</span>が多項式関手である
+<span class="math inline">\Leftrightarrow</span>
+<span class="math inline">F</span>は、いくつかの表現可能関手<span class="math inline">F_s</span>の直和として表すことができる
+</dd>
+</dl>
+<p>これを表現可能関手の定義を使って言い換えると、<span class="math inline">\Set</span>上の多項式関手<span class="math inline">F</span>とは、
+ある集合<span class="math inline">S</span>と、<span class="math inline">S</span>で添字付けられた集合族<span class="math inline">P:S \to \Set</span>を使って、
+以下のように表現できる関手です。</p>
 <p><span class="math display">
   \begin{align}
-    t &amp;: S \to S' \\
-    q &amp;: \prod_{s : S} P'(t s) \to P s
+    F(\placeholder) &amp;\cong \setsum (s \in S). \left( Ps \to \placeholder \right)
   \end{align}
 </span></p>
-<p>これは以下のように図示することができます。</p>
-<p><strong>TODO</strong><img src="../images/stub.svg" /></p>
+<p>特に、ある集合<span class="math inline">X</span>に<span class="math inline">F</span>を適用した集合<span class="math inline">FX</span>は以下のように書くことができます。</p>
+<p><span class="math display">
+  \begin{equation}
+    \begin{aligned}
+      FX &amp;\cong \setsum (s \in S). \left( Ps \to X \right) \\
+         &amp;\cong \set{ (s,v) | s \in S, v \in Ps \to X }
+    \end{aligned}
+  \end{equation}
+</span></p>
+<p>Haskellで例えるならば、多項式関手<code>F</code>とは以下のような<code>Functor</code>（あるいは以下のようなものと同型な<code>Functor</code>）
+のことです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> a <span class="ot">=</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">S0</span> (<span class="dt">P0</span> <span class="ot">-&gt;</span> a) <span class="op">|</span> <span class="dt">S1</span> (<span class="dt">P1</span> <span class="ot">-&gt;</span> a) <span class="op">|</span> <span class="dt">S2</span> (<span class="dt">P2</span> <span class="ot">-&gt;</span> a) <span class="op">|</span> <span class="op">...</span></span></code></pre></div>
+<p>数学的な定義における<span class="math inline">S</span>の各要素<span class="math inline">s_0, s_1, \ldots \in S</span>が
+コンストラクタ<code>S0, S1, ...</code>に、
+各要素における<span class="math inline">P</span>の値<span class="math inline">P(s_0), P(s_1), \ldots</span>が
+各コンストラクタにおける<code>P0, P1, ...</code>に対応します。</p>
+<p>例えば、以下のようなデータ型<code>Foo</code>は多項式関手です。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Foo</span> a <span class="ot">=</span> <span class="dt">Foo0</span> a <span class="op">|</span> <span class="dt">Foo1</span> a a <span class="op">|</span> <span class="dt">Foo2</span> a a</span></code></pre></div>
+<p>実際に、<code>Foo</code>と同型な関手<code>Foo'</code>を上記の形式で書くことができます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P0</span> <span class="ot">=</span> ()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P1</span> <span class="ot">=</span> <span class="dt">Bool</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P2</span> <span class="ot">=</span> <span class="dt">Bool</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Foo'</span> a <span class="ot">=</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Foo0'</span> (<span class="dt">P0</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Foo1'</span> (<span class="dt">P1</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Foo2'</span> (<span class="dt">P2</span> <span class="ot">-&gt;</span> a)</span></code></pre></div>
+<h2 id="コンテナ">コンテナ</h2>
+<p><em>コンテナ</em>（<em>container</em>）とは、（<span class="math inline">\Set</span>上の）多項式関手から、
+それを定義するために使われたデータだけを取り出したものです。</p>
+<dl>
+<dt>コンテナ</dt>
+<dd>
+コンテナとは、集合<span class="math inline">S</span>と集合族<span class="math inline">P:S \to \Set</span>の組<span class="math inline">(S,P)</span>のことである。
+</dd>
+</dl>
+<p>任意のコンテナ<span class="math inline">(S,P)</span>に対して、対応する<span class="math inline">\Set</span>上の関手を<span class="math inline">(S,P)</span>の解釈 (<em>interpretation</em>)と
+呼んで、<span class="math inline">\asfunctor{S,P}</span>と書くことにします。
+逆に言えば、<em>多項式関手</em>とは、あるコンテナの解釈<span class="math inline">\asfunctor{S,P}</span>と同型になっているような関手のことです。</p>
+<p><span class="math display">
+  \begin{align}
+    {} &amp; \asfunctor{S,P} : \Set \to \Set\\
+    {} &amp; \asfunctor{S,P}X = \set{ (s,v) | s : S, v : Ps \to X }\\
+    {} &amp; (\asfunctor{S,P}f)(s,v) = (s, f \comp v)
+  \end{align}
+</span></p>
+<p>多項式関手それぞれにコンテナが対応するだけでなく、
+多項式関手の間の射である自然変換についても、
+それに対応する<em>コンテナの射</em>（<em>container morphism</em>）を考えることができます。</p>
+<dl>
+<dt>コンテナの射</dt>
+<dd>
+以下のような型の関数の組<span class="math inline">(t,q)</span>を、コンテナ<span class="math inline">(S,P)</span>から<span class="math inline">(S',P')</span>へのコンテナの射とよぶ。
+<span class="math display">
+\begin{align}
+  t &amp;: S \to S' \\
+  q &amp;: \setprod (s : S). P'(t s) \to P s
+\end{align}
+  </span>
+</dd>
+</dl>
 <p>コンテナの射<span class="math inline">(t,q)</span>は、多項式関手の間の自然変換<span class="math inline">\asfunctor{t,q}</span>として解釈できます。</p>
 <p><span class="math display">
   \begin{align}
@@ -113,18 +227,19 @@
     \asfunctor{t,q}_{X}(s,v) &amp;= (t s, \lambda p'. v (q s p'))
   \end{align}
 </span></p>
-<p>任意の2つのコンテナ<span class="math inline">(S,P),(S',P')</span>の間のコンテナの射をすべて集めた集合を<span class="math inline">\homset{\Cont}{(S,P)}{(S',P')}</span>とすると、
-その自然変換としての解釈を与える関数<span class="math inline">\asfunctor{-} : \homset{\Cont}{(S,P)}{(S',P')} \to \homset{\Set^{\Set}}{\asfunctor{S,P}}{\asfunctor{S',P'}}</span>
-は全単射になっています<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。これにより、各コンテナを対象、
-射集合を<span class="math inline">\homset{\Cont}{(S,P)}{(S',P')}</span>とした<em>コンテナの圏</em>（<em>category of containers</em>）<span class="math inline">\Cont</span>を定めることができます。
+<p>2つのコンテナ<span class="math inline">(S,P),(S',P')</span>の間のコンテナの射をすべて集めた集合を<span class="math inline">\homset{\Cont}{(S,P)}{(S',P')}</span>とすると、
+その自然変換としての解釈を与える関数<span class="math inline">\asfunctor{-} : \homset{\Cont}{(S,P)}{(S',P')} \to \left( \asfunctor{S,P} \to \asfunctor{S',P'} \right)</span>
+は全単射になっています。というより、そうなるようにコンテナの射とその解釈は定義されています。
+これにより、各コンテナを対象、
+射をコンテナの射とした<em>コンテナの圏</em>（<em>category of containers</em>）<span class="math inline">\Cont</span>を定めることができます。
 コンテナの圏における恒等射と射の合成は、
-解釈<span class="math inline">\asfunctor{-}</span>がコンテナの圏から<span class="math inline">\Set</span>上の自己関手の圏<span class="math inline">\Set^{\Set}</span>への関手</p>
+解釈<span class="math inline">\asfunctor{\placeholder}</span>がコンテナの圏から<span class="math inline">\Set</span>上の自己関手の圏<span class="math inline">\Functors{\Set}</span>への関手</p>
 <p><span class="math display">
   \begin{CD}
-    \Cont @&gt;{\asfunctor{-}}&gt;&gt; \Set^{\Set} 
+    \Cont @&gt;{\asfunctor{-}}&gt;&gt; \Functors{\Set}
   \end{CD}
 </span></p>
-<p>となるように定めます。射において全単射であるため、これは忠実充満関手となります。</p>
+<p>として成り立つように、自然変換の恒等射と合成から逆算して定めることができます。</p>
 <details>
 <summary>
 具体的には…
@@ -147,12 +262,51 @@
 </span>
 という定義になります。
 </details>
-<p>実質的に、コンテナは<span class="math inline">\Set</span>上の<strong>多項式関手を集合で表現したもの</strong>といえます。</p>
+<p>実質的に、コンテナは<span class="math inline">\Set</span>上の多項式関手を集合で表現したもので、
+更にコンテナの圏は関手圏<span class="math inline">\Functors{\Set}</span>の部分圏の”多項式関手の圏”の表現になっています。</p>
 <h3 id="コンテナと多項式">コンテナと多項式</h3>
-<p><span class="math inline">\gdef\src{\mathrm{s}}
-  \gdef\tgt{\mathrm{t}}</span></p>
-<p>コンテナと同じものを記述する別の方法として、<em>多項式</em>（<em>polynomial</em>）を考えることができます。
-多項式<span class="math inline">(S,\bar{P},\src)</span>とは、</p>
+<p><span class="math inline">\gdef\src{\operatorname{src}}
+  \gdef\tgt{\operatorname{tgt}}</span></p>
+<p>コンテナと同じく<span class="math inline">\Set</span>上の多項式関手を記述する別の方法として、<em>多項式</em>（<em>polynomial</em>）を考えることができます。
+（紛らわしい名前ですが、「関手」が付かない「多項式」とだけ言ったとき、それは多項式関手そのものではなく、
+それを表現するデータをそう呼ぶ、という意味です。）</p>
+<dl>
+<dt>多項式</dt>
+<dd>
+多項式とは、集合<span class="math inline">S</span>、集合<span class="math inline">\bar{P}</span>、そして関数<span class="math inline">\src : \bar{P} \to S</span>の三つ組<span class="math inline">(S,\bar{P},\src)</span>のことである。
+</dd>
+</dl>
+<p>あるいは、多項式とは、図式</p>
+<p><span class="math display">
+  \begin{CD}
+    S @&lt;&lt;{\src}&lt; \bar{P}
+  \end{CD}
+</span></p>
+<p>のことだということもできます。</p>
+<p>任意のコンテナ<span class="math inline">(S,P)</span>は、
+<span class="math inline">\bar{P}</span>を全ての<span class="math inline">s</span>に対する<span class="math inline">Ps</span>の直和をとったものとし、
+<span class="math inline">\src</span>を「元々はどの集合<span class="math inline">Ps</span>に属していたか」を返す関数として、
+多項式<span class="math inline">(S,\bar{P},\src)</span>に変換することができます。</p>
+<p><span class="math display">
+  \begin{align}
+    \bar{P} &amp;= \setsum (s \in S). Ps \\
+     &amp;= \set{ (s,p) | s \in S, p \in Ps } \\
+    \src (s,p) &amp;= s
+  \end{align}
+</span></p>
+<p>逆に、任意の多項式<span class="math inline">((S,\bar{P},\src))</span>は、
+<span class="math inline">Ps</span>を「<span class="math inline">\src p == s</span>となるような<span class="math inline">p</span>を集めた<span class="math inline">\bar{P}</span>の部分集合」
+と定義することで、コンテナ<span class="math inline">(S,P)</span>に変換することができます。</p>
+<p><span class="math display">
+  \begin{align}
+    Ps = \set{ p | p \in \bar{P}, \src p = s }
+  \end{align}
+</span></p>
+<p>これらの変換は（同型なコンテナを同じとみなせば）互いに逆変換になっており、
+コンテナと多項式は同じデータの異なる表現であることがわかります。</p>
+<p>コンテナの射と同様に、多項式の射も考えることができます。
+これは上記の変換と整合するようにコンテナの射の定義から計算することで得られますが、
+やや煩雑なのでここでは省略します。</p>
 <h2 id="多項式コモナド-directedコンテナ-小さい圏">多項式コモナド = Directedコンテナ = 小さい圏</h2>
 <h3 id="コンテナの合成">コンテナの合成</h3>
 <p>多項式関手は合成で閉じています。すなわち、2つのコンテナ<span class="math inline">(S,P)</span><span class="math inline">(T,Q)</span>
@@ -163,9 +317,9 @@
 <p>コンテナの合成演算子<span class="math inline">\contcomp</span>は、具体的な計算方法を次のように与えることができます。</p>
 <p><span class="math display">
   \begin{align}
-    U &amp;= \sum_{s : S} Ps \to T \\
+    U &amp;= \setsum (s : S). Ps \to T \\
      &amp;= \set{ (s,v) | s : S, v : Ps \to T } \\
-    R(s,v) &amp;= \sum_{p : Ps} Q(vp)
+    R(s,v) &amp;= \setsum (p : Ps). Q(vp)
   \end{align}
 </span></p>
 <p>実際、これを関手として解釈すると、
@@ -173,25 +327,28 @@
 <p><span class="math display">
   \begin{align}
     \asfunctor{U,R}X
-      &amp;= \sum_{u : U} (Ru \to X) \\
-      &amp;= \sum_{s : S} \sum_{v : Ps \to T} \left( R(s,v) \to X \right) \\
-      &amp;= \sum_{s : S} \sum_{v : Ps \to T} \left( \left( \sum_{p : Ps} Q(vp) \right) \to X \right) \\
-      &amp;\simeq \sum_{s : S} \sum_{v : Ps \to T} \left( \prod_{p : Ps} \left( Q(vp) \to X \right) \right) \\
-      &amp;\simeq \sum_{s : S} \prod_{p : Ps} \left( \sum_{t : T} Qt \to X \right) \\
-      &amp;\simeq \sum_{s : S} Ps \to \left( \sum_{t : T} Qt \to X \right) \\
+      &amp;= \setsum (u : U). (Ru \to X) \\
+      &amp;= \setsum (s : S). \setsum (v : Ps \to T). \left( R(s,v) \to X \right) \\
+      &amp;= \setsum (s : S). \setsum (v : Ps \to T). \left( \left( \setsum (p : Ps). Q(vp) \right) \to X \right) \\
+      &amp;\simeq \setsum (s : S). \setsum (v : Ps \to T) \left( \setprod (p : Ps). \left( Q(vp) \to X \right) \right) \\
+      &amp;\simeq \setsum (s : S). \setprod (p : Ps). \left( \setsum (t : T). Qt \to X \right) \\
+      &amp;\simeq \setsum (s : S). Ps \to \left( \setsum (t : T). Qt \to X \right) \\
       &amp;= \asfunctor{S,P}( \asfunctor{T,Q}X )
   \end{align}
 </span></p>
 <p>コンテナの合成は、それが関手の合成という（同型を除いて）モノイドになっている演算と
 一致するように定義されているため、それ自身コンテナの圏<span class="math inline">\Cont</span>におけるモノイド積となることができます。
-すなわち、<span class="math inline">\contcomp</span>は（同型を除いて）結合的で、モノイド単位<span class="math inline">(1, \lambda p. 1)</span>をもちます。
-ここで<span class="math inline">1</span>は適当な一元集合です。</p>
-<h3 id="directedコンテナ-多項式コモナド">Directedコンテナ = 多項式コモナド</h3>
+すなわち、<span class="math inline">\contcomp</span>は（同型を除いて）結合的で、モノイド単位<span class="math inline">(1, \mathrm{const} 1)</span>をもちます。
+ここで<span class="math inline">1</span>は適当な一元集合<span class="math inline">1=\set{\star}</span>です。</p>
+<h3 id="多項式コモナドから小さい圏まで">多項式コモナドから小さい圏まで</h3>
+<p><span class="math inline">\gdef\rootpos{o}
+  \gdef\nextshape{\darr}
+  \gdef\posplus{\oplus}</span></p>
 <p>前項で見たように多項式関手は関手の合成で閉じているので、コモナドすなわち関手の合成に関するコモノイドも、
-多項式関手だけからなる<span class="math inline">\Set^{\Set}</span>の部分圏において考えられる概念です。
-コモナド構造を追加でもつ多項式関手を<em>多項式コモナド</em>と呼ぶことにしましょう。
+多項式関手だけからなる<span class="math inline">\Functors{\Set}</span>の部分圏において考えられる概念です。
+コモナド構造を追加で持つ多項式関手を<em>多項式コモナド</em> (<em>polynomial comonad</em>)と呼ぶことにしましょう。
 コモナドとは、以下のような自然変換<span class="math inline">\mathrm{extract}, \mathrm{duplicate}</span>
-をもつ関手<span class="math inline">W</span>であって、それらが適当な等式（コモナド則）を満たすものでした。</p>
+を持つ関手<span class="math inline">W</span>であって、それらがコモナド則とよばれるいくつかの等式を満たすものでした。</p>
 <p><span class="math display">
   \begin{CD}
     W @&gt;{\mathrm{extract}}&gt;&gt; \mathrm{Id}
@@ -203,8 +360,8 @@
   \end{CD}
 </span></p>
 <p>コンテナは多項式関手と対応し、コンテナの合成は多項式関手の合成と対応することから、
-多項式関手がもつコモナド構造に対応する構造をコンテナに対しても考えることができます。
-そのようなコモナドに対応する構造をもつコンテナは、
+多項式関手が持つコモナド構造に対応する構造をコンテナに対しても考えることができます。
+そのようなコモナドに対応する構造を持つコンテナは、
 コンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>であって、
 コモナド則と対応する等式を満たすようなものです。</p>
 <p><span class="math display">
@@ -217,105 +374,264 @@
     (S,P) @&gt;{(d_0,d_1)}&gt;&gt; (S,P) \contcomp (S,P)
   \end{CD}
 </span></p>
-<p>コンテナの射やコンテナの合成の定義を展開すると、<span class="math inline">e_0, e_1, d_0, d_1</span>は以下のような型をもつ関数です。</p>
+<p>コモナド則から課される条件を適用していくと、これらの射
+<span class="math inline">(e_0, e_1), (d_0, d_1)</span>は3つの関数<span class="math inline">(\rootpos_{(-)}, (- \nextshape -), (- \posplus_{(-)} -))</span>
+を使って以下のように書かれるものでなければならないことを示すことができます。</p>
 <p><span class="math display">
   \begin{align}
-    e_0 &amp;: S \to 1 \\
-    e_1 &amp;: \prod_{s : S} 1 \to Ps \\
-    d_0 &amp;: S \to S_2 \\
-    d_1 &amp;: \prod_{s : S} P_2(d_0s) \to Ps
+    e_0 &amp;= \lambda (\_ : S). \star \\
+    e_1 &amp;= \lambda (s : S) (\_ : 1). \rootpos_s \\
+    d_0 &amp;= \lambda (s : S). (s, \lambda (p : Ps). s \nextshape p) \\
+    d_1 &amp;= \lambda (s : S) \left((p, p') : \setsum (p : Ps). P(s \nextshape p)\right). \\
+        &amp;{\phantom{=}} \qquad p \posplus_{s} p'
   \end{align}
 </span></p>
-<p>ただし</p>
-<p><span class="math display">
-  \begin{align}
-    S_2 &amp;= \sum_{s : S} \left( Ps \to S \right) \\
-     &amp;= \set{ (s,v) | s : S, v : Ps \to S } \\
-    P_2 \left( (s,v) : S_2 \right) &amp;= \sum_{p : Ps} P(vp) 
-  \end{align}
-</span></p>
-<p>です。</p>
-<p>ここで更に、コンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>
-が多項式コモナドを定めていることを考慮に入れると、<span class="math inline">\pi_1(d_0s) = s</span>となること、
-すなわち<span class="math inline">d_0</span>は適当な関数<span class="math inline">d_0' : \prod_{s : S} Ps \to S</span>を使って</p>
+<p>ただし、これらの関数の型は以下のようになっており、</p>
 <p><span class="math display">
   \begin{equation}
-    d_0s = (s, d_0's)
+    \begin{aligned}
+      \rootpos_{(-)} &amp;: \setprod (s : S). Ps \\
+      (- \nextshape -) &amp;: \setprod (s : S). Ps \to S \\
+      (- \posplus_{(-)} -) &amp;: \setprod (s : S). \setprod (p : Ps). P(s \nextshape p) \to Ps
+    \end{aligned}
   \end{equation}
 </span></p>
-<p>と書けることがわかり、これを代入すると<span class="math inline">d_1</span>の型は以下のように整理できます。</p>
-<p><span class="math display">
-  \begin{align}
-    d_1 &amp;: \prod_{s : S} P_2(d_0s) \to Ps \\
-    &amp;= \prod_{s : S} P_2(s, d_0's) \to Ps \\
-    &amp;= \prod_{s : S} \left( \sum_{p : Ps} P(d_0'sp) \right) \to Ps \\
-    &amp;\simeq \prod_{s : S} \prod_{p : Ps} P(d_0'sp) \to Ps
-  \end{align}
-</span></p>
-<p><span class="math inline">\gdef\rootpos{o}
-  \gdef\nextshape{\darr}
-  \gdef\posplus{\oplus}</span></p>
-<p>総合すると、<span class="math inline">(e_0, e_1, d_0, d_1)</span>と等価なDirectedコンテナの表現として、
-以下の3つの演算子<span class="math inline">(\rootpos, \nextshape, \posplus)</span>を用いることができます。</p>
-<p><span class="math display">
-  \begin{align}
-    \rootpos_{(-)} &amp;: \prod_{s : S} Ps \\
-    (- \nextshape -) &amp;: \prod_{s : S} Ps \to S \\
-    (- \posplus_{(-)} -) &amp;: \prod_{s : S} \prod_{p : Ps} P(s \nextshape p) \to Ps
-  \end{align}
-</span></p>
-<p>ここで</p>
-<p><span class="math display">
-  \begin{align}
-    e_1 s &amp;= \lambda \_. \rootpos_s \\
-    d_0 s &amp;= (s, \lambda (p : Ps). s \nextshape p) \\
-    d_1 s (p_1 : Ps) (p_2 : P(s \nextshape p)) &amp;= p_1 \posplus_{s} p_2
-  \end{align}
-</span></p>
-<p>です。更に、記述を簡潔にするため、
-文脈から推測できる場合には<span class="math inline">\rootpos_s</span>と<span class="math inline">\posplus_s</span>の添字<span class="math inline">s</span>を省略できることにします。</p>
-<p>3つの演算子<span class="math inline">(\rootpos, \nextshape, \posplus)</span>から得られるコンテナの射<span class="math inline">\mathrm{extract}'=(e_0, e_1),\mathrm{duplicate}'=(d_0, d_1)</span>
-がコモナド則を満たすことは、以下の5本の等式が成り立つことと同値になります。</p>
+<p>以下の等式を満たすものである必要があります。</p>
 <p><span class="math display">
   \begin{equation}
     \begin{aligned}
       s \nextshape \rootpos &amp;= s \\
-      s \nextshape (p \posplus p') &amp;= \left(s \nextshape p\right) \nextshape p' \\
-      p \posplus o &amp;= p \\
-      o \posplus p &amp;= p \\
-      \left(p \posplus p' \right) \posplus p'' &amp;= p \posplus \left(p' \posplus p'' \right)
+      s \nextshape (p \posplus_s p') &amp;= \left(s \nextshape p\right) \nextshape p' \\
+      p \posplus_s o &amp;= p \\
+      o \posplus_s p &amp;= p \\
+      \left(p \posplus_s p' \right) \posplus_s p'' &amp;= p \posplus_s \left(p' \posplus_{(s \nextshape p)} p'' \right)
     \end{aligned}
   \end{equation}
 </span></p>
-<details>
-量化を明示し、添字を省略しないと以下のようになります。
-<span class="math display">
-  \begin{equation}
-    \begin{alignedat}{2}
-      \forall s.&amp;&amp; s \nextshape \rootpos_s &amp;= s \\
-      \forall s (p : Ps) (p' :: P(s \nextshape p)).&amp;&amp; s \nextshape (p \posplus p') &amp;= \left(s \nextshape p\right) \nextshape p' \\
-      \forall s (p : Ps).&amp;&amp; p \posplus_s \rootpos_{s\nextshape p} &amp;= p \\
-      \forall s (p : Ps).&amp;&amp; \rootpos_s \posplus_s p &amp;= p \\
-      \forall s (p : Ps)
-        \left(p' : P(s \nextshape p)\right)
-        \left(p'' : P ((s \nextshape p) \nextshape p')\right).&amp;&amp;
-        \left(p \posplus_s p' \right) \posplus_s p'' &amp;= p \posplus_s \left(p' \posplus_{(s \nextshape p)} p'' \right)
-    \end{alignedat}
-  \end{equation}
-</span>
-ここで、4番目の等式左辺の<span class="math inline">p</span>の箇所に期待される型は<span class="math inline">P(s \nextshape \rootpos_s)</span>ですが、
-1番目の等式より<span class="math inline">p : Ps</span>を渡すことができています。同様に、
-5番目の等式左辺の<span class="math inline">p''</span>に期待される型は<span class="math inline">P(s\nextshape(p\posplus_s p'))</span>ですが、
-2番目の等式より<span class="math inline">p'' : P ((s \nextshape p) \nextshape p')</span>を渡すことができています。
-</details>
 <p><em>Directedコンテナ</em>を、この5つの等式を満たすような<span class="math inline">(\rootpos, \nextshape, \posplus)</span>を備えたコンテナ<span class="math inline">(S,P)</span>
 と定義します。すなわち、<strong>Directedコンテナは多項式コモナドをコンテナの言葉で記述したもの</strong>です。</p>
-<p>ここで更に、Directedコンテナを記述するデータは小さい圏を記述するデータ</p>
+<dl>
+<dt>Directedコンテナ</dt>
+<dd>
+Directedコンテナとは、以下の型を持つ5つ組<span class="math inline">(S,P,\rootpos, \nextshape, \posplus)</span>であって、
+(30)の等式すべてを満足するもののことである。
+<span class="math display">
+\begin{align*}
+  S &amp;: \Set\\
+  P &amp;: S \to \Set\\
+  \rootpos_{(-)} &amp;: \setprod (s : S). Ps \\
+  (- \nextshape -) &amp;: \setprod (s : S). Ps \to S \\
+  (- \posplus_{(-)} -) &amp;: \setprod (s : S). \setprod (p : Ps). P(s \nextshape p) \to Ps
+\end{align*}
+  </span>
+</dd>
+</dl>
+<p>ここで更に、Directedコンテナを記述するデータ<span class="math inline">(S,P,\rootpos, \nextshape, \posplus)</span>を、
+コンテナ<span class="math inline">(S,P)</span>の代わりに多項式<span class="math inline">(S,\bar{P},\src)</span>を用いるように書き換えます。
+まず、機械的に<span class="math inline">Ps</span>を<span class="math inline">\bar{P}</span>で置き換えます。</p>
+<p><span class="math display">
+  \begin{align}
+    \rootpos_{(-)} &amp;: S \to \bar{P} \\
+    (- \nextshape -) &amp;: S \to \bar{P} \to S \\
+    (- \posplus_{(-)} -) &amp;: S \to \bar{P} \to \bar{P} \to \bar{P}
+  \end{align}
+</span></p>
+<p>ただし、</p>
+<ul>
+<li>これらの関数の戻り値を<span class="math inline">Ps</span>から置き換えた箇所については、
+その戻り値に<span class="math inline">\src</span>を適用すると<span class="math inline">s</span>であるという新しい等式を追加する</li>
+<li>これらの関数の引数を<span class="math inline">Ps</span>から置き換えた箇所については、
+“<span class="math inline">\src</span>が<span class="math inline">s</span>でない引数に対しては定義されない”とする</li>
+</ul>
+<p>ようにします。細かくみていくと、以下のようになります。</p>
+<ul>
+<li><p><span class="math inline">\rootpos_s</span>は、<span class="math inline">\src (\rootpos_s) = s</span>という等式が追加されます。</p></li>
+<li><p><span class="math inline">s \nextshape p</span>については、引数の条件から「<span class="math inline">s = \src p</span>であるような引数についてのみ定義される」
+という条件が付きますが、これは<span class="math inline">\tgt p = \src p \nextshape p</span>である関数<span class="math inline">\tgt : \bar{P} \to S</span>を
+代わりに用いれば、定義域を全域に保ったままにできます。</p></li>
+<li><p><span class="math inline">p \posplus_{s} p'</span>については、引数の条件から</p>
+<ul>
+<li><span class="math inline">s = \src p</span></li>
+<li><span class="math inline">\tgt p = \src p'</span></li>
+</ul>
+<p>についてのみ定義された関数であり、更に</p>
+<ul>
+<li><span class="math inline">\src (p \posplus_{s} p') = s</span></li>
+</ul>
+<p>という等式が追加されます。<span class="math inline">(- \nextshape -)</span>のときと同様に、
+引数<span class="math inline">s</span>を自動で補う新たな関数
+<span class="math inline">p ; p' = p \posplus_{\src p} p'</span>
+を用いれば、引数の条件ひとつは取り除くことができます。</p></li>
+</ul>
+<p>これらをまとめると、多項式<span class="math inline">(S,\bar{P},\src)</span>に変換したDirectedコンテナとして、<em>Directed多項式</em>が次のように定義できます。</p>
+<ul>
+<li><p>Directed多項式は、2つの集合<span class="math inline">(S, \bar{P})</span>および以下の4つの関数</p>
+<p><span class="math display">
+  \begin{align}
+    \src &amp;: \bar{P} \to S\\
+    \tgt &amp;: \bar{P} \to S\\
+    \rootpos_{(-)} &amp;: S \to \bar{P}\\
+    (- ; -) &amp;: \bar{P} \to \bar{P} \to \bar{P}
+  \end{align}
+</span></p>
+<p>であって、以下の等式</p>
+<p><span class="math display">
+  \begin{aligned}
+    \src (\rootpos_s) &amp;= s \\
+    \tgt (\rootpos_s) &amp;= s \\
+    \src (p ; p') &amp;= \src p \\
+    \tgt (p ; p') &amp;= \tgt p' \\
+    p ; o &amp;= p \\
+    o ; p &amp;= p \\
+    \left(p ; p' \right) ; p'' &amp;= p ; \left(p' ; p'' \right)
+  \end{aligned}
+</span></p>
+<p>を満たすものである。ただし、<span class="math inline">p ; p'</span>は部分関数であり、
+<span class="math inline">\tgt p = \src p'</span>を満たすとき、そのときに限り定義される。</p></li>
+</ul>
+<p>これは、名前が違っているだけで、対象の集合を<span class="math inline">S</span>、射の集合を<span class="math inline">\bar{P}</span>とする小さい圏を定義するデータと全く同じになっています。</p>
+<dl>
+<dt>小さい圏</dt>
+<dd>
+2つの集合<span class="math inline">\Ob(C),\Mor(C)</span>と、
+以下の型を持つ4つの関数の組<span class="math inline">(\src,\tgt,\id,(-;-))</span>を併せたものであって、
+更に(41)のすべての等式を満たすものを小さい圏とよぶ。
+<span class="math display">
+\begin{align}
+  \src, \tgt &amp;: \Mor(C) \to \Ob(C) \\
+  \id &amp;: \Ob(C) \to \Mor(C) \\
+  (- ; -) &amp;: \Mor(C) \to \Mor(C) \to \Mor(C)
+\end{align}
+  </span>
+ただし、<span class="math inline">(- ; -)</span>は部分関数であり、<span class="math inline">(p ; p')</span>は<span class="math inline">\tgt p = \src p'</span>であるとき、
+そのときに限り定義される。
+<span class="math display">
+\begin{align}
+  \begin{aligned}
+    \src (\id_s) &amp;= s \\
+    \tgt (\id_s) &amp;= s \\
+    \src (p ; p') &amp;= \src p \\
+    \tgt (p ; p') &amp;= \tgt p' \\
+    p ; \id &amp;= p \\
+    \id ; p &amp;= p \\
+    (p ; p') ; p'' &amp;= p ; (p' ; p'')
+  \end{aligned}
+\end{align}
+  </span>
+</dd>
+</dl>
+<p>これらのデータは、元々は多項式コモナドを記述するデータを、
+1対1対応を守りながら変形させていったものでした。したがって、</p>
+<p>多項式コモナド <span class="math inline">\cong</span> Directedコンテナ <span class="math inline">\cong</span> Directed多項式 <span class="math inline">=</span> 小さい圏</p>
+<p>という1対1の対応が得られたことになります。</p>
+<h3 id="コモナドと小さい圏は射についても対応しているか">コモナドと小さい圏は射についても対応しているか？</h3>
+<p>「コンテナとコンテナの射からなる圏」は、「多項式関手と自然変換の圏」と
+多項式関手やコンテナの同型を無視すれば完全に一致するように作ることができました。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>さて、2つの<span class="math inline">\Set</span>上のコモナド<span class="math inline">W, W'</span>があったとき、
+その間の自然変換<span class="math inline">\alpha : W \to W'</span>であってコモナド演算<span class="math inline">\mathrm{extract}, \mathrm{duplicate}</span>と両立するものを
+<em>コモナド準同型</em> (<em>comonad morphism</em>)とよびます。
+コモナドを対象、コモナド準同型を射とする圏を考えることもでき、コモナドの圏<span class="math inline">\Comonads{\Set}</span>と呼ばれます。</p>
+<p>一方で、2つの小さい圏<span class="math inline">C,C'</span>の間の射として、最もふつうに考えられるのは関手<span class="math inline">F : C \to C'</span>です。
+小さい圏の圏<span class="math inline">\Cat</span>は、対象を小さい圏、射を関手とする圏として、圏論の教科書にも必ず登場するような一般的な圏です。</p>
+<p>ここまで、多項式コモナドと小さい圏は1対1に対応することを見てきましたが、それは
+「コモナドの圏を多項式コモナドに制限したもの」と「小さい圏の圏」との圏同値になっているのでしょうか？
+言い換えれば、「多項式コモナドの間のコモナド準同型」と「小さい圏の間の関手」の間に自然な1対1対応はあるのでしょうか？</p>
+<p>これは「ない」というのが解答になります。「多項式コモナドの間のコモナド準同型」に対応するような小さい圏のあいだの射は、
+関手とは異なるものになります。
+その小さい圏の間の射は関手でなければ何であるのか、というのは後続の論文などで明らかにされており、“cofunctor”とよばれているもの
+(をわずかに一般化して、射の向きを合わせたもの)、あるいは”retrofunctor”とよばれているものであったことが言われています。</p>
+<h3 id="対応の具体例">対応の具体例</h3>
+<p>多項式コモナドと小さい圏の対応を、具体的なコモナドや圏に対して考えた例を挙げてみます。
+論文中では、これらの例のほかに、
+「小さい圏の余積が多項式コモナドの余積(<code>instance (Comonad f, Comonad g) =&gt; Comonad (Sum f g)</code>)に対応すること」や、
+「小さい圏の積が多項式コモナドのテンソル積(<code>instance (Comonad f, Comonad g) =&gt; Comonad (Day f g)</code>)に対応すること」
+が挙げられています。</p>
+<h4 id="具体例1-tracedコモナド">具体例1: <code>Traced</code>コモナド</h4>
+<p>多項式コモナドである<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad-Traced.html">Traced</a>コモナドを考えます。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Traced</span> m a <span class="ot">=</span> <span class="dt">Traced</span> {<span class="ot"> runTraced ::</span> m <span class="ot">-&gt;</span> a }</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> <span class="dt">Functor</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> m <span class="ot">=&gt;</span> <span class="dt">Comonad</span> (<span class="dt">Traced</span> m) <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  extract (<span class="dt">Traced</span> t) <span class="ot">=</span> t <span class="fu">mempty</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  duplicate (<span class="dt">Traced</span> t) <span class="ot">=</span> <span class="dt">Traced</span> <span class="op">$</span> \m1 <span class="ot">-&gt;</span> <span class="dt">Traced</span> <span class="op">$</span> \m2 <span class="ot">-&gt;</span> t (m1 <span class="op">&lt;&gt;</span> m2)</span></code></pre></div>
+<p>これは表現可能関手<code>(-&gt;) m</code>と同じものなので多項式です。
+（多項式とはいくつかの表現可能関手の和なのでした。どんな表現可能関手も”1個の和”なので多項式です。）
+型<code>m</code>を適当な集合<span class="math inline">M</span>とみなして、コンテナ<span class="math inline">(S,P)</span>として表すならば、
+<span class="math inline">S</span>としては1つの元のみを持つ集合<span class="math inline">1 = \set{\star}</span>とし、<span class="math inline">P</span>は<span class="math inline">S=1</span>の唯一の元を
+集合<span class="math inline">M</span>に写す関数<span class="math inline">P(\star) = M</span>になります。</p>
+<p><span class="math inline">M</span>上のモノイド構造<span class="math inline">(\mathrm{mempty}, \cdot)</span>を使うと、<code>Traced m</code>に対応するdirectedコンテナ<span class="math inline">(S,P,\rootpos,\nextshape,\posplus)</span>
+は次のようになります。</p>
+<p><span class="math display">
+  \begin{align}
+    \rootpos_{\star} &amp;= \mathrm{mempty} \\
+    \star \nextshape m &amp;= \star \\
+    m_1 \posplus_{\star} m_2 &amp;= m_1 \cdot m_2
+  \end{align}
+</span></p>
+<p>これを更に小さい圏としてみなすと、これは</p>
+<ul>
+<li>対象の集合が<span class="math inline">S = 1 = \set{\star}</span>、すなわち対象を1つだけ持つ</li>
+<li>射の集合が<span class="math inline">\bar{P} \cong M</span>で、対象が1つだけなのですべての射は対象<span class="math inline">\star</span>から出てそこに戻る射である</li>
+<li>恒等射は<span class="math inline">\id_{\star} = \mathrm{mempty}</span>、射の合成は<span class="math inline">m_1 ; m_2 = m_1 \cdot m_2</span>である</li>
+</ul>
+<p>となっています。これは、
+<a href="https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89#%E5%9C%8F%E8%AB%96%E3%81%A8%E3%81%AE%E9%96%A2%E4%BF%82">モノイドを対象が1つだけの圏とみなす標準的な方法</a>そのものです。</p>
+<h4 id="具体例2-nonemptyリスト">具体例2: <code>NonEmpty</code>リスト</h4>
+<p>また、<a href="https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-List-NonEmpty.html#t:NonEmpty">NonEmpty</a>リスト
+が持つ<code>Comonad</code>インスタンスも、対応するdirectedコンテナや小さい圏が何であるかを見てみましょう。</p>
+<p>（<code>NonEmpty</code>の<code>Comond</code>インスタンスを知らなかったという方は、<a href="./2023-06-02-monad-co.html">過去記事</a>でも軽く触れましたのでご参照ください。）</p>
+<p><code>NonEmpty a</code>は長さ1以上のリストのデータ型ですが、これを（きちんとしたHaskellではありませんが）
+以下のように長さごとに異なるコンストラクタ<code>Ln</code>からなるデータ型とみなせば、多項式関手になっています。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">NonEmpty'</span> a <span class="ot">=</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">L0</span> a</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">L1</span> a a</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">L2</span> a a a</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Ln</span> a a a <span class="op">......</span> a <span class="co">-- (n+1)個</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">NonEmpty''</span> a <span class="ot">=</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">L0</span> ({<span class="dv">0</span>} <span class="ot">-&gt;</span> a)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">L1</span> ({<span class="dv">0</span>,<span class="dv">1</span>} <span class="ot">-&gt;</span> a)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">L2</span> ({<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>} <span class="ot">-&gt;</span> a)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Ln</span> ({<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="op">...</span>,n} <span class="ot">-&gt;</span> a)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span></code></pre></div>
+<p>これをコンテナ<span class="math inline">(S,P)</span>として表現するならば、<span class="math inline">S</span>が自然数の集合<span class="math inline">S = \mathbb{N} = \set{0,1,\ldots}</span>、
+<span class="math inline">Pn</span>を<span class="math inline">0</span>から<span class="math inline">n</span>までの<span class="math inline">n+1</span>個の自然数の集合<span class="math inline">\set{0,1,\ldots,n}</span>とすることに相当します。</p>
+<p>更に、<code>NonEmpty</code>のコモナドのインスタンスに対応するdirectedコンテナのデータ<span class="math inline">(\rootpos, \nextshape, \posplus)</span>は
+以下のようになります。</p>
+<p><span class="math display">
+  \begin{align}
+    \rootpos_{n} &amp;= 0 \\
+    n \nextshape p &amp;= n - p \\
+    p \posplus_{n} p' &amp;= p + p'
+  \end{align}
+</span></p>
+<p>これを小さい圏に変形すると、以下のような圏が得られます。</p>
+<ul>
+<li><p>対象の集合<span class="math inline">S</span>は自然数の集合<span class="math inline">\mathbb{N}</span></p></li>
+<li><p>射の集合<span class="math inline">\bar{P}</span>は、自然数の組<span class="math inline">(n,p)∈\mathbb{N}^2</span>であって、
+<span class="math inline">n \ge p</span>を満たすようなものの集合</p>
+<ul>
+<li><span class="math inline">\src (n,p) = n, \tgt (n,p) = n - p</span>すなわち<span class="math inline">(n,p)</span>は<span class="math inline">n</span>から出て<span class="math inline">n-p</span>に向かう射</li>
+<li>恒等射は<span class="math inline">\id_{n} = (n,0)</span></li>
+<li><span class="math inline">(n,p)</span>と<span class="math inline">(n',p)</span>の射の合成は<span class="math inline">n - p = n'</span>であるときのみ定義され、<span class="math inline">(n,p) ; (n - p,p') = (n,p + p')</span></li>
+</ul></li>
+</ul>
+<p>これは、<span class="math inline">\mathbb{N}</span>に以下のような順序を与えて順序集合とみなし、それをさらに圏とみなしたものになっています。</p>
+<p><span class="math display">
+  \cdots \prec n+1 \prec n \prec \cdots \prec 2 \prec 1 \prec 0
+</span></p>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Haskellでいうなら<code>Functor</code> <span class="math inline">\asfunctor{S,P}</span>における<code>fmap f</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>というより、コンテナの射はそうなるべく定義されています<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>圏同値といいます<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>論文中では、これをさらに自然数<span class="math inline">\mathbb{N}=\set{0,1,2,\ldots}</span>が足し算に関してなすモノイドに特殊化したものが例として挙げられています。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
