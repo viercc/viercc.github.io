@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - Stateモナドはいくつあるか？</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Stateモナドはいくつあるか？</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2024-12-10</li>
+            
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <hr />
+<p><strong>この記事は<a href="https://qiita.com/advent-calendar/2024/haskell">Haskell Advent Calendar 2024</a>の10日目です</strong></p>
+<hr />
+<p>去年の12月という古い話ではありますが、
+<span class="citation" data-cites="Kory__3">@Kory__3</span> さんが発した疑問(<a href="https://x.com/Kory__3/status/1737757423673413635">ツイート</a>)に答える形で、次の事実を証明することができました。
+（<a href="https://github.com/viercc/polymorphic-state-monad/">Agdaで書いた証明</a>）</p>
+<dl>
+<dt><code>Monad (State s)</code>のインスタンスは唯一</dt>
+<dd>
+Haskellにおいて、<code>instance Monad (State s) where ...</code>と書ける<code>Monad</code>のインスタンスであって<code>Monad</code>則を満たすものは、
+<a href="https://hackage.haskell.org/package/transformers-0.6.1.2/docs/Control-Monad-Trans-State-Lazy.html#g:1">標準的なStateモナド</a>と同値なものに限られる。
+</dd>
+</dl>
+<p>ただし、<code>State s</code>は以下の型とします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="ot">=</span> <span class="dt">State</span> {<span class="ot"> runState ::</span> s <span class="ot">-&gt;</span> (s, a) }</span></code></pre></div>
+<p>この記事では、その証明の概略を述べます。</p>
+<h2 id="何を証明したのか">何を証明したのか</h2>
+<p>証明の前に、まずは示そうとしていることが正確に何であるのかを詳しく述べます。
+「<code>instance Monad (State s) where ...</code>と書けるインスタンス」というのは、
+<em>文字通り</em>次の形をした<code>Monad</code>のインスタンスです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> <span class="ot">=</span> <span class="op">...</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> <span class="op">...</span></span></code></pre></div>
+<p>このように書くことができるインスタンスのうち、きちんと<code>Monad</code>則を満たすものは、
+以下に示す”普通の”Stateモナドだけしか存在しないことを示すことが証明のゴールになります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> a <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span> (s,a)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> usualBind</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">usualBind ::</span> <span class="kw">forall</span> s a b<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">State</span> s b) <span class="ot">-&gt;</span> <span class="dt">State</span> s b</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>usualBind ma k <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (s1,a) <span class="ot">=</span> runState ma s0</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState (k a) s1</span></code></pre></div>
+<p>ただし、<code>State s</code>型の内容である関数<code>s -&gt; (s,a)</code>や<code>return, (&gt;&gt;=)</code>といった関数は、
+いずれも部分関数でないものだけを考えています。<code>undefined</code>や再帰を用いて、
+一部の入力に対して<code>⊥</code>になるような定義は認めていません。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>この主張の意味するところには、勘違いしやすい箇所が2つあります。まず、
+<code>Monad</code>則を満たすインスタンスだけを数えている点です。</p>
+<p>実は、<code>Monad</code>則を満たさなくてもよいならば、幾らでも異なるインスタンスを作ることができます。
+例えば、以下のインスタンスはコンパイルできますが、<code>Monad</code>則を満たしません。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> a <span class="ot">=</span> <span class="dt">State</span> \s <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> strangeBind</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">strangeBind ::</span> <span class="kw">forall</span> s a b<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">State</span> s b) <span class="ot">-&gt;</span> <span class="dt">State</span> s b</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>strangeBind ma k <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (s1, _) <span class="ot">=</span> runState ma s0</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      (s2, _) <span class="ot">=</span> runState ma s1</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      (_,  a) <span class="ot">=</span> runState ma s2</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState (k a) s1</span></code></pre></div>
+<p>2つ目に、「どんな型<code>A</code>についても、<code>Monad (State A)</code>のインスタンスは唯一である」
+と混同しそうになる点があります。ここで主張していることは</p>
+<ul>
+<li>⭕「『(任意の型<code>s</code>に対して使える)<code>Monad (State s)</code>のインスタンス』は通常のStateモナドに限られる」</li>
+</ul>
+<p>であって、</p>
+<ul>
+<li>❌「任意の型<code>s</code>に対して『<code>Monad (State s)</code>のインスタンスは通常のStateモナドに限られる』が成り立つ」</li>
+</ul>
+<p>ではありません。
+実際、後者は誤った主張です。
+反例を挙げると、<code>s</code>に<code>Bool</code>を代入した場合にそれは成り立ちません。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> <span class="dt">Bool</span>) <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 要 FlexibleInstances 拡張</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">......</span></span></code></pre></div>
+<p>と書けるインスタンスには、きちんと<code>Monad</code>則を満たす”普通でない”インスタンスが多数存在します。</p>
+<details>
+<summary>
+“普通でない”インスタンスの具体例
+</summary>
+<p>例えば、以下のような<code>Monad</code>インスタンスがあり、普通のStateモナドとは異なりますが<code>Monad</code>則は満たしています。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toTriple ::</span> <span class="dt">State</span> <span class="dt">Bool</span> a <span class="ot">-&gt;</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>, a, a)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>toTriple (<span class="dt">State</span> f) <span class="ot">=</span> (<span class="fu">fst</span> <span class="op">.</span> f, <span class="fu">snd</span> (f <span class="dt">False</span>), <span class="fu">snd</span> (f <span class="dt">True</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ot">fromTriple ::</span> (<span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>, a, a) <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="dt">Bool</span> a</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>fromTriple (g, a0, a1) <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> s <span class="kw">of</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">False</span> <span class="ot">-&gt;</span> (g s, a0)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">True</span> <span class="ot">-&gt;</span> (g s, a1)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> <span class="dt">Bool</span>) <span class="kw">where</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> a <span class="ot">=</span> fromTriple (<span class="fu">id</span>, a, a)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  ma <span class="op">&gt;&gt;=</span> k <span class="ot">=</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> (f, a0, a1) <span class="ot">=</span> toTriple ma</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        (g, b0, _)  <span class="ot">=</span> toTriple (k a0)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        (_, _,  b1) <span class="ot">=</span> toTriple (k a1)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> fromTriple (g <span class="op">.</span> f, b0, b1)</span></code></pre></div>
+<p>更に、上記の<code>Monad</code>インスタンスが<code>Monad</code>則を満たすことを確かめると、
+その際に<code>Bool -&gt; Bool</code>が<code>id</code>を単位元、<code>flip (.)</code>を積とするモノイドを成していること
+だけが重要であることに気づきます。</p>
+実際、4個（<code>Bool -&gt; Bool</code>と同じ数）の要素をもつ任意のモノイドを用いても
+<code>State Bool a</code>上に類似の<code>Monad</code>インスタンスを定めることが可能です。
+そのようなモノイドで同型でないものは35種類あり、それらが全て別々の”普通でない”<code>Monad</code>インスタンス
+を定めます。
+</details>
+<h2 id="証明の概略">証明の概略</h2>
+<p>証明は3つのパートに分けられます。</p>
+<h3 id="パート1-joinの変化だけ考えればよい">パート1: <code>join</code>の変化だけ考えればよい</h3>
+<p>詳細は省きますが、parametricityというHaskellの言語としての性質から、
+<code>Monad (State s)</code>のインスタンスとして変化を付けられる可能性があるのは、
+<code>(&gt;&gt;=)</code>の部分だけであることがわかります。詳しく言うと、</p>
+<ul>
+<li><p>任意のデータ型<code>F</code>に対して<code>Functor F</code>のインスタンスは唯一である</p>
+<ul>
+<li><code>Functor</code>則を満たす2つの<code>fmap, fmap' :: forall a b. (a -&gt; b) -&gt; F a -&gt; F b</code>に対して常に<code>fmap f x === fmap' f x</code>が成り立つので、
+“異なる”<code>Functor</code>のインスタンスは作ることができない</li>
+</ul></li>
+<li><p><code>Monad</code>則を考慮に入れずとも、<code>return</code>は一つしか存在しない</p>
+<ul>
+<li><p>型<code>forall s a. a -&gt; State s a</code>が付く式の値は、いずれも</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span><span class="ot"> ::</span> <span class="kw">forall</span> s a<span class="op">.</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span> a <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span> (s, a)</span></code></pre></div>
+<p>と同値である</p></li>
+</ul></li>
+</ul>
+<p>が成り立ちます。したがって、「<code>Monad</code>則を満たす<code>(&gt;&gt;=)</code>としてあり得る値はいくつあるか」
+が分かればよいのですが、ここで更に、証明での扱いやすさのため、<code>(&gt;&gt;=)</code>の代わりに
+<a href="https://hackage.haskell.org/package/base-4.20.0.1/docs/Control-Monad.html#v:join">join</a>を使うことにします。</p>
+<p>元来<code>join</code>は<code>(&gt;&gt;=)</code>を使って定義されていますが、逆に<code>join</code>から<code>(&gt;&gt;=)</code>を復元することもできるので、
+それぞれの型<code>BindTy</code>と<code>JoinTy</code>の間には全単射があります。
+つまり、<code>(&gt;&gt;=)</code>としてあり得る変化を調べる代わりに、<code>join</code>としてあり得る変化を考えれば必要十分というわけです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">BindTy</span> <span class="ot">=</span> <span class="kw">forall</span> s a b<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">State</span> s b) <span class="ot">-&gt;</span> <span class="dt">State</span> s b</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">JoinTy</span> <span class="ot">=</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s (<span class="dt">State</span> s a) <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- BindTy と JoinTy は同型</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">bindToJoin ::</span> <span class="dt">BindTy</span> <span class="ot">-&gt;</span> <span class="dt">JoinTy</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>bindToJoin bind' <span class="ot">=</span> \mma <span class="ot">-&gt;</span> mma <span class="ot">`bind'`</span> <span class="fu">id</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ot">joinToBind ::</span> <span class="dt">JoinTy</span> <span class="ot">-&gt;</span> <span class="dt">BindTy</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>joinToBind join' <span class="ot">=</span> \ma k <span class="ot">-&gt;</span> join' (<span class="fu">fmap</span> k ma)</span></code></pre></div>
+<p>例えば、どちらも<code>BindTy</code>型の値である<code>usualBind</code>と<code>strangeBind</code>をそれぞれ
+<code>JoinTy</code>型に変換すると、以下のようになります。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- usualJoin = bindToJoin usualBind</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ot">usualJoin ::</span> <span class="dt">JoinTy</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>usualJoin mma <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (s1, ma) <span class="ot">=</span> runState mma s0</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState ma s1</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- strangeJoin = bindToJoin strangeBind</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ot">strangeJoin ::</span> <span class="dt">JoinTy</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>strangeJoin mma <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (s1, _) <span class="ot">=</span> runState mma s0</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      (s2, _) <span class="ot">=</span> runState mma s1</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      (_,  ma) <span class="ot">=</span> runState mma s2</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState ma s1</span></code></pre></div>
+<p>つまり、証明のゴールは、</p>
+<blockquote>
+<p><code>JoinTy</code>型の値のうち、<code>return</code>と組み合わせて<code>Monad</code>則を満たすものは、
+通常のStateモナドを定める<code>usualJoin</code>の1つに限られる</p>
+</blockquote>
+<p>を示すことになります。</p>
+<p>また、ここでいう<code>Monad</code>則は、<code>join</code>を用いて表現した以下の3つの等式のことです。</p>
+<ul>
+<li>左単位則(left unit) <code>join . return === id</code></li>
+<li>右単位則(right unit) <code>join . fmap return === id</code></li>
+<li>結合則(associativity) <code>join . join === join . fmap join</code></li>
+</ul>
+<h3 id="パート2-ポリモーフィックな関数の代わりに代数的データ型で考えればよい">パート2: ポリモーフィックな関数の代わりに代数的データ型で考えればよい</h3>
+<p>パート1で、証明のゴールを</p>
+<blockquote>
+<p><code>JoinTy</code>型の値のうち、<code>return</code>と組み合わせて<code>Monad</code>則を満たすものは、
+通常のStateモナドを定める1つだけである</p>
+</blockquote>
+<p>に絞り込むことができました。しかし、直接この証明にとりかかるのはまだ早いです。</p>
+<p><code>JoinTy</code>型というのは、型パラメータ<code>s, a</code>に関して<code>forall</code>が付いた、ポリモーフィックな関数</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">JoinTy</span> <span class="ot">=</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s (<span class="dt">State</span> s a) <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span></code></pre></div>
+<p>のことでした。そのような<em>ポリモーフィックな関数すべて</em>に対して<code>Monad</code>則を満たすかどうかを調べていくというのは、
+どうやればいいのでしょうか？</p>
+<p>ここで、<em><a href="https://okmij.org/ftp/tagless-final/course/Boehm-Berarducci.html">Boehm–Beraducciエンコーディング</a></em>という、「代数的データ型をポリモーフィックな関数で表現する」
+手法を使うことができます。
+これは代数的データ型とポリモーフィックな関数が<strong>同型</strong>になるようなエンコーディングなので、逆に関数のほうを代数的データ型と見做すためにも使えます。</p>
+<p>厳密な言明はここでは説明しませんが、Boehm–Beraducciエンコーディングは以下のような例をすべて包含する一般化になっています。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<ul>
+<li><details open="true">
+<summary>
+自然数<code>Nat</code> ↔︎ <code>forall r. (r -&gt; r) -&gt; r -&gt; r</code>
+</summary>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE RankNTypes #-}</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- 以下、他のすべての例にもRankNTypes拡張が必要</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Nat</span> <span class="ot">=</span> <span class="dt">Suc</span> <span class="dt">Nat</span> <span class="op">|</span> <span class="dt">Z</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">NatEnc</span> <span class="ot">=</span> <span class="kw">forall</span> r<span class="op">.</span> (r <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> r</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- encodeNat (Suc Z) = \s z -&gt; s z</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- encodeNat (Suc (Suc Z)) = \s z -&gt; s (s z)</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeNat ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">NatEnc</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>encodeNat (<span class="dt">Suc</span> n) <span class="ot">=</span> \s z <span class="ot">-&gt;</span> s (encodeNat n s z)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>encodeNat <span class="dt">Z</span>       <span class="ot">=</span> \_ z <span class="ot">-&gt;</span> z</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeNat ::</span> <span class="dt">NatEnc</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>decodeNat f <span class="ot">=</span> f <span class="dt">Suc</span> <span class="dt">Z</span></span></code></pre></div>
+</details></li>
+<li><details>
+<summary>
+<code>Bool</code> ↔︎ <code>forall r. r -&gt; r -&gt; r</code>
+</summary>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Bool</span> <span class="ot">=</span> <span class="dt">False</span> <span class="op">|</span> <span class="dt">True</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">BoolEnc</span> <span class="ot">=</span> <span class="kw">forall</span> r<span class="op">.</span> r <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> r</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeBool ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">BoolEnc</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>encodeBool <span class="dt">False</span> <span class="ot">=</span> \x _ <span class="ot">-&gt;</span> x</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>encodeBool <span class="dt">True</span>  <span class="ot">=</span> \_ y <span class="ot">-&gt;</span> y</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeBool ::</span> <span class="dt">BoolEnc</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>decodeBool f <span class="ot">=</span> f <span class="dt">False</span> <span class="dt">True</span></span></code></pre></div>
+</details></li>
+<li><details>
+<summary>
+リスト <code>List a</code> ↔︎ <code>forall r. (a -&gt; r -&gt; r) -&gt; r -&gt; r</code>
+</summary>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ListEnc</span> a <span class="ot">=</span> <span class="kw">forall</span> r<span class="op">.</span> (a <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> r</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- encodeList (Cons a0 Nil) = \c n -&gt; c a0 n</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- encodeList (Cons a0 (Cons a1 Nil)) = \c n -&gt; c a0 (c a1 n)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeList ::</span> <span class="dt">List</span> a <span class="ot">-&gt;</span> <span class="dt">ListEnc</span> a</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>encodeList (<span class="dt">Cons</span> a as) <span class="ot">=</span> \c n <span class="ot">-&gt;</span> c a (encodeList as c n)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>encodeList <span class="dt">Nil</span>         <span class="ot">=</span> \_ n <span class="ot">-&gt;</span> n</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeList ::</span> <span class="dt">ListEnc</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>decodeList f <span class="ot">=</span> f <span class="dt">Suc</span> <span class="dt">Z</span></span></code></pre></div>
+</details></li>
+<li><details>
+<summary>
+二分木 <code>BinTree a</code> ↔︎ <code>forall r. (a -&gt; r) -&gt; (r -&gt; r -&gt; r) -&gt; r</code>
+</summary>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">BinTree</span> a <span class="ot">=</span> <span class="dt">Tip</span> a <span class="op">|</span> <span class="dt">Branch</span> (<span class="dt">BinTree</span> a) (<span class="dt">BinTree</span> a)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">BinTreeEnc</span> a <span class="ot">=</span> <span class="kw">forall</span> r<span class="op">.</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> (r <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeBT ::</span> <span class="dt">BinTree</span> a <span class="ot">-&gt;</span> <span class="dt">BinTreeEnc</span> a</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>encodeBT (<span class="dt">Tip</span> x)      <span class="ot">=</span> \t _ <span class="ot">-&gt;</span> t x</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>encodeBT (<span class="dt">Branch</span> l r) <span class="ot">=</span> \t b <span class="ot">-&gt;</span> b (encodeBT l t b) (encodeBT r t b)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeBT ::</span> <span class="dt">BinTreeEnc</span> <span class="ot">-&gt;</span> <span class="dt">BinTree</span> a</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>decodeBT f <span class="ot">=</span> f <span class="dt">Tip</span> <span class="dt">Branch</span></span></code></pre></div>
+</details></li>
+</ul>
+<p>型<code>JoinTy</code>を、Boehm–Beraducciエンコーディングが適用できる形になるまで同型な型に変形させていくと、
+以下のようになります。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">JoinTy</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s (<span class="dt">State</span> s a) <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- Stateのnewtypeを剥がす</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s a<span class="op">.</span> (s <span class="ot">-&gt;</span> (s, s <span class="ot">-&gt;</span> (s, a))) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> (s, a))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- (x -&gt;)はタプルに分配できる:</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>   <span class="co">--     (x -&gt; (y,z)) ~ (x -&gt; y, x -&gt; z)</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s a<span class="op">.</span> (s <span class="ot">-&gt;</span> s, s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s, a)) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s a<span class="op">.</span> (s <span class="ot">-&gt;</span> s, (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s, s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> a)) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- カリー化:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>   <span class="co">--     ((x, y) -&gt; z) ~ (x -&gt; y -&gt; z) </span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s a<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 引数の順序を入れ替え</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s a<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 引数の型が a に依存しない関数と forall a. を交換</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="kw">forall</span> a<span class="op">.</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- カリー化</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="kw">forall</span> a<span class="op">.</span> ((s,s) <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- Yoneda</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">Yoneda</span> ((,) s) (s,s)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (s,(s,s))</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- (s,(s,s)) ~ (s,s,s)</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- (x -&gt;)をタプルに分配</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> <span class="kw">forall</span> s<span class="op">.</span> (</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>      (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s,</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>      (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s,</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>      (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- forall をタプルに分配:</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>   <span class="co">--     forall x. (f x, g x) ~ (forall x. f x, forall x. g x)</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a> <span class="op">~</span> (</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>      <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s,</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s,</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- 各成分の型を (TEnc := forall s. (s -&gt; s) -&gt; (s -&gt; s -&gt; s) -&gt; s -&gt; s) とおく</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> (<span class="dt">TEnc</span>, <span class="dt">TEnc</span>, <span class="dt">TEnc</span>)</span></code></pre></div>
+<p>ここで出てきた<code>TEnc = forall s. (s -&gt; s) -&gt; (s -&gt; s -&gt; s) -&gt; s -&gt; s</code>という型は、
+代数的データ型<code>T</code>にBoehm–Beraducciエンコーディングを適用した結果になっています。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">T</span> <span class="ot">=</span> <span class="dt">F</span> <span class="dt">T</span> <span class="op">|</span> <span class="dt">G</span> <span class="dt">T</span> <span class="dt">T</span> <span class="op">|</span> <span class="dt">X</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- TEnc は T の Boehm--Beraducciエンコーディング</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">TEnc</span> <span class="ot">=</span> <span class="kw">forall</span> s<span class="op">.</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> (s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeT ::</span> <span class="dt">T</span> <span class="ot">-&gt;</span> <span class="dt">TEnc</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>encodeT (<span class="dt">F</span> t)   <span class="ot">=</span> \f g x <span class="ot">-&gt;</span> f (encodeT t f g x)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>encodeT (<span class="dt">G</span> t u) <span class="ot">=</span> \f g x <span class="ot">-&gt;</span> g (encodeT t f g x) (encodeT u f g x)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>encodeT <span class="dt">X</span>       <span class="ot">=</span> \_ _ x <span class="ot">-&gt;</span> x</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeT ::</span> <span class="dt">TEnc</span> <span class="ot">-&gt;</span> <span class="dt">T</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>decodeT enc <span class="ot">=</span> enc <span class="dt">F</span> <span class="dt">G</span> <span class="dt">X</span></span></code></pre></div>
+<p>したがって、<code>JoinTy</code>は、ある全単射<code>encodeJoin, decodeJoin</code>によって、
+代数的データ型である<code>T</code>の3つ組<code>(T,T,T)</code>と同型です。
+これらの同型を実際にHaskellで書くと以下の通りになります。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">encodeJoin ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>) <span class="ot">-&gt;</span> <span class="dt">JoinTy</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>encodeJoin (t,l,r) mma <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> s2 <span class="ot">=</span> encodeT t f g s0</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        sLeft <span class="ot">=</span> encodeT l f g s0</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        sRight <span class="ot">=</span> encodeT r f g s0</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">in</span> (s2, h sLeft sRight)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    f s0 <span class="ot">=</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> (s1,_) <span class="ot">=</span> runState mma s0</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> s1</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    g s0 s1 <span class="ot">=</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> (_,ma) <span class="ot">=</span> runState mma s0</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>          (s2,_) <span class="ot">=</span> runState mma s1</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> s2</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    h s0 s1 <span class="ot">=</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> (_,ma) <span class="ot">=</span> runState mma s0</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>          (_,a) <span class="ot">=</span> runState ma s1</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> a</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="ot">decodeJoin ::</span> <span class="dt">JoinTy</span> <span class="ot">-&gt;</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>decodeJoin join' <span class="ot">=</span> combine <span class="op">$</span> runState (join' mmT) <span class="dt">X</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    combine (t,(l,r)) <span class="ot">=</span> (t,l,r)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="ot">    mmT ::</span> <span class="dt">State</span> <span class="dt">T</span> (<span class="dt">State</span> <span class="dt">T</span> (<span class="dt">T</span>,<span class="dt">T</span>))</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    mmT <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span> (<span class="dt">F</span> s, <span class="dt">State</span> <span class="op">$</span> \s' <span class="ot">-&gt;</span> (<span class="dt">G</span> s s', (s,s')))</span></code></pre></div>
+<p>例えば、通常のStateモナドを定める<code>usualJoin</code>や、<code>Monad</code>則を満たさない例として挙げた<code>strangeJoin</code>をエンコードすると、
+以下のようになります。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- usualDef = decodeJoin usualJoin</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ot">usualDef ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>usualDef <span class="ot">=</span> (<span class="dt">G</span> <span class="dt">X</span> (<span class="dt">F</span> <span class="dt">X</span>), <span class="dt">X</span>, <span class="dt">F</span> <span class="dt">X</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ot">strangeDef ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>strangeDef <span class="ot">=</span> (<span class="dt">G</span> (<span class="dt">F</span> (<span class="dt">F</span> <span class="dt">X</span>)) (<span class="dt">F</span> <span class="dt">X</span>),<span class="dt">F</span> (<span class="dt">F</span> <span class="dt">X</span>),<span class="dt">F</span> <span class="dt">X</span>)</span></code></pre></div>
+<p><code>(T,T,T)</code>のような代数的データ型であれば、それがとる値すべてに対する性質を証明していくことはできそうですね！
+示すべき証明のゴールは</p>
+<blockquote>
+<p><code>join = encodeJoin def</code>が<code>Monad</code>則を満たすような<code>def :: (T,T,T)</code>は<code>usualDef</code>のみである</p>
+</blockquote>
+<p>になりました。</p>
+<ul>
+<li>左単位則(left unit) <code>encodeJoin def . return === id</code></li>
+<li>右単位則(right unit) <code>encodeJoin def . fmap return === id</code></li>
+<li>結合則(associativity)<code>encodeJoin def . encodeJoin def === encodeJoin def . fmap encodeJoin def</code></li>
+</ul>
+<p>そして更に、これらの<code>Monad</code>則において、</p>
+<ul>
+<li>(左|右)単位則の両辺は<code>forall s a. State s a -&gt; State s a</code>という型</li>
+<li>結合則の両辺は<code>forall s a. State s (State s (State s a)) -&gt; State s a</code>という型</li>
+</ul>
+<p>です。<code>JoinTy = forall s a. State s (State s a) -&gt; State s a</code>に対して行ったのと同様にして、
+これらの型も適切な代数的データ型と同型になっています。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">UnitLawTy</span> <span class="ot">=</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- UnitLawTy ~ (Nat, Nat)</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="ot">encode1 ::</span> (<span class="dt">Nat</span>, <span class="dt">Nat</span>) <span class="ot">-&gt;</span> <span class="dt">UnitLawTy</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>encode1 (n,m) (<span class="ot">ma ::</span> <span class="dt">State</span> s a) <span class="ot">=</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> f <span class="ot">=</span> <span class="fu">fst</span> <span class="op">.</span> runState<span class="ot"> ma   ::</span> s <span class="ot">-&gt;</span> s</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>      ret <span class="ot">=</span> <span class="fu">snd</span> <span class="op">.</span> runState<span class="ot"> ma ::</span> s <span class="ot">-&gt;</span> a</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> <span class="dt">State</span> <span class="op">$</span> \s0 <span class="ot">-&gt;</span> (encodeNat n f s0, ret (encodeNat m f s0))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="ot">decode1 ::</span> <span class="dt">UnitLawTy</span> <span class="ot">-&gt;</span> (<span class="dt">Nat</span>, <span class="dt">Nat</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>decode1 mm <span class="ot">=</span> </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> mNat <span class="ot">=</span> <span class="dt">State</span> <span class="dt">Nat</span> <span class="dt">Nat</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>      mNat <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \n <span class="ot">-&gt;</span> (<span class="dt">Suc</span> n, n)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState (mm mNat) <span class="dt">Z</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">AssocLawTy</span> <span class="ot">=</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s (<span class="dt">State</span> s (<span class="dt">State</span> s a)) <span class="ot">-&gt;</span> <span class="dt">State</span> s a</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">S</span> <span class="ot">=</span> <span class="dt">Leaf</span> <span class="op">|</span> <span class="dt">A</span> <span class="dt">S</span> <span class="op">|</span> <span class="dt">B</span> <span class="dt">S</span> <span class="dt">S</span> <span class="op">|</span> <span class="dt">C</span> <span class="dt">S</span> <span class="dt">S</span> <span class="dt">S</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="ot">encode3 ::</span> (<span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>) <span class="ot">-&gt;</span> <span class="dt">AssocLawTy</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>encode3 <span class="ot">=</span> <span class="co">{- 省略 -}</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="ot">decode3 ::</span> <span class="dt">AssocLawTy</span> <span class="ot">-&gt;</span> (<span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>decode3 <span class="ot">=</span> <span class="co">{- 省略 -}</span></span></code></pre></div>
+<p>これらのエンコーディングは同型写像なので、等式の両辺に適用しても
+等式が成り立つ条件を変えません。したがって、以下のような補助関数を用いて…</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">idRep ::</span> (<span class="dt">Nat</span>, <span class="dt">Nat</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>idRep <span class="ot">=</span> decode1 (<span class="fu">id</span><span class="ot"> ::</span> <span class="kw">forall</span> s a<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> <span class="dt">State</span> s a)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="ot">leftUnitLHS ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>) <span class="ot">-&gt;</span> (<span class="dt">Nat</span>, <span class="dt">Nat</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>leftUnitLHS def <span class="ot">=</span> decode1 (encodeJoin def <span class="op">.</span> <span class="fu">return</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="ot">rightUnitLHS ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>) <span class="ot">-&gt;</span> (<span class="dt">Nat</span>, <span class="dt">Nat</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>rightUnitLHS def <span class="ot">=</span> decode1 (encodeJoin def <span class="op">.</span> <span class="fu">fmap</span> <span class="fu">return</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>assocLHS,<span class="ot"> assocRHS ::</span> (<span class="dt">T</span>,<span class="dt">T</span>,<span class="dt">T</span>) <span class="ot">-&gt;</span> (<span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>, <span class="dt">S</span>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>assocLHS def <span class="ot">=</span> decode3 (encodeJoin def <span class="op">.</span> encodeJoin def)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>assocRHS def <span class="ot">=</span> decode3 (encodeJoin def <span class="op">.</span> <span class="fu">fmap</span> (encodeJoin def))</span></code></pre></div>
+<p>…<code>Monad</code>則は以下のように記述できます。</p>
+<ul>
+<li>左単位則 <code>leftUnitLHS def = idRep</code></li>
+<li>右単位則 <code>rightUnitLHS def = idRep</code></li>
+<li>結合則 <code>assocLHS def = assocRHS def</code></li>
+</ul>
+<p>この等式は<em>代数的データ</em>の間の等式なので、変数<code>def</code>の動く範囲も含めて
+「ポリモーフィックな関数」に一度も言及せずに<code>Monad</code>則を表すことができたことになります。</p>
+<h3 id="パート3-場合分けを頑張れば答えが出せる">パート3: 場合分けを頑張れば答えが出せる</h3>
+<p>さて、前パートの<code>leftUnitLHS</code>などの補助関数は、型を見るとわかるように
+<em>代数的データ型から代数的データ型へのごく普通の関数</em>であり、
+その計算方法も<code>encode*, decode*</code>などを展開すると具体的にわかります。
+例えば、<code>idRep</code>を実際に評価してみれば<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a><code>idRep = (Suc Z, Z)</code>がわかりますし、<code>leftUnitLHS, rightUnitLHS</code>も、
+具体的には以下のような関数(に同値な振る舞いの関数)であることが計算できます。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>leftUnitLHS (t,l,r)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (countGs t, countGs r)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>rightUnitLHS (t,l,r)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> (countFs t, countFs l)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- ただしcountGs, countFsは以下の関数</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ot">countGs ::</span> <span class="dt">T</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>countGs (<span class="dt">F</span> t') <span class="ot">=</span> countGs t'</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>countGs (<span class="dt">G</span> _ t') <span class="ot">=</span> <span class="dt">Suc</span> (countGs t')</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>countGs <span class="dt">X</span> <span class="ot">=</span> <span class="dt">Z</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="ot">countFs ::</span> <span class="dt">T</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>countFs (<span class="dt">F</span> t') <span class="ot">=</span> <span class="dt">Suc</span> (countFs t')</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>countFs (<span class="dt">G</span> _ t') <span class="ot">=</span> countFs t'</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>countFs <span class="dt">X</span> <span class="ot">=</span> <span class="dt">Z</span></span></code></pre></div>
+<p>これにより、<code>Monad</code>則は、具体的な定義をもつ補助関数たちによって書かれた、
+代数的データ型<code>(T,T,T)</code>上を動く変数<code>def</code>についての”連立方程式”と見做すことができます。</p>
+<p>後はひたすら場合分けをしていくことでこの”連立方程式”を解き、
+その解が<code>def = usualDef = (G X (F X), X, F X)</code>の一点に限ることを示すのみです。
+本記事にその細部までは書ききれませんが、雰囲気を感じていただくため、
+単位則だけからわかる部分までを解説します。</p>
+<p>上に結果だけ記した<code>leftUnitLHS, rightUnitLHS</code>の計算方法を<code>Monad</code>則に代入すると、</p>
+<ul>
+<li>左単位則 <code>leftUnitLHS (t,l,r) = (countGs t, countGs r) = (Suc Z, Z)</code></li>
+<li>右単位則 <code>rightUnitLHS (t,l,r) = (countFs t, countFs l) = (Suc Z, Z)</code></li>
+</ul>
+<p>となります。タプル間の等式を成分ごとに書けば、(eq1)–(eq4)が得られます。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>countGs t <span class="ot">=</span> <span class="dt">Suc</span> <span class="dt">Z</span>        <span class="co">-- (eq1)</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>countGs r <span class="ot">=</span> <span class="dt">Z</span>            <span class="co">-- (eq2)</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>countFs t <span class="ot">=</span> <span class="dt">Suc</span> <span class="dt">Z</span>        <span class="co">-- (eq3)</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>countFs l <span class="ot">=</span> <span class="dt">Z</span>            <span class="co">-- (eq4)</span></span></code></pre></div>
+<p>これから、以下の3式が成り立ちます。</p>
+<ul>
+<li><p>ある自然数<code>n</code>を用いて、<code>r = F^n X</code></p>
+<ul>
+<li><details>
+<p>(eq2)より<code>countGs r = Z</code>ですが、これは<code>r</code>が<code>G _ _</code>という部分項を含まないこと、すなわち</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">=</span> <span class="dt">X</span> <span class="op">|</span> <span class="dt">F</span> <span class="dt">X</span> <span class="op">|</span> <span class="dt">F</span> (<span class="dt">F</span> <span class="dt">X</span>) <span class="op">|</span> <span class="op">...</span></span></code></pre></div>
+<p>であることがわかります。</p>
+</details></li>
+</ul></li>
+<li><p>ある自然数<code>m</code>を用いて、<code>l = (G _)^m X</code></p>
+<ul>
+<li><details>
+<p>(eq4)より<code>countFs l = Z</code>です。これは</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">=</span> <span class="dt">X</span> <span class="op">|</span> <span class="dt">G</span> u₁ <span class="dt">X</span> <span class="op">|</span> <span class="dt">G</span> u₁ (<span class="dt">G</span> u₂ <span class="dt">X</span>) <span class="op">|</span> <span class="op">...</span></span></code></pre></div>
+<p>を意味します。正確な情報を忘れてしまってよいのであれば、<code>l = (G _)^m X</code>と表記してもよいでしょう。</p>
+</details></li>
+</ul></li>
+<li><p>ある<code>u :: T</code>を用いて、<code>t = F (G u X)</code>または<code>t = G u (F X)</code></p>
+<ul>
+<li><details>
+<p>(eq1)と(eq3)より、<code>countFs t = countGs t = Suc Z</code>です。
+ここで<code>T</code>型の値<code>t</code>の値について場合分けをします。</p>
+<ol type="1">
+<li><p><code>t = X</code> ではありえません。</p></li>
+<li><p><code>t = F t'</code> の場合:</p>
+<p>まず、<code>countFs</code>の定義より <code>countFs (F t') = Suc (countFs t') = Suc Z</code>であり、
+<code>countFs t' = Z</code>でなければなりません。(eq4)と同様にして<code>t' = (G _)^m X</code>
+がわかります。</p>
+<p>また、<code>countGs (F t') = countGs t' = countGs ((G _)^m X) = Suc Z</code>
+であるので、<code>m = 1</code>が得られます。すなわち、<code>t'</code>はある<code>u</code>を用いて<code>t' = G u X</code>と表されます。</p></li>
+<li><p><code>t = G u t'</code> の場合:</p>
+<p><code>countGs</code>の定義より <code>countGs (G u t') = Suc (countGs t') = Suc Z</code>であり、
+<code>countGs t' = Z</code>でなければなりません。(eq2)と同様にして<code>t' = F^n X</code>がわかります。</p>
+<p>また、<code>countFs (G u t') = countFs t' = countFs (F^n X) t = Suc Z</code>
+であるので、<code>n = 1</code>が得られます。すなわち、<code>t' = F X</code>です。</p></li>
+</ol>
+<p>場合分けをまとめると、ある<code>u</code>を使って<code>t = F (G u X)</code>または<code>t = G u (F X)</code>のどちらかであることがわかります。</p>
+</details></li>
+</ul></li>
+</ul>
+<p>通常のStateモナドは<code>Monad</code>則を満たしているので、
+それに対応する<code>usualDef = (G X (F X), X, F X)</code>も当然にこれらの条件をすべてクリアしているはずです。
+確かめてみてください。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>Haskellにおいて<code>instance Monad (State s) where ...</code>と書けるインスタンスで<code>Monad</code>則を満たすものは、
+“普通の”Stateモナドしか存在しません。この記事ではその証明の大まかな方針を説明しました。</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>実は、上記の形のインスタンスを持つ<a href="https://hackage.haskell.org/package/rev-state-0.2.0.1/docs/Control-Monad-RevState.html">Reverse State Monad</a>というものがあります。
+Reverse State Monadは、通常のStateモナドとは異なり、遅延評価と再帰を使って<code>(&gt;&gt;=)</code>が定義されるモナドで、一定の条件下に限れば<code>Monad</code>則を満たしますが、
+その条件を満たさなかった場合<code>(&gt;&gt;=)</code>が「全域でない関数<code>s -&gt; (s, a)</code>」を作り出すなど、いまひとつ同じ土俵に乗りません。</p>
+<p>私の知識不足が大きいでしょうが、このモナドは後述する Boehm–Beraducci エンコーディングの枠組みで捉えることもできず、
+どう考えるべきかはっきりしません。なるべくad hocに見えない方法でReverse State Monadの類を除外する為に
+“部分関数はないものとする”という前提を設けました。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://ja.wikipedia.org/wiki/%E3%83%A9%E3%83%A0%E3%83%80%E8%A8%88%E7%AE%97#%E8%AB%B8%E6%A6%82%E5%BF%B5%E3%81%AE%E3%83%A9%E3%83%A0%E3%83%80%E5%BC%8F%E3%81%A7%E3%81%AE%E8%A1%A8%E7%8F%BE">チャーチ・エンコーディング</a>
+をご存知の場合、これは”厳密な型の付いた”チャーチ・エンコーディングと考えてもかまいません。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>GHCiなどを使って<code>idRep</code>を評価させることができます<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
