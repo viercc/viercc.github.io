@@ -35,6 +35,8 @@
                 <li>Posted on 2024-12-10</li>
             
             
+                <li>Last modified on 2024-12-18</li>
+            
             
             
         </ul>
@@ -81,7 +83,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <p>実は、<code>Monad</code>則を満たさなくてもよいならば、幾らでも異なるインスタンスを作ることができます。
 例えば、以下のインスタンスはコンパイルできますが、<code>Monad</code>則を満たしません。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> a <span class="ot">=</span> <span class="dt">State</span> \s <span class="ot">-&gt;</span> (s, a)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> a <span class="ot">=</span> <span class="dt">State</span> <span class="op">$</span> \s <span class="ot">-&gt;</span> (s, a)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> strangeBind</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">strangeBind ::</span> <span class="kw">forall</span> s a b<span class="op">.</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">State</span> s b) <span class="ot">-&gt;</span> <span class="dt">State</span> s b</span>
@@ -370,7 +372,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <blockquote>
 <p><code>join = encodeJoin def</code>が<code>Monad</code>則を満たすような<code>def :: (T,T,T)</code>は<code>usualDef</code>のみである</p>
 </blockquote>
-<p>になりました。</p>
+<p>になりました。 <code>join = encodeJoin def</code>を代入した<code>Monad</code>則は以下の通りです。</p>
 <ul>
 <li>左単位則(left unit) <code>encodeJoin def . return === id</code></li>
 <li>右単位則(right unit) <code>encodeJoin def . fmap return === id</code></li>
@@ -426,7 +428,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <li>右単位則 <code>rightUnitLHS def = idRep</code></li>
 <li>結合則 <code>assocLHS def = assocRHS def</code></li>
 </ul>
-<p>この等式は<em>代数的データ</em>の間の等式なので、変数<code>def</code>の動く範囲も含めて
+<p>この等式は<em>代数的データ型</em>の値の間の等式なので、変数<code>def</code>の動く範囲も含めて
 「ポリモーフィックな関数」に一度も言及せずに<code>Monad</code>則を表すことができたことになります。</p>
 <h3 id="パート3-場合分けを頑張れば答えが出せる">パート3: 場合分けを頑張れば答えが出せる</h3>
 <p>さて、前パートの<code>leftUnitLHS</code>などの補助関数は、型を見るとわかるように
