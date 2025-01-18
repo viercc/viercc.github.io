@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - 多項式コモナドの準同型 ≃ Retrofunctor</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.css" integrity="sha384-sMefv1J1YJCHsg0mTa9YG+n/9KnJb9lGrJUUY5arg6bAL1qps/oZjmUwaHlX5Ugg" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.js" integrity="sha384-i9p+YmlwbK0lT9RcfgdAo/Cikui1KeFMeV/0Fwsu+rzgsCvas6oUptNOmo29C33p" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>多項式コモナドの準同型 ≃ Retrofunctor</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2025-01-13</li>
+            
+            
+                <li>Last modified on 2025-01-18</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <!-- basic set manipulation -->
+<p><span class="math inline">\gdef\id{\mathop{\mathrm{id}}}
+  \gdef\comp{\circ}
+  \gdef\placeholder{{-}}
+  \gdef\setsum{\operatorname{\raisebox{-0.2em}{$\Large\Sigma$}}}
+  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}</span>
+<!-- category theory -->
+<span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\Functors#1{\mathrm{\mathbf{Fun}}\left({#1}\right)}
+  \gdef\Monads#1{\mathrm{\mathbf{Monads}}\left({#1}\right)}
+  \gdef\Comonads#1{\mathrm{\mathbf{Comonads}}\left({#1}\right)}
+  \gdef\CatC{\Cat^\sharp}
+  \gdef\Ob{\mathop{\mathrm{Ob}}}
+  \gdef\Mor{\mathop{\mathrm{Mor}}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\map{\mathop{\mathrm{map}}}
+  \gdef\binprod{\mathbin{\Pi}}
+  \gdef\bincoprod{\mathbin{\amalg}}
+  \gdef\Id{\mathrm{Id}}</span>
+<!-- custom notations -->
+<span class="math inline">\gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\homsetl#1#2{{#1}\! \left\lbrack {#2} \right\rbrack}
+  \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
+  \gdef\Cont{\mathrm{\mathbf{Cont}}}
+  \gdef\Poly{\mathrm{\mathbf{Poly}}}
+  \gdef\PolyFunctor#1{\mathrm{\mathbf{PFun}}\left({#1}\right)}
+  \gdef\contcomp{\lhd}
+  \gdef\inl{\operatorname{\mathtt{inl}}}
+  \gdef\inr{\operatorname{\mathtt{inr}}}
+  \gdef\divleft#1#2{\frac{{#1}, \_}{{#1}, {#2}}}
+  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}</span>
+<span class="math inline">\gdef\rootpos{o}
+  \gdef\nextshape{\darr}
+  \gdef\posplus{\oplus}
+  \gdef\retroarr{\nrightarrow}</span></p>
+<p>この記事は、以前から投稿している「多項式コモナドと小さい圏の対応」関連のシリーズです。</p>
+<ul>
+<li><a href="../posts/2024-08-30-cat-morphism-division.html">射の分割をもつ圏</a></li>
+<li><a href="../posts/2024-09-06-directed-containers-explained.html">解説: Directed Containers as Categoires</a></li>
+</ul>
+<h2 id="多項式コモナドの圏-小さい圏の圏">多項式コモナドの圏 ＝ ??? (≠ 小さい圏の圏)</h2>
+<p>前回の記事では、文献(<a href="https://arxiv.org/abs/1604.01187">“Directed Containers as Categories”</a>)の
+解説として「多項式コモナドと小さい圏には(同型を除いて)1対1の対応が付く」ことを解説しました。
+しかし、「1対1の対応が付く」だけでは不満が残る点があります。</p>
+<p>（あらゆる数学的構造がそうであるように、）コモナドは個々のコモナドを別々に考えるのではなく、それらの間の関係を調べることが大事であり、
+通常は<em>コモナド準同型</em>というコモナドの間の自然変換を考え、それらを射とする<em>コモナドの圏</em><span class="math inline">\Comonads{\Set}</span>を考察対象とします。同じように、小さい圏は関手を射とする<em>小さい圏の圏</em><span class="math inline">\Cat</span>を考えることが普通です。ここで「1対1の対応が付く」というのは、それらの圏の対象の間の対応がとれているという意味でしかなく、射については何一つ言及できていません。</p>
+<p>実際、前回の記事でも少し述べましたが、多項式コモナドの圏（<span class="math inline">\Comonads{\Set}</span>の部分圏）と小さい圏の圏<span class="math inline">\Cat</span>の射は対応しません。そこで、射として関手ではなくコモナド準同型と正確に対応する<strong>何か</strong>を考えた新しい圏<span class="math inline">\CatC</span>を考えることにします。
+この<strong>何か</strong>は<em>cofunctor</em>あるいは<em>retrofunctor</em>と呼ばれています。</p>
+<p>この記事では以下の参考文献に基づきcofunctor, retrofunctorを解説していきます。
+この参考文献においては(おそらくcofunctorの定義が先行する文献内で微妙にブレているため?)retrofunctorという名称を(新たに?)用いており、本記事ではそれに倣い、以降はretrofunctorに呼称を統一します。</p>
+<ul>
+<li><p>Nelson Niu and David I. Spivak, “Polynomial Functors: A Mathematical Theory of Interaction,” <a href="https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf">https://github.com/ToposInstitute/poly/blob/pdf/poly-book.pdf</a></p>
+<ul>
+<li>Retrofunctorの定義は§7.3 (2025年1月現在)</li>
+</ul></li>
+</ul>
+<p><strong>この記事の内容は特筆しない限り上記の文献に基づきます。</strong>また、上記文献は現在も執筆が進んでいる途中のようであることに注意してください。私はここで解説する内容に大きな修正はないだろうと予想していますが、
+章番号の変化などはあるでしょう。</p>
+<h2 id="多項式コモナドの準同型からretrofunctorへ">「多項式コモナドの準同型」からretrofunctorへ</h2>
+<p>多項式コモナドの準同型と対応する「小さい圏の間の射」を考えることで、retrofunctorの定義を導出します。</p>
+<p>前回の記事で述べたことをまとめると、多項式関手<span class="math inline">W = \asfunctor{S,P}</span>を台とするコモナドは、directedコンテナ<span class="math inline">(S,P,\rootpos, \nextshape, \posplus)</span>として以下のように記述でき、</p>
+<p><span class="math display">
+  \begin{align}
+    \begin{aligned}
+      W(\placeholder) &amp;= \setsum (s \in S). \left( Ps \to \placeholder \right) \\
+        &amp;= \set{ (s,v) | s \in S, v \in Ps \to \placeholder } \\
+      \operatorname{extract}_{W} (s,v) &amp;= v(\rootpos_s) \\
+      \operatorname{duplicate}_{W} (s,v) &amp;=
+        \left(
+          s,
+          \lambda p. \left(
+            s \nextshape p,
+            \lambda p'. v(p \posplus_{s} p')
+          \right)
+        \right)
+    \end{aligned}
+  \end{align}
+</span></p>
+<p>directedコンテナは小さい圏<span class="math inline">C</span>と以下の式によって1対1に対応します。</p>
+<p><span class="math display">
+  \begin{align}
+    S &amp;= \Ob(C) \\
+    Ps &amp;= \homsetl{C}{s} \notag\\
+     &amp;= \set{ p | p \in \Mor(C), \dom p = s } \\
+    \rootpos_s &amp;= \id_s \\
+    s \nextshape p &amp;= \cod p \\
+    p \posplus_{s} p' &amp;= p;p'
+  \end{align}
+</span></p>
+<p>ここからdirectedコンテナの定義を消去すると、以下の通り多項式コモナド<span class="math inline">W</span>と小さい圏<span class="math inline">C</span>を直接関係付ける式が得られます。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><span class="math display">
+  \begin{align}
+    W(\placeholder) &amp;= \setsum (c \in \Ob(C)). (\homsetl{C}{c} \to \placeholder) \\
+     &amp;= \set{ (c,v) | c \in \Ob(C), v \in \homsetl{C}{c} \to \placeholder } \notag \\
+    \operatorname{extract}_{W}(c,v) &amp;= v(\id_{c}) \\
+    \operatorname{duplicate}_{W}(c,v) &amp;=
+      (c, \lambda p. (\cod p, \lambda p'. v(p;p')) )
+  \end{align}
+</span></p>
+<p>この対応関係を用いて、多項式コモナド<span class="math inline">W</span>と<span class="math inline">W'</span>の間のコモナド準同型、
+すなわちコモナド演算を保つような自然変換<span class="math inline">\tau_a : Wa \to W'a</span>が、
+小さい圏については何を表すのかを求めていきます。</p>
+<p><span class="math display">
+  \begin{align}
+    \operatorname{extract}_{W'} \comp \tau &amp;= \operatorname{extract}_{W} \\
+    \operatorname{duplicate}_{W'} \comp \tau &amp;= \map_{W'} \tau \comp \tau \comp \operatorname{duplicate}_{W}
+  \end{align}
+</span></p>
+<p>多項式コモナド<span class="math inline">W,W'</span>は小さい圏<span class="math inline">C,D</span>をそれぞれ用いて上記のように表現されているとします。
+多項式関手の間の自然変換はどれも、一定の方法でコンテナの射<span class="math inline">(t,q)</span>として表すことができます。自然変換<span class="math inline">\tau_a : Wa \to W' a</span>をコンテナの射<span class="math inline">(t,q)</span>として表すと以下のようになります。</p>
+<p><span class="math display">
+  \begin{align}
+      \tau_a(c,v) &amp;= (tc, v \comp qc)
+  \end{align}
+</span></p>
+<p>ここで<span class="math inline">(t,q)</span>はそれぞれ以下のような型をもった関数です。</p>
+<p><span class="math display">
+  \begin{align}
+      t &amp;: \Ob(C) \to \Ob(D) \\
+      q &amp;: \setprod (c : \Ob(C)). \homsetl{D}{tc} \to \homsetl{C}{c}
+  \end{align}
+</span></p>
+<p>このコンテナの射は、<span class="math inline">C</span>から<span class="math inline">D</span>への関手に似て非なるものになっています。
+関手のごとく<span class="math inline">t</span>は<span class="math inline">C</span>の対象<span class="math inline">c</span>を<span class="math inline">D</span>の対象<span class="math inline">tc</span>へ送る写像ですが、
+コンテナの射のもう一部<span class="math inline">q</span>は<span class="math inline">D</span>の射<span class="math inline">p : \homsetl{D}{tc}</span>を<span class="math inline">C</span>の射<span class="math inline">qcp' : \homsetl{C}{c}</span>に送ります。通常の関手と違い、<strong>対象と射で逆の方向に送る写像</strong>で定義されているのです！</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 28%" />
+<col style="width: 57%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>対象</td>
+<td>射</td>
+</tr>
+<tr class="even">
+<td>関手<span class="math inline">F</span></td>
+<td><span class="math inline">F : \Ob(C) \to \Ob(D)</span></td>
+<td><span class="math inline">\map_F : \homset{C}{c}{c'} \to \homset{D}{Fc}{Fc'}</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">(t,q)</span></td>
+<td><span class="math inline">t : \Ob(C) \to \Ob(D)</span></td>
+<td><span class="math inline">q : \homsetl{D}{tc} \to \homsetl{C}{c}</span></td>
+</tr>
+</tbody>
+</table>
+<p>また、関手は恒等射と射の合成を保つという性質も持つ必要がありました。コモナド準同型<span class="math inline">\tau</span>も、それがコモナド演算を保つ必要があるため、それに対応して<span class="math inline">(t,q)</span>にも満たすべき性質があります。</p>
+<p>コモナド演算のうち<span class="math inline">\operatorname{extract}</span>を保つという性質を考えると、</p>
+<p><span class="math display">
+  \begin{align}
+    \operatorname{extract}_{W'} (\tau(c,v)) &amp;= \operatorname{extract}_{W}(c,v) \notag \\
+    (v \comp qc)(\id_{tc}) &amp;= v(\id_c) \notag \\
+    v(qc(\id_{tc})) &amp;= v(\id_c) \notag
+  \end{align}
+</span></p>
+<p>であり、<span class="math inline">v</span>は任意の関数であったので</p>
+<p><span class="math display">
+  \begin{align}
+    qc(\id_{tc}) &amp;= \id_c
+  \end{align}
+</span></p>
+<p>を得ます。また、<span class="math inline">\operatorname{duplicate}</span>を保つという性質から</p>
+<p><span class="math display">
+  \begin{align*}
+   \operatorname{duplicate}_{W'} (\tau(c,v)) &amp;= (\map_{W'} \tau \comp \tau \comp \operatorname{duplicate}_{W})(c,v) \\
+   \text{左辺}
+    &amp;= \operatorname{duplicate}_{W'} (\tau(c,v)) \\
+    &amp;= \operatorname{duplicate}_{W'} (tc, v \comp qc) \\
+    &amp;= (tc, \lambda p. (\cod p, \lambda p'. (v\comp qc) (p;p') ))\\
+   \text{右辺}
+    %= (\map_{W'} \tau \comp \tau \comp \operatorname{duplicate}_{W})(c,v) \\
+    &amp;= (\map_{W'} \tau \comp \tau)(c, \lambda p. (\cod p, \lambda p'. v(p;p'))) \\
+    &amp;= \map_{W'} \tau (tc, \lambda p. (\cod (qcp), \lambda p'. v(qcp; p'))) \\
+    &amp;= (tc, \lambda p. (t (\cod (qcp)), \lambda p. v(qcp; q(\cod(qcp))p')))
+  \end{align*}
+</span></p>
+<p>です。両辺の比較から、まず任意の<span class="math inline">c : \Ob(c)</span>と<span class="math inline">p : \homsetl{D}{tc}</span>について</p>
+<p><span class="math display">
+  \begin{align}
+    \cod p &amp;= t(\cod (qcp))
+  \end{align}
+</span></p>
+<p>であり、加えて任意の<span class="math inline">p' : \homsetl{D}{\cod p}</span>について</p>
+<p><span class="math display">
+  \begin{gather}
+    qc(p;p') = qcp; qc'p'  \\
+    \quad \quad \text{where} \quad c' = \cod(qcp) : \Ob(C)
+  \end{gather}
+</span></p>
+<p>を得ます。</p>
+<p>Retrofunctorは、単にここから<span class="math inline">(t,q)</span>の記号を変更したものです。</p>
+<dl>
+<dt>(定義) Retrofunctor</dt>
+<dd>
+<p><span class="math inline">C,D</span>を小さい圏とする。Retrofunctor <span class="math inline">F : C \retroarr D</span>とは、</p>
+<ul>
+<li>対象について順方向の関数 <span class="math inline">F : \Ob(C) \to \Ob(D)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
+<li>射について逆方向の関数 <span class="math inline">F_{c}^{\sharp} : \homsetl{D}{Fc} \to \homsetl{C}{c}</span></li>
+</ul>
+<p>からなり、以下の性質をすべて満たすもののことである。</p>
+<ol type="1">
+<li><p><em>恒等射を保つ</em>。 任意の<span class="math inline">c \in \Ob(C)</span>について次式が成り立つ。</p>
+<p><span class="math display"> F_{c}^{\sharp} \id_{Fc} = \id_{c} </span></p></li>
+<li><p><em>余域<span class="math inline">(\cod)</span>を保つ</em>。 任意の<span class="math inline">c \in \Ob(C)</span>と<span class="math inline">g \in \homsetl{D}{Fc}</span>について次式が成り立つ。</p>
+<p><span class="math display"> F(\cod F_{c}^{\sharp} g) = \cod g </span></p></li>
+<li><p><em>合成を保つ</em>。 任意の<span class="math inline">c \in \Ob(C)</span>と
+<span class="math inline">g \in \homsetl{D}{Fc}, h \in \homsetl{D}{\cod g}</span>について次式が成り立つ。</p>
+<p><span class="math display"> F_{c}^{\sharp} (g; h) = F_{c}^{\sharp} g; F_{c'}^{\sharp} h </span></p>
+<p>ただし<span class="math inline">c' = \cod F_{c}^{\sharp} g \in \Ob(C)</span>とおいた。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p></li>
+</ol>
+</dd>
+</dl>
+<p>Retrofunctorは、もともと圏を成している多項式コモナドの射に対応しているので、それ自体も「retrofunctorを射とする圏」を作ることができます。小さい圏を対象、retrofunctorを射とする圏を<span class="math inline">\CatC</span>と表記することにします。
+構成の仕方から、<span class="math inline">\CatC</span>は多項式コモナドの圏と圏同値です。</p>
+<div class="sidenote">
+<p>
+(補足) 「圏<span class="math inline">\mathcal{C}</span>が圏<span class="math inline">\mathcal{C}'</span>と圏同値」というのは、次のような関手のペア<span class="math inline">F : \mathcal{C}\to\mathcal{C}'</span>と<span class="math inline">G : \mathcal{C}'\to \mathcal{C}</span>が存在することを
+指します。
+<il>
+<li>
+<span class="math inline">\mathcal{C}</span>の各対象<span class="math inline">a</span>に対して、<span class="math inline">G(F(a))</span>と<span class="math inline">a</span>は同型
+</li>
+<li>
+<span class="math inline">\mathcal{C}'</span>の各対象<span class="math inline">a'</span>に対して、<span class="math inline">F(G(a'))</span>と<span class="math inline">a'</span>は同型
+</li>
+</il>
+</p>
+<p>
+今の例でいえば、「多項式コモナド<span class="math inline">W</span>から小さい圏<span class="math inline">F(W)</span>を作り、コモナド準同型<span class="math inline">W(-) \to W'(-)</span>からretrofunctor<span class="math inline">F(W)\retroarr F(W')</span>を作る関手<span class="math inline">F</span>」と、「小さい圏<span class="math inline">C</span>から多項式コモナド<span class="math inline">G(C)</span>を作り、retrofunctor<span class="math inline">C \retroarr C'</span>からコモナド準同型<span class="math inline">G(C)(-)\to G(C')(-)</span>を作る関手<span class="math inline">G</span>」が存在して、
+それらが上記のように”同型を除いて”互いに逆である、というものです。
+</p>
+<p>
+ここで、小さい圏<span class="math inline">F(G(C))</span>と<span class="math inline">C</span>が”同型”であるというのは、厳密に言うと、通常の（<span class="math inline">\Cat</span>での）同型（すなわち、<em>関手</em><span class="math inline">F : F(G(C))\to C</span>であって可逆なものが存在する）ではなく、<span class="math inline">\CatC</span>の意味での同型、つまり<em>retrofunctor</em><span class="math inline">F : F(G(C)) \retroarr C</span>であって可逆なものが存在するという意味です。
+ですが、この2種類の”同型”の区別は実際には不要です。「小さい圏が<span class="math inline">\Cat</span>において同型 ⇔ <span class="math inline">\CatC</span>において同型」が成り立つからです。
+</p>
+</div>
+<h3 id="retrofunctorの気持ち">Retrofunctorの気持ち</h3>
+<p>ここで定義したretrofunctor<span class="math inline">F : C \retroarr D</span>は、あまり直感的に理解できない概念かと思います。
+Retrofunctorの気持ちの一つとして、「retrofunctorはユーザーインターフェースのようなものである」という
+たとえ話ができます。</p>
+<ul>
+<li><p>小さい圏<span class="math inline">C</span>を、ある機械(“本体”)だとみなします。対象<span class="math inline">c \in \Ob(C)</span>はこの機械の状態であり、
+射<span class="math inline">f \in \homset{C}{c}{c'}</span>はこの機械が状態<span class="math inline">c</span>から<span class="math inline">c'</span>へ移行するなんらかの操作を表していると考えます。</p></li>
+<li><p>小さい圏<span class="math inline">D</span>も同じように、別の機械(“リモコン”)だと考えます。</p></li>
+<li><p>Retrofunctor<span class="math inline">F : C \retroarr D</span>は、機械<span class="math inline">D</span>(“リモコン”)が機械<span class="math inline">C</span>(“本体”)の
+ユーザーインターフェースとして振る舞っていることを表します。</p>
+<ul>
+<li><p>対象についての写像<span class="math inline">F(-) : \Ob(C) \to \Ob(D)</span>は、“本体”<span class="math inline">C</span>の状態から、
+“リモコン”<span class="math inline">D</span>の状態が決まる、ということを表します。</p></li>
+<li><p>射についての写像<span class="math inline">F_c^{\sharp} : \homsetl{D}{Fc} \to \homsetl{C}{c}</span>は、
+“本体”の状態が<span class="math inline">c</span>にあるとき、
+“リモコン”の状態を現在の<span class="math inline">Fc</span>から別の<span class="math inline">d</span>へ動かす操作<span class="math inline">g</span>を
+“本体”に対する操作<span class="math inline">F_c^{\sharp} g</span>に変換する写像です。</p>
+<ul>
+<li><p><em>恒等射を保つ</em>性質は、リモコンに対して何もしない操作<span class="math inline">\id_{Fc}</span>は、
+本体に対しても何も変化させないことを表します。</p></li>
+<li><p><em>余域を保つ</em>性質は、リモコンと本体に対する操作の結果としてたどりつく状態が、
+状態の写像<span class="math inline">F</span>と整合していることを表します。</p>
+<p>リモコンの状態を<span class="math inline">d</span>に変える操作<span class="math inline">g \in \homset{D}{Fc}{d}</span>を本体への操作にした
+<span class="math inline">F_c^{\sharp}g</span>が本体の状態を<span class="math inline">c'</span>へと変えるものであるならば（<span class="math inline">\dom (F_c^{\sharp}g) = c'</span>）、
+その状態をリモコンに反映すると<span class="math inline">Fc'=d</span>となり、リモコン単独で見たときの状態遷移と整合します。</p></li>
+<li><p><em>合成を保つ</em>性質は、リモコン上の操作の合成が、本体に対する操作の合成と整合していることを表します。</p></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="retrofunctorを射とする圏catc">Retrofunctorを射とする圏<span class="math inline">\CatC</span></h2>
+<p>圏<span class="math inline">\CatC</span>の、圏論的な性質をいくつか見てみましょう。</p>
+<h3 id="余積">余積<span class="math inline">+</span></h3>
+<p>任意の圏<span class="math inline">C_1</span>と<span class="math inline">C_2</span>から、それらの<em>圏の余積</em><span class="math inline">C_1 + C_2</span>を定義できます。
+直観的には、<span class="math inline">C_1 + C_2</span>は<span class="math inline">C_1</span>と<span class="math inline">C_2</span>の対象と射を、互いに関係のないまま足しただけの圏です。
+もう少し丁寧に述べると、<span class="math inline">C_1 + C_2</span>は次のような圏です。</p>
+<ul>
+<li><p>対象はそれぞれの圏の対象の直和<span class="math inline">\Ob(C_1 + C_2) = \Ob(C_1) + \Ob(C_2)</span></p></li>
+<li><p>射もそれぞれの圏の射の直和</p>
+<p><span class="math display">
+  \begin{align*}
+    \Mor(C_1 + C_2) &amp;= \Mor(C_1) + \Mor(C_2) \\
+    \dom(\inl c_1) &amp;= \inl (\dom c_1) \\
+    \dom(\inr c_2) &amp;= \inr (\dom c_2) \\
+    \cod(\inl c_1) &amp;= \inl (\cod c_1) \\
+    \cod(\inr c_2) &amp;= \inr (\cod c_2)
+  \end{align*}
+</span></p></li>
+<li><p>射の合成は元の圏と同じものを使う。元の圏が異なる射どうしは合成可能でない。</p></li>
+</ul>
+<p>小さい圏の余積は、名前が示唆するように、<span class="math inline">\Cat</span>における余積になっています。すなわち、
+和を構成する関手<span class="math inline">I_1 : C_1 \to C_1 + C_2</span>, <span class="math inline">I_2 : C_2 \to C_1 + C_2</span>
+と、<em>和の普遍性</em>を持ちます。すなわち任意の関手の組<span class="math inline">(G_i : C_i \to D)_i</span>に対して、
+<span class="math inline">G_i = G \comp I_i</span>となるような関手<span class="math inline">G : C_1 + C_2 \to D</span>が一意に存在します。</p>
+<p>また、空な圏<span class="math inline">0</span>、すなわち対象を全くもたない圏を”ゼロ個の圏の余積”とみなすことができます。</p>
+<p>そして、<span class="math inline">+</span>は<span class="math inline">\CatC</span>においても余積になっています。</p>
+<ul>
+<li><p>和を構成するretrofunctor<span class="math inline">\tilde{I}_1, \tilde{I}_2</span>は以下のように定義できます。
+（<span class="math inline">I_1</span>の場合だけ示します）</p>
+<ul>
+<li><p>対象における写像は関手<span class="math inline">I_1</span>と同じです。</p>
+<p><span class="math display">\tilde{I}_1(c_1) = \inl c_1</span></p></li>
+<li><p>射についての写像<span class="math inline">\tilde{I}_{1,c}^{\sharp} : \homsetl{(C_1+C_2)}{\tilde{I}_1(c)} \to \homsetl{C_1}{c}</span>
+において、定義域となる射の集合<span class="math inline">\homsetl{(C_1+C_2)}{\tilde{I}_1(c)}</span>は</p>
+<p><span class="math display">
+  \begin{align*}
+    \homsetl{(C_1+C_2)}{\tilde{I}_1(c)}
+     &amp;= \set{ f | f \in \Mor(C_1+C_2), \dom(f) = \inl c } \\
+     &amp;= \set{ \inl f | f \in \Mor(C_1), \dom(f) = c } \\
+     &amp;= \set{ \inl f | f \in \homsetl{C_1}{c} } \\
+  \end{align*}
+</span></p>
+<p>であり、これは単射<span class="math inline">\inl</span>による<span class="math inline">\homsetl{C_1}{c}</span>の像です。
+<span class="math inline">\tilde{I}_{1,c}^{\sharp}</span>は<span class="math inline">\inl</span>を外す写像として定義でき、
+そうするとretrofunctorとなるために必要な性質を満たします。</p></li>
+</ul></li>
+</ul>
+<p>普遍性については省略しますが、そちらも素直に定義できます。</p>
+<p>また、ここでは2個の小さい圏の和を書きましたが、任意の和
+（任意の大きさの集合<span class="math inline">J</span>で添字付けられた小さい圏の族<span class="math inline">C_j</span>の和）
+も同様に定義できます。</p>
+<h3 id="並行積otimes">並行積<span class="math inline">\otimes</span></h3>
+<p>任意の圏<span class="math inline">C_1, C_2</span>に対して、<em>圏の積</em><span class="math inline">C_1 \otimes C_2</span>を以下のように定義します。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<ul>
+<li><span class="math inline">\Ob(C_1 \otimes C_2) = \Ob(C_1) \times \Ob(C_2)</span></li>
+<li><span class="math inline">\homset{(C_1 \otimes C_2)}{(c_1,c_2)}{(c_1',c_2')} = \homset{C_1}{c_1}{c_1'} \times \homset{C_2}{c_2}{c_2'}</span></li>
+</ul>
+<p>名前の通り、これは<span class="math inline">\Cat</span>における（圏論的）積になっており、
+射影関手<span class="math inline">\pi_1 : C_1 \otimes C_2 \to C_1, \pi_2 : C_1 \otimes C_2 \to C_2</span>と、
+<em>積の普遍性</em>を持ちます。すなわち、任意の関手の組<span class="math inline">G_1 : D \to C_1, G_2 : D \to C_2</span>に対して、
+<span class="math inline">G_i = \pi_i \comp G</span>(<span class="math inline">i=1,2</span>)となる関手<span class="math inline">G : D \to C_1 \otimes C_2</span>が一意に存在します。</p>
+<p>ゼロ個の圏の積である終圏<span class="math inline">1</span>も存在します。この圏は対象がただ1つで、射もその対象における恒等射を1つだけをもつ圏であり、
+圏の同型<span class="math inline">C \otimes 1 \cong C \cong 1 \otimes C</span>が成り立ちます。</p>
+<p>余積の場合と異なり、<span class="math inline">\CatC</span>においては<span class="math inline">C_1 \otimes C_2</span>は<span class="math inline">C_1</span>と<span class="math inline">C_2</span>の（圏論的）積ではありません。<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>
+射影関手に相当する”射影retrofunctor”は作ることができますが、それらは積の普遍性を満たしません。
+そこで、<span class="math inline">\CatC</span>の文脈においては、圏の積<span class="math inline">\otimes</span>のことを<em>並行積</em>(<em>parallel product</em>)と呼ぶことにします。</p>
+<p>圏論的積でこそありませんが、並行積は<span class="math inline">\CatC</span>におけるモノイド積になっています。
+<span class="math inline">\Cat</span>における同型は<span class="math inline">\CatC</span>における同型でもあるので、
+<span class="math inline">\otimes</span>が<span class="math inline">\CatC</span>において<em>(双)関手になってさえいれば</em>、
+<span class="math inline">\Cat</span>において<span class="math inline">\otimes, 1</span>がモノイド積になっている<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>ことから
+<span class="math inline">\CatC</span>においてもモノイド積になっていることが従います。</p>
+<p>そして、<span class="math inline">\otimes</span>は関手<span class="math inline">\CatC \times \CatC \to \CatC</span>にできます。
+<span class="math inline">\otimes</span>が関手であるとは、
+<span class="math inline">\CatC \times \CatC</span>の射であるretrofunctorの組<span class="math inline">(F : C_1 \retroarr D_1, G : C_2 \retroarr D_2)</span>
+が与えられたとき、retrofunctor<span class="math inline">(F\otimes G) : C_1 \otimes C_2 \retroarr D_1 \otimes D_2</span>が構成でき、
+それが恒等retrofunctorとretrofunctorの合成を保つことです。</p>
+<p>Retrofunctor<span class="math inline">(F\otimes G) : C_1 \otimes C_2 \retroarr D_1 \otimes D_2</span>は次のように定義できます。</p>
+<ul>
+<li>対象に関して <span class="math inline">(F\otimes G)(c_1,c_2) = (Fc_1, Gc_2)</span></li>
+<li>射に関して <span class="math inline">(F\otimes G)_{(c_1,c_2)}^{\sharp} (h_1, h_2) = (F_{c_1}^{\sharp} h_1, G_{c_2}^{\sharp} h_2)</span></li>
+</ul>
+<p>これがretrofunctorとしての性質をもつこと、恒等射と合成を保つことは証明が必要ですが省略します。</p>
+<h2 id="射の分割をもつ圏-並行積timesに関する半群モノイド対象">“射の分割をもつ圏” = 並行積<span class="math inline">\times</span>に関する半群（モノイド）対象</h2>
+<p>以前の記事で述べた<a href="../posts/2024-08-30-cat-morphism-division.html">射の分割をもつ圏</a>は、
+圏<span class="math inline">\CatC</span>を用いて簡潔に記述できます。
+射の分割をもつ圏の定義を再度書くと、以下のようになります。</p>
+<dl>
+<dt>射の分割をもつ圏</dt>
+<dd>
+<p>射の分割をもつ圏とは、小さい圏<span class="math inline">C</span>であって、更に</p>
+<ul>
+<li><p>（対象の集合を半群にする）結合的な二項演算<span class="math inline">(\cdot) : \Ob(C) \times \Ob(C) \to \Ob(C)</span></p></li>
+<li><p>各対象<span class="math inline">a,b \in \Ob(C)</span>について <em>射の分割</em></p>
+<p><span class="math display">
+   \begin{align*}
+     \divleft{a}{b} &amp;: \homsetl{C}{a\cdot b} \to \homsetl{C}{a} \\
+     \divright{a}{b} &amp;: \homsetl{C}{a\cdot b} \to \homsetl{C}{b} \\
+   \end{align*}
+ </span></p></li>
+</ul>
+<p>をもち、以下の性質を満たすもののことである。</p>
+<ol type="1">
+<li><p><em>射の分割が半群演算と両立する</em>。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b\cdot c}</span>に対して、</p>
+<p><span class="math display">
+  \begin{align*}
+    \divleft{a}{b} \left( \divleft{a\cdot b}{c} t \right) &amp;= \divleft{a}{b \cdot c} t \\
+    \divright{b}{c} \left( \divright{a}{b\cdot c} t \right) &amp;= \divright{a \cdot b}{c} t \\
+    \divright{a}{b} \left( \divleft{a\cdot b}{c} t \right)
+      &amp;= \divleft{b}{c} \left( \divright{a}{b\cdot c} t \right)
+  \end{align*}
+</span></p></li>
+<li><p><em>射の分割は恒等射を保つ</em>。</p>
+<p><span class="math display">
+  \begin{align*}
+   \divleft{a}{b}\id_{a\cdot b} &amp;= \id_a \\
+   \divright{a}{b}\id_{a\cdot b} &amp;= \id_b
+  \end{align*}
+</span></p></li>
+<li><p><em>射の分割が終域を保つ</em>こと。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b}</span>に対して、</p>
+<p><span class="math display">
+   \begin{equation}
+     \cod \left( \divleft{a}{b} t \right) \cdot \cod \left( \divright{a}{b} t \right) = \cod t
+   \end{equation}
+ </span></p></li>
+<li><p><em>射の分割が射の合成を保つ</em>こと。以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
+<p><span class="math display">
+   \begin{CD}
+     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d 
+   \end{CD}
+ </span></p>
+<p>このとき、以下が成り立つ。</p>
+<p><span class="math display">
+   \begin{align*}
+　　　　\divleft{a}{b} \left(t;u\right) &amp;=
+       \left(\divleft{a}{b} t\right); \left(\divleft{c_a}{c_b} u\right) \\
+　　　　\divright{a}{b} \left(t;u\right) &amp;=
+       \left(\divright{a}{b} t\right); \left(\divright{c_a}{c_b} u\right)
+   \end{align*}\\
+   \begin{align*}
+     \qquad \text{where} \begin{cases}
+       c_a &amp;= \cod\left(\divleft{a}{b} t\right) \\
+       c_b &amp;= \cod\left(\divright{a}{b} t\right)
+     \end{cases}
+   \end{align*}
+ </span></p></li>
+</ol>
+</dd>
+</dl>
+<p>この定義の見方を少し変えると、これがretrofunctorを使って定義できることに気が付きます。
+まず、二項演算<span class="math inline">(\cdot)</span>を関数<span class="math inline">M</span>として書きます。</p>
+<p><span class="math display">
+  \begin{align*}
+    &amp; M : \Ob(C) \times \Ob(C) \to \Ob(C) \\
+    &amp; M(a,b) = a \cdot b
+  \end{align*}
+</span></p>
+<p>また、左右の射の分割を一つの関数<span class="math inline">M_{(a,b)}^{\sharp}</span>にまとめて書きます。</p>
+<p><span class="math display">
+  \begin{align*}
+    &amp; M_{(a,b)}^{\sharp} : \homsetl{C}{M(a,b)} \to \homsetl{C}{a} \times \homsetl{C}{b} \\
+    &amp; M_{(a,b)}^{\sharp}(t) = \left( \divleft{a}{b} t, \divright{a}{b}t \right)
+  \end{align*}
+</span></p>
+<p>並行積の定義から、これらの関数の型はretrofunctor<span class="math inline">M : C \otimes C \retroarr C</span>と一致しています。</p>
+<p><span class="math display">
+  \begin{align*}
+    M &amp;: \Ob(C \otimes C) \to \Ob(C)\\
+    M_{(a,b)}^{\sharp} &amp;: \homsetl{C}{M(a,b)} \to \homsetl{(C\otimes C)}{(a,b)}
+  \end{align*}
+</span></p>
+<p>更に、射の分割の性質2.-4.はそのまま<span class="math inline">M</span>がretrofunctor<span class="math inline">C \otimes C \retroarr C</span>であるための条件に該当します。すなわち、<span class="math inline">M</span>はretrofunctorであり、逆にこのようなretrofunctorは射の分割のうち2.-4.だけを満たすものに合致します。</p>
+<p>残りの条件である「演算<span class="math inline">\cdot</span>が結合的であること」と「射の分割の性質1.」を合わせると、retrofunctor <span class="math inline">M</span>が結合法則を満たすという、<span class="math inline">(C,M)</span>が半群対象であるための条件に合致します。すなわち、</p>
+<dl>
+<dt>射の分割をもつ圏</dt>
+<dd>
+射の分割をもつ圏<span class="math inline">C</span>とは、<span class="math inline">\CatC</span>における<span class="math inline">\otimes</span>に関する半群対象
+<span class="math inline">(C, M : C\otimes C \retroarr C)</span>のことである。
+</dd>
+</dl>
+<p>と簡潔にまとめられます。単位的な射の分割をもつ圏も、同様にして</p>
+<dl>
+<dt>単位的な射の分割をもつ圏</dt>
+<dd>
+単位的な射の分割をもつ圏<span class="math inline">C</span>とは、<span class="math inline">\CatC</span>における<span class="math inline">\otimes</span>に関するモノイド対象
+<span class="math inline">(C, M : C\otimes C \retroarr C, E : 1 \retroarr C)</span>のことである。
+</dd>
+</dl>
+<p>と簡潔に定義できます。</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>本来は前回の記事に含めるべき内容でしたが忘れてしまっていたのでここに書きます。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>関手における慣習と同じく、記法の濫用によってretrofunctor<span class="math inline">F</span>自体と<span class="math inline">F</span>の対象についての関数を同じ記号で表し、文脈によって見分けることとします。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>余域を保つ性質から<span class="math inline">Fc' = \cod g</span>となっていることに注意してください。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>通常、これは<span class="math inline">\Cat</span>における圏論的積(≒直積)であるため<span class="math inline">C_1 \times C_2</span>と書かれますが、
+<span class="math inline">\CatC</span>においてはそうでないことを強調するためにこのように表記します。
+参考文献においても似た取り扱いがなされています。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p><span class="math inline">\CatC</span>における積は常に存在しますが、<span class="math inline">C_1 \otimes C_2</span>とは異なるもので、
+具体的に構成しようとすると少し複雑です。
+例えば、対象を2つ<span class="math inline">\set{a,b}</span>と持ち、恒等射以外の射を<span class="math inline">a→b</span>の一つだけ持つような有限圏<span class="math inline">A</span>を考えると、<span class="math inline">A</span>と<span class="math inline">A</span>の<span class="math inline">\CatC</span>における圏論的積は無限個の対象をもつ圏になります。
+これは群やモノイドの圏における余積に相当する
+<a href="https://ja.wikipedia.org/wiki/%E8%87%AA%E7%94%B1%E7%A9%8D">自由積</a>と同様で、
+「有限群と有限群の自由積(=余積)が有限群にならない」ことに類似の事実です。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>一般に有限個の積がすべて存在する圏（↔︎0個と2個の積がすべて存在する圏）はモノイド圏になる<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
