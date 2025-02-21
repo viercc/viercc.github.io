@@ -40,6 +40,8 @@
                 <li>Posted on 2025-01-18</li>
             
             
+                <li>Last modified on 2025-02-21</li>
+            
             
             
         </ul>
@@ -266,23 +268,24 @@
 構成の仕方から、<span class="math inline">\CatC</span>は多項式コモナドの圏と圏同値です。</p>
 <div class="sidenote">
 <p>
-(補足) 「圏<span class="math inline">\mathcal{C}</span>が圏<span class="math inline">\mathcal{C}'</span>と圏同値」というのは、次のような関手のペア<span class="math inline">F : \mathcal{C}\to\mathcal{C}'</span>と<span class="math inline">G : \mathcal{C}'\to \mathcal{C}</span>が存在することを
+(補足) 「圏<span class="math inline">\mathcal{C}</span>が圏<span class="math inline">\mathcal{C}'</span>と圏同値」というのは、次のような関手のペア<span class="math inline">H : \mathcal{C}\to\mathcal{C}'</span>と<span class="math inline">H^{*} : \mathcal{C}'\to \mathcal{C}</span>が存在することを
 指します。
 <il>
 <li>
-<span class="math inline">\mathcal{C}</span>の各対象<span class="math inline">a</span>に対して、<span class="math inline">G(F(a))</span>と<span class="math inline">a</span>は同型
+<span class="math inline">\mathcal{C}</span>の各対象<span class="math inline">a</span>に対して、<span class="math inline">H^{*}(H(a))</span>と<span class="math inline">a</span>は同型
 </li>
 <li>
-<span class="math inline">\mathcal{C}'</span>の各対象<span class="math inline">a'</span>に対して、<span class="math inline">F(G(a'))</span>と<span class="math inline">a'</span>は同型
+<span class="math inline">\mathcal{C}'</span>の各対象<span class="math inline">a'</span>に対して、<span class="math inline">H(H^{*}(a'))</span>と<span class="math inline">a'</span>は同型
 </li>
 </il>
 </p>
 <p>
-今の例でいえば、「多項式コモナド<span class="math inline">W</span>から小さい圏<span class="math inline">F(W)</span>を作り、コモナド準同型<span class="math inline">W(-) \to W'(-)</span>からretrofunctor<span class="math inline">F(W)\retroarr F(W')</span>を作る関手<span class="math inline">F</span>」と、「小さい圏<span class="math inline">C</span>から多項式コモナド<span class="math inline">G(C)</span>を作り、retrofunctor<span class="math inline">C \retroarr C'</span>からコモナド準同型<span class="math inline">G(C)(-)\to G(C')(-)</span>を作る関手<span class="math inline">G</span>」が存在して、
+今の例でいえば、「多項式コモナド<span class="math inline">W</span>から小さい圏<span class="math inline">H(W)</span>を作り、コモナド準同型<span class="math inline">W(-) \to W'(-)</span>からretrofunctor<span class="math inline">H(W)\retroarr H(W')</span>を作る関手<span class="math inline">H</span>」と、「小さい圏<span class="math inline">C</span>から多項式コモナド<span class="math inline">H^{*}(C)</span>を作り、retrofunctor<span class="math inline">C \retroarr C'</span>からコモナド準同型<span class="math inline">H^{*}(C)(-)\to H^{*}(C')(-)</span>を作る関手<span class="math inline">H^{*}</span>」が存在して、
 それらが上記のように”同型を除いて”互いに逆である、というものです。
 </p>
 <p>
-ここで、小さい圏<span class="math inline">F(G(C))</span>と<span class="math inline">C</span>が”同型”であるというのは、厳密に言うと、通常の（<span class="math inline">\Cat</span>での）同型（すなわち、<em>関手</em><span class="math inline">F : F(G(C))\to C</span>であって可逆なものが存在する）ではなく、<span class="math inline">\CatC</span>の意味での同型、つまり<em>retrofunctor</em><span class="math inline">F : F(G(C)) \retroarr C</span>であって可逆なものが存在するという意味です。
+ここで、小さい圏<span class="math inline">H(H^{*}(C))</span>と<span class="math inline">C</span>が”同型”であるというのは、厳密に言うと、通常の（<span class="math inline">\Cat</span>での）同型（すなわち、<em>関手</em><span class="math inline">F : H(H^{*}(C))\to C</span>であって可逆なものが存在する）とは異なり、
+<span class="math inline">\CatC</span>の意味での同型、つまり<em>retrofunctor</em><span class="math inline">F : H(H^{*}(C)) \retroarr C</span>であって可逆なものが存在するという意味です。
 ですが、この2種類の”同型”の区別は実際には不要です。「小さい圏が<span class="math inline">\Cat</span>において同型 ⇔ <span class="math inline">\CatC</span>において同型」が成り立つからです。
 </p>
 </div>
