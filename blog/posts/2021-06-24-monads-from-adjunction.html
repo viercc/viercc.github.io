@@ -40,21 +40,23 @@
                 <li>Posted on 2021-06-26</li>
             
             
-                <li>Last modified on 2021-08-16</li>
+                <li>Last modified on 2025-02-22</li>
             
             
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'string-diagram'." href="../tags/string-diagram.html" rel="tag">string-diagram</a></li>
             
         </ul>
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+<pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Hask{\mathrm{\mathbf{Hask}}}
   \gdef\Vect{\mathrm{\mathbf{Vect}}}
   \gdef\Mon{\mathrm{\mathbf{Mon}}}
   \gdef\id{\mathrm{id}}
   \gdef\map{\mathrm{map}}
-  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}</span></p>
+  \gdef\op#1{{#1}^{\mathrm{\scriptsize op}}}</code></pre>
 <p>前回まで、各種モナド/モナド変換子を理解するために、
 ストリング図という武器を使っていくつものモナドを見てきました。</p>
 <ul>
@@ -182,59 +184,59 @@
 </ul>
 <p>これはHaskellで書いてあったほうが理解しやすいかもしれません。<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Category.html#t:Category">Control.Category</a>に、
 圏を定義するための型クラス<code>Category</code>があります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Control.Category</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Category</span> cat <span class="kw">where</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 恒等射</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> cat a a</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 射の合成</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> cat b c <span class="ot">-&gt;</span> cat a b <span class="ot">-&gt;</span> cat a c</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Hask</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Hask</span> <span class="kw">where</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Hask</span> a a   <span class="co">--   a -&gt; a</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> \x <span class="ot">-&gt;</span> x</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Hask</span> b c <span class="ot">-&gt;</span> <span class="dt">Hask</span> a b <span class="ot">-&gt;</span> <span class="dt">Hask</span> a c</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Control.Category</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Category</span> cat <span class="kw">where</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 恒等射</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> cat a a</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 射の合成</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> cat b c <span class="ot">-&gt;</span> cat a b <span class="ot">-&gt;</span> cat a c</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Hask</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Hask</span> <span class="kw">where</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Hask</span> a a   <span class="co">--   a -&gt; a</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> \x <span class="ot">-&gt;</span> x</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Hask</span> b c <span class="ot">-&gt;</span> <span class="dt">Hask</span> a b <span class="ot">-&gt;</span> <span class="dt">Hask</span> a c</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</span></code></pre></div>
 <p><span class="math inline">\Hask</span>の射を逆向きにした圏<span class="math inline">\op\Hask</span>というものも考えられます。つまり、
 <code>A -&gt; B</code>を<code>B</code><strong>から</strong><code>A</code>に向かう射とした圏です。
 GHCの<code>base</code>パッケージにはこの圏がすでに実装されていて、
 <a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html#t:Op">Data.Functor.Contravariant.Op</a>にあります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Op</span> b a <span class="ot">=</span> <span class="dt">Op</span> (a <span class="ot">-&gt;</span> b)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Op</span> <span class="kw">where</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Op</span> a a</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Op</span> <span class="fu">id</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Op</span> b c   <span class="ot">-&gt;</span> <span class="dt">Op</span> a b   <span class="ot">-&gt;</span> <span class="dt">Op</span> a c</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (c -&gt; b) -&gt; (b -&gt; a) -&gt; (c -&gt; a)</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Op</span> f <span class="op">.</span> <span class="dt">Op</span> g <span class="ot">=</span> <span class="dt">Op</span> (g <span class="op">.</span> f)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Op</span> b a <span class="ot">=</span> <span class="dt">Op</span> (a <span class="ot">-&gt;</span> b)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Op</span> <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Op</span> a a</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Op</span> <span class="fu">id</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Op</span> b c   <span class="ot">-&gt;</span> <span class="dt">Op</span> a b   <span class="ot">-&gt;</span> <span class="dt">Op</span> a c</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- (c -&gt; b) -&gt; (b -&gt; a) -&gt; (c -&gt; a)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Op</span> f <span class="op">.</span> <span class="dt">Op</span> g <span class="ot">=</span> <span class="dt">Op</span> (g <span class="op">.</span> f)</span></code></pre></div>
 <p>一般に、どんな圏<span class="math inline">C</span>に対しても、すべての射の向きを反対にすることで得られる圏<span class="math inline">\op{C}</span>があります。
 これもHaskellで書けば次のようになります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- C^{op}</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Opposite</span> cat a b <span class="ot">=</span> <span class="dt">Opposite</span> (cat a b)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Category</span> (<span class="dt">Opposite</span> cat) <span class="kw">where</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Opposite</span> cat a a</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Opposite</span> <span class="fu">id</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Opposite</span> cat b c <span class="ot">-&gt;</span> <span class="dt">Opposite</span> cat a b <span class="ot">-&gt;</span> <span class="dt">Opposite</span> cat a c</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Opposite</span> f <span class="op">.</span> <span class="dt">Opposite</span> g <span class="ot">=</span> <span class="dt">Opposite</span> (g <span class="op">.</span> f)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- f :: cat c b</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- g :: cat b a</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- g . f :: cat c a</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- C^{op}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Opposite</span> cat a b <span class="ot">=</span> <span class="dt">Opposite</span> (cat a b)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Category</span> (<span class="dt">Opposite</span> cat) <span class="kw">where</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Opposite</span> cat a a</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Opposite</span> <span class="fu">id</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Opposite</span> cat b c <span class="ot">-&gt;</span> <span class="dt">Opposite</span> cat a b <span class="ot">-&gt;</span> <span class="dt">Opposite</span> cat a c</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Opposite</span> f <span class="op">.</span> <span class="dt">Opposite</span> g <span class="ot">=</span> <span class="dt">Opposite</span> (g <span class="op">.</span> f)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- f :: cat c b</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- g :: cat b a</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- g . f :: cat c a</span></span></code></pre></div>
 <p><code>Op</code>は実質的に<code>Opposite Hask</code>です。</p>
 <p>Haskellでの例をもう一つ挙げると、<code>a -&gt; Maybe b</code>の形をした関数を射とする圏<code>Partial</code>を考えることができます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | &quot;部分関数&quot;@a -&gt; Maybe b@を射とする圏</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Partial</span> a b <span class="ot">=</span> <span class="dt">Partial</span> {<span class="ot"> runPartial ::</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b }</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Partial</span> <span class="kw">where</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Partial</span> a a</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Partial</span> <span class="fu">return</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Partial</span> b c <span class="ot">-&gt;</span> <span class="dt">Partial</span> a b <span class="ot">-&gt;</span> <span class="dt">Partial</span> a c</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Partial</span> f <span class="op">.</span> <span class="dt">Partial</span> g <span class="ot">=</span> <span class="dt">Partial</span> <span class="op">$</span> f <span class="op">&lt;=&lt;</span> g</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | &quot;部分関数&quot;@a -&gt; Maybe b@を射とする圏</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Partial</span> a b <span class="ot">=</span> <span class="dt">Partial</span> {<span class="ot"> runPartial ::</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b }</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Partial</span> <span class="kw">where</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ot">  id ::</span> <span class="dt">Partial</span> a a</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">id</span> <span class="ot">=</span> <span class="dt">Partial</span> <span class="fu">return</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ot">  (.) ::</span> <span class="dt">Partial</span> b c <span class="ot">-&gt;</span> <span class="dt">Partial</span> a b <span class="ot">-&gt;</span> <span class="dt">Partial</span> a c</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Partial</span> f <span class="op">.</span> <span class="dt">Partial</span> g <span class="ot">=</span> <span class="dt">Partial</span> <span class="op">$</span> f <span class="op">&lt;=&lt;</span> g</span></code></pre></div>
 <h3 id="関手">関手</h3>
 <p><strong>関手</strong>(functor)とは、二つの圏<span class="math inline">C, D</span>に対して、次の二つを合わせたものです。</p>
 <ul>
@@ -269,8 +271,8 @@ GHCの<code>base</code>パッケージにはこの圏がすでに実装されて
 <p>関手を表すクラスは他にもあります。<code>base</code>パッケージの<code>Contravariant</code>クラス
 （<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Contravariant.html">Data.Functor.Contravariant</a>）は、
 <span class="math inline">\op\Hask</span>から<span class="math inline">\Hask</span>への関手のための型クラスといえます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  contramap ::</span> (a' <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f a'</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="kw">where</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  contramap ::</span> (a' <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f a'</span></code></pre></div>
 <ul>
 <li><p><code>Contravariant f</code>は、<code>f</code>が型<code>a</code>を型<code>f a</code>に対応させる型コンストラクタであるときに宣言できる。</p>
 <p><span class="math inline">\Hask</span>の対象も<span class="math inline">\op\Hask</span>の対象も型なので、<span class="math inline">\op\Hask</span>の対象<code>a</code>を<span class="math inline">\Hask</span>の対象<code>f a</code>に対応させているとも読み替えられる。</p></li>
@@ -286,9 +288,9 @@ GHCの<code>base</code>パッケージにはこの圏がすでに実装されて
 <p><code>Partial</code>から<span class="math inline">\Hask</span>への関手も当然考えられます。3rd partyなライブラリにある型クラス
 <a href="https://hackage.haskell.org/package/witherable-0.4.1/docs/Data-Witherable.html#t:Filterable">Filterable</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
 は、そのような関手の型クラスと見なせます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Filterable</span> t <span class="kw">where</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mapMaybe ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="co">-- Partial a b    -&gt; Hask (t a) (t b)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Filterable</span> t <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mapMaybe ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> t b</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           <span class="co">-- Partial a b    -&gt; Hask (t a) (t b)</span></span></code></pre></div>
 <p><code>Functor</code>が合成できたように、一般の関手も合成関手を作ることができます。
 これはほぼ<code>Functor</code>の合成（<a href="https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor-Compose.html">Data.Functor.Compose</a>）
 そのまま、どの圏のあいだの関手なのかが一般化されただけです。</p>
@@ -334,31 +336,31 @@ GHCの<code>base</code>パッケージにはこの圏がすでに実装されて
 <span class="math inline">\Mon</span>といった代数的構造の圏が関係する場合はもちろん、
 Haskellでプログラムとして定義した圏でも、<code>Functor</code>以外でこれが成り立たないことがあります。
 特に、<code>Partial</code>から<span class="math inline">\Hask</span>への関手<code>Filterable</code>については成り立ちません。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> [] <span class="kw">where</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    mapMaybe <span class="ot">=</span> Data.List.mapMaybe</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> <span class="dt">Maybe</span> <span class="kw">where</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    mapMaybe f <span class="ot">=</span> (<span class="op">&gt;&gt;=</span> f)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> (<span class="dt">Const</span> c) <span class="kw">where</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    mapMaybe _ (<span class="dt">Const</span> c) <span class="ot">=</span> <span class="dt">Const</span> c</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- reverseは、[]をPartialからHaskへの関手と見たとき自然変換である。</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- つまり、</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . reverse = reverse . mapMaybe f</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- が成り立つ。</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">reverse</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">reverse</span> <span class="ot">=</span> Data.List.reverse</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- Functorのように、`forall a.`が付いているだけで自然変換になるだろうか？</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- それは、任意の (t :: forall a. f a -&gt; g a) について以下の式が成り立つ</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- という主張である。</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . t = t . mapMaybe f</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- しかし明らかに以下の式は成り立たない。</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . length' = length' . mapMaybe f</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="ot">length' ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Const</span> <span class="dt">Int</span> a</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>length' as <span class="ot">=</span> <span class="dt">Const</span> (<span class="fu">length</span> as)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> [] <span class="kw">where</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    mapMaybe <span class="ot">=</span> Data.List.mapMaybe</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> <span class="dt">Maybe</span> <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    mapMaybe f <span class="ot">=</span> (<span class="op">&gt;&gt;=</span> f)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Filterable</span> (<span class="dt">Const</span> c) <span class="kw">where</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    mapMaybe _ (<span class="dt">Const</span> c) <span class="ot">=</span> <span class="dt">Const</span> c</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- reverseは、[]をPartialからHaskへの関手と見たとき自然変換である。</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- つまり、</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . reverse = reverse . mapMaybe f</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- が成り立つ。</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">reverse</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">reverse</span> <span class="ot">=</span> Data.List.reverse</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- Functorのように、`forall a.`が付いているだけで自然変換になるだろうか？</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- それは、任意の (t :: forall a. f a -&gt; g a) について以下の式が成り立つ</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- という主張である。</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . t = t . mapMaybe f</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- しかし明らかに以下の式は成り立たない。</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">--   mapMaybe f . length' = length' . mapMaybe f</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="ot">length' ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Const</span> <span class="dt">Int</span> a</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>length' as <span class="ot">=</span> <span class="dt">Const</span> (<span class="fu">length</span> as)</span></code></pre></div>
 <p><code>Functor</code>とは限らない関手の話題では、自然変換と思っていた関数が
 <code>length'</code>のような”ジェネリックだけど自然じゃない変換”になっていないか、
 注意を払う必要があります。</p>

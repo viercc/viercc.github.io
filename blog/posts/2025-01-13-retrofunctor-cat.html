@@ -40,21 +40,23 @@
                 <li>Posted on 2025-01-18</li>
             
             
-                <li>Last modified on 2025-02-21</li>
+                <li>Last modified on 2025-02-22</li>
             
             
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'comonad'." href="../tags/comonad.html" rel="tag">comonad</a>, <a title="All pages tagged 'polynomial'." href="../tags/polynomial.html" rel="tag">polynomial</a>, <a title="All pages tagged 'retrofunctor'." href="../tags/retrofunctor.html" rel="tag">retrofunctor</a>, <a title="All pages tagged 'morphism-division'." href="../tags/morphism-division.html" rel="tag">morphism-division</a></li>
             
         </ul>
     </section>
     <section>
-        <!-- basic set manipulation -->
-<p><span class="math inline">\gdef\id{\mathop{\mathrm{id}}}
+        <pre class="math-block"><code>% basic set manipulation
+  \gdef\id{\mathop{\mathrm{id}}}
   \gdef\comp{\circ}
   \gdef\placeholder{{-}}
   \gdef\setsum{\operatorname{\raisebox{-0.2em}{$\Large\Sigma$}}}
-  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}</span>
-<!-- category theory -->
-<span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}
+% category theory
+  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Cat{\mathrm{\mathbf{Cat}}}
   \gdef\Functors#1{\mathrm{\mathbf{Fun}}\left({#1}\right)}
   \gdef\Monads#1{\mathrm{\mathbf{Monads}}\left({#1}\right)}
@@ -67,9 +69,9 @@
   \gdef\map{\mathop{\mathrm{map}}}
   \gdef\binprod{\mathbin{\Pi}}
   \gdef\bincoprod{\mathbin{\amalg}}
-  \gdef\Id{\mathrm{Id}}</span>
-<!-- custom notations -->
-<span class="math inline">\gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\Id{\mathrm{Id}}
+% custom notations
+  \gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
   \gdef\homsetl#1#2{{#1}\! \left\lbrack {#2} \right\rbrack}
   \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
   \gdef\Cont{\mathrm{\mathbf{Cont}}}
@@ -79,11 +81,11 @@
   \gdef\inl{\operatorname{\mathtt{inl}}}
   \gdef\inr{\operatorname{\mathtt{inr}}}
   \gdef\divleft#1#2{\frac{{#1}, \_}{{#1}, {#2}}}
-  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}</span>
-<span class="math inline">\gdef\rootpos{o}
+  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}
+  \gdef\rootpos{o}
   \gdef\nextshape{\darr}
   \gdef\posplus{\oplus}
-  \gdef\retroarr{\nrightarrow}</span></p>
+  \gdef\retroarr{\nrightarrow}</code></pre>
 <p>この記事は、以前から投稿している「多項式コモナドと小さい圏の対応」関連のシリーズです。</p>
 <ul>
 <li><a href="../posts/2024-08-30-cat-morphism-division.html">射の分割をもつ圏</a></li>

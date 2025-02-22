@@ -40,15 +40,23 @@
                 <li>Posted on 2023-06-02</li>
             
             
-                <li>Last modified on 2024-08-30</li>
+                <li>Last modified on 2025-02-22</li>
             
             
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'morphism-division'." href="../tags/morphism-division.html" rel="tag">morphism-division</a></li>
             
         </ul>
     </section>
     <section>
-        \(
-<p>\)</p>
+        <pre class="math-block"><code>  \gdef\Set{\mathop{\mathrm{\mathbf{Set}}}}
+  \gdef\Ob{\mathop{\mathrm{Ob}}}
+  \gdef\Mor{\mathop{\mathrm{Mor}}}
+  \gdef\id{\mathop{\mathrm{id}}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\map{\mathop{\mathrm{map}}}
+  \gdef\blank{\mathord{-}}</code></pre>
 <h2 id="追記">2024-08-30追記</h2>
 <p>この件について新しい記事を書きました。
 この記事は記録のために残しているだけとなり、
@@ -67,9 +75,9 @@
 <li>この2項演算は可換である: <span class="math inline">a + b = b + a</span></li>
 <li>ただし、<span class="math inline">C</span>が<em>モノイド圏になることまでは要求しない</em>。<span class="math inline">+</span>が関手のような性質を持ったりする必要はない。</li>
 </ul></li>
-<li><p><span class="math inline">a,b</span>を任意の対象とする。<span class="math inline">a + b</span>を始域とする射<span class="math inline">t \in C_1(a + b)</span>へ射<span class="math inline">\frac{a}{a,b}t\in C_1(a)</span>を対応させる演算<span class="math inline">\frac{a}{a,b}(\mathord{-})\colon C_1(a + b)\to C_1(a)</span>を持つ。この演算（の族）を<em>射の分割</em>と呼ぶことにする。</p>
+<li><p><span class="math inline">a,b</span>を任意の対象とする。<span class="math inline">a + b</span>を始域とする射<span class="math inline">t \in C_1(a + b)</span>へ射<span class="math inline">\frac{a}{a,b}t\in C_1(a)</span>を対応させる演算<span class="math inline">\frac{a}{a,b}(\blank)\colon C_1(a + b)\to C_1(a)</span>を持つ。この演算（の族）を<em>射の分割</em>と呼ぶことにする。</p>
 <ul>
-<li><p>可換性から、<span class="math inline">\frac{b}{b,a}(\mathord{-})\colon C_1(a+b)\to C_1(b)</span>である。</p></li>
+<li><p>可換性から、<span class="math inline">\frac{b}{b,a}(\blank)\colon C_1(a+b)\to C_1(b)</span>である。</p></li>
 <li><p>射の分割は<span class="math inline">C_0</span>のモノイド演算と次の意味で整合的であることを要求する。</p>
 <ul>
 <li>任意の<span class="math inline">t\in C_1(a) = C_1(a + 0)</span>に対して、<span class="math inline">\frac{a}{a,0}t = t</span></li>
@@ -82,7 +90,7 @@
 <li><p>恒等射の分割は恒等射である。すなわち次式が成り立つ。</p>
 <p><span class="math display">
   \begin{equation*}
-    \frac{a}{a,b}\mathop{\mathrm{id}}_{a+b} = \mathop{\mathrm{id}}_a
+    \frac{a}{a,b}\id_{a+b} = \id_a
   \end{equation*}
 </span></p></li>
 <li><p>終域が<span class="math inline">c</span>である射<span class="math inline">t \in C_1(a+b,c)</span>を次のように分割したとする。</p>
@@ -95,7 +103,7 @@
 <p>このとき、<span class="math inline">t_a</span>と<span class="math inline">t_b</span>の終域がどの対象になるかは決まっていない。（<span class="math inline">a,b,c</span>によって決まることさえ保証しなくてよい。）しかし、それらの終域をモノイド演算で足し合わせると<span class="math inline">c</span>に戻ることは要求する。</p>
 <p><span class="math display">
   \begin{equation*}
-    \mathop{\mathrm{cod}}(t_a) + \mathop{\mathrm{cod}}(t_b) = \mathop{\mathrm{cod}}(t) = c
+    \cod(t_a) + \cod(t_b) = \cod(t) = c
   \end{equation*}
 </span></p></li>
 <li><p>以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
@@ -113,8 +121,8 @@
 <p>ただし、<span class="math inline">c_a, c_b</span>は<span class="math inline">t</span>の射の分割それぞれの終域とする。</p>
 <p><span class="math display">
   \begin{align*}
-    c_a &amp;= \mathop{\mathrm{cod}}\left(\frac{a}{a,b}t\right) \\
-    c_b &amp;= \mathop{\mathrm{cod}}\left(\frac{b}{b,a}t\right)
+    c_a &amp;= \cod\left(\frac{a}{a,b}t\right) \\
+    c_b &amp;= \cod\left(\frac{b}{b,a}t\right)
   \end{align*}
 </span></p>
 <p>前項で要求した性質より<span class="math inline">c_a + c_b = c</span>であるため、<span class="math inline">c</span>を始域とする射<span class="math inline">u</span>を<span class="math inline">c_a,c_b</span>で分割することができる。</p></li>
@@ -122,10 +130,10 @@
 </ul>
 <h2 id="なぜこんなものを考えているのか">なぜこんなものを考えているのか</h2>
 <p>最近考えていることの一つに、多項式<code>Comonad</code>が小圏と対応すること<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>がある。ここで、<code>Comonad</code>に加えて<code>Applicative</code>のような演算<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>をサポートする型クラス<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad.html#t:ComonadApply">ComonadApply</a>を考えてみる。<code>Comonad</code>と小圏の対応を通じて<code>Applicative</code>の演算を小圏での表現に送り込むと、「対象の集合<span class="math inline">C_0</span>の(関手的ではない)モノイド演算」「射の分割」ができる。また、以下のように<code>Comonad</code>の演算と<code>Applicative</code>の演算が両立することを要求するならば、それは「射の分割」に対するさらなる性質の要求と読み替えることができる。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>extract (<span class="fu">pure</span> a)    <span class="ot">=</span> a   <span class="co">-- free theorem</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>duplicate (<span class="fu">pure</span> a)  <span class="ot">=</span> <span class="fu">pure</span> (<span class="fu">pure</span> a)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>extract (x <span class="op">&lt;*&gt;</span> y)   <span class="ot">=</span> extract x (extract y)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>duplicate (x <span class="op">&lt;*&gt;</span> y) <span class="ot">=</span> (<span class="op">&lt;*&gt;</span>) <span class="op">&lt;$&gt;</span> duplicate x <span class="op">&lt;*&gt;</span> duplicate y</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>extract (<span class="fu">pure</span> a)    <span class="ot">=</span> a   <span class="co">-- free theorem</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>duplicate (<span class="fu">pure</span> a)  <span class="ot">=</span> <span class="fu">pure</span> (<span class="fu">pure</span> a)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>extract (x <span class="op">&lt;*&gt;</span> y)   <span class="ot">=</span> extract x (extract y)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>duplicate (x <span class="op">&lt;*&gt;</span> y) <span class="ot">=</span> (<span class="op">&lt;*&gt;</span>) <span class="op">&lt;$&gt;</span> duplicate x <span class="op">&lt;*&gt;</span> duplicate y</span></code></pre></div>
 <p>これを単純のため、可換な<code>Applicative</code>に限って考えて得たものが、上記の「射の分割」の定義である。
 （可換に限らなくてもできるが、書き下すのが非常に面倒）
 “properな”射の分割の定義は、この<code>Comonad</code>の演算と<code>Applicative</code>の演算が両立する条件を翻訳したものである。</p>

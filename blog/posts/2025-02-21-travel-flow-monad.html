@@ -42,17 +42,19 @@
             
             
             
+                <li class="post-tags">tags: <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'comonad'." href="../tags/comonad.html" rel="tag">comonad</a>, <a title="All pages tagged 'polynomial'." href="../tags/polynomial.html" rel="tag">polynomial</a>, <a title="All pages tagged 'state-like-monad'." href="../tags/state-like-monad.html" rel="tag">state-like-monad</a>, <a title="All pages tagged 'singletons'." href="../tags/singletons.html" rel="tag">singletons</a></li>
+            
         </ul>
     </section>
     <section>
-        <!-- basic set manipulation -->
-<p><span class="math inline">\gdef\id{\mathop{\mathrm{id}}}
+        <pre class="math-block"><code>% basic set manipulation
+  \gdef\id{\mathop{\mathrm{id}}}
   \gdef\comp{\circ}
   \gdef\placeholder{{-}}
   \gdef\setsum{\operatorname{\raisebox{-0.2em}{$\Large\Sigma$}}}
-  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}</span>
-<!-- category theory -->
-<span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}
+% category theory
+  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Cat{\mathrm{\mathbf{Cat}}}
   \gdef\Functors#1{\mathrm{\mathbf{Fun}}\left({#1}\right)}
   \gdef\Monads#1{\mathrm{\mathbf{Monads}}\left({#1}\right)}
@@ -65,9 +67,9 @@
   \gdef\map{\mathop{\mathrm{map}}}
   \gdef\binprod{\mathbin{\Pi}}
   \gdef\bincoprod{\mathbin{\amalg}}
-  \gdef\Id{\mathrm{Id}}</span>
-<!-- custom notations -->
-<span class="math inline">\gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\Id{\mathrm{Id}}
+% custom notations
+  \gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
   \gdef\homsetl#1#2{{#1}\! \left\lbrack {#2} \right\rbrack}
   \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
   \gdef\Cont{\mathrm{\mathbf{Cont}}}
@@ -77,14 +79,13 @@
   \gdef\inl{\operatorname{\mathtt{inl}}}
   \gdef\inr{\operatorname{\mathtt{inr}}}
   \gdef\divleft#1#2{\frac{{#1}, \_}{{#1}, {#2}}}
-  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}</span>
-<span class="math inline">\gdef\rootpos{o}
+  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}
+  \gdef\rootpos{o}
   \gdef\nextshape{\darr}
   \gdef\posplus{\oplus}
   \gdef\retroarr{\nrightarrow}
   \gdef\Travel{\operatorname{\mathrm{Travel}}}
-  \gdef\Flow{\operatorname{\mathrm{Flow}}}
-  \gdef\keyword#1{\mathop{\mathbf{\mathrm{#1}}\enspace}}</span></p>
+  \gdef\Flow{\operatorname{\mathrm{Flow}}}</code></pre>
 <h2 id="travel-categoryから作るcomonad"><code>Travel</code>: <code>Category</code>から作る<code>Comonad</code></h2>
 <p>以前、<a href="../posts/2024-09-06-directed-containers-explained.html">多項式コモナドと小さい圏の間に対応がある</a>という論文の解説を行いました。
 この記事では「小さい圏<span class="math inline">C</span>が与えられたとき、対応する多項式コモナド<span class="math inline">W</span>を構成する方法」があることを暗黙に示しています。
@@ -93,8 +94,7 @@
 <dt>(定義)コモナド<span class="math inline">\Travel_{C}</span></dt>
 <dd>
 <p>小さい圏<span class="math inline">C</span>に対して、<span class="math inline">C</span>上のtravelコモナドを次の多項式コモナド<span class="math inline">\Travel_{C} : \Set \to \Set</span>と定義する。</p>
-<p><span class="math display">
-  \begin{align*}
+<pre class="math-block"><code>  \begin{align*}
     &amp; \begin{aligned}
       &amp; \Travel_{C} : \Set \to \Set \\
       &amp; \Travel_{C} X = \setsum (c : \Ob(C)). \left(\homsetl{C}{c} \to X \right)
@@ -107,65 +107,64 @@
         &amp; \operatorname{duplicate} : \forall \alpha. \Travel_{C}\alpha \to \Travel_{C}(\Travel_{C}\alpha)\\
         &amp; \operatorname{duplicate} (c, f) = \left(c, \lambda p. (\cod p, \lambda q. f (p;q)) \right)
     \end{aligned}
-  \end{align*}
-</span></p>
+  \end{align*}</code></pre>
 </dd>
 </dl>
 <p>さて、Haskellには圏を表す型クラス<code>Category</code>がありました。Haskell内で<code>Category</code>をもとに<code>Comonad</code>を構成するような
 型<code>Travel</code>は、標準のHaskellではありませんが、GHC拡張をふんだんに使って依存型を表すことで実現可能です。
 実際に私が書いてみたものがこちらにあります: <a href="https://github.com/viercc/polynomial-functor/tree/main/polynomial-comonad">polynomial-functors/polynomial-comonad</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://github.com/viercc/polynomial-functor/blob/17404603235028fe9b10af72a0eaf96a01dae7c2/polynomial-comonad/src/Control/Comonad/Travel.hs</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Make 'Polynomial' 'Comonad' from 'Category'.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- @Travel cat@ is a polynomial functor for any type constructor</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- @cat@.</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Travel cat r ~ ∑a. ((∑b. cat a b) -&gt; r)</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- @Travel cat@ is a @Comonad@ if @cat@ is a @Category@.</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Travel</span><span class="ot"> ::</span> (k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Travel</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) r <span class="kw">where</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">MkTravel</span> <span class="ot">::</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">forall</span> k (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) (<span class="ot">r ::</span> <span class="dt">Type</span>) (<span class="ot">a ::</span> k)<span class="op">.</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Sing</span> a <span class="ot">-&gt;</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)) <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Travel</span> cat r</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://github.com/viercc/polynomial-functor/blob/17404603235028fe9b10af72a0eaf96a01dae7c2/polynomial-comonad/src/Control/Comonad/Travel.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Make 'Polynomial' 'Comonad' from 'Category'.</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- @Travel cat@ is a polynomial functor for any type constructor</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- @cat@.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Travel cat r ~ ∑a. ((∑b. cat a b) -&gt; r)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- @Travel cat@ is a @Comonad@ if @cat@ is a @Category@.</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Travel</span><span class="ot"> ::</span> (k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Travel</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) r <span class="kw">where</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">MkTravel</span> <span class="ot">::</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">forall</span> k (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) (<span class="ot">r ::</span> <span class="dt">Type</span>) (<span class="ot">a ::</span> k)<span class="op">.</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Sing</span> a <span class="ot">-&gt;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)) <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Travel</span> cat r</span></code></pre></div>
 <p><code>Sing</code>や<code>Sigma</code>といった型は<a href="https://hackage.haskell.org/package/singletons">singletons</a>パッケージ由来です。
 このsingletonsパッケージは、依存型がはじめから使える言語に存在する「依存積型(<span class="math inline">\setprod</span>-型)」「依存和型(<span class="math inline">\setsum</span>-型)」
 に相当する型をHaskellで書くために必要な「singleton型」というテクニックに関する便利な機能を提供しています。</p>
 <p>例えば、集合の依存積<span class="math inline">\setprod (i \in I). P(i)</span>に相当する型を以下の<code>ProdP</code>のように表すことができます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">I</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P</span><span class="ot"> ::</span> <span class="dt">I</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- ProdP = Π(i ∈ I). P(i)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ProdP</span> <span class="ot">=</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">I</span>)<span class="op">.</span> <span class="dt">Sing</span> i <span class="ot">-&gt;</span> <span class="dt">P</span> i</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">I</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P</span><span class="ot"> ::</span> <span class="dt">I</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- ProdP = Π(i ∈ I). P(i)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ProdP</span> <span class="ot">=</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">I</span>)<span class="op">.</span> <span class="dt">Sing</span> i <span class="ot">-&gt;</span> <span class="dt">P</span> i</span></code></pre></div>
 <p><code>Sing</code> を用いずに以下のように定義してしまうと、依存積になりません。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ForallP</span> <span class="ot">=</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">I</span>)<span class="op">.</span> <span class="dt">P</span> i</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ForallP</span> <span class="ot">=</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">I</span>)<span class="op">.</span> <span class="dt">P</span> i</span></code></pre></div>
 <p>例えば、<code>I = Bool</code>であり、<code>P</code>はGADTを使って定義される以下の<code>Foo</code>である場合を考えます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Foo</span> (<span class="ot">i ::</span> <span class="dt">Bool</span>) <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooAny</span><span class="ot"> ::</span> <span class="dt">Foo</span> i</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooFalse</span><span class="ot"> ::</span> <span class="dt">Foo</span> <span class="dt">False</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooTrue</span><span class="ot"> ::</span> <span class="dt">Foo</span> <span class="dt">True</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Foo</span> (<span class="ot">i ::</span> <span class="dt">Bool</span>) <span class="kw">where</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooAny</span><span class="ot"> ::</span> <span class="dt">Foo</span> i</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooFalse</span><span class="ot"> ::</span> <span class="dt">Foo</span> <span class="dt">False</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FooTrue</span><span class="ot"> ::</span> <span class="dt">Foo</span> <span class="dt">True</span></span></code></pre></div>
 <p><code>Foo</code>の依存積は<code>Π(i ∈ I) Foo(i) ~ (Foo False, Foo True)</code>です。これは</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="dt">FooAny</span>, <span class="dt">FooAny</span>)<span class="ot"> ::</span> (<span class="dt">Foo</span> <span class="dt">False</span>, <span class="dt">Foo</span> <span class="dt">True</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(<span class="dt">FooFalse</span>, <span class="dt">FooTrue</span>)<span class="ot"> ::</span> (<span class="dt">Foo</span> <span class="dt">False</span>, <span class="dt">Foo</span> <span class="dt">True</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="dt">FooAny</span>, <span class="dt">FooAny</span>)<span class="ot"> ::</span> (<span class="dt">Foo</span> <span class="dt">False</span>, <span class="dt">Foo</span> <span class="dt">True</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="dt">FooFalse</span>, <span class="dt">FooTrue</span>)<span class="ot"> ::</span> (<span class="dt">Foo</span> <span class="dt">False</span>, <span class="dt">Foo</span> <span class="dt">True</span>)</span></code></pre></div>
 <p>のように、第一成分はFooAnyとFooFalseから、第二成分はFooAnyとFooTrueから任意に選んだ組の型です。
 しかし、<code>ForallP</code>のように<code>forall i. Foo i</code>という型がつく項は<code>FooAny</code>しかありません。
 Haskellには<em>型変数に対するパターンマッチが存在しない</em>ので、型変数<code>i</code>が実際にとる型に依存する項
 というものが書けないのです。しかし、<code>Sing (i :: Bool)</code>という型
 の<em>値レベルの引数</em>に対してはパターンマッチが可能であり、以下のように書くことができます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- (FooFalse, FooTrue)に対応する依存積の値をSingを使って表現</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">prodValue ::</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">Bool</span>)<span class="op">.</span> <span class="dt">Sing</span> i <span class="ot">-&gt;</span> <span class="dt">Foo</span> i</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>prodValue singI <span class="ot">=</span> <span class="kw">case</span> singI <span class="kw">of</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SFalse</span> <span class="ot">-&gt;</span> <span class="dt">FooFalse</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">STrue</span> <span class="ot">-&gt;</span> <span class="dt">FooTrue</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- (FooFalse, FooTrue)に対応する依存積の値をSingを使って表現</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">prodValue ::</span> <span class="kw">forall</span> (<span class="ot">i ::</span> <span class="dt">Bool</span>)<span class="op">.</span> <span class="dt">Sing</span> i <span class="ot">-&gt;</span> <span class="dt">Foo</span> i</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>prodValue singI <span class="ot">=</span> <span class="kw">case</span> singI <span class="kw">of</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SFalse</span> <span class="ot">-&gt;</span> <span class="dt">FooFalse</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">STrue</span> <span class="ot">-&gt;</span> <span class="dt">FooTrue</span></span></code></pre></div>
 <p>同じように、集合の依存和<span class="math inline">\setsum (i \in I). P(i)</span>に相当する型は<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">SumP</span> <span class="ot">=</span> <span class="dt">Sigma'</span> <span class="dt">I</span> <span class="dt">P</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Sigma'</span> k t <span class="kw">where</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (:&amp;:) ::</span> <span class="dt">Sing</span> k <span class="ot">-&gt;</span> t k <span class="ot">-&gt;</span> <span class="dt">Sigma'</span> k t</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">SumP</span> <span class="ot">=</span> <span class="dt">Sigma'</span> <span class="dt">I</span> <span class="dt">P</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Sigma'</span> k t <span class="kw">where</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (:&amp;:) ::</span> <span class="dt">Sing</span> k <span class="ot">-&gt;</span> t k <span class="ot">-&gt;</span> <span class="dt">Sigma'</span> k t</span></code></pre></div>
 <p>として書くことができます。</p>
 <h2 id="flow-categoryから作るmonad"><code>Flow</code>: <code>Category</code>から作る<code>Monad</code></h2>
 <p><code>Comonad</code>から<code>Monad</code>を作ることができる<a href="https://hackage.haskell.org/package/kan-extensions-5.2.5/docs/Control-Monad-Co.html">Co</a>という型を以前紹介しました。</p>
@@ -173,32 +172,32 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 <li><a href="../posts/2023-06-02-monad-co.html">Control.Monad.Coの正体</a></li>
 </ul>
 <p>再掲すると、以下のように定義される<code>Co</code>型を用いると、任意の<code>Comonad w</code>に対して<code>Co w</code>は<code>Monad</code>になります。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Co</span> w <span class="ot">=</span> <span class="dt">Co</span> {<span class="ot"> runCo ::</span> <span class="kw">forall</span> r<span class="op">.</span> w (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r }</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Co</span> f)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Comonad</span> w <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Co</span> w)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Comonad</span> w <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Co</span> w)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Co</span> w <span class="ot">=</span> <span class="dt">Co</span> {<span class="ot"> runCo ::</span> <span class="kw">forall</span> r<span class="op">.</span> w (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r }</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Functor</span> (<span class="dt">Co</span> f)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Comonad</span> w <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Co</span> w)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Comonad</span> w <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Co</span> w)</span></code></pre></div>
 <p>前述した通り、<code>Comonad w</code>が多項式関手でもあった場合、<code>w</code>は適当な<code>Category cat</code>を用いて
 <code>Travel cat</code>と同型なコモナドです。したがって、<code>Co w</code>は<code>Co (Travel cat)</code>と同型なモナドです。</p>
 <p>では、<code>Co (Travel cat)</code>とはどのようなモナドなのか？ということが気になります。
 <code>Co (Travel cat)</code>を同型な型に変形させていくと、<code>Flow</code>モナドを以下のように得ることができます。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Control.Monad.Flow</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://github.com/viercc/polynomial-functor/blob/17404603235028fe9b10af72a0eaf96a01dae7c2/polynomial-comonad/src/Control/Monad/Flow.hs</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- より改変</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Flow</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) x <span class="ot">=</span> <span class="dt">MkFlow</span> {</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    runFlow ::</span> <span class="kw">forall</span> (<span class="ot">a ::</span> k)<span class="op">.</span> <span class="dt">Sing</span> a <span class="ot">-&gt;</span> (x, <span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)))</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Flow</span> cat) <span class="kw">where</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">MkFlow</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Flow</span> cat) <span class="kw">where</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  ma <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">MkFlow</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> runFlow ma sa <span class="kw">of</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>      (y, sb <span class="op">:&amp;:</span> f) <span class="ot">-&gt;</span> <span class="kw">case</span> runFlow (k y) sb <span class="kw">of</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        (z, sc <span class="op">:&amp;:</span> g) <span class="ot">-&gt;</span> (z, sc <span class="op">:&amp;:</span> (f <span class="op">&gt;&gt;&gt;</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Control.Monad.Flow</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- https://github.com/viercc/polynomial-functor/blob/17404603235028fe9b10af72a0eaf96a01dae7c2/polynomial-comonad/src/Control/Monad/Flow.hs</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- より改変</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Flow</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) x <span class="ot">=</span> <span class="dt">MkFlow</span> {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    runFlow ::</span> <span class="kw">forall</span> (<span class="ot">a ::</span> k)<span class="op">.</span> <span class="dt">Sing</span> a <span class="ot">-&gt;</span> (x, <span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Flow</span> cat) <span class="kw">where</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">MkFlow</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Category</span> cat <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Flow</span> cat) <span class="kw">where</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  ma <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">MkFlow</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> runFlow ma sa <span class="kw">of</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>      (y, sb <span class="op">:&amp;:</span> f) <span class="ot">-&gt;</span> <span class="kw">case</span> runFlow (k y) sb <span class="kw">of</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        (z, sc <span class="op">:&amp;:</span> g) <span class="ot">-&gt;</span> (z, sc <span class="op">:&amp;:</span> (f <span class="op">&gt;&gt;&gt;</span> g))</span></code></pre></div>
 <!--
 これを数学的な記法で書くと以下のようになります。
 
@@ -272,23 +271,23 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 遷移後の状態<code>b</code>だけでなく「どう遷移するか」を表す<code>cat</code>の射<code>f :: cat a b</code>も持っているものです。</p>
 <p>ついでに、<code>State</code>モナドに対して<code>StateT</code>モナド変換子があるのと同じ調子で、
 <code>Flow</code>モナドにも<code>FlowT</code>を考えることができます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">FlowT</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) m x <span class="ot">=</span> <span class="dt">MkFlowT</span> {</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    runFlowT ::</span> <span class="kw">forall</span> (<span class="ot">a ::</span> k)<span class="op">.</span> <span class="dt">Sing</span> a <span class="ot">-&gt;</span> m (x, <span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)))</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">FlowT</span> cat m) <span class="kw">where</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> <span class="fu">pure</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">FlowT</span> cat m) <span class="kw">where</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  mx <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">do</span> (y, sb <span class="op">:&amp;:</span> f) <span class="ot">&lt;-</span> runFlowT mx sa</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>       (z, sc <span class="op">:&amp;:</span> g) <span class="ot">&lt;-</span> runFlowT (k y) sb</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>       <span class="fu">pure</span> (z, sc <span class="op">:&amp;:</span> (f <span class="op">&gt;&gt;&gt;</span> g))</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat) <span class="ot">=&gt;</span> <span class="dt">MonadTrans</span> (<span class="dt">FlowT</span> cat) <span class="kw">where</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  lift mx <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> mx <span class="op">&lt;&amp;&gt;</span> \x <span class="ot">-&gt;</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">FlowT</span> (<span class="ot">cat ::</span> k <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) m x <span class="ot">=</span> <span class="dt">MkFlowT</span> {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    runFlowT ::</span> <span class="kw">forall</span> (<span class="ot">a ::</span> k)<span class="op">.</span> <span class="dt">Sing</span> a <span class="ot">-&gt;</span> m (x, <span class="dt">Sigma</span> k (<span class="dt">TyCon</span> (cat a)))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">FlowT</span> cat m) <span class="kw">where</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> <span class="fu">pure</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">FlowT</span> cat m) <span class="kw">where</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  mx <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">do</span> (y, sb <span class="op">:&amp;:</span> f) <span class="ot">&lt;-</span> runFlowT mx sa</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>       (z, sc <span class="op">:&amp;:</span> g) <span class="ot">&lt;-</span> runFlowT (k y) sb</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>       <span class="fu">pure</span> (z, sc <span class="op">:&amp;:</span> (f <span class="op">&gt;&gt;&gt;</span> g))</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Category</span> cat) <span class="ot">=&gt;</span> <span class="dt">MonadTrans</span> (<span class="dt">FlowT</span> cat) <span class="kw">where</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  lift mx <span class="ot">=</span> <span class="dt">MkFlowT</span> <span class="op">$</span> \sa <span class="ot">-&gt;</span> mx <span class="op">&lt;&amp;&gt;</span> \x <span class="ot">-&gt;</span> (x, sa <span class="op">:&amp;:</span> <span class="fu">id</span>)</span></code></pre></div>
 <p>この<code>FlowT</code>の理論的背景は私はよくわかっていませんが、なんとなく「こうじゃないかな〜」と思っていることが</p>
 <blockquote>
 <p><code>Flow cat</code>モナドを随伴に分解する方法のひとつに</p>

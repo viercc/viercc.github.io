@@ -40,47 +40,49 @@
                 <li>Posted on 2023-01-22</li>
             
             
-                <li>Last modified on 2023-01-23</li>
+                <li>Last modified on 2025-02-22</li>
             
             
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'applicative'." href="../tags/applicative.html" rel="tag">applicative</a></li>
             
         </ul>
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+<pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\id{\mathrm{id}}
   \gdef\assoc{\mathrm{assoc}}
   \gdef\comult{\mathrm{comult}}
   \gdef\comp{\circ}
   \gdef\setbraces#1{\left\{{#1}\right\}}
-  \gdef\blank{-}</span></p>
+  \gdef\blank{-}</code></pre>
 <h2 id="cosemigroup-semigroupの双対"><code>Cosemigroup</code>: <code>Semigroup</code>の双対</h2>
 <p>この記事では、半群(Semigroup)の双対と考えられる、Cosemigroupという概念について考えていきます。</p>
 <h3 id="cosemigroupのアイデアと定義"><code>Cosemigroup</code>のアイデアと定義</h3>
 <p>Haskellでの半群の定義は以下のようになっていました。
 （半群およびモノイドについては既知とします。）</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Semigroup</span> a <span class="kw">where</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- | Semigroup則: @(&lt;&gt;)@ は以下の結合法則を満たす</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">--</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- x &lt;&gt; (y &lt;&gt; z) == (x &lt;&gt; y) &lt;&gt; z</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;&gt;) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Semigroup</span> a <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- | Semigroup則: @(&lt;&gt;)@ は以下の結合法則を満たす</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">--</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- x &lt;&gt; (y &lt;&gt; z) == (x &lt;&gt; y) &lt;&gt; z</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- @</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;&gt;) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
 <p><code>Semigroup</code>の「双対をとったもの」は、2個の<code>a</code>型の値から1個の<code>a</code>型の値を作る<code>&lt;&gt;</code>という演算に対して、
 <strong>1個の</strong>値から<strong>2個の</strong>値を取り出す<code>comult</code>という演算を持ち、「結合法則」も流れを逆にした条件（<strong>余</strong>結合法則と呼ぶ）を持ちます。</p>
 <p>つまり、次のようなクラスです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Cosemigroup則: @comult@は以下の余結合法則を満たす</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- first comult . comult = assoc . second comult . comult</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Cosemigroup</span> a <span class="kw">where</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    comult ::</span> a <span class="ot">-&gt;</span> (a,a)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Cosemigroup則: @comult@は以下の余結合法則を満たす</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- first comult . comult = assoc . second comult . comult</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Cosemigroup</span> a <span class="kw">where</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    comult ::</span> a <span class="ot">-&gt;</span> (a,a)</span></code></pre></div>
 <p>ここで、<code>first, second, assoc</code>は次のように定義されているものとします。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>first  f (a,b) <span class="ot">=</span> (f a, b)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>second f (a,b) <span class="ot">=</span> (a, f b)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>assoc (a,(b,c)) <span class="ot">=</span> ((a,b),c)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>first  f (a,b) <span class="ot">=</span> (f a, b)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>second f (a,b) <span class="ot">=</span> (a, f b)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>assoc (a,(b,c)) <span class="ot">=</span> ((a,b),c)</span></code></pre></div>
 <p>これがなぜ「結合法則」の逆であるのかは、データの流れを図にしてみると一目瞭然です。</p>
 <figure>
 <img src="../images/cosemigroup/semigroup-and-cosemigroup.png" alt="Semigroup・Cosemigroupとそれらの法則" />
@@ -426,45 +428,45 @@ Cosemigroup <span class="math inline">C</span>が弱推移的なCosemigroupで�
 正直なことを言うと私には思いつかないのですが、<code>Cosemigroup</code>を考えると<code>Applicative</code>についての知識が深まります。</p>
 <p>「<code>pure</code>の無い<code>Applicative</code>」である、<a href="https://hackage.haskell.org/package/semigroupoids-5.3.7/docs/Data-Functor-Apply.html#g:2">Apply</a>という型クラスがあります。
 以下に<code>Apply</code>の定義を引用します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Apply</span> f <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;!&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Apply</span> f <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;!&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
 <p>いま、「ある型<code>C</code>からの関数<code>(-&gt;) C</code>」と同型な関手<code>F</code>を考えます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">C</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (f <span class="op">.</span> ca)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Apply</span> <span class="dt">F</span> <span class="kw">where</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">F</span> cab <span class="op">&lt;!&gt;</span> <span class="dt">F</span> ca <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
-<p><code>F</code>に対して可能なあらゆる<code>(&lt;!&gt;)</code>の実装は、どれも<code>C -&gt; (C,C)</code>という型の関数と一対一に対応します。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">comultToApply ::</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)) <span class="ot">-&gt;</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>comultToApply comult' (<span class="dt">F</span> cab) (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (\c <span class="ot">-&gt;</span> <span class="kw">case</span> comult c <span class="kw">of</span> (cl, cr) <span class="ot">-&gt;</span> (cab cl) (ca cr))</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">C</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">F</span> a <span class="ot">=</span> <span class="dt">F</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ot">applyToComult ::</span> (<span class="kw">forall</span> a b<span class="op">.</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b) <span class="ot">-&gt;</span> <span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>applyToComult apply <span class="ot">=</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> pass <span class="ot">=</span> <span class="dt">F</span> (<span class="fu">id</span><span class="ot"> ::</span> <span class="dt">C</span> <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">F</span> comult' <span class="ot">=</span> <span class="fu">fmap</span> (,) pass <span class="ot">`apply`</span> pass</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>     <span class="kw">in</span> comult'</span></code></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (f <span class="op">.</span> ca)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Apply</span> <span class="dt">F</span> <span class="kw">where</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">F</span> cab <span class="op">&lt;!&gt;</span> <span class="dt">F</span> ca <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<p><code>F</code>に対して可能なあらゆる<code>(&lt;!&gt;)</code>の実装は、どれも<code>C -&gt; (C,C)</code>という型の関数と一対一に対応します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">comultToApply ::</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)) <span class="ot">-&gt;</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>comultToApply comult' (<span class="dt">F</span> cab) (<span class="dt">F</span> ca) <span class="ot">=</span> <span class="dt">F</span> (\c <span class="ot">-&gt;</span> <span class="kw">case</span> comult c <span class="kw">of</span> (cl, cr) <span class="ot">-&gt;</span> (cab cl) (ca cr))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">applyToComult ::</span> (<span class="kw">forall</span> a b<span class="op">.</span> <span class="dt">F</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">F</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> b) <span class="ot">-&gt;</span> <span class="dt">C</span> <span class="ot">-&gt;</span> (<span class="dt">C</span>,<span class="dt">C</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>applyToComult apply <span class="ot">=</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> pass <span class="ot">=</span> <span class="dt">F</span> (<span class="fu">id</span><span class="ot"> ::</span> <span class="dt">C</span> <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">F</span> comult' <span class="ot">=</span> <span class="fu">fmap</span> (,) pass <span class="ot">`apply`</span> pass</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>     <span class="kw">in</span> comult'</span></code></pre></div>
 <p>更に、<code>F</code>が<code>Apply</code>則を満たすことと、<code>C</code>が<code>Cosemigroup</code>則を満たすことは、
 上記の対応のもとで同値になります。</p>
 <p>すなわち、<code>Cosemigroup</code>は、<code>F a = C -&gt; a</code>という形をした関手の、あらゆる<code>Apply</code>のインスタンスを説明しているのです！</p>
 <p>更に、より馴染み深い<code>Applicative</code>に対しても、近いことが言えます。
 以下の形をした関手<code>G</code>を考えます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">G</span> a <span class="ot">=</span> <span class="dt">One</span> a <span class="op">|</span> <span class="dt">Fn</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">G</span> <span class="kw">where</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">One</span> a) <span class="ot">=</span> <span class="dt">One</span> (f a)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">Fn</span> ca) <span class="ot">=</span> <span class="dt">Fn</span> (f <span class="op">.</span> ca)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">G</span> a <span class="ot">=</span> <span class="dt">One</span> a <span class="op">|</span> <span class="dt">Fn</span> (<span class="dt">C</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">G</span> <span class="kw">where</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">One</span> a) <span class="ot">=</span> <span class="dt">One</span> (f a)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmap</span> f (<span class="dt">Fn</span> ca) <span class="ot">=</span> <span class="dt">Fn</span> (f <span class="op">.</span> ca)</span></code></pre></div>
 <p>ここで更に、<code>G</code>が<code>Applicative</code>のインスタンスを持ち、<code>pure = One</code>であるとします。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">G</span> <span class="kw">where</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pure</span> <span class="ot">=</span> <span class="dt">One</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">G</span> <span class="kw">where</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pure</span> <span class="ot">=</span> <span class="dt">One</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
 <p>このとき、<code>&lt;*&gt;</code>の定義としてありえるケースのうち、
 <code>Fn _ &lt;*&gt; Fn _</code>以外は<code>Applicative</code>則から以下のように決まります。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">One</span> x <span class="op">&lt;*&gt;</span> y <span class="ot">=</span> <span class="fu">fmap</span> x y</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">One</span> y <span class="ot">=</span> <span class="dt">Fn</span> (\c <span class="ot">-&gt;</span> cx c y)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">One</span> x <span class="op">&lt;*&gt;</span> y <span class="ot">=</span> <span class="fu">fmap</span> x y</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">One</span> y <span class="ot">=</span> <span class="dt">Fn</span> (\c <span class="ot">-&gt;</span> cx c y)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="co">{- ...... -}</span></span></code></pre></div>
 <p>更に、一部の例外を除いて、<code>Fn cx &lt;*&gt; Fn cy</code>の右辺は必ず<code>Fn _</code>という形になります。
 このとき、<code>Apply</code>に対して行ったのと同様にして、
 <code>Applicative G</code>としてあり得る全てのインスタンスのうち<code>pure = One</code>であるものは、<code>Cosemigroup C</code>のあり得るインスタンスと1対1に対応します。</p>
@@ -475,27 +477,27 @@ Cosemigroup <span class="math inline">C</span>が弱推移的なCosemigroupで�
 <p><a href="2021-01-01-faccat2.html">以前の記事</a>で述べたことの系なのですが、より直接的に示すこともできます。</p>
 <p><code>Fn cx &lt;*&gt; Fn cy = One _</code>となっているとします。
 このような<code>&lt;*&gt;</code>としてありえる実装は、ある<code>c1, c2 :: C</code>が存在して、</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="dt">One</span> (cx c1 (cy c2))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Fn</span> cx <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> cy <span class="ot">=</span> <span class="dt">One</span> (cx c1 (cy c2))</span></code></pre></div>
 <p>というものに限られます。ここで、</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dt">Fn</span><span class="ot"> const      ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>)<span class="ot"> ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> ())</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())<span class="ot"> ::</span> <span class="dt">G</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dt">Fn</span><span class="ot"> const      ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> <span class="dt">C</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>)<span class="ot"> ::</span> <span class="dt">G</span> (() <span class="ot">-&gt;</span> ())</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())<span class="ot"> ::</span> <span class="dt">G</span> ()</span></code></pre></div>
 <p>とおきます。</p>
 <p><code>Applicative</code>則から、<code>x &lt;*&gt; (y &lt;*&gt; z) = (.) &lt;*&gt; x &lt;*&gt; y &lt;*&gt; z</code>です。
 これらの両辺を計算すると、</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;*&gt;</span> (y <span class="op">&lt;*&gt;</span> z)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> (<span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> <span class="fu">id</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> (<span class="fu">const</span> <span class="fu">id</span> c1 (<span class="fu">const</span> () c2))</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">const</span> <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">id</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>(<span class="op">.</span>) <span class="op">&lt;*&gt;</span> x <span class="op">&lt;*&gt;</span> y <span class="op">&lt;*&gt;</span> z</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> ((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) c1 (<span class="fu">const</span> <span class="fu">id</span> c2)) <span class="op">&lt;*&gt;</span> z</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> ((<span class="op">.</span>) (<span class="fu">const</span> c1) <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1 <span class="op">.</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> c1)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">&lt;*&gt;</span> (y <span class="op">&lt;*&gt;</span> z)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> (<span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> <span class="fu">id</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> (<span class="fu">const</span> <span class="fu">id</span> c1 (<span class="fu">const</span> () c2))</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> x <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">const</span> <span class="op">&lt;*&gt;</span> <span class="dt">One</span> ()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> <span class="fu">id</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>(<span class="op">.</span>) <span class="op">&lt;*&gt;</span> x <span class="op">&lt;*&gt;</span> y <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> ((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (((<span class="op">.</span>) <span class="op">.</span> <span class="fu">const</span>) c1 (<span class="fu">const</span> <span class="fu">id</span> c2)) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> ((<span class="op">.</span>) (<span class="fu">const</span> c1) <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1 <span class="op">.</span> <span class="fu">id</span>) <span class="op">&lt;*&gt;</span> z</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">One</span> (<span class="fu">const</span> c1) <span class="op">&lt;*&gt;</span> <span class="dt">Fn</span> (<span class="fu">const</span> ())</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Fn</span> (<span class="fu">const</span> c1)</span></code></pre></div>
 <p>となり、<code>id = const c1 :: C -&gt; C</code>であることがわかります。
 これが可能なのは<code>C</code>型の値がすべて<code>c1</code>と等しいとき、すなわち<code>C</code>が<code>()</code>と同型なときに限ります。</p>
 したがって、<code>C</code>が<code>()</code>に同型である場合という例外を除いて、

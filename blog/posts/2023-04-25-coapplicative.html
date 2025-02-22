@@ -40,13 +40,17 @@
                 <li>Posted on 2023-05-16</li>
             
             
+                <li>Last modified on 2025-02-22</li>
             
+            
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'applicative'." href="../tags/applicative.html" rel="tag">applicative</a></li>
             
         </ul>
     </section>
     <section>
         <!-- tex macros -->
-<p><span class="math inline">\gdef\Set{\mathrm{\mathbf{Set}}}
+<pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Hask{\mathrm{\mathbf{Hask}}}
   \gdef\Vect{\mathrm{\mathbf{Vect}}}
   \gdef\Mon{\mathrm{\mathbf{Mon}}}
@@ -57,7 +61,7 @@
   \gdef\ihom{\operatorname*{hom}}
   \gdef\hombr#1#2{\left\lbrack {#1},{#2} \right\rbrack}
   \gdef\blank{\mathord{-}}
-  \gdef\blank2{\mathord{=}}</span></p>
+  \gdef\blank2{\mathord{=}}</code></pre>
 <p>この記事は以前に公開したGistのまとめ直し<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>です。</p>
 <h2 id="comonadがあるならcoapplicativeは無いのか">「<code>Comonad</code>があるなら<code>Coapplicative</code>は無いのか？」</h2>
 <p><a href="https://hackage.haskell.org/package/comonad">Comonad</a>という型クラスを知れば「<code>Comonad</code>があるなら<code>Coapplicative</code>は無いのか？」
@@ -70,53 +74,53 @@
 <li><p><a href="https://www.haskellforall.com/2021/10/co-applicative-programming-style.html">Co-Applicative programming style (Haskell for all, by Gabriella Gonzalez</a></p>
 <ul>
 <li><p>ここではcontravariantパッケージにある<a href="https://hackage.haskell.org/package/contravariant-1.4/docs/Data-Functor-Contravariant-Divisible.html#t:Divisible">Divisible</a>がco-applicativeに相当するのだ、と紹介されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="ot">=&gt;</span> <span class="dt">Divisible</span> f <span class="kw">where</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    divide ::</span> (a <span class="ot">-&gt;</span> (b,c)) <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c <span class="ot">-&gt;</span> f a</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    conquer ::</span> f a</span></code></pre></div></li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="ot">=&gt;</span> <span class="dt">Divisible</span> f <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    divide ::</span> (a <span class="ot">-&gt;</span> (b,c)) <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c <span class="ot">-&gt;</span> f a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    conquer ::</span> f a</span></code></pre></div></li>
 </ul></li>
 <li><p><a href="https://old.reddit.com/r/haskell/comments/qsrmq/coapplicative_functor/?sort=confidence">Reddit post</a></p>
 <ul>
 <li><p><code>Coapplicative</code>に相当するものは何か？という議論がr/haskellでもありました。OP（投稿者）は</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Poster (u/tailcalled) proposed</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Coapplicative</span> f <span class="kw">where</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">　copure ::</span> f a <span class="ot">-&gt;</span> a</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">　cozip ::</span> f (<span class="dt">Either</span> a b) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f a) (f b)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Poster (u/tailcalled) proposed</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Coapplicative</span> f <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">　copure ::</span> f a <span class="ot">-&gt;</span> a</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">　cozip ::</span> f (<span class="dt">Either</span> a b) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f a) (f b)</span></code></pre></div>
 <p>と定義して考えています。コメントでは、また別の定義として</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Comment by u/camcann</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Contravariant</span> f) <span class="ot">=&gt;</span> <span class="dt">Inapplicative</span> f <span class="kw">where</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    nil ::</span> f <span class="dt">Void</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    contrazip ::</span> (f a, f b) <span class="ot">-&gt;</span> f (<span class="dt">Either</span> a b)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Comment by u/camcann</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Contravariant</span> f) <span class="ot">=&gt;</span> <span class="dt">Inapplicative</span> f <span class="kw">where</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    nil ::</span> f <span class="dt">Void</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    contrazip ::</span> (f a, f b) <span class="ot">-&gt;</span> f (<span class="dt">Either</span> a b)</span></code></pre></div>
 <p>も提案されました。この<code>Inapplicative</code>はcontravariantの<a href="https://hackage.haskell.org/package/contravariant-1.4/docs/Data-Functor-Contravariant-Divisible.html#t:Decidable">Decidable</a>と同等です。</p></li>
 </ul></li>
 <li><p><a href="https://cstheory.stackexchange.com/questions/16241/is-there-a-concept-of-something-like-co-applicative-functors-sitting-between-com">Is there a concept of something like co-applicative functors sitting between comonads and functors? - StackOverflow</a></p>
 <p>ベストアンサーは、<code>CoApplicative</code>と<code>CoMonoidal</code>を以下のように定義し、それらが<code>Comonad</code>と関係しないことを説明しています。つまり、質問者が想像したような、「<code>Comonad</code>と<code>Functor</code>の間にある型クラス」にはならない、としました。</p>
 <p>2つの異なる定義を考えているのは、<code>Applicative</code>と<code>Monoidal</code>は<em>偶然にも</em>同じ型クラスを定義しているが、
 そのアイデアは異なるから、それぞれの双対は一致するとは限らない、としているためです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    pure  ::</span> a <span class="ot">-&gt;</span> f a</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (f a <span class="ot">-&gt;</span> f b)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Monoidal</span> f <span class="kw">where</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- equivalent to Applicative</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    unit ::</span> () <span class="ot">-&gt;</span> f ()</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">    zip  ::</span> (f a, f b) <span class="ot">-&gt;</span> f (a,b)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoApplicative</span> f <span class="kw">where</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ot">    copure ::</span> f a <span class="ot">-&gt;</span> a</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    coap   ::</span> (f a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> f (a <span class="ot">-&gt;</span> b)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- NOT equivalent to CoApplicative</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    pure  ::</span> a <span class="ot">-&gt;</span> f a</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    (&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (f a <span class="ot">-&gt;</span> f b)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Monoidal</span> f <span class="kw">where</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- equivalent to Applicative</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    unit ::</span> () <span class="ot">-&gt;</span> f ()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ot">    zip  ::</span> (f a, f b) <span class="ot">-&gt;</span> f (a,b)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoApplicative</span> f <span class="kw">where</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ot">    copure ::</span> f a <span class="ot">-&gt;</span> a</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    coap   ::</span> (f a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> f (a <span class="ot">-&gt;</span> b)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- NOT equivalent to CoApplicative</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span></code></pre></div>
 <p>別の回答者は以下の <code>Decisive</code> を挙げています。
 残念ながら、参照先として書かれたリンクは切れており、詳細はよくわかりませんでした。</p>
 <ul>
 <li>http://sneezy.cs.nott.ac.uk/fplunch/weblog/?p=69</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Decisive</span> f <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    nogood ::</span> f <span class="dt">Void</span> <span class="ot">-&gt;</span> <span class="dt">Void</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    orwell ::</span> f (<span class="dt">Either</span> s t) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f s) (f t)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Decisive</span> f <span class="kw">where</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    nogood ::</span> f <span class="dt">Void</span> <span class="ot">-&gt;</span> <span class="dt">Void</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    orwell ::</span> f (<span class="dt">Either</span> s t) <span class="ot">-&gt;</span> <span class="dt">Either</span> (f s) (f t)</span></code></pre></div>
 <p>（この型クラスは2. でも挙げられていました。）</p></li>
 </ol>
 <h2 id="違いを整理する">違いを整理する</h2>
@@ -153,12 +157,12 @@
 </tbody>
 </table>
 <p>また、手前味噌ですが、私は以前”モノイドの双対”といえばコモノイドだろうという発想から、<code>Functor</code>の圏において<code>Day</code>をモノイド積としたときの<em>コモノイド</em>対象についても検討しました。Haskellでの定義だけざっと書くと、以下のような型クラスです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Day</span> f g x <span class="kw">where</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Day</span><span class="ot"> ::</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> <span class="dt">Day</span> f g x</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Comonad</span> f <span class="ot">=&gt;</span> <span class="dt">Comonoid</span> f <span class="kw">where</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">--  extract :: f a -&gt; a</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    coapply ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Day</span> f g x <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Day</span><span class="ot"> ::</span> f a <span class="ot">-&gt;</span> g b <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> <span class="dt">Day</span> f g x</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Comonad</span> f <span class="ot">=&gt;</span> <span class="dt">Comonoid</span> f <span class="kw">where</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">--  extract :: f a -&gt; a</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    coapply ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span></code></pre></div>
 <p>詳細はこちらをどうぞ: <a href="https://github.com/viercc/functor-monad/blob/31c637b020aa0abfe69f6fcccae248f05e66c469/functor-monad/src/Data/Functor/Day/Comonoid.hs">Data.Functor.Day.Comonoid</a></p>
 <table>
 <thead>
@@ -217,12 +221,12 @@
 </tbody>
 </table>
 <p>余談ですが、この<code>CoMonoidal</code>は「つまらない」クラスです。任意の<code>Functor f</code>は以下のように<code>CoMonoidal</code>になります。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    counit <span class="ot">=</span> <span class="fu">const</span> ()</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    cozip fab <span class="ot">=</span> (<span class="fu">fst</span> <span class="op">&lt;$&gt;</span> fab, <span class="fu">snd</span> <span class="op">&lt;$&gt;</span> fab)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">CoMonoidal</span> f <span class="kw">where</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    counit ::</span> f () <span class="ot">-&gt;</span> ()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    counit <span class="ot">=</span> <span class="fu">const</span> ()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    cozip ::</span> f (a,b) <span class="ot">-&gt;</span> (f a, f b)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    cozip fab <span class="ot">=</span> (<span class="fu">fst</span> <span class="op">&lt;$&gt;</span> fab, <span class="fu">snd</span> <span class="op">&lt;$&gt;</span> fab)</span></code></pre></div>
 <p>更に、（oplaxモノイダル関手と見るならば満たされるべき）<code>CoMonoidal</code>則によって、
 任意の<code>CoMonoidal</code>はこの実装と一致しなければならないことが示せます。</p>
 <p>また、詳細のわからなかった<code>Decisive</code>型クラスも、メソッドの型だけを見れば、oplaxモノイダル関手<span class="math inline">(\Hask, \mathcode{Either}) \to (\Hask,\mathcode{Either})</span>に相当します。</p>
