@@ -49,7 +49,19 @@
         </ul>
     </section>
     <section>
-        <pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
+        <div id="post-toc">目次<ul>
+<li><a href="#背景" id="toc-背景">背景</a></li>
+<li><a href="#射の分割の定義" id="toc-射の分割の定義">射の分割の定義</a></li>
+<li><a href="#射の分割をもつ圏の例" id="toc-射の分割をもつ圏の例">射の分割をもつ圏の例</a>
+<ul>
+<li><a href="#離散圏における射の分割" id="toc-離散圏における射の分割">離散圏における射の分割</a></li>
+<li><a href="#任意の圏の左零分割" id="toc-任意の圏の左零分割">任意の圏の左零分割</a></li>
+<li><a href="#前順序である場合特に結び半束join-semilatticeである場合" id="toc-前順序である場合特に結び半束join-semilatticeである場合">前順序である場合、特に結び半束(join-semilattice)である場合</a></li>
+</ul></li>
+<li><a href="#次回予告" id="toc-次回予告">次回予告</a></li>
+<li><a href="#追記" id="toc-追記">追記</a></li>
+</ul></div>
+<pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Cat{\mathrm{\mathbf{Cat}}}
   \gdef\CatC{\Cat^\sharp}
   \gdef\Ob{\mathrm{Ob}}
@@ -127,12 +139,12 @@
 <ol type="1">
 <li><p><em>射の分割が半群演算と両立する</em>こと。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b\cdot c}</span>に対して、</p>
 <p><span class="math display">
- \begin{align}
+\begin{align}
    \divleft{a}{b} \left( \divleft{a\cdot b}{c} t \right) &amp;= \divleft{a}{b \cdot c} t \\
    \divright{b}{c} \left( \divright{a}{b\cdot c} t \right) &amp;= \divright{a \cdot b}{c} t \\
    \divright{a}{b} \left( \divleft{a\cdot b}{c} t \right)
      &amp;= \divleft{b}{c} \left( \divright{a}{b\cdot c} t \right)
- \end{align}
+\end{align}
 </span></p></li>
 <li><p><em>射の分割が恒等射を保つ</em>こと。</p>
 <p><span class="math display">
@@ -140,33 +152,33 @@
      \divleft{a}{b} \id_{a\cdot b} &amp;= \id_{a} \\
      \divright{a}{b} \id_{a\cdot b} &amp;= \id_{b}
    \end{align}
- </span></p></li>
+</span></p></li>
 <li><p><em>射の分割が終域を保つ</em>こと。<span class="math inline">C</span>の射<span class="math inline">t \in \homsetl{C}{a\cdot b}</span>に対して、</p>
 <p><span class="math display">
    \begin{equation}
      \cod \left( \divleft{a}{b} t \right) \cdot \cod \left( \divright{a}{b} t \right) = \cod t
    \end{equation}
- </span></p></li>
+</span></p></li>
 <li><p><em>射の分割が射の合成を保つ</em>こと。以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
 <p><span class="math display">
    \begin{CD}
-     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d 
+     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d
    \end{CD}
- </span></p>
+</span></p>
 <p>このとき、以下が成り立つ。</p>
 <p><span class="math display">
    \begin{align}
 　　　　\divleft{a}{b} \left(t;u\right) &amp;= \left(\divleft{a}{b} t\right); \left(\divleft{c_a}{c_b} u\right) \\
 　　　　\divright{a}{b} \left(t;u\right) &amp;= \left(\divright{a}{b} t\right); \left(\divright{c_a}{c_b} u\right)
    \end{align}
- </span></p>
+</span></p>
 <p>ただし、<span class="math inline">c_a, c_b</span>は<span class="math inline">t</span>の射の分割それぞれの終域とする。</p>
 <p><span class="math display">
    \begin{align*}
      c_a &amp;= \cod\left(\divleft{a}{b} t\right) \\
      c_b &amp;= \cod\left(\divright{a}{b} t\right)
    \end{align*}
- </span></p></li>
+</span></p></li>
 </ol>
 <p><em>単位的な</em>射の分割を持つ圏<span class="math inline">C</span>を、射の分割を持つ圏<span class="math inline">C</span>であって、
 対象<span class="math inline">1 : \Ob(C)</span>を持ち、以下の条件を満たすものと定義します。</p>
@@ -220,12 +232,12 @@
 <ol type="1">
 <li><p><em>射の分割が半群演算と両立する</em>こと。<span class="math inline">a\cdot b\cdot c \sqsubseteq d</span>なる<span class="math inline">a,b,c,d</span>に対して、</p>
 <p><span class="math display">
- \begin{align}
+\begin{align}
    \divleft{a}{b} \left( \divleft{a\cdot b}{c} d \right) &amp;= \divleft{a}{b \cdot c} d \\
    \divright{b}{c} \left( \divright{a}{b\cdot c} d \right) &amp;= \divright{a \cdot b}{c} d \\
    \divright{a}{b} \left( \divleft{a\cdot b}{c} d \right)
      &amp;= \divleft{b}{c} \left( \divright{a}{b\cdot c} d \right)
- \end{align}
+\end{align}
 </span></p></li>
 <li><p><em>射の分割が恒等射を保つ</em>こと。</p>
 <p><span class="math display">
@@ -233,27 +245,27 @@
      \divleft{a}{b} (a\cdot b) &amp;= a \\
      \divright{a}{b} (a\cdot b) &amp;= b
    \end{align}
- </span></p></li>
+</span></p></li>
 <li><p><em>射の分割が終域を保つ</em>こと。<span class="math inline">a\cdot b \sqsubseteq c</span>なる<span class="math inline">a,b,c</span>に対して、</p>
 <p><span class="math display">
    \begin{equation}
      \left( \divleft{a}{b} c \right) \cdot \left( \divright{a}{b} c \right) = c
    \end{equation}
- </span></p></li>
+</span></p></li>
 <li><p><em>射の分割が射の合成を保つ</em>こと。<span class="math inline">a\cdot b \sqsubseteq c \sqsubseteq d</span>なる<span class="math inline">a,b,c,d</span>に対して、</p>
 <p><span class="math display">
    \begin{align}
 　　　　\divleft{a}{b} d &amp;= \left(\divleft{c_a}{c_b} d\right) \\
 　　　　\divright{a}{b} d &amp;= \left(\divright{c_a}{c_b} d\right)
    \end{align}
- </span></p>
+</span></p>
 <p>ただし、<span class="math inline">c_a, c_b</span>は以下の通りとする。</p>
 <p><span class="math display">
    \begin{align*}
      c_a &amp;= \divleft{a}{b} c \\
      c_b &amp;= \divright{a}{b} c
    \end{align*}
- </span></p></li>
+</span></p></li>
 </ol>
 <p>自分自身これの具体例はいまいち思いついていないのですが、
 前順序集合<span class="math inline">(X,\sqsubseteq)</span>が実際には結び半束である場合、すなわち</p>

@@ -44,7 +44,11 @@
         </ul>
     </section>
     <section>
-        <h2 id="モナドになれないfunctor-a-functor-which-cant-be-a-monad">モナドになれないFunctor (A Functor which can’t be a Monad)</h2>
+        <div id="post-toc">目次<ul>
+<li><a href="#モナドになれないfunctor-a-functor-which-cant-be-a-monad" id="toc-モナドになれないfunctor-a-functor-which-cant-be-a-monad">モナドになれないFunctor (A Functor which can’t be a Monad)</a></li>
+<li><a href="#一般化しよう" id="toc-一般化しよう">一般化しよう</a></li>
+</ul></div>
+<h2 id="モナドになれないfunctor-a-functor-which-cant-be-a-monad">モナドになれないFunctor (A Functor which can’t be a Monad)</h2>
 <p>このFunctorをMonadにする方法があるだろうか、という問題を考えます。</p>
 <pre><code>data F2 x = Z | P x x
   deriving (Functor)

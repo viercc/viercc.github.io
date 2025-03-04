@@ -49,7 +49,17 @@
         </ul>
     </section>
     <section>
-        <!-- tex macros -->
+        <div id="post-toc">目次<ul>
+<li><a href="#comonadがあるならcoapplicativeは無いのか" id="toc-comonadがあるならcoapplicativeは無いのか">「<code>Comonad</code>があるなら<code>Coapplicative</code>は無いのか？」</a></li>
+<li><a href="#違いを整理する" id="toc-違いを整理する">違いを整理する</a>
+<ul>
+<li><a href="#applicativeを関手圏のモノイド対象と見たとき" id="toc-applicativeを関手圏のモノイド対象と見たとき"><code>Applicative</code>を関手圏のモノイド対象と見たとき</a></li>
+<li><a href="#applicativeをlaxモノイダル関手と見たとき" id="toc-applicativeをlaxモノイダル関手と見たとき"><code>Applicative</code>をlaxモノイダル関手と見たとき</a></li>
+<li><a href="#謎のcoapplicative" id="toc-謎のcoapplicative">謎の<code>CoApplicative</code></a></li>
+<li><a href="#まとめ" id="toc-まとめ">まとめ</a></li>
+</ul></li>
+</ul></div>
+<!-- tex macros -->
 <pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Hask{\mathrm{\mathbf{Hask}}}
   \gdef\Vect{\mathrm{\mathbf{Vect}}}
@@ -193,7 +203,7 @@
 <p><span class="math display">
 \begin{align*}
   &amp; \mathrm{opunit} \mathrel{\colon} F(I_C) \to I_D \\
-  &amp; \mathrm{opmult} \mathrel{\colon} F(a \otimes_C b) \to F(a) \mathrel{\otimes_D} F(b) 
+  &amp; \mathrm{opmult} \mathrel{\colon} F(a \otimes_C b) \to F(a) \mathrel{\otimes_D} F(b)
 \end{align*}
 </span></p>
 <p>を持つという条件を満たす関手のことを指します。例えば、強モノイダル関手は<code>unit, mult</code>がそれぞれ同型なのでその逆射があり、これによって強モノイダル関手はoplaxモノイダル関手でもあります。</p>

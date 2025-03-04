@@ -44,7 +44,19 @@
         </ul>
     </section>
     <section>
-        <p><a href="2022-03-25-monad-embed.html">前回</a>の続きです。</p>
+        <div id="post-toc">目次<ul>
+<li><a href="#前回のまとめ" id="toc-前回のまとめ">前回のまとめ</a></li>
+<li><a href="#equifibered自然変換" id="toc-equifibered自然変換">Equifibered自然変換</a>
+<ul>
+<li><a href="#定義" id="toc-定義">定義</a></li>
+<li><a href="#equifibered自然変換の例" id="toc-equifibered自然変換の例">Equifibered自然変換の例</a></li>
+</ul></li>
+<li><a href="#rがequifiberedならばrpもequifibered" id="toc-rがequifiberedならばrpもequifibered"><code>r</code>がequifiberedならば<code>rp</code>もequifibered</a>
+<ul>
+<li><a href="#equifiberedを使ってわかること" id="toc-equifiberedを使ってわかること">Equifiberedを使ってわかること</a></li>
+</ul></li>
+</ul></div>
+<p><a href="2022-03-25-monad-embed.html">前回</a>の続きです。</p>
 <h2 id="前回のまとめ">前回のまとめ</h2>
 <p>前回の記事と同様に、<code>R, P, RP</code>を以下のモナドとします。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">P</span>   <span class="ot">=</span> <span class="dt">Maybe</span>    <span class="co">-- Pointed の P</span></span>

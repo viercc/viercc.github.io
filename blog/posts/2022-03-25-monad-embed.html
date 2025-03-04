@@ -44,7 +44,13 @@
         </ul>
     </section>
     <section>
-        <h2 id="概要">概要</h2>
+        <div id="post-toc">目次<ul>
+<li><a href="#概要" id="toc-概要">概要</a></li>
+<li><a href="#maybet-m-は-maybe-と-m-の余積である" id="toc-maybet-m-は-maybe-と-m-の余積である"><code>MaybeT m</code> は <code>Maybe</code> と <code>m</code> の余積である</a></li>
+<li><a href="#rが単射ならばcoprod-r-pも単射である" id="toc-rが単射ならばcoprod-r-pも単射である"><code>r</code>が単射ならば<code>coprod r p</code>も単射である</a></li>
+<li><a href="#rpが単射であることの意義" id="toc-rpが単射であることの意義">「<code>rp</code>が単射である」ことの意義</a></li>
+</ul></div>
+<h2 id="概要">概要</h2>
 <p><code>A</code>を適当な型とします。
 <code>MaybeT (Reader A) x</code>と<code>ReaderT A Maybe x</code>という2つの型は、
 <code>newtype</code>の包みを剥がせばどちらも<code>A -&gt; Maybe x</code>となり、

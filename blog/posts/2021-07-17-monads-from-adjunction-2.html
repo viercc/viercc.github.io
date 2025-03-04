@@ -49,7 +49,15 @@
         </ul>
     </section>
     <section>
-        <!-- tex macros -->
+        <div id="post-toc">目次<ul>
+<li><a href="#stateモナドの一般化に挑戦する" id="toc-stateモナドの一般化に挑戦する">Stateモナドの一般化に挑戦する</a></li>
+<li><a href="#随伴" id="toc-随伴">随伴</a></li>
+<li><a href="#随伴をストリング図に描く" id="toc-随伴をストリング図に描く">随伴をストリング図に描く</a></li>
+<li><a href="#随伴からcont-rを作る" id="toc-随伴からcont-rを作る">随伴から<code>Cont r</code>を作る</a></li>
+<li><a href="#リストモナドを随伴に分ける" id="toc-リストモナドを随伴に分ける">リストモナド<code>[]</code>を随伴に分ける</a></li>
+<li><a href="#listt-mは随伴のサンドイッチだった" id="toc-listt-mは随伴のサンドイッチだった"><code>ListT m</code>は随伴のサンドイッチだった</a></li>
+</ul></div>
+<!-- tex macros -->
 <pre class="math-block"><code>  \gdef\Set{\mathrm{\mathbf{Set}}}
   \gdef\Hask{\mathrm{\mathbf{Hask}}}
   \gdef\Vect{\mathrm{\mathbf{Vect}}}
@@ -367,7 +375,7 @@ Haskellの式で書くなら、以下の等式になります。</p>
 U(\mathrm{counit}) \circ \mathrm{unit}
 &amp;= U(\mathrm{counit}) \circ (\lambda a. \listof{a}) \\
 &amp;= \mathrm{mconcat} \circ (\lambda a. \listof{a}) \\
-&amp;= \id_{\listof{a}} 
+&amp;= \id_{\listof{a}}
 \end{split}
 \end{equation}
 </span></p>
@@ -377,7 +385,7 @@ U(\mathrm{counit}) \circ \mathrm{unit}
 \mathrm{counit} \circ F(\mathrm{unit})
 &amp;= \mathrm{counit} \circ \map(\mathrm{unit})   \\
 &amp;= \mathrm{mconcat} \circ \map (\lambda a. \listof{a})   \\
-&amp;= \id_{\listof{a}} 
+&amp;= \id_{\listof{a}}
 \end{split}
 \end{equation}
 </span></p>

@@ -44,7 +44,22 @@
         </ul>
     </section>
     <section>
-        <h2 id="多項式functor">多項式Functor</h2>
+        <div id="post-toc">目次<ul>
+<li><a href="#多項式functor" id="toc-多項式functor">多項式Functor</a></li>
+<li><a href="#多項式applicative-functorの特徴づけ" id="toc-多項式applicative-functorの特徴づけ">多項式Applicative Functorの特徴づけ</a>
+<ul>
+<li><a href="#証明" id="toc-証明">証明</a></li>
+</ul></li>
+<li><a href="#phiを関手として見る" id="toc-phiを関手として見る"><code>phi</code>を関手として見る</a></li>
+<li><a href="#まとめ" id="toc-まとめ">まとめ</a></li>
+<li><a href="#例" id="toc-例">例</a>
+<ul>
+<li><a href="#maybe" id="toc-maybe">Maybe</a></li>
+<li><a href="#list" id="toc-list">List</a></li>
+</ul></li>
+<li><a href="#モノイドより強い条件" id="toc-モノイドより強い条件">モノイドより強い条件</a></li>
+</ul></div>
+<h2 id="多項式functor">多項式Functor</h2>
 <p>半年ぐらい前から、
 <code>newtype F x = F (M, E -&gt; x)</code> の形をしたApplicative Functorのすべてを決めるような
 <code>M</code>と<code>E</code>上の代数的構造を考えていました。</p>

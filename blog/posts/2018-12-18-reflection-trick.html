@@ -44,7 +44,8 @@
         </ul>
     </section>
     <section>
-        <p><a href="http://hackage.haskell.org/package/reflection">reflection</a>というライブラリを使って、ちょっと便利なものを思いつきました。
+        <div id="post-toc">目次</div>
+<p><a href="http://hackage.haskell.org/package/reflection">reflection</a>というライブラリを使って、ちょっと便利なものを思いつきました。
 <a href="https://gist.github.com/viercc/0f5e57d6c1cc1029eed2eb090d8f2a32">これです</a>。</p>
 <p>何をするものかと言うと、<code>forall a. Show a =&gt; Show (f a)</code>と書ける<code>Show</code>のインスタンスを持つ型<code>f</code>に対して、
 <code>Show1 f</code>を機械的に定義できるようにするモジュールです。</p>

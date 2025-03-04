@@ -49,7 +49,8 @@
         </ul>
     </section>
     <section>
-        <p><code>Maybe</code>は<code>Free</code>モナドの一つです。特に、<code>Maybe = Free Proxy</code>です。</p>
+        <div id="post-toc">目次</div>
+<p><code>Maybe</code>は<code>Free</code>モナドの一つです。特に、<code>Maybe = Free Proxy</code>です。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">|</span> <span class="dt">Just</span> a</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Free</span> f a <span class="ot">=</span> <span class="dt">Pure</span> a <span class="op">|</span> <span class="dt">Wrap</span> (f (<span class="dt">Free</span> f a))</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Proxy</span> a <span class="ot">=</span> <span class="dt">Proxy</span></span>

@@ -44,7 +44,16 @@
         </ul>
     </section>
     <section>
-        <h1 id="haskellで幅優先探索">Haskellで幅優先探索</h1>
+        <div id="post-toc">目次<ul>
+<li><a href="#haskellで幅優先探索" id="toc-haskellで幅優先探索">Haskellで幅優先探索</a></li>
+<li><a href="#例題コインで支払い" id="toc-例題コインで支払い">例題：コインで支払い</a>
+<ul>
+<li><a href="#キューここではseqを使う" id="toc-キューここではseqを使う">キュー(ここでは<code>Seq</code>)を使う</a></li>
+<li><a href="#余再帰を使う" id="toc-余再帰を使う">余再帰を使う</a></li>
+<li><a href="#遅延データ構造を使う" id="toc-遅延データ構造を使う">遅延データ構造を使う</a></li>
+</ul></li>
+</ul></div>
+<h1 id="haskellで幅優先探索">Haskellで幅優先探索</h1>
 <p>Haskellで<a href="https://ja.wikipedia.org/wiki/%E5%B9%85%E5%84%AA%E5%85%88%E6%8E%A2%E7%B4%A2">幅優先探索</a>をしようとして、
 キューをどうするか困ったことはないでしょうか？</p>
 <p>まず思いつくだろうことは、<a href="https://hackage.haskell.org/package/containers-0.6.3.1/docs/Data-Sequence.html#t:Seq">Data.Sequence.Seq</a>をキューとして使って、キュー<code>Seq node</code>を状態として持ち回れば、手続き型言語で普段書いていたような幅優先探索が書ける、ということでしょう。</p>

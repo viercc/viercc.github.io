@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - モナド同士、コモナド同士の分配法則について</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.css" integrity="sha384-sMefv1J1YJCHsg0mTa9YG+n/9KnJb9lGrJUUY5arg6bAL1qps/oZjmUwaHlX5Ugg" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.js" integrity="sha384-i9p+YmlwbK0lT9RcfgdAo/Cikui1KeFMeV/0Fwsu+rzgsCvas6oUptNOmo29C33p" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>モナド同士、コモナド同士の分配法則について</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on 2025-03-04</li>
+            
+            
+            
+            
+                <li class="post-tags">tags: <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'comonad'." href="../tags/comonad.html" rel="tag">comonad</a>, <a title="All pages tagged 'distributive-law'." href="../tags/distributive-law.html" rel="tag">distributive-law</a>, <a title="All pages tagged 'string-diagram'." href="../tags/string-diagram.html" rel="tag">string-diagram</a></li>
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#概要" id="toc-概要">概要</a></li>
+<li><a href="#モナドの分配法則" id="toc-モナドの分配法則">モナドの分配法則</a></li>
+<li><a href="#コモナドの分配法則" id="toc-コモナドの分配法則">コモナドの分配法則</a>
+<ul>
+<li><a href="#コモナドの分配法則の例" id="toc-コモナドの分配法則の例">コモナドの分配法則の例</a>
+<ul>
+<li><a href="#コモナド変換子envt" id="toc-コモナド変換子envt">コモナド変換子<code>EnvT</code></a></li>
+<li><a href="#コモナド変換子tracedt" id="toc-コモナド変換子tracedt">コモナド変換子<code>TracedT</code></a></li>
+<li><a href="#traced-aのtraced-bに対する分配法則-zappaszép-product" id="toc-traced-aのtraced-bに対する分配法則-zappaszép-product"><code>Traced A</code>の<code>Traced B</code>に対する分配法則 ↔︎ Zappa–Szép product</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#storeコモナドに関係する分配法則" id="toc-storeコモナドに関係する分配法則"><code>Store</code>コモナドに関係する分配法則</a>
+<ul>
+<li><a href="#storeコモナド" id="toc-storeコモナド"><code>Store</code>コモナド</a></li>
+<li><a href="#任意のコモナドwのstore_sに対する分配法則" id="toc-任意のコモナドwのstore_sに対する分配法則">任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則</a></li>
+<li><a href="#store_sのstore_tに対する分配法則" id="toc-store_sのstore_tに対する分配法則"><span class="math inline">\Store_S</span>の<span class="math inline">\Store_T</span>に対する分配法則</a></li>
+</ul></li>
+<li><a href="#参考文献" id="toc-参考文献">参考文献</a></li>
+</ul></div>
+<pre class="math-block"><code>% basic set manipulation
+  \gdef\id{\mathop{\mathrm{id}}}
+  \gdef\comp{\mathbin{\circ}}
+  \gdef\placeholder{{-}}
+  \gdef\setsum{\operatorname{\raisebox{-0.2em}{$\Large\theta$}}}
+  \gdef\setprod{\operatorname{\raisebox{-0.2em}{$\Large\Pi$}}}
+% category theory
+  \gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\Functors#1{\mathrm{\mathbf{Fun}}\left({#1}\right)}
+  \gdef\Monads#1{\mathrm{\mathbf{Monads}}\left({#1}\right)}
+  \gdef\Comonads#1{\mathrm{\mathbf{Comonads}}\left({#1}\right)}
+  \gdef\CatC{\Cat^\sharp}
+  \gdef\Ob{\mathop{\mathrm{Ob}}}
+  \gdef\Mor{\mathop{\mathrm{Mor}}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\map{\mathop{\mathrm{map}}}
+  \gdef\binprod{\mathbin{\Pi}}
+  \gdef\bincoprod{\mathbin{\amalg}}
+  \gdef\Id{\mathrm{Id}}
+% custom notations
+  \gdef\homset#1#2#3{{#1}\! \left\lbrack {#2}, {#3} \right\rbrack}
+  \gdef\homsetl#1#2{{#1}\! \left\lbrack {#2} \right\rbrack}
+  \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
+  \gdef\Cont{\mathrm{\mathbf{Cont}}}
+  \gdef\Poly{\mathrm{\mathbf{Poly}}}
+  \gdef\PolyFunctor#1{\mathrm{\mathbf{PFun}}\left({#1}\right)}
+  \gdef\contcomp{\lhd}
+  \gdef\inl{\operatorname{\mathtt{inl}}}
+  \gdef\inr{\operatorname{\mathtt{inr}}}
+  \gdef\divleft#1#2{\frac{{#1}, \_}{{#1}, {#2}}}
+  \gdef\divright#1#2{\frac{\_, {#2}}{{#1}, {#2}}}
+  \gdef\rootpos{o}
+  \gdef\nextshape{\darr}
+  \gdef\posplus{\oplus}
+  \gdef\retroarr{\nrightarrow}
+  \gdef\Travel{\operatorname{\mathrm{Travel}}}
+  \gdef\Flow{\operatorname{\mathrm{Flow}}}
+  \gdef\pure{\mathop{\mathrm{pure}}}
+  \gdef\join{\mathop{\mathrm{join}}}
+  \gdef\extract{\mathop{\mathrm{ex}}}
+  \gdef\duplicate{\mathop{\mathrm{dup}}}
+  \gdef\keyword#1{\mathrel{\mathrm{\mathbf{#1}}}}</code></pre>
+<h2 id="概要">概要</h2>
+<p>2つのモナド<span class="math inline">M,N</span>の関手としての合成<span class="math inline">M\comp N</span>は、再びモナドになるとは限りません。
+しかし、モナドの<em>分配法則</em>という特別な性質をもつ自然変換を使うと<span class="math inline">M\comp N</span>をモナドにすることができ、
+しかもそのモナドは個別のモナド<span class="math inline">M, N</span>を<span class="math inline">M\comp N</span>に持ち上げる(lift)ことができるモナドです。</p>
+<p>このブログでも以前、<a href="https://hackage.haskell.org/package/transformers-0.6.1.2/docs/Control-Monad-Trans-Reader.html">ReaderT</a>や
+<a href="https://hackage.haskell.org/package/transformers-0.6.1.2/docs/Control-Monad-Trans-Writer.html">WriterT</a>、
+<a href="https://hackage.haskell.org/package/transformers-0.6.1.2/docs/Control-Monad-Trans-Except.html">ExceptT</a>といったモナド変換子は、
+“分配”という自然変換を用いて定義でき、
+これらを一般化すると2つのモナドの合成<code>Compose m n</code>は分配<code>swap :: forall x. n (m x) -&gt; m (n x)</code>
+を用いて定義できることを説明しました。
+当時はこれらの自然変換のことを”分配”と呼んでいましたが、
+今後は一般的な名称に合わせて<strong>分配法則</strong>(<em>distributive law</em>)と呼ぶことにします。</p>
+<ul>
+<li><a href="../posts/string-3.html">ストリング図でMonad再入門(3)</a></li>
+</ul>
+<p>この記事で例に挙げた分配法則には以下のようなものがあります。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Reader r の m に対する分配法則</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">swapMR ::</span> (<span class="dt">Functor</span> m) <span class="ot">=&gt;</span> m (r <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> r <span class="ot">-&gt;</span> m b</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- m の Writer w に対する分配法則</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">swapWM ::</span> (<span class="dt">Functor</span> m) <span class="ot">=&gt;</span> (w, m b) <span class="ot">-&gt;</span> m (w, b)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- m の Either e に対する分配法則</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ot">swapEM ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Either</span> e (m b) <span class="ot">-&gt;</span> m (<span class="dt">Either</span> e b)</span></code></pre></div>
+<p>本記事では、モナドではなく<em>コモナドの</em>分配法則についても解説します。
+モナドと全く同じように、コモナドの分配法則は、それを使うと2つのコモナドの合成関手
+を再度コモナドにできます。</p>
+<p>加えて、コモナドの分配法則を特に<code>Store</code>コモナドについて調べた結果として、</p>
+<ol type="1">
+<li><p>Torsorという代数構造をもつ型<code>S</code>に対して
+<code>∀w. (Comonad w) =&gt; ∀x. w (Store S x) -&gt; Store S (w x)</code>という分配法則を定めることができること</p></li>
+<li><p><code>Bool</code>のようにちょうど2種類の値をとる型<code>S, T</code> (<code>|S| = |T| = 2</code>) に対して、
+<code>Store S</code>の<code>Store T</code>に対する分配法則</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dist ::</span> ∀x<span class="op">.</span> <span class="dt">Store</span> <span class="dt">S</span> (<span class="dt">Store</span> <span class="dt">T</span> x) <span class="ot">-&gt;</span> <span class="dt">Store</span> <span class="dt">T</span> (<span class="dt">Store</span> <span class="dt">S</span> x)</span></code></pre></div>
+<p>をプログラムで全探索した結果、1.の方法で説明できるもの1つを含む4つの分配法則が
+得られたこと</p></li>
+</ol>
+<p>について説明します。これは、先月からBlueskyにてつぶやいていた内容になります。</p>
+<h2 id="モナドの分配法則">モナドの分配法則</h2>
+<p>モナドの分配法則は以下のように定義されます。</p>
+<dl>
+<dt>モナドの分配法則</dt>
+<dd>
+<p><span class="math inline">M</span>と<span class="math inline">N</span>を圏<span class="math inline">\mathcal{C}</span>上のモナドとする。
+<strong>モナド<span class="math inline">M</span>の<span class="math inline">N</span>に対する分配法則</strong>(<em>distributive law of monad <span class="math inline">M</span> over <span class="math inline">N</span></em>)を、
+自然変換</p>
+<pre class="math-block"><code>\theta : N\comp M \to M\comp N</code></pre>
+<p>であって、以下の等式<span class="math inline">\mathrm{(DM1)-(DM4)}</span>を満たすものと定義する。</p>
+<pre class="math-block"><code>\begin{alignat}{2}
+ \theta \comp \pure_{N}M &amp;= M \pure_{N} &amp; &amp;: M \to M\comp N \tag{DM1}\\
+ \theta \comp N\pure_M &amp;= \pure_{M} N &amp; &amp;: N \to M\comp N \tag{DM2}\\
+ \theta \comp \join_{N}M &amp;= M\join_{N} \comp \theta N \comp N \theta &amp; &amp;: N\comp N\comp M \to M\comp N \tag{DM3}\\
+ \theta \comp N\join_{M} &amp;= \join_{M}N \comp M \theta \comp \theta M &amp; &amp;: N\comp M\comp M \to M\comp N \tag{DM4}
+\end{alignat}</code></pre>
+</dd>
+</dl>
+<p>等式<span class="math inline">\mathrm{(DM1)-(DM4)}</span>をストリング図で描くと以下のようになります。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<figure>
+<img src="../images/distlaws/monad-distributive-laws.png" alt="モナドの分配法則が満たすべき等式" />
+<figcaption aria-hidden="true">モナドの分配法則が満たすべき等式</figcaption>
+</figure>
+<p>以下のよく知られた<sup>参考文献参照</sup>事実があり、モナド<span class="math inline">M</span>の<span class="math inline">N</span>に対する分配法則を与えることは、
+モナドの合成<span class="math inline">MN</span>を与えることと全く同じです。</p>
+<dl>
+<dt>モナドの合成</dt>
+<dd>
+<p><span class="math inline">M,N : \mathcal{C} \to \mathcal{C}</span>をそれぞれモナドとする。
+<em><span class="math inline">M</span>と<span class="math inline">N</span>の合成モナド</em>を、
+台となる関手が<span class="math inline">M,N</span>の関手としての合成<span class="math inline">M\comp N</span>であるモナド<span class="math inline">MN = (M\comp N, \pure_{MN}, \join_{MN})</span>であって、
+更に以下の3条件(<em>left lifting</em>, <em>right lifting</em>, <em>middle unitary</em>)を満たすものと定義する。</p>
+<ul>
+<li><p>Left lifting:「<span class="math inline">M</span>を持ち上げる」自然変換</p>
+<p><span class="math display">
+  \mathrm{lift}_1 = M\pure_{N} : M \to M\comp N
+</span></p>
+<p>はモナド準同型でもある。</p>
+<figure>
+<img src="../images/distlaws/compmonad-lift1.png" alt="Left liftingのストリング図" />
+<figcaption aria-hidden="true">Left liftingのストリング図</figcaption>
+</figure></li>
+<li><p>Right lifting:「<span class="math inline">N</span>を持ち上げる」自然変換</p>
+<p><span class="math display">
+  \mathrm{lift}_2 = \pure_{M}N : N \to M\comp N
+</span></p>
+<p>はモナド準同型でもある。</p>
+<figure>
+<img src="../images/distlaws/compmonad-lift2.png" alt="Right liftingのストリング図" />
+<figcaption aria-hidden="true">Right liftingのストリング図</figcaption>
+</figure></li>
+<li><p>Middle unitary: 任意の<span class="math inline">MN</span>は<span class="math inline">M,N</span>を持ち上げたものを組み合わせて書ける。特に</p>
+<p><span class="math display">
+  \join_{MN} \comp \mathrm{lift}_1 MN \comp M\mathrm{lift_2} = \id_{MN} : M \comp N \to M \comp N
+</span></p>
+<p>が成り立つ。</p>
+<figure>
+<img src="../images/distlaws/middle-unit.png" alt="Middle unitaryのストリング図" />
+<figcaption aria-hidden="true">Middle unitaryのストリング図</figcaption>
+</figure></li>
+</ul>
+</dd>
+<dt>モナドの分配法則<span class="math inline">\Rightarrow</span>モナドの合成</dt>
+<dd>
+<p><span class="math inline">M,N : \mathcal{C} \to \mathcal{C}</span>をそれぞれモナド、<span class="math inline">\theta : N\comp M \to M \comp N</span>を分配法則とする。
+以下のように定義される<span class="math inline">\pure_{MN}, \join_{MN}</span>によって<span class="math inline">MN=(M\comp N, \pure_{MN}, \join_{MN})</span>は
+<span class="math inline">M</span>と<span class="math inline">N</span>の合成モナドである。</p>
+<pre class="math-block"><code>\begin{align*}
+ &amp; \pure_{MN} : \Id \to M \comp N \\ 
+ &amp; \pure_{MN} = \pure_{M}N \comp \pure_{N} \\
+ &amp; \join_{MN} : M \comp N \comp M \comp N \to M \comp N \\
+ &amp; \join_{MN} = M \join_{N} \comp \join_{M} NN \comp M \theta N
+\end{align*}</code></pre>
+<figure>
+<img src="../images/distlaws/dist-to-comp.png" alt="分配法則→合成モナド" />
+<figcaption aria-hidden="true">分配法則→合成モナド</figcaption>
+</figure>
+</dd>
+<dt>モナドの分配法則<span class="math inline">\Leftarrow</span>モナドの合成</dt>
+<dd>
+<p><span class="math inline">M,N : \mathcal{C} \to \mathcal{C}</span>をそれぞれモナド、<span class="math inline">MN</span>を<span class="math inline">M</span>と<span class="math inline">N</span>の合成モナドとすると、
+以下の自然変換<span class="math inline">\theta_{MN} : N\comp M \to M\comp N</span>は分配法則である。</p>
+<pre class="math-block"><code>\theta_{MN} = \join_{MN} \comp \pure_{M}NMN \comp NM\pure_{N}</code></pre>
+<figure>
+<img src="../images/distlaws/comp-to-dist.png" alt="合成モナド→分配法則" />
+<figcaption aria-hidden="true">合成モナド→分配法則</figcaption>
+</figure>
+</dd>
+</dl>
+<p>更に<span class="math inline">\theta_{MN} \mapsto \join_{MN}</span>と<span class="math inline">\join_{MN}\mapsto \theta_{MN}</span>は互いに逆変換になっており、
+モナドの分配法則はモナドの合成と同じものを表していることがわかります。</p>
+<p>このブログにおける<a href="../posts/string-3.html">以前の記事</a>では<code>ReaderT, WriterT, ExceptT</code>などのモナド変換子を解説しました。
+その内容は、<code>Reader r, Writer w, Either e</code>といったモナドと別の任意のモナド<code>m</code>が(適切な合成順の)分配法則をもつこと、
+そして分配法則を用いると上で定義された合成モナドを作ることができるというものです。つまり、その記事で行っていたことは上記の
+「モナドの分配法則<span class="math inline">\Rightarrow</span>モナドの合成」の例および証明だったというわけです。</p>
+<h2 id="コモナドの分配法則">コモナドの分配法則</h2>
+<p>さて、圏<span class="math inline">\mathcal{C}</span>上のコモナドは<span class="math inline">\mathcal{C}^{\mathrm{op}}</span>上のモナドと考えることができるので、上記の定義に登場する自然変換をすべて逆向きにすることで、
+<strong>コモナドの分配法則</strong>も定義できます。</p>
+<dl>
+<dt>コモナドの分配法則</dt>
+<dd>
+<p><span class="math inline">W</span>と<span class="math inline">V</span>を圏<span class="math inline">\mathcal{C}</span>上のコモナドとする。
+<strong>コモナド<span class="math inline">W</span>の<span class="math inline">V</span>に対する分配法則</strong>(<em>distributive law of comonad <span class="math inline">W</span> over <span class="math inline">V</span></em>)を、
+自然変換</p>
+<pre class="math-block"><code>\theta : W\comp V \to V\comp W</code></pre>
+<p>であって、以下の等式<span class="math inline">\mathrm{(DW1)-(DW4)}</span>を満たすものと定義する。</p>
+<pre class="math-block"><code>\begin{alignat}{2}
+ \extract_{V}W \comp \theta &amp;= W \extract_{V}
+     &amp; &amp;: W\comp V \to W \tag{DW1}\\
+ V\extract_{W} \comp \theta &amp;= \extract_{W} V
+     &amp; &amp;: W\comp V \to V \tag{DW2}\\
+ \duplicate_{V}W \comp \theta &amp;= V\theta \comp \theta V \comp W\duplicate_{V}
+     &amp; &amp;: W\comp V \to V\comp V\comp W \tag{DW3}\\
+ V\duplicate_{W} \comp \theta &amp;= \theta W \comp W \theta \comp \duplicate_{W}V
+     &amp; &amp;: W\comp V \to V\comp W\comp W \tag{DW4}
+\end{alignat}</code></pre>
+</dd>
+</dl>
+<p>こちらも等式<span class="math inline">\mathrm{(DW1)-(DW4)}</span>をストリング図で描くと以下のようになります。（ラベルを除けば、モナドの分配法則の上下を反転しただけですね！）</p>
+<figure>
+<img src="../images/distlaws/comonad-distributive-laws.png" alt="コモナドの分配法則が満たすべき等式" />
+<figcaption aria-hidden="true">コモナドの分配法則が満たすべき等式</figcaption>
+</figure>
+<p>コモナドの分配法則と以下の”合成コモナド”が対応することも、モナドの場合から定義と証明をすべて双対なものに読み替えて得られます。</p>
+<dl>
+<dt>コモナドの合成</dt>
+<dd>
+<p><span class="math inline">W,V : \mathcal{C} \to \mathcal{C}</span>をそれぞれコモナドとする。
+<em><span class="math inline">W</span>と<span class="math inline">V</span>の合成コモナド</em>を、
+台となる関手が<span class="math inline">W,V</span>の関手としての合成<span class="math inline">W\comp V</span>であるコモナド<span class="math inline">WV = (W\comp V, \extract_{WV}, \duplicate_{WV})</span>であって、
+更に以下の3条件を満たすものと定義する。</p>
+<ul>
+<li>「<span class="math inline">W</span>を取り出す」自然変換<span class="math inline">\mathrm{lower}_1 = W\extract_{N} : W\comp V \to W</span>はコモナド準同型</li>
+<li>「<span class="math inline">V</span>を取り出す」自然変換<span class="math inline">\mathrm{lower}_2 = \extract_{W}V : W\comp V \to V</span>はコモナド準同型</li>
+<li>Middle unitary条件<span class="math inline">\mathrm{lower}_1 V \comp WV\mathrm{lower}_2 \comp \duplicate_{WV} = \id : W\comp V \to W \comp V</span></li>
+</ul>
+</dd>
+</dl>
+<p>コモナド変換子の一部は、モナド変換子と同様に「合成コモナド」として（つまり、分配法則を使って）得られます。
+<a href="https://hackage.haskell.org/package/comonad-5.0.9/">comonad</a>ライブラリ内にあるものとしては、以下の2つがそのようなモナド変換子です。</p>
+<ul>
+<li><p><a href="https://hackage.haskell.org/package/comonad-5.0.9/docs/Control-Comonad-Env.html#g:3">EnvT</a>コモナド変換子は、
+<code>EnvT e w</code>が<code>Env e</code>と任意のコモナド<code>w</code>の合成コモナド<code>Env e ∘ w</code>であることに由来する</p>
+<ul>
+<li>つまり、コモナドの分配法則<span class="math inline">\theta_{\mathtt{EnvT}} : \mathtt{Env\ e} \comp W \to W \comp \mathtt{Env\ e}</span>がある</li>
+</ul></li>
+<li><p><a href="https://hackage.haskell.org/package/comonad-5.0.9/docs/Control-Comonad-Traced.html#g:3">TracedT</a>コモナド変換子は、
+<code>TracedT m w</code>が任意のコモナド<code>w</code>と<code>Traced m</code>の合成コモナド<code>w ∘ Traced m</code>であることに由来する</p>
+<ul>
+<li>つまり、コモナドの分配法則<span class="math inline">\theta_{\mathtt{TracedT}} : W \comp \mathtt{Traced\ m} \to \mathtt{Traced\ m} \comp W</span>がある</li>
+</ul></li>
+</ul>
+<h3 id="コモナドの分配法則の例">コモナドの分配法則の例</h3>
+<h4 id="コモナド変換子envt">コモナド変換子<code>EnvT</code></h4>
+<p>前述したように、コモナド変換子<code>EnvT</code>はコモナドの分配法則を用いて得られます。
+以下に与えられた型<code>A</code>を環境とするEnvコモナド<code>Env A</code>を短く<span class="math inline">E</span>と書くことにし、コモナド<span class="math inline">E</span>の定義を数式で書き下したものを示します。</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; E : \Set \to \Set \\
+  &amp; E X = A \times X
+\end{align*}</code></pre>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \extract_{E} : \forall X. A \times X \to X \\
+  &amp; \extract_{E}(a,x) = x \\
+  &amp; \duplicate_{E} : \forall X. A \times X \to A \times (A \times X) \\
+  &amp; \duplicate_{E}(a,x) = (a,(a,x))
+\end{align*}</code></pre>
+<p>コモナド変換子<code>EnvT</code>は、Envコモナド<span class="math inline">E</span>の任意のコモナド<span class="math inline">V</span>に対する以下の分配法則<span class="math inline">\theta_{\mathtt{EnvT}}</span>によって定まる
+合成コモナドです。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \theta_{\mathtt{EnvT}} : \forall X. E (V X) \to V (E X) \\
+  &amp; \theta_{\mathtt{EnvT}} (a, v_x) = \map_{V} (a,-) v_x
+\end{align*}</code></pre>
+<details>
+<summary>
+証明
+</summary>
+<p>以下のように計算して確かめられます。
+省略のため<span class="math inline">\theta_{\mathtt{EnvT}}=\theta</span>とおきます。</p>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (\extract_{V}E \comp \theta)(a, v_x) \\
+      &amp;= \extract_{V, Ex} (\map_{V} (a,-) v_x) \\
+      &amp;= (a, -) (\extract_{V, x} v_x) \\
+      &amp;= (a, \extract_{V,x} v_x) \\
+      &amp;= \map_{E} \extract_{V} (a, v_x)
+    \end{aligned}
+  \end{rcases}
+  \tag{DW1-EnvT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (V\extract_{E} \comp \theta)(a, v_x) \\
+      &amp;= \map_{V} \extract_{E,x} (\map_{V} (a,-) v_x) \\
+      &amp;= \map_{V} (\extract_{E,x} \comp (a, -)) v_x \\
+      &amp;= \map_{V} (\id_x) v_x \\
+      &amp;= v_x \\
+      &amp;= \extract_{E, Vx} (a, v_x)
+    \end{aligned}
+    \end{rcases}
+  \tag{DW2-EnvT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (\duplicate_{V}E \comp \theta)(a, v_x) \\
+      &amp;= \duplicate_{V,Ex} (\map_{V} (a,-) v_x) \\
+      &amp;= \map_{V\comp V} (a,-) \duplicate_{V,x} v_x \\
+      &amp;\phantom{=} (V\theta \comp \theta V \comp E\duplicate_{V})(a,v_x) \\
+      &amp;= \map_V \theta_{x} (\theta_{Vx} (\map_E \duplicate_V (a,v_x))) \\
+      &amp;= \map_V \theta_{x} (\theta_{Vx} (a, \duplicate_V v_x)) \\
+      &amp;= \map_V \theta_{x} (\map_V (a, -) (\duplicate_V v_x)) \\
+      &amp;= \map_V (\theta_{x} \comp (a, -)) (\duplicate_V v_x) \\
+      &amp;= \map_V (\lambda v'_x. \theta_{x} (a, v'_x)) (\duplicate_V v_x) \\
+      &amp;= \map_V (\lambda v'_x. \map_V (a, -) v'_x) (\duplicate_V v_x) \\
+      &amp;= \map_V (\map_V (a,-)) v_x \\
+      &amp;= \map_{V\comp V} (a,-) v_x
+    \end{aligned}
+  \end{rcases}
+  \tag{DW3-EnvT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (V\duplicate_{E} \comp \theta)(a, v_x) \\
+      &amp;= \map_V \duplicate_E (\theta (a, v_x)) \\
+      &amp;= \map_V \duplicate_E (\map_V (a, -) v_x) \\
+      &amp;= \map_V (\duplicate_E \comp (a, -)) v_x \\
+      &amp;= \map_V (a, (a, -)) v_x \\
+      &amp;\phantom{=} (\theta E \comp E \theta \comp \duplicate_{E}V)(a,v_x) \\
+      &amp;= \theta_{Ex} (\map_E \theta_{x} (\duplicate_{E,Vx} (a,v_x))) \\
+      &amp;= \theta_{Ex} (\map_E \theta_{x} (a,(a,v_x))) \\
+      &amp;= \theta_{Ex} (a, \theta_{x} (a,v_x)) \\
+      &amp;= \theta_{Ex} (a, \map_V (a,-) v_x) \\
+      &amp;= \map_V (a,-) (\map_V (a,-) v_x) \\
+      &amp;= \map_V ((a,-) \comp (a,-)) v_x \\
+      &amp;= \map_V (a,(a,-)) v_x
+    \end{aligned}
+  \end{rcases}
+  \tag{DW4-EnvT}
+\end{equation}</code></pre>
+</details>
+<h4 id="コモナド変換子tracedt">コモナド変換子<code>TracedT</code></h4>
+<p>コモナド変換子<code>TracedT</code>もまた、コモナドの分配法則を用いて得られます。
+与えられたモノイド<span class="math inline">B=(B,1_B,\cdot)</span>を用いるTracedコモナド<code>Traced B</code>を短く<span class="math inline">T</span>と書くことにし、コモナド<span class="math inline">T</span>の定義を数式で書き下したものを示します。</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; T : \Set \to \Set \\
+  &amp; T X = B \to X
+\end{align*}</code></pre>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \extract_{T} : \forall X. (B \to X) \to X \\
+  &amp; \extract_{T} f = f(1_B) \\
+  &amp; \duplicate_{T} : \forall X. (B \to X) \to (B \to B \to X) \\
+  &amp; \duplicate_{T} f = \lambda (b_1 : B). \lambda (b_2 : B). f(b_1 \cdot b_2)
+\end{align*}</code></pre>
+<p>コモナド変換子<code>TracedT</code>は、任意のコモナド<span class="math inline">W</span>のTracedコモナド<span class="math inline">T</span>に対する以下の分配法則<span class="math inline">\theta_{\mathtt{TracedT}}</span>によって定まる
+合成コモナドです。</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \theta_{\mathtt{TracedT}} : \forall X. W (B \to X) \to (B \to W X) \\
+  &amp; \theta_{\mathtt{TracedT}} w_f = \lambda (b : B). \map_{W} (b^{*}) w_xf
+\end{align*}</code></pre>
+<p>ただし、<span class="math inline">b^{*}</span>は<span class="math inline">\lambda (f : B \to X). f(b)</span>を意味するものとします。</p>
+<details>
+<summary>
+証明
+</summary>
+<p>以下のように計算して確かめられます。
+省略のため<span class="math inline">\theta_{\mathtt{TracedT}}=\theta</span>とおきます。</p>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (\extract_{T}W \comp \theta)w_f \\
+      &amp;= \extract_{T, Wx} (\lambda b. \map_{W} b^{*} w_f) \\
+      &amp;= \map_{W} 1_B^{*} w_f \\
+      &amp;= \map_{W} \extract_{T} w_f
+    \end{aligned}
+  \end{rcases}
+  \tag{DW1-TracedT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (T\extract_{W} \comp \theta) w_f \\
+      &amp;= \map_{T} \extract_{W} (\lambda b. \map_{W} b^{*} w_f) \\
+      &amp;= \lambda b. \extract_{W} (\map_{W} b^{*} w_f) \\
+      &amp;= \lambda b. b^{*} (\extract_{W} w_f) \\
+      &amp;= \lambda b. \extract_{W} w_f b \\
+      &amp;= \extract_{W} w_f
+    \end{aligned}
+    \end{rcases}
+  \tag{DW2-TracedT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (\duplicate_{T}W \comp \theta) w_f \\
+      &amp;= \duplicate_{T,Wx} (\lambda b. \map_{W} b^{*} w_f) \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W (b_1 \cdot b_2)^{*} w_f \\
+      &amp;\phantom{=} (T\theta \comp \theta T \comp W\duplicate_{T})w_f \\
+      &amp;= \map_T \theta_{x} (\theta_{Tx} (\map_W \duplicate_T w_f)) \\
+      &amp;= \map_T \theta_{x} (\lambda b_1. \map_W b_1^{*} (\map_W \duplicate_T w_f)) \\
+      &amp;= \lambda b_1. \theta_{x} (\map_W b_1^{*} (\map_W \duplicate_T w_f)) \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W b_2^{*} (\map_W b_1^{*} (\map_W \duplicate_T w_f)) \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W (b_2^{*} \comp b_1^{*} \comp \duplicate_T) w_f \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W (\lambda f. \duplicate_T f b_1 b_2) w_f \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W (\lambda f. f(b_1\cdot b_2)) w_f \\
+      &amp;= \lambda b_1. \lambda b_2. \map_W (b_1\cdot b_2)^{*} w_f
+    \end{aligned}
+  \end{rcases}
+  \tag{DW3-TracedT}
+\end{equation}</code></pre>
+<pre class="math-block"><code>\begin{equation}
+  \begin{rcases}
+    \begin{aligned}
+      &amp;\phantom{=} (T\duplicate_{W} \comp \theta)w_f \\
+      &amp;= \map_T \duplicate_W (\theta w_f) \\
+      &amp;= \map_T \duplicate_W (\lambda b. \map_W b^{*} w_f) \\
+      &amp;= \lambda b. \duplicate_W (\map_W b^{*} w_f) \\
+      &amp;\phantom{=} (\theta W \comp W \theta \comp \duplicate_{W}T) w_f \\
+      &amp;= \theta_{Wx} (\map_W \theta_{x} (\duplicate_{W,Tx} w_f)) \\
+      &amp;= \theta_{Wx} (\map_W (\lambda w'_f. \lambda b. \map_W b^{*} w'_f) (\duplicate_{W,Tx} w_f)) \\
+      &amp;= \lambda b. \map_W b^{*} (\map_W (\lambda w'_f. \lambda b'. \map_W b'^{*} w'_f) (\duplicate_{W,Tx} w_f)) \\
+      &amp;= \lambda b. \map_W (\lambda w'_f. b^{*} (\lambda b'. \map_W b'^{*} w'_f)) (\duplicate_{W,Tx} w_f) \\
+      &amp;= \lambda b. \map_W (\lambda w'_f. \map_W b^{*} w'_f) (\duplicate_{W,Tx} w_f) \\
+      &amp;= \lambda b. \map_W (\map_W b^{*}) (\duplicate_{W,Tx} w_f) \\
+      &amp;= \lambda b. \duplicate_{W,Tx} (\map_W b^{*} w_f)
+    \end{aligned}
+  \end{rcases}
+  \tag{DW4-TracedT}
+\end{equation}</code></pre>
+</details>
+<h4 id="traced-aのtraced-bに対する分配法則-zappaszép-product"><code>Traced A</code>の<code>Traced B</code>に対する分配法則 ↔︎ Zappa–Szép product</h4>
+<p>前2つの例はコモナド変換子に対応する分配法則であったので、
+片方（“変換される方”）のコモナドとして任意のコモナドを当てはめ可能でした。
+分配法則の両方のコモナドが具体的に決まっている、
+コモナド変換子として考えることができない分配法則の例を挙げます。</p>
+<p>モノイド<span class="math inline">A=(A,1_A,\cdot_A)</span>と<span class="math inline">B=(B,1_B,\cdot_B)</span>のそれぞれを使った
+<code>Traced</code>コモナドを<span class="math inline">T_A = (A \to -), T_B = (B \to -)</span>とします。
+<span class="math inline">T_A</span>の<span class="math inline">T_B</span>に対する分配法則には、
+上記の<code>TracedT</code>において<span class="math inline">W = T_A</span>とした場合以外の分配法則も存在します。</p>
+<p>モナドの場合と同様に、コモナドの分配法則を与えることは合成コモナドを与えることと同じです。
+<span class="math inline">T_A, T_B</span>の関手としての合成<span class="math inline">T_{AB} = T_A \comp T_B</span>を
+<span class="math inline">T_A, T_B</span>の合成コモナドにするためには、コモナド演算</p>
+<pre class="math-block"><code>\begin{align*}
+ &amp; \extract_{T_{AB}} : \forall X. (A \to B \to X) \to X \\
+ &amp; \duplicate_{T_{AB}} : \forall X. (A \to B \to X) \to (A \to B \to A \to B \to X)
+\end{align*}</code></pre>
+<p>であって、</p>
+<ul>
+<li><p><span class="math inline">\extract_{T_A}T_B : \forall X. (A \to B \to X) \to (B \to X)</span>がコモナド準同型</p></li>
+<li><p><span class="math inline">T_A \extract_{T_B} : \forall X. (A \to B \to X) \to (A \to X)</span>がコモナド準同型</p></li>
+<li><p>Middle unitary条件</p>
+<p><span class="math inline">\mathrm{lower}_1 T_B \comp T_A T_B \mathrm{lower}_2 \comp \duplicate_{T_A T_B} = \id : \forall X. (A \to B \to X) \to (A \to B \to X)</span></p></li>
+</ul>
+<p>を満たすようなものを与えればよいのでした。</p>
+<p>ここで、<span class="math inline">A \times B</span>との間に（モノイドとしてではなく、単なる集合として）全単射があるとある集合を<span class="math inline">C</span>とすると、<span class="math inline">T_A \comp T_B</span>は<span class="math inline">T_C = (C \to -)</span>と同型です。
+「任意の集合<span class="math inline">C</span>について、関手<span class="math inline">(C \to -)</span>を台とするどんなコモナドも<span class="math inline">C</span>を台集合とするあるモノイドを
+用いた<code>Traced</code>コモナドである」<sup>(証明略)</sup>ことを使うと、
+<span class="math inline">T_{C}</span>上のコモナド演算は<span class="math inline">C</span>を台集合とする（モノイドの直積<span class="math inline">A\times B</span>と一致するとは限らない）
+あるモノイド演算と対応します。</p>
+<p>更に、「任意のモノイド<span class="math inline">C,C'</span>について、<code>Traced</code>コモナド間のコモナド準同型<span class="math inline">\phi : T_C \to T_{C'}</span>
+はいずれもモノイド準同型<span class="math inline">f : C' \to C</span>を用いて<span class="math inline">\phi(t) = t \comp f</span>と書ける」<sup>(証明略)</sup>
+ことを用いると、コモナド<span class="math inline">T_{C}</span>が<span class="math inline">T_A, T_B</span>の合成コモナドとなるための追加の条件は、
+適当な同型写像を<span class="math inline">p : A \times B \to C</span>として</p>
+<ul>
+<li><span class="math inline">(\lambda b. p(1_A, b)) : B \to C</span>はモノイド準同型</li>
+<li><span class="math inline">(\lambda a. p(a, 1_B)) : A \to C</span>はモノイド準同型</li>
+<li>任意の<span class="math inline">a \in A, b \in B</span>に対して<span class="math inline">p(a,1_B)\cdot p(1_A,b) = p(a,b)</span></li>
+</ul>
+<p>であることがわかります。前2つの条件における<span class="math inline">\lambda b. p(1_A, b)), (\lambda a. p(a, 1_B))</span>はどちらも単射なので<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>
+<span class="math inline">A,B</span>は<span class="math inline">C</span>のある部分モノイドと同一視でき、
+3つ目の条件から、<span class="math inline">C</span>の元<span class="math inline">p(a,b)</span>は<span class="math inline">a = p(a,1_B)∈ A</span>と<span class="math inline">b = p(1_A,b) \in B</span>の積<span class="math inline">a\cdot b</span>として書くことができます。
+特に<span class="math inline">p</span>は全単射なので、任意の<span class="math inline">C</span>の元は<span class="math inline">p(a,b)=a\cdot b</span>と因数分解でき、その方法は一意に定まります。</p>
+<p>この「部分モノイドの積として一意に書くことができる」という性質をもつモノイドには、(内部)Zappa–Szép productという名前が付いています。</p>
+<dl>
+<dt>(内部)Zappa–Szép product</dt>
+<dd>
+モノイド<span class="math inline">C</span>が<span class="math inline">C</span>の部分モノイド<span class="math inline">A,B</span>のZappa–Szép productである <br>
+<span class="math inline">\Leftrightarrow</span> <span class="math inline">C</span>の任意の元<span class="math inline">c</span>が<span class="math inline">c = a\cdot b, a \in A, b \in B</span>と一意に因数分解できる
+</dd>
+</dl>
+<p>したがって、Tracedコモナド<span class="math inline">T_A</span>の<span class="math inline">T_B</span>に対する分配法則は、
+<span class="math inline">A,B</span>を部分モノイドとして持ち、さらにそのZappa–Szép productになっているモノイド<span class="math inline">C</span>と対応します。</p>
+<h2 id="storeコモナドに関係する分配法則"><code>Store</code>コモナドに関係する分配法則</h2>
+<p>Haskellで触れることのあるコモナドには<code>Env</code>コモナドや<code>Traced</code>コモナド以外に<a href="https://hackage.haskell.org/package/comonad-5.0.8/docs/Control-Comonad-Store.html">Store</a>
+コモナドもありますが、私が調べたぶんに限れば、参考文献内で<code>Store</code>コモナド（に相当する<span class="math inline">\Set</span>上のコモナド等）
+が関係する分配法則について具体的に調べたものはありませんでした。</p>
+<p>そこで、自分で頑張って<code>Store</code>コモナドに関係する分配法則について考えてみたところ、
+ちょっと良さそうな事実を見つけたのでここに書きます。</p>
+<h3 id="storeコモナド"><code>Store</code>コモナド</h3>
+<pre class="math-block"><code>\gdef\Store{\mathop{\mathrm{St}}}</code></pre>
+<p>表記法の準備として、
+Haskellでの<code>Store</code>コモナドにあたる<span class="math inline">\Set</span>上のコモナドを以下のように与えます。</p>
+<dl>
+<dt>Storeコモナド<span class="math inline">\Store_{(-)}</span></dt>
+<dd>
+<p>集合<span class="math inline">S</span>に対して、<span class="math inline">S</span>を状態とするStoreコモナド<span class="math inline">\Store_S</span>を以下の通り定義する。</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \Store_S : \Set \to \Set \\
+  &amp; \Store_S(-) = S \times (S \to -) \\
+  &amp; \extract_{\Store} : \forall X. \Store_S X \to X \\
+  &amp; \extract_{\Store} (s,f) = f s \\
+  &amp; \duplicate_{\Store} : \forall X. \Store_S X \to \Store_S (\Store_S X) \\
+  &amp; \duplicate_{\Store} (s,f) = \left(s, \lambda s'. (s', f) \right)
+\end{align*}</code></pre>
+</dd>
+</dl>
+<h3 id="任意のコモナドwのstore_sに対する分配法則">任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則</h3>
+<p>Storeコモナド<span class="math inline">\Store_S</span>には、<span class="math inline">S</span>が単なる集合ではなくTorsorという代数構造が与えられているとき、
+任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則を与えることができます。</p>
+<dl>
+<dt>Torsor</dt>
+<dd>
+<p>空でない集合<span class="math inline">S</span>とその上の3項演算<span class="math inline">t : S \times S \times S \to S</span>
+が以下の等式(<em>torsorの公理</em>)をすべて満たすとき、その組<span class="math inline">(S,t)</span>を<em>torsor</em>とよぶ。</p>
+<pre class="math-block"><code>\begin{alignat}{2}
+ \forall a b.       &amp;\quad &amp; t(a,a,b) &amp;= b \tag{T1} \\
+ \forall a b.       &amp;\quad &amp; t(b,a,a) &amp;= b \tag{T2} \\
+ \forall a b c d e. &amp;\quad &amp; t(a,b,t(c,d,e)) &amp;= t(t(a,b,c),d,e) \tag{T3}
+\end{alignat}</code></pre>
+</dd>
+<dt>Torsorの公理の別の定式化</dt>
+<dd>
+<p>空でない集合<span class="math inline">S</span>とその上の3項演算<span class="math inline">t : S \times S \times S \to S</span>
+がtorsorの公理のうち<span class="math inline">\mathrm{T1}, \mathrm{T2}</span>を満たすならば、以下は同値</p>
+<ul>
+<li><span class="math inline">\mathrm{T3}</span>を満たす</li>
+<li>次の<span class="math inline">\mathrm{T4}, \mathrm{T5}</span>を満たす</li>
+</ul>
+<pre class="math-block"><code>\begin{alignat}{2}
+ \forall a b c d. &amp;\quad &amp; t(a,b,t(b,c,d)) &amp;= t(a,c,d) \tag{T4} \\
+ \forall a b c d. &amp;\quad &amp; t(t(a,b,c),c,d) &amp;= t(a,b,d) \tag{T5}
+\end{alignat}</code></pre>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<ul>
+<li><p><span class="math inline">\mathrm{T3} \Rightarrow \mathrm{T4,T5}</span></p>
+<pre class="math-block"><code>\begin{alignat*}{2}
+  t(a,b,t(b,c,d))
+    &amp;= t(t(a,b,b),c,d) &amp; \qquad &amp; \text{from} (\mathrm{T3}) \\
+    &amp;= t(a,c,d) &amp; &amp; \text{from} (\mathrm{T2}) \\
+  t(t(a,b,c),c,d)
+    &amp;= t(a,b,t(c,c,d)) &amp; &amp; \text{from} (\mathrm{T3}) \\
+    &amp;= t(a,b,d) &amp; &amp; \text{from} (\mathrm{T1}) \\
+\end{alignat*}</code></pre></li>
+<li><p><span class="math inline">\mathrm{T4,T5} \Rightarrow \mathrm{T3}</span></p>
+<pre class="math-block"><code>\begin{alignat*}{2}
+  t(a,b,t(c,d,e))
+    &amp;= t(t(a,b,c),c,t(c,d,e)) &amp; \qquad &amp; \text{from} (\mathrm{T5}) \\
+    &amp;= t(t(a,b,c),d,e) &amp; &amp; \text{from} (\mathrm{T4})
+\end{alignat*}</code></pre></li>
+</ul>
+</details>
+<dl>
+<dt>任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則</dt>
+<dd>
+<p><span class="math inline">W</span>を任意のコモナド、<span class="math inline">(S,t)</span>をtorsorとするとき、
+次の<span class="math inline">\theta : W\comp \Store_S \to \Store_S \comp W</span>は
+<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則である。</p>
+<pre class="math-block"><code>\gdef\pos{\mathop{\mathrm{pos}}}
+\begin{align*}
+ &amp; \theta : W\comp \Store_S \to \Store_S \comp W \\
+ &amp; \theta : \forall X. W (S \times (S \to X)) \to S \times (S \to WX) \\
+ &amp; \theta(w) = (\pos w, \lambda s_1. \map_W h(s_1) w) \\
+ &amp; \quad \keyword{where} \;\; \pos : \forall Y. W (\Store_S Y) \to S\\
+ &amp; \quad \phantom{\keyword{where}} \;\; \pos = \pi_1 \comp \extract_{W}\\
+ &amp; \quad \phantom{\keyword{where}} \;\; h(s_1) = \lambda (s,f). f(t(s, \pos w, s_1)) : S \times (S \to X) \to X
+\end{align*}</code></pre>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<ul>
+<li><p><span class="math inline">\mathrm{DW1}</span></p>
+<pre class="math-block"><code>  \begin{aligned}
+    \text{LHS}
+    &amp;= (\extract_{\Store}W \comp \theta)w \\
+    &amp;= \extract_{\Store, Wx} (\pos w. \lambda s_1. \map_{W} h(s_1) w) \\
+    &amp;= \map_{W} h(\pos w) w \\
+    &amp;= \map_{W} (\lambda (s,f). f(t(s, \pos w, \pos w))) w \\
+    &amp;= \map_{W} (\lambda (s,f). f(s)) w \\
+    &amp;= \map_{W} \extract_{\Store_S} w \\
+    &amp;= \text{RHS}
+  \end{aligned}</code></pre></li>
+<li><p><span class="math inline">\mathrm{DW2}</span></p>
+<pre class="math-block"><code>  \begin{aligned}
+    \text{LHS}
+    &amp;= (\Store_S \extract_{W} \comp \theta) w \\
+    &amp;= \map_{\Store_S} \extract_{W} (\pos w. \lambda s_1. \map_{W} h(s_1) w) \\
+    &amp;= \left(\pos w. \lambda s_1. \extract_{W} \left( \map_{W} h(s_1) w \right) \right) \\
+    &amp;= \left(\pos w. \lambda s_1. h(s_1) (\extract_{W} w) \right) \\
+    &amp;= \left(s_0. \lambda s_1. h(s_1) (s_0, f_0) \right) \\
+    &amp;\quad \keyword{where} \; (s_0, f_0) = \extract_{W} w \\
+    &amp;= \left(s_0. \lambda s_1. f_0(t(s_0,s_0,s_1)) \right) \\
+    &amp;= \left(s_0. \lambda s_1. f_0(s_1) \right) \\
+    &amp;= (s_0, f_0) \\
+    &amp;= \extract_{W} w \\
+    &amp;= \text{RHS}
+  \end{aligned}</code></pre></li>
+<li><p><span class="math inline">\mathrm{DW3}</span></p>
+<pre class="math-block"><code>  \begin{aligned}
+    \text{LHS}
+    &amp;= (\duplicate_{\Store}W \comp \theta) w \\
+    &amp;= \duplicate_{\Store,Wx} (\pos w, \lambda s_1. \map_W h(s_1) w) \\
+    &amp;= (\pos w, \lambda s_1. (s_1, \lambda s_2. (\map_W h(s_2) w))) \\
+    &amp;= (\pos w, \lambda s_1. (s_1, \lambda s_2. (\map_W (\lambda (s,f). f(t(s,\pos_w,s_2))) w))) \\
+    \text{RHS}
+    &amp;= (\Store_S \theta \comp \theta \Store_S \comp W \duplicate_{\Store}) w \\
+    &amp;= \map \theta (\theta (\map_W \duplicate_{\Store} w)) \\
+    &amp;= \map \theta (s_0', \lambda s_1. \map_W h'(s_1) (\map_W \duplicate_{\Store} w)) \\
+    &amp;\quad \keyword{where} \; s_0' = \pos (\map_W \duplicate_{\Store} w) \\
+    &amp;\quad \phantom{\keyword{where} \; s_0'} = \pi_1 (\duplicate_{\Store} (\extract_W w))\\
+    &amp;\quad \phantom{\keyword{where} \; s_0'} = \pi_1 (\duplicate_{\Store} (s_0, f_0)) = s_0 \\
+    &amp;\quad \keyword{where} \; h'(s_1) = \lambda (s,f). f(s,s_0',s_1) \\
+    &amp;= \map \theta (s_0, \lambda s_1. \map_W (h'(s_1) \comp \duplicate_{\Store}) w) \\
+    &amp;= \map \theta (s_0, \lambda s_1. \map_W h''(s_1) w) \\
+    &amp;\quad \keyword{where} \; h''(s_1) = \lambda (s,f). \keyword{let} (s',f') = \duplicate(s,f) \keyword{in} f'(t(s',s_0,s_1)) \\
+    &amp;\quad \phantom{\keyword{where} \; h''(s_1)} = \lambda (s,f). (\lambda s'. (s', f))(t(s,s_0,s_1)) \\
+    &amp;\quad \phantom{\keyword{where} \; h''(s_1)} = \lambda (s,f). (t(s,s_0,s_1), f) \\
+    &amp;= (s_0, \lambda s_1. \theta (\map_W h''(s_1) w)) \\
+    &amp;= (s_0, \lambda s_1. (s_1', \lambda s_2. \map_W k(s_2) (\map_W h''(s_1) w))) \\
+    &amp;\quad \keyword{where} \; s_1' = \pi_1(\extract_W (\map_W h''(s_1) w)) = \pi_1 (h''(s_1)(s_0, f_0)) = t(s_0,s_0,s_1) = s_1 \\
+    &amp;\quad \keyword{where} \; k(s_2) = \lambda (s,f). f(s,s_1',s_2) \\
+    &amp;= (s_0, \lambda s_1. (s_1, \lambda s_2. \map_W (k(s_2) \comp h''(s_1)) w)) \\
+    &amp;= (s_0, \lambda s_1. (s_1, \lambda s_2. \map_W k'(s_1,s_2) w)) \\
+    &amp;\quad \keyword{where} \; k'(s_1,s_2) = \lambda (s,f). \keyword{let} (s',f') = h''(s_1)(s,f) \keyword{in} f'(t(s',s_1,s_2)) \\
+    &amp;\quad \phantom{\keyword{where} \; k'(s_1,s_2)} = \lambda (s,f). \keyword{let} s' = t(s,s_0,s_1); f'=f \keyword{in} f'(t(s',s_1,s_2)) \\
+    &amp;\quad \phantom{\keyword{where} \; k'(s_1,s_2)} = \lambda (s,f). f(t(t(s,s_0,s_1),s_1,s_2)) \\
+    &amp;\quad \phantom{\keyword{where} \; k'(s_1,s_2)} = \lambda (s,f). f(t(s,s_0,s_2)) \\
+    &amp;= (s_0, \lambda s_1. (s_1, \lambda s_2. \map_W (\lambda (s,f). f(t(s,s_0,s_2))) w)) \\
+  \end{aligned}</code></pre></li>
+<li><p><span class="math inline">\mathrm{DW4}</span></p>
+<pre class="math-block"><code>  \begin{aligned}
+    \text{LHS}
+    &amp;= (\Store_{S}\duplicate_{W} \comp \theta)w \\
+    &amp;= \map \duplicate_{W} (\theta w) \\
+    &amp;= \map \duplicate_{W} (\pos w, \lambda s_1. \map_{W} h(s_1) w) \\
+    &amp;\quad \keyword{where} \; h(s_1) = \lambda (s,f). f(s, \pos w, s_1) \\
+    &amp;= (\pos w, \lambda s_1. \duplicate_{W} (\map_{W} h(s_1) w)) \\
+    &amp;= (\pos w, \lambda s_1. \map_{W\comp W} h(s_1) \duplicate_{W} w) \\
+    \text{RHS}
+    &amp;= (\theta W \comp W \theta \comp \duplicate_{W}\Store_{S}) w \\
+    &amp;= \theta (\map \theta (\duplicate_{W} w)) \\
+    &amp;= (s_0', \lambda s_1. \map h'(s_1) w_1) \\
+    &amp;\quad \keyword{where} \; w_1 = \map \theta (\duplicate_{W} w) \\
+    &amp;\quad \phantom{\keyword{where}} \; s_0' = \pos w_1 \\
+    &amp;\quad \phantom{\keyword{where} \; s_0'} = \pi_1 (\theta (\extract_W (\duplicate_W w))) \\
+    &amp;\quad \phantom{\keyword{where} \; s_0'} = \pi_1 (\theta w) \\
+    &amp;\quad \phantom{\keyword{where} \; s_0'} = \pos w \\
+    &amp;\quad \phantom{\keyword{where}} \; h'(s_1) = \lambda (s,f). f(s,\pos w,s_1) = h(s_1) \\
+    &amp;= (\pos w, \lambda s_1. \map h(s_1) w_1) \\
+    &amp;= (\pos w, \lambda s_1. \map (h(s_1) \comp \theta) (\duplicate_{W} w)) \\
+    &amp;= (\pos w, \lambda s_1. \map k(s_1) (\duplicate_{W} w)) \\
+    &amp;\quad \keyword{where} \; k(s_1)w' = h(s_1)(\theta w') \\
+    &amp;\quad \phantom{\keyword{where} \; k(s_1)w'} = h(s_1)(\pos w', \lambda s_2. \map (\lambda (s',f'). f'(t(s', \pos w', s_2))) w') \\
+    &amp;\quad \phantom{\keyword{where} \; k(s_1)w'} = (\lambda s_2. \map (\lambda (s',f'). f'(t(s', \pos w', s_2))) w') (t(\pos w', \pos w, s_1)) \\
+    &amp;\quad \phantom{\keyword{where} \; k(s_1)w'} = \map (\lambda (s',f'). f'(t(s', \pos w', t(\pos w', \pos w, s_1)))) w'\\
+    &amp;\quad \phantom{\keyword{where} \; k(s_1)w'} = \map (\lambda (s',f'). f'(t(s', \pos w, s_1))) w'\\
+    &amp;\quad \phantom{\keyword{where} \; k(s_1)w'} = \map h(s_1) w'\\
+    &amp;= (\pos w, \lambda s_1. \map (\map h(s_1)) (\duplicate_{W} w)) \\
+    &amp;= (\pos w, \lambda s_1. \map_{W\comp W} h(s_1) (\duplicate_{W} w)) \\
+  \end{aligned}</code></pre></li>
+</ul>
+</details>
+<p>これはきちんと証明を清書できていないのですが、この逆、
+つまりコモナド<span class="math inline">W</span>に関して自然な分配法則の族<span class="math inline">\theta : \forall (W : \mathrm{\mathbf{Comonad}}). W \comp \Store_S \to \Store_S \comp W</span>は、
+どれもあるtorsor演算<span class="math inline">t</span>によって上記の方法で定義された分配法則に等しくなると私は考えています。
+（証明に必要な道具があって、それに関して参考文献を見つけられず、自分で書くにも結構な文章量が必要で困っています。）</p>
+<!--
+
+```haskell
+type S :: Type
+type Dist = forall w. Comonad w => forall x. w (S, S -> x) -> (S, S -> w x)
+
+-- Dist ~ (Dist1, Dist2)
+type Dist1 = (forall w. Comonad w => forall x. w (S, S -> x) -> S)
+type Dist2 = (forall w. Comonad w => forall x. w (S, S -> x) -> S -> w x)
+
+-- Dist1 ~ Dist1' ~ Dist1'' ~ Dist1'''
+type Dist1' = (forall g. Functor g => forall x. Cofree g (S, S -> x) -> S)
+type Dist1'' = (forall x. (S, S -> x) -> S)
+type Dist1''' = (S -> S)
+
+-- Dist2 ~ Dist2' ~ ... ~ Dist2'''''
+type Dist2' = (forall g. Functor g => forall x. Cofree g (S, S -> x) -> S -> g x)
+type Dist2'' = forall x. (forall g. Functor g => (S, S -> x) -> g (Cofree g (S, S -> x)) -> S -> g x)
+type Dist2''' = forall x. (S, S -> x) -> S -> (forall g. Functor g => g (Cofree g (S, S -> x)) -> g x)
+type Dist2'''' = forall x. (S, S -> x) -> S -> ((S, S -> x) -> x)
+type Dist2''''' = S -> S -> S -> Either S S
+```
+
+\\(\theta : W \comp \Store_S \to \Store_S \comp W\\)が与えられたとき、
+以下の方法で\\(t : S \times S \times S \to S \\)を抽出できます。
+
+コモナド\\(W\\)に関して自然な分配法則\\(\theta : W \comp \Store_S \to \Store_S \comp W\\) から \\((t: S \times S \times S \to S)\\)
+:   コモナド\\(W\\)に関して自然な分配法則\\(\theta : W \comp \Store_S \to \Store_S \comp W\\)が与えられたとき、
+    \\(W\\)にTracedコモナド\\(T_2\\)をあてはめたものを\\(\theta' : T_2 \comp \Store_S \to \Store_S \comp T_2\\)とする。
+    ここで\\(2\\)は集合\\({0,1}\\)が排他的論理和\\(\oplus\\)によってなすモノイドとする。
+
+    このとき、以下のように\\(t\\)を定義すると、\\((S,t)\\)はtorsorである。
+
+    ```math-block
+    \begin{align*}
+      & t(a,b,c) = k(c)(1) \\
+      & \quad \keyword{where} \; s_a = (a, \id_S) \\
+      & \quad \phantom{\keyword{where}} \; s_b = (b, \id_S) \\
+      & \quad \phantom{\keyword{where}} \; w : 2 \to \Store_S S \\
+      & \quad \phantom{\keyword{where}} \; w(0) = s_b; w(1) = s_a \\
+      & \quad \phantom{\keyword{where}} \; k : S \to 2 \to S \\
+      & \quad \phantom{\keyword{where}} \; (\_, k) = \theta w
+    \end{align*}
+    ```
+
+-->
+<h3 id="store_sのstore_tに対する分配法則"><span class="math inline">\Store_S</span>の<span class="math inline">\Store_T</span>に対する分配法則</h3>
+<p><span class="math inline">\Store_S</span>の<span class="math inline">\Store_T</span>に対する分配法則は、
+<span class="math inline">D = \forall X. \Store_S (\Store_T X) \to \Store_T (\Store_S X)</span>という型の自然変換のうち
+<span class="math inline">\mathrm{(DW1)-(DW4)}</span>を満たすものでした。
+集合<span class="math inline">S,T</span>が有限集合であるとき、このような自然変換として異なるものは有限個であり、
+それをすべてプログラムで列挙することは可能です。また、その自然変換が<span class="math inline">\mathrm{(DW1)-(DW4)}</span>を満たすこともプログラムでチェック可能です。
+そこで、プログラム的に<em>全ての</em><span class="math inline">\Store_S</span>の<span class="math inline">\Store_T</span>に対する分配法則を見つけることを試みました。</p>
+<p>集合<span class="math inline">S</span>の元の数が<span class="math inline">0</span>あるいは<span class="math inline">1</span>のとき、<span class="math inline">\Store_S</span>はそれぞれ空コモナド<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>、<code>Identity</code>コモナドになり、
+集合<span class="math inline">T</span>に対しても同様です。そして、それらは(自明な)唯一の分配法則をもつので、「全ての分配法則を見つける」目的にはそぐいません。
+したがって、一番小さい非自明なケースは、<span class="math inline">|S| = |T| = 2</span>の場合です。</p>
+<p>しかし、ここで問題が発生しました。一番小さい非自明なケースでさえ、
+自然変換<span class="math inline">D</span>の個数は<span class="math inline">2^{24} \times 2^{64}</span>個もあり、到底全てなめることは不可能な数です。
+幸い、この一番小さいケースでは、分配法則の条件のうち<span class="math inline">\mathrm{(DW1)},\mathrm{(DW2)}</span>を使うと
+探索すべき自然変換をなんとか実行可能な<span class="math inline">2^{8} \times 2^{16}</span>個まで減らすことができました。</p>
+<p>しかし、次に小さい<span class="math inline">|S|=2, |T|=3</span>の場合、<em>削減後の</em>自然変換の個数は<span class="math inline">4^{18} \times 6^{2 \times 24}</span>個にもなり、
+小手先の工夫では完全に無理（アルゴリズムお姉さん・・・）です。
+ひとまず<span class="math inline">|S| = |T| = 2</span>についてプログラムを実行したところ、4つの分配法則が得られました。
+出力の読みかたを説明しておらず、ただ貼るだけになってしまいますが<a href="https://github.com/viercc/monad-gen/blob/3a123a0c12562c553c3b1871ffe5b601b20ab87d/comonad-dist-gen/comonad-dist-gen.output">comonad-dist-gen.output</a>といった感じです。</p>
+<p>探索によって見つけた分配法則のうち1つが、前節の「任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_{S'}</span>に対する分配法則<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>」
+の<span class="math inline">W</span>へ<span class="math inline">\Store_S</span>を、<span class="math inline">S'</span>に<span class="math inline">T</span>を代入して得られる分配法則であることは確認しています。
+残り3つがどのように説明できるものであるのかは今後の課題としたく思います。</p>
+<h2 id="参考文献">参考文献</h2>
+<ul>
+<li><p>分配法則について</p>
+<ul>
+<li><p>Beckの<a href="https://link.springer.com/chapter/10.1007/BFb0083084">Distributive Laws</a>が原典なのですが、自分では読めていません・・・
+大学にいる人は私の代わりに読んでください</p></li>
+<li><p><a href="http://web.cecs.pdx.edu/~mpj/pubs/composing.html">Composing Monads</a></p>
+<ul>
+<li><p>BeckのDistributive lawsに直接の言及はないのですが、実質的に同じ構成を使っています。
+(分配法則<span class="math inline">\Rightarrow</span>合成モナド方向のみ)</p>
+<p>この論文はHaskellerにとっては歴史的に重要で、モナド変換子(Monad Transformer)によってモナドが表すエフェクトを組み合わせるという
+発想の出発点となっています。</p></li>
+</ul></li>
+<li><p><a href="https://golem.ph.utexas.edu/category/2017/02/distributive_laws.html">Distributive Laws | The n-Category Café</a></p>
+<ul>
+<li>分配法則とモナドの合成との関係(持ち上げとmiddle unitaryという条件下での同値性)はこの記事を元にしています</li>
+</ul></li>
+<li><p><a href="https://www.nii.ac.jp/pi/n10/10_3.pdf">Distributed laws of directed containers [pdf]</a></p>
+<ul>
+<li><p>Directedコンテナ（=多項式コモナド）の分配法則について述べられています。ほかの参考文献がモナドの分配法則について述べ、
+コモナドに関しては言及なしか「ベースの圏を反対圏に取り替えるだけ」といった扱いの中、コモナドの分配法則が明示的に書かれています。
+具体的な分配法則の例も全てこちらの論文から引きました。</p>
+<p>また、Directedコンテナという「具体的に数え上げられる」もので記述したらどうなるかが記載されているため、プログラムで分配法則を探索する際に
+最も参考にしました。</p></li>
+</ul></li>
+</ul></li>
+<li><p>Zappa–Szép Productについて</p>
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Zappa%E2%80%93Sz%C3%A9p_product">Zappa–Szép Product [Wikipedia]</a> 2025-03-03アクセス</p>
+<ul>
+<li>群のZappa–Szép Productについて</li>
+</ul></li>
+<li><p><a href="https://arxiv.org/abs/math/0406044">On the Zappa–Szép Product</a></p>
+<ul>
+<li><p>総論です。もともと群に対してだけ定義されていたZappa–Szép Productはモノイド、半群、groupoid、圏と一般化されていっているという
+中、それらをいちばん一般的な形で記述し、それまでの報告をまとめた、という形です。</p>
+<p>今回使った部分と関係ない箇所が多く、必要そうなところだけ読みました</p></li>
+</ul></li>
+<li><p><a href="https://www-users.york.ac.uk/~varg1/zappa%20szep%20products.pdf">An introduction to Zappa–Szép Products [pdf]</a></p>
+<ul>
+<li>スライド資料ですが参考になりました</li>
+</ul></li>
+</ul></li>
+<li><p>Torsorについて</p>
+<ul>
+<li><p><a href="https://ncatlab.org/nlab/show/torsor">torsor in nLab</a></p>
+<ul>
+<li>とくに<a href="https://ncatlab.org/nlab/show/torsor#singlesorted_definition">Single-sorted definition</a>節</li>
+</ul></li>
+</ul></li>
+</ul>
+<p>参考文献ではありませんが、この記事の内容は今年1月から時々つぶやいていました。</p>
+<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:zjfkgoccpaxbukqahhtpsiwv/app.bsky.feed.post/3lgi63ultgs2z" data-bluesky-cid="bafyreigsbfgarvlnhj2maglghiwmmyyqcsgm3ka5c7nufgpicxus75mohm">
+<p lang="ja">
+Do distributive laws exist for two store comonads?
+</p>
+— Koji Miyazato (<a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv?ref_src=embed"><span class="citation" data-cites="viercc.bsky.social">@viercc.bsky.social</span></a>) <a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgi63ultgs2z?ref_src=embed">2025年1月24日 19:16</a>
+</blockquote>
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:zjfkgoccpaxbukqahhtpsiwv/app.bsky.feed.post/3lgmzdj5vck2s" data-bluesky-cid="bafyreih6gc5e7ziir4bdiqglbgwsduzf7jlaylkr6i5k3wdn7ivumjc7py">
+<p lang="ja">
+<p>What are distributive law θ between store comonads?</p>
+<p>θ : Store s ∘ Store t ~&gt; Store t ∘ Store s</p>
+<p>Have tried an exhaustive search for the smallest nontrivial case |s| = |t| = 2, and found 4 such distributive laws.</p>
+<p>I'm totally lost on how to interpret the output, though…</p>
+github.com/viercc/monad…<br><br><a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgmzdj5vck2s?ref_src=embed">[image or embed]</a>
+</p>
+— Koji Miyazato (<a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv?ref_src=embed"><span class="citation" data-cites="viercc.bsky.social">@viercc.bsky.social</span></a>) <a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgmzdj5vck2s?ref_src=embed">2025年1月26日 17:34</a>
+</blockquote>
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:zjfkgoccpaxbukqahhtpsiwv/app.bsky.feed.post/3lgmzxi76b22s" data-bluesky-cid="bafyreicyzjkujqeqbn4a5ngrz4dqy6ltz4jvvhsg6qsle3wrskvgrayiea">
+<p lang="ja">
+<p>何も条件を付けずに|s| = |t| = 2の</p>
+<p>θ : Store s ∘ Store t ~&gt; Store t ∘ Store s</p>
+<p>を列挙すると、(2^24 * 2^64)個もある。</p>
+<p>distributive law になるために必要な条件を少しだけ使うと (2^8 * 2^16)個に落とせたから、それでなんとか全探索した。</p>
+けれどこれは全くスケールしない・・・|s| = 3, |t| = 2 になるだけで調べる個数は(3^24 * (6<sup>2)</sup>24)になって無理
+</p>
+— Koji Miyazato (<a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv?ref_src=embed"><span class="citation" data-cites="viercc.bsky.social">@viercc.bsky.social</span></a>) <a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgmzxi76b22s?ref_src=embed">2025年1月26日 17:45</a>
+</blockquote>
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:zjfkgoccpaxbukqahhtpsiwv/app.bsky.feed.post/3lgrpkoj37k2w" data-bluesky-cid="bafyreigqfvipp6iz5x6wmyfjsiro54lwfzggeb6dz6p275omnrrrg6jwzu">
+<p lang="ja">
+<p>Storeコモナドの分配法則</p>
+<p>θ : Store S ∘ Store T ~&gt; Store T ∘ Store S</p>
+<p>であってSについて自然なもの、つまり</p>
+<p>θ : ∀S. Store S ∘ Store T ~&gt; Store T ∘ Store S</p>
+<p>は、T上のpreheap構造すなわちT上の3項演算子</p>
+<p>t : (T,T,T) -&gt; T</p>
+<p>であって</p>
+<p>t(a,a,b) = b = t(b,a,a)
+t(a,b,t(c,d,e)) = t(t(a,b,c),d,e)</p>
+を満たすものと対応する。
+</p>
+— Koji Miyazato (<a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv?ref_src=embed"><span class="citation" data-cites="viercc.bsky.social">@viercc.bsky.social</span></a>) <a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgrpkoj37k2w?ref_src=embed">2025年1月28日 14:22</a>
+</blockquote>
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:zjfkgoccpaxbukqahhtpsiwv/app.bsky.feed.post/3lgsbn5qswk2s" data-bluesky-cid="bafyreigwkvi6p5dkyal6ouyvgvxu5ktjjscsarm7jlaakigsvhr4ccn5h4">
+<p lang="ja">
+<p>Preheapって別の概念があるのか</p>
+"空でないpreheapがheap"という趣旨で適当に名前を書いたのでよくなかったかも
+</p>
+— Koji Miyazato (<a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv?ref_src=embed"><span class="citation" data-cites="viercc.bsky.social">@viercc.bsky.social</span></a>) <a href="https://bsky.app/profile/did:plc:zjfkgoccpaxbukqahhtpsiwv/post/3lgsbn5qswk2s?ref_src=embed">2025年1月28日 19:46</a>
+</blockquote>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>「モナド則」(“monad laws”)など、「〇〇則」は演算が満たすべき等式だけを指す言葉でしたが、
+“分配法則”は<span class="math inline">\mathrm{(DM1)-(DM4)}</span>を満たすような自然変換<span class="math inline">\theta</span>それ自体を指している言葉です。
+等式<span class="math inline">\mathrm{(DM1)-(DM4)}</span>だけを指したいときは”分配法則則”(distributive law laws)とでも言えばいいんでしょうかね？<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>これは「どんなコモナド<span class="math inline">V</span>に対しても、少なくとも１つの分配法則<span class="math inline">\theta_{\mathtt{EnvT}}</span>がこのように作れる」
+という意味です。一般にコモナドの分配法則はユニークではないので、これ以外の分配法則が存在する可能性については何も言っていない
+ことに注意してください。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><span class="math inline">(\lambda b. (1_A, b)) : B \to A \times B</span>が単射であり、<span class="math inline">p</span>は全単射なのでその合成は単射です。
+もう片方も同様です。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>空コモナドは、任意の型<code>x</code>に対して<code>E x</code>が空な型(<a href="https://hackage.haskell.org/package/base-4.21.0.0/docs/Data-Void.html">Void</a>のように要素をひとつも持たない型)になるような関手<code>E</code>上のコモナドです。
+これは一意にコモナドになります。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>集合が入るパラメータ名<span class="math inline">S</span>の名前が衝突してしまったので<span class="math inline">S'</span>に変更しました<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

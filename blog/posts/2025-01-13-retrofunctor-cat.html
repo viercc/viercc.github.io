@@ -49,7 +49,20 @@
         </ul>
     </section>
     <section>
-        <pre class="math-block"><code>% basic set manipulation
+        <div id="post-toc">目次<ul>
+<li><a href="#多項式コモナドの圏-小さい圏の圏" id="toc-多項式コモナドの圏-小さい圏の圏">多項式コモナドの圏 ＝ ??? (≠ 小さい圏の圏)</a></li>
+<li><a href="#多項式コモナドの準同型からretrofunctorへ" id="toc-多項式コモナドの準同型からretrofunctorへ">「多項式コモナドの準同型」からretrofunctorへ</a>
+<ul>
+<li><a href="#retrofunctorの気持ち" id="toc-retrofunctorの気持ち">Retrofunctorの気持ち</a></li>
+</ul></li>
+<li><a href="#retrofunctorを射とする圏catc" id="toc-retrofunctorを射とする圏catc">Retrofunctorを射とする圏<span class="math inline">\CatC</span></a>
+<ul>
+<li><a href="#余積" id="toc-余積">余積<span class="math inline">+</span></a></li>
+<li><a href="#並行積otimes" id="toc-並行積otimes">並行積<span class="math inline">\otimes</span></a></li>
+</ul></li>
+<li><a href="#射の分割をもつ圏-並行積otimesに関する半群対象" id="toc-射の分割をもつ圏-並行積otimesに関する半群対象">“射の分割をもつ圏” = 並行積<span class="math inline">\otimes</span>に関する半群対象</a></li>
+</ul></div>
+<pre class="math-block"><code>% basic set manipulation
   \gdef\id{\mathop{\mathrm{id}}}
   \gdef\comp{\circ}
   \gdef\placeholder{{-}}
@@ -418,7 +431,7 @@ Retrofunctorの気持ちの一つとして、「retrofunctorはユーザーイ�
      \divleft{a}{b} &amp;: \homsetl{C}{a\cdot b} \to \homsetl{C}{a} \\
      \divright{a}{b} &amp;: \homsetl{C}{a\cdot b} \to \homsetl{C}{b} \\
    \end{align*}
- </span></p></li>
+</span></p></li>
 </ul>
 <p>をもち、以下の性質を満たすもののことである。</p>
 <ol type="1">
@@ -443,13 +456,13 @@ Retrofunctorの気持ちの一つとして、「retrofunctorはユーザーイ�
    \begin{equation}
      \cod \left( \divleft{a}{b} t \right) \cdot \cod \left( \divright{a}{b} t \right) = \cod t
    \end{equation}
- </span></p></li>
+</span></p></li>
 <li><p><em>射の分割が射の合成を保つ</em>こと。以下のように合成できる射<span class="math inline">t,u</span>があるとする。</p>
 <p><span class="math display">
    \begin{CD}
-     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d 
+     {a\cdot b} @&gt;t&gt;&gt; c @&gt;u&gt;&gt; d
    \end{CD}
- </span></p>
+</span></p>
 <p>このとき、以下が成り立つ。</p>
 <p><span class="math display">
    \begin{align*}
@@ -464,7 +477,7 @@ Retrofunctorの気持ちの一つとして、「retrofunctorはユーザーイ�
        c_b &amp;= \cod\left(\divright{a}{b} t\right)
      \end{cases}
    \end{align*}
- </span></p></li>
+</span></p></li>
 </ol>
 </dd>
 </dl>

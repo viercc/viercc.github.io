@@ -44,7 +44,17 @@
         </ul>
     </section>
     <section>
-        <h2 id="listtの醜名"><code>ListT</code>の醜名</h2>
+        <div id="post-toc">目次<ul>
+<li><a href="#listtの醜名" id="toc-listtの醜名"><code>ListT</code>の醜名</a></li>
+<li><a href="#可換なモナド-とは" id="toc-可換なモナド-とは">可換なモナド #とは</a></li>
+<li><a href="#証明しようモナドmが可換-listt-mがモナド則を満たす" id="toc-証明しようモナドmが可換-listt-mがモナド則を満たす">証明しよう、「モナド<code>m</code>が可換」 ⇒ 「<code>ListT m</code>がモナド則を満たす」</a>
+<ul>
+<li><a href="#モナドmが可換-joinがapplicative準同型" id="toc-モナドmが可換-joinがapplicative準同型">「モナド<code>m</code>が可換」 ⇒ 「<code>join'</code>がApplicative準同型」</a></li>
+</ul></li>
+<li><a href="#joinがapplicative準同型-listt-mがモナド則を満たす" id="toc-joinがapplicative準同型-listt-mがモナド則を満たす">「<code>join'</code>がApplicative準同型」 ⇒ 「<code>ListT m</code>がモナド則を満たす」</a></li>
+<li><a href="#余談" id="toc-余談">余談</a></li>
+</ul></div>
+<h2 id="listtの醜名"><code>ListT</code>の醜名</h2>
 <p>よく知られた話として、モナド変換子 <code>ListT</code>（<a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-List.html#t:ListT">ドキュメント</a>）
 が<code>Monad</code>則を満たしていないという話があります。</p>
 <p><code>ListT</code>は、あまり本質的でない部分を除くと、以下のように定義されています。</p>

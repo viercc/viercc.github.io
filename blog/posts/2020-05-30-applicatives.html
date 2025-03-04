@@ -44,7 +44,16 @@
         </ul>
     </section>
     <section>
-        <h1 id="動機">動機</h1>
+        <div id="post-toc">目次<ul>
+<li><a href="#動機" id="toc-動機">動機</a>
+<ul>
+<li><a href="#applicative-f-の構造" id="toc-applicative-f-の構造">Applicative F の構造</a></li>
+<li><a href="#具体例を調べる" id="toc-具体例を調べる">具体例を調べる</a></li>
+<li><a href="#モノイド作用によるapplicative" id="toc-モノイド作用によるapplicative">モノイド作用によるApplicative</a></li>
+<li><a href="#一般論に戻って" id="toc-一般論に戻って">一般論に戻って</a></li>
+</ul></li>
+</ul></div>
+<h1 id="動機">動機</h1>
 <p>次の<code>F</code>の形をした<code>Monad</code>について考えたかった。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">M</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">E</span><span class="ot"> ::</span> <span class="dt">Type</span></span>

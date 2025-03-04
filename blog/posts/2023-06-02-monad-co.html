@@ -44,7 +44,14 @@
         </ul>
     </section>
     <section>
-        <h2 id="tldr">TL;DR</h2>
+        <div id="post-toc">目次<ul>
+<li><a href="#tldr" id="toc-tldr">TL;DR</a></li>
+<li><a href="#背景" id="toc-背景">背景</a></li>
+<li><a href="#モナド-co-w-の具体例たち" id="toc-モナド-co-w-の具体例たち">モナド <code>Co w</code> の具体例たち</a></li>
+<li><a href="#co-wは常にstatelikeを使って表すことができる" id="toc-co-wは常にstatelikeを使って表すことができる"><code>Co w</code>は常に<code>StateLike</code>を使って表すことができる</a></li>
+<li><a href="#まとめと今後" id="toc-まとめと今後">まとめと今後</a></li>
+</ul></div>
+<h2 id="tldr">TL;DR</h2>
 <p><a href="https://hackage.haskell.org/package/kan-extensions-5.2.5/docs/Control-Monad-Co.html">Control.Monad.Co</a>にある、各コモナド<code>w</code>に対して定義されるモナド<code>Co w</code>は、<code>State</code>モナドの一般化と見なせる。</p>
 <h2 id="背景">背景</h2>
 <p><a href="https://hackage.haskell.org/package/kan-extensions-5.2.5">kan-extensions</a>というパッケージに、<code>CoT</code>というモナド変換子が定義されています。
