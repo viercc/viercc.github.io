@@ -35,11 +35,11 @@
                 <li>Posted on 2024-12-10</li>
             
             
-                <li>Last modified on 2025-02-22</li>
+                <li>Last modified on 2025-03-08</li>
             
             
             
-                <li class="post-tags">tags: <a title="All pages tagged 'advent-calenar'." href="../tags/advent-calenar.html" rel="tag">advent-calenar</a>, <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'state-monad'." href="../tags/state-monad.html" rel="tag">state-monad</a>, <a title="All pages tagged 'agda'." href="../tags/agda.html" rel="tag">agda</a></li>
+                <li class="post-tags">tags: <a title="All pages tagged 'advent-calendar'." href="../tags/advent-calendar.html" rel="tag">advent-calendar</a>, <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'state-monad'." href="../tags/state-monad.html" rel="tag">state-monad</a>, <a title="All pages tagged 'agda'." href="../tags/agda.html" rel="tag">agda</a></li>
             
         </ul>
     </section>
@@ -53,6 +53,7 @@
 <li><a href="#パート3-場合分けを頑張れば答えが出せる" id="toc-パート3-場合分けを頑張れば答えが出せる">パート3: 場合分けを頑張れば答えが出せる</a></li>
 </ul></li>
 <li><a href="#まとめ" id="toc-まとめ">まとめ</a></li>
+<li><a href="#修正履歴" id="toc-修正履歴">修正履歴</a></li>
 </ul></div>
 <hr />
 <p><strong>この記事は<a href="https://qiita.com/advent-calendar/2024/haskell">Haskell Advent Calendar 2024</a>の10日目です</strong></p>
@@ -71,7 +72,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="ot">=</span> <span class="dt">State</span> {<span class="ot"> runState ::</span> s <span class="ot">-&gt;</span> (s, a) }</span></code></pre></div>
 <p>この記事では、その証明の概略を述べます。</p>
 <h2 id="何を証明したのか">何を証明したのか</h2>
-<p>証明の前に、まずは示そうとしていることが正確に何であるのかを詳しく述べます。
+<p>証明の前に、まずは示そうとしていることが正確に何であるのかを述べます。
 「<code>instance Monad (State s) where ...</code>と書けるインスタンス」というのは、
 <em>文字通り</em>次の形をした<code>Monad</code>のインスタンスです。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span></span>
@@ -104,18 +105,17 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      (s2, _) <span class="ot">=</span> runState ma s1</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      (_,  a) <span class="ot">=</span> runState ma s2</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">in</span> runState (k a) s1</span></code></pre></div>
-<p>2つ目に、「どんな型<code>A</code>についても、<code>Monad (State A)</code>のインスタンスは唯一である」
-と混同しそうになる点があります。ここで主張していることは</p>
+<p>2つ目に、異なる主張と混同しそうになる点があります。ここで主張していることは</p>
 <ul>
 <li>⭕「『(任意の型<code>s</code>に対して使える)<code>Monad (State s)</code>のインスタンス』は通常のStateモナドに限られる」</li>
 </ul>
 <p>であって、</p>
 <ul>
-<li>❌「任意の型<code>s</code>に対して『<code>Monad (State s)</code>のインスタンスは通常のStateモナドに限られる』が成り立つ」</li>
+<li>❌「『<code>Monad (State A)</code>のインスタンスは通常のStateモナドに限られる』が<code>A</code>に任意の型を代入しても成り立つ」</li>
 </ul>
 <p>ではありません。
 実際、後者は誤った主張です。
-反例を挙げると、<code>s</code>に<code>Bool</code>を代入した場合にそれは成り立ちません。</p>
+反例を挙げると、<code>A</code>に<code>Bool</code>を代入した場合にそれは成り立ちません。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span> (<span class="dt">State</span> <span class="dt">Bool</span>) <span class="kw">where</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 要 FlexibleInstances 拡張</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">......</span></span></code></pre></div>
@@ -145,7 +145,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 その際に<code>Bool -&gt; Bool</code>が<code>id</code>を単位元、<code>flip (.)</code>を積とするモノイドを成していること
 だけが重要であることに気づきます。</p>
 実際、4個（<code>Bool -&gt; Bool</code>と同じ数）の要素をもつ任意のモノイドを用いても
-<code>State Bool a</code>上に類似の<code>Monad</code>インスタンスを定めることが可能です。
+<code>State Bool</code>上に類似の<code>Monad</code>インスタンスを定めることが可能です。
 そのようなモノイドで同型でないものは35種類あり、それらが全て別々の”普通でない”<code>Monad</code>インスタンス
 を定めます。
 </details>
@@ -156,7 +156,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <code>Monad (State s)</code>のインスタンスとして変化を付けられる可能性があるのは、
 <code>(&gt;&gt;=)</code>の部分だけであることがわかります。詳しく言うと、</p>
 <ul>
-<li><p>任意のデータ型<code>F</code>に対して<code>Functor F</code>のインスタンスは唯一である</p>
+<li><p>任意のデータ型<code>F</code>に対して<code>Functor F</code>のインスタンスは高々1つである</p>
 <ul>
 <li><code>Functor</code>則を満たす2つの<code>fmap, fmap' :: forall a b. (a -&gt; b) -&gt; F a -&gt; F b</code>に対して常に<code>fmap f x === fmap' f x</code>が成り立つので、
 “異なる”<code>Functor</code>のインスタンスは作ることができない</li>
@@ -527,6 +527,10 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <h2 id="まとめ">まとめ</h2>
 <p>Haskellにおいて<code>instance Monad (State s) where ...</code>と書けるインスタンスで<code>Monad</code>則を満たすものは、
 “普通の”Stateモナドしか存在しません。この記事ではその証明の大まかな方針を説明しました。</p>
+<h2 id="修正履歴">修正履歴</h2>
+<ul>
+<li><strong>2024-12-10</strong>: タグ<code>advent-calendar</code>を<code>calenar</code>と誤記していた。ほか細かな表現の修正</li>
+</ul>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>

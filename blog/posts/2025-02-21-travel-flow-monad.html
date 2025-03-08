@@ -40,6 +40,8 @@
                 <li>Posted on 2025-02-22</li>
             
             
+                <li>Last modified on 2025-03-08</li>
+            
             
             
                 <li class="post-tags">tags: <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'comonad'." href="../tags/comonad.html" rel="tag">comonad</a>, <a title="All pages tagged 'polynomial'." href="../tags/polynomial.html" rel="tag">polynomial</a>, <a title="All pages tagged 'state-like-monad'." href="../tags/state-like-monad.html" rel="tag">state-like-monad</a>, <a title="All pages tagged 'singletons'." href="../tags/singletons.html" rel="tag">singletons</a></li>
@@ -239,10 +241,19 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 一方、<code>Flow cat</code>モナドでは、圏<code>cat :: k -&gt; k -&gt; Type</code>の対象を”状態”、射を”状態遷移の経路”と呼ぶことにすると、<code>Flow cat α</code>型の値は、現在の”状態” <code>a :: k</code> が与えられると、そこでのモナドの実行結果<code>x :: α</code>と、
 実行後の状態への”状態遷移の経路” <code>f :: Σ(b :: k). (cat a b)</code>を返す関数であると考えることができます。</p>
 <table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 4%" />
+<col style="width: 15%" />
+<col style="width: 4%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 22%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>モナド</th>
-<th style="text-align: center;">:</th>
+<th style="text-align: center;">=</th>
 <th>現在の状態</th>
 <th style="text-align: center;">→</th>
 <th>実行結果</th>
@@ -253,7 +264,7 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 <tbody>
 <tr class="odd">
 <td><code>State s α</code></td>
-<td style="text-align: center;">:</td>
+<td style="text-align: center;">=</td>
 <td><code>s0 :: s</code></td>
 <td style="text-align: center;">→</td>
 <td><code>x :: α</code></td>
@@ -262,7 +273,7 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 </tr>
 <tr class="even">
 <td><code>Flow cat α</code></td>
-<td style="text-align: center;">:</td>
+<td style="text-align: center;">=</td>
 <td><code>a :: k</code></td>
 <td style="text-align: center;">→</td>
 <td><code>x :: α</code></td>
