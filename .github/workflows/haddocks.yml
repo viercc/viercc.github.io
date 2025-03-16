@@ -1,0 +1,86 @@
+name: Build Haddocks
+on:
+  # Trigger the workflow on every 1 week
+  schedule:
+    - cron: '0 0 * * 0'
+  # Or trigger manually
+  workflow_dispatch:
+
+env:
+  ghc-version: 9.8.2
+  cabal-version: 3.12.1.0
+
+jobs:
+  build-docs:
+    name: "Build docs"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u \"+%Y%m%d\")" >> $GITHUB_OUTPUT
+          echo "hour=$(/bin/date -u \"+%H\")" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Setup Haskell
+        id: setup
+        uses: haskell-actions/setup@v2.7.10
+        with:
+          ghc-version: ${{ env.ghc-version }}
+          cabal-version: ${{ env.cabal-version }}
+      
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          path: main
+      
+      - name: "Fetch polynomial-functors"
+        uses: actions/checkout@v4
+        with:
+          repository: viercc/polynomial-functors
+          ref: main
+          path: projects/polynomial-functors
+      
+      - name: "Fetch monad-gen"
+        uses: actions/checkout@v4
+        with:
+          repository: viercc/monad-gen
+          ref: main
+          path: projects/monad-gen
+      
+      - name: Restore dependency cache
+        uses: actions/cache@v4
+        id: restore-build-cache
+        with:
+          key: c-${{ steps.get-date.outputs.date }}-${{steps.get-date.outputs.hour}}
+          restore-keys: |
+            c-
+            c-${{ steps.get-date.outputs.date }}-
+          path: |
+            ~/.cabal/packages
+            ~/.cabal/store
+            projects/monad-gen/dist-newstyle
+            projects/polynomial-functors/dist-newstyle
+      
+      - name: Cabal Update
+        run: |
+          cabal update
+        shell: bash
+      
+      - name: Build (monad-gen)
+        shell: bash
+        run: |
+          cd projects/monad-gen
+          cabal haddock all \
+            --haddock-output-dir=./doc-output \
+            --haddock-hyperlink-source \
+            --haddock-html-location: http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html
+          cp -a doc-output/* ../../haddocks/
+      
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "haddock generated"
+          git push
