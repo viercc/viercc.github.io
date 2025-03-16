@@ -14,137 +14,106 @@ jobs:
   build-docs:
     name: "Build docs"
     runs-on: ubuntu-latest
-    concurrency:
-      group: build-doc-group
-      cancel-in-progress: false
-    strategy:
-      matrix:
-        target-repo: ["functor-monad", "monad-gen", "polynomial-functors"]
     steps:
       - name: Get Date
         id: get-date
         run: |
           /bin/date -u "+date=%Y%m%d" >> $GITHUB_OUTPUT
+          /bin/date -u "+hour=%H" >> $GITHUB_OUTPUT
         shell: bash
       
-      - name: Restore ghc cache
-        uses: actions/cache/restore@v4
-        id: restore-ghc
+      - name: Restore dependency cache
+        uses: actions/cache@v4
+        id: restore-build-cache
         with:
-          key: ghc-${{ env.ghc-version }}
-          path: |
-            /usr/local/.ghcup/
-            ~/.ghcup/
-      
-      - name: Restore cabal cache
-        uses: actions/cache/restore@v4
-        id: restore-cabal
-        with:
-          key: dep-${{ env.ghc-version }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}-${{ github.sha }}
+          key: c-${{ steps.get-date.outputs.date }}-${{steps.get-date.outputs.hour}}
           restore-keys: |
-            dep-${{ env.ghc-version }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}-
-            dep-${{ env.ghc-version }}-${{ steps.get-date.outputs.date }}-
-            dep-${{ env.ghc-version }}
+            c-${{ steps.get-date.outputs.date }}-
+            c-
           path: |
-            ~/.cabal/packages/
-            ~/.cabal/store/
+            ~/.ghcup/ghc
+            ~/.ghcup/bin
+            ~/.cabal/packages
+            ~/.cabal/store
+            projects/monad-gen/dist-newstyle
+            projects/polynomial-functors/dist-newstyle
+            projects/functor-monad/dist-newstyle
       
       - name: Setup Haskell
+        id: setup
         uses: haskell-actions/setup@v2.7.10
         with:
           ghc-version: ${{ env.ghc-version }}
           cabal-version: ${{ env.cabal-version }}
       
-      - name: Fetch
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/${{ matrix.target-repo }}
-          path: projects/${{ matrix.target-repo }}
-      
-      - name: "Get latest commit hash"
-        id: get-repo-sha
-        run: |
-          cd projects/${{ matrix.target-repo }}
-          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      
-      - name: Restore project-specific cache
-        uses: actions/cache@v4
-        id: restore-build-cache
-        with:
-          key: cache-${{ matrix.target-repo }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}-${{ steps.get-repo-sha.outputs.sha }}
-          restore-keys: |
-            cache-${{ matrix.target-repo }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}-
-            cache-${{ matrix.target-repo }}-${{ steps.get-date.outputs.date }}-
-            cache-${{ matrix.target-repo }}-
-          path: |
-            projects/${{ matrix.target-repo }}/
-      
-      - name: Build Docs
-        shell: bash
-        run: |
-          set -e
-          cd projects/${{ matrix.target-repo }}
-          cabal haddock all \
-            "--haddock-output-dir=./doc-output" \
-            "--haddock-hyperlink-source" \
-            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
-      
-      - name: Save Docs
-        uses: actions/upload-artifact@v4
-        with:
-          name: doc-${{ matrix.target-repo }}
-          path: projects/${{ matrix.target-repo }}/doc-output/
-          retention-days: 1
-
-      - name: Save cabal cache
-        if: always()
-        uses: actions/cache/save@v4
-        id: save-cabal
-        with:
-          key: dep-${{ env.ghc-version }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}-${{ github.sha }}
-          path: |
-            ~/.cabal/packages/
-            ~/.cabal/store/
-      
-      - name: Save ghc cache
-        if: always()
-        uses: actions/cache/save@v4
-        id: save-ghc
-        with:
-          key: ghc-${{ env.ghc-version }}
-          path: |
-            /usr/local/.ghcup/
-            ~/.ghcup/
-
-  publish-results:
-    name: "Publish built docs"
-    runs-on: ubuntu-latest
-    needs: [ build-docs ]
-    
-    steps:
       - name: "Checkout"
         uses: actions/checkout@v4
         with:
           ref:  master
           path: site-root
       
-      - uses: actions/download-artifact@v4
+      - name: "Fetch functor-monad"
+        uses: actions/checkout@v4
         with:
-          name: doc-functor-monad
-          merge-multiple: true
-          path: site-root/haddocks/
+          repository: viercc/functor-monad
+          ref: main
+          path: projects/functor-monad
       
-      - uses: actions/download-artifact@v4
+      - name: "Fetch polynomial-functor"
+        uses: actions/checkout@v4
         with:
-          name: doc-monad-gen
-          merge-multiple: true
-          path: site-root/haddocks/
+          repository: viercc/polynomial-functor
+          ref: main
+          path: projects/polynomial-functor
       
-      - uses: actions/download-artifact@v4
+      - name: "Fetch monad-gen"
+        uses: actions/checkout@v4
         with:
-          name: doc-polynomial-functor
-          merge-multiple: true
-          path: site-root/haddocks/
+          repository: viercc/monad-gen
+          ref: master
+          path: projects/monad-gen
+      
+      - name: Cabal Update
+        run: |
+          cabal update
+        shell: bash
+      
+      - name: Build (functor-monad)
+        shell: bash
+        run: |
+          set -e
+          cd projects/functor-monad
+          cabal haddock all \
+            "--haddock-output-dir=./doc-output" \
+            "--haddock-hyperlink-source" \
+            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
+      
+      - name: Build (polynomial-functor)
+        shell: bash
+        run: |
+          set -e
+          cd projects/polynomial-functor
+          cabal haddock all \
+            "--haddock-output-dir=./doc-output" \
+            "--haddock-hyperlink-source" \
+            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
+      
+      - name: Build (monad-gen)
+        shell: bash
+        run: |
+          set -e
+          cd projects/monad-gen
+          cabal haddock all \
+            "--haddock-output-dir=./doc-output" \
+            "--haddock-hyperlink-source" \
+            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
+      
+      - name: Copy
+        shell: bash
+        run: |
+          cp -a projects/functor-monad/doc-output/* site-root/haddocks
+          cp -a projects/polynomial-functor/doc-output/* site-root/haddocks
+          cp -a projects/monad-gen/doc-output/* site-root/haddocks
       
       - name: Commit Changes
         id: commit_changes
