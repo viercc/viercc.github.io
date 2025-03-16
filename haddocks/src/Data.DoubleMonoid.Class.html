@@ -1,0 +1,530 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GeneralisedNewtypeDeriving #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.DoubleMonoid.Class</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier">DoubleMonoid</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Dual</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Ix</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Ix</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">foldl'</span></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;|&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- | @DoubleMonoid@ is a type with two independent monoid structures.</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- The two monoids are named \&quot;additive\&quot; @(zero, \/+\/)@ and</span><span>
+</span><span id="line-18"></span><span class="hs-comment">-- \&quot;multiplicative\&quot; @(one, \/*\/)@ respectively. But unlike 'Num' or</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- (semi)ring structures, @DoubleMonoid@ assume no relation between the two</span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- monoids like distributivity.</span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- ==== Laws</span><span>
+</span><span id="line-23"></span><span class="hs-comment">--</span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- Monoid laws of \&quot;additive\&quot; set of operators:</span><span>
+</span><span id="line-25"></span><span class="hs-comment">--</span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- (x \/+\/ y) \/+\/ z === x \/+\/ (y \/+\/ z)</span><span>
+</span><span id="line-28"></span><span class="hs-comment">-- zero \/+\/ x === x</span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- x \/+\/ zero === x</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-31"></span><span class="hs-comment">--</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- Monoid laws of \&quot;multiplicative\&quot; set of operators:</span><span>
+</span><span id="line-33"></span><span class="hs-comment">--</span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- (x \/*\/ y) \/*\/ z === x \/*\/ (y \/*\/ z)</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- one \/*\/ x === x</span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- x \/*\/ one === x</span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-39"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- ==== Relation to other known algebraic structures</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- Of course, @DoubleMonoid@ can be seen as @Monoid@ in two ways.</span><span>
+</span><span id="line-43"></span><span class="hs-comment">-- Other than that, near-semiring (TODO:url) is a subclass of DoubleMonoid</span><span>
+</span><span id="line-44"></span><span class="hs-comment">-- which additionally satisfy \&quot;left distribution law\&quot; (which confusingly have</span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- another name \&quot;right distributivity\&quot;).</span><span>
+</span><span id="line-46"></span><span class="hs-comment">--</span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-48"></span><span class="hs-comment">-- -- in near-semiring</span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- zero \/*\/ x  === zero</span><span>
+</span><span id="line-50"></span><span class="hs-comment">-- (x \/+\/ y) \/*\/ z === (x \/*\/ z) \/+\/ (y \/*\/ z)</span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-keyword">class</span><span> </span><span id="DoubleMonoid"><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-var">DoubleMonoid</span></a></span></span><span> </span><span id="local-6989586621679075820"><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-pragma">{-# MINIMAL</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-pragma hs-type">one</span></a></span><span class="hs-pragma">,</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">/*/</span><span class="hs-pragma">)</span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-pragma hs-type">zero</span></a></span><span class="hs-pragma">,</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">/+/</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">|</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-pragma hs-type">mprod</span></a></span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-pragma hs-type">msum</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-comment">-- | The unit of \&quot;multiplicative\&quot; monoid.</span><span>
+</span><span id="line-57"></span><span>  </span><span id="one"><span class="annot"><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-type">one</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679075897"><span class="annot"><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var hs-var">one</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var">mprod</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-comment">-- | The binary operator of \&quot;multiplicative\&quot; monoid.</span><span>
+</span><span id="line-61"></span><span>  </span><span id="%2F%2A%2F"><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-type">(/*/)</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-62"></span><span>  </span><span id="local-6989586621679075899"><span id="local-6989586621679075901"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075901"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var hs-var">/*/</span></a></span><span> </span><span id="local-6989586621679075902"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075902"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var">mprod</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075901"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075902"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-comment">-- | The unit of \&quot;additive\&quot; monoid.</span><span>
+</span><span id="line-65"></span><span>  </span><span id="zero"><span class="annot"><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-type">zero</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679075903"><span class="annot"><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-var hs-var">zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-comment">-- | The binary operator of \&quot;additive\&quot; monoid.</span><span>
+</span><span id="line-69"></span><span>  </span><span id="%2F%2B%2F"><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-type">(/+/)</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621679075905"><span id="local-6989586621679075907"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075907"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-var hs-var">/+/</span></a></span><span> </span><span id="local-6989586621679075908"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075908"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075907"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679075908"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-71"></span><span>  </span><span>
+</span><span id="line-72"></span><span>  </span><span class="hs-comment">-- | Fold a list using '/*/' monoid.</span><span>
+</span><span id="line-73"></span><span>  </span><span id="mprod"><span class="annot"><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-type">mprod</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span id="local-6989586621679075909"><span class="annot"><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var hs-var">mprod</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; a) -&gt; a -&gt; [a] -&gt; a
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: * -&gt; *) a b.
+Foldable t =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldr</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. DoubleMonoid a =&gt; a -&gt; a -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var">(/*/)</span></a></span><span> </span><span class="annot"><span class="annottext">a
+forall a. DoubleMonoid a =&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var">one</span></a></span></span><span>
+</span><span id="line-75"></span><span>  </span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-comment">-- | Fold a list using '/+/' monoid.</span><span>
+</span><span id="line-77"></span><span>  </span><span id="msum"><span class="annot"><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-type">msum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679075820"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679075915"><span class="annot"><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var hs-var">msum</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; a) -&gt; a -&gt; [a] -&gt; a
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: * -&gt; *) a b.
+Foldable t =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldr</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. DoubleMonoid a =&gt; a -&gt; a -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-var">(/+/)</span></a></span><span> </span><span class="annot"><span class="annottext">a
+forall a. DoubleMonoid a =&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-var">zero</span></a></span></span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-type">/+/</span></a></span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-type">/*/</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span id="local-6989586621679075921"><span id="local-6989586621679075925"><span id="local-6989586621679075929"><span id="local-6989586621679075933"><span id="local-6989586621679075937"><span id="local-6989586621679075941"><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679075830"><span class="annot"><a href="#local-6989586621679075830"><span class="hs-keyword hs-type">newtype</span></a></span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679075830"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Dual</span></span><span> </span><span class="annot"><a href="#local-6989586621679075830"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-comment">-- | Use the usual '(+)' and '(*)' operators of 'Num' class</span><span>
+</span><span id="line-87"></span><span class="hs-comment">--   as DoubleMonoid </span><span>
+</span><span id="line-88"></span><span class="hs-keyword">newtype</span><span> </span><span id="AsNum"><span class="annot"><a href="Data.DoubleMonoid.Class.html#AsNum"><span class="hs-identifier hs-var">AsNum</span></a></span></span><span> </span><span id="local-6989586621679075948"><span class="annot"><a href="#local-6989586621679075948"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="AsNum"><span class="annot"><a href="Data.DoubleMonoid.Class.html#AsNum"><span class="hs-identifier hs-var">AsNum</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679075948"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679075952"><span id="local-6989586621679075955"><span class="annot"><span class="annottext">AsNum a -&gt; AsNum a -&gt; Bool
+(AsNum a -&gt; AsNum a -&gt; Bool)
+-&gt; (AsNum a -&gt; AsNum a -&gt; Bool) -&gt; Eq (AsNum a)
+forall a. Eq a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+== :: AsNum a -&gt; AsNum a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+/= :: AsNum a -&gt; AsNum a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679075964"><span id="local-6989586621679075967"><span id="local-6989586621679075970"><span id="local-6989586621679075974"><span id="local-6989586621679075977"><span id="local-6989586621679075980"><span id="local-6989586621679075983"><span class="annot"><span class="annottext">Eq (AsNum a)
+Eq (AsNum a) =&gt;
+(AsNum a -&gt; AsNum a -&gt; Ordering)
+-&gt; (AsNum a -&gt; AsNum a -&gt; Bool)
+-&gt; (AsNum a -&gt; AsNum a -&gt; Bool)
+-&gt; (AsNum a -&gt; AsNum a -&gt; Bool)
+-&gt; (AsNum a -&gt; AsNum a -&gt; Bool)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; Ord (AsNum a)
+AsNum a -&gt; AsNum a -&gt; Bool
+AsNum a -&gt; AsNum a -&gt; Ordering
+AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (AsNum a)
+forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Ordering
+forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+$ccompare :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Ordering
+compare :: AsNum a -&gt; AsNum a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+&lt; :: AsNum a -&gt; AsNum a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+&lt;= :: AsNum a -&gt; AsNum a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+&gt; :: AsNum a -&gt; AsNum a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; Bool
+&gt;= :: AsNum a -&gt; AsNum a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+max :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$cmin :: forall a. Ord a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+min :: AsNum a -&gt; AsNum a -&gt; AsNum a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679075989"><span id="local-6989586621679075993"><span id="local-6989586621679075997"><span class="annot"><span class="annottext">Int -&gt; AsNum a -&gt; ShowS
+[AsNum a] -&gt; ShowS
+AsNum a -&gt; String
+(Int -&gt; AsNum a -&gt; ShowS)
+-&gt; (AsNum a -&gt; String) -&gt; ([AsNum a] -&gt; ShowS) -&gt; Show (AsNum a)
+forall a. Show a =&gt; Int -&gt; AsNum a -&gt; ShowS
+forall a. Show a =&gt; [AsNum a] -&gt; ShowS
+forall a. Show a =&gt; AsNum a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; AsNum a -&gt; ShowS
+showsPrec :: Int -&gt; AsNum a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; AsNum a -&gt; String
+show :: AsNum a -&gt; String
+$cshowList :: forall a. Show a =&gt; [AsNum a] -&gt; ShowS
+showList :: [AsNum a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076004"><span id="local-6989586621679076008"><span id="local-6989586621679076012"><span id="local-6989586621679076016"><span class="annot"><span class="annottext">ReadPrec [AsNum a]
+ReadPrec (AsNum a)
+Int -&gt; ReadS (AsNum a)
+ReadS [AsNum a]
+(Int -&gt; ReadS (AsNum a))
+-&gt; ReadS [AsNum a]
+-&gt; ReadPrec (AsNum a)
+-&gt; ReadPrec [AsNum a]
+-&gt; Read (AsNum a)
+forall a. Read a =&gt; ReadPrec [AsNum a]
+forall a. Read a =&gt; ReadPrec (AsNum a)
+forall a. Read a =&gt; Int -&gt; ReadS (AsNum a)
+forall a. Read a =&gt; ReadS [AsNum a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (AsNum a)
+readsPrec :: Int -&gt; ReadS (AsNum a)
+$creadList :: forall a. Read a =&gt; ReadS [AsNum a]
+readList :: ReadS [AsNum a]
+$creadPrec :: forall a. Read a =&gt; ReadPrec (AsNum a)
+readPrec :: ReadPrec (AsNum a)
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [AsNum a]
+readListPrec :: ReadPrec [AsNum a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-92"></span><span>     </span><span id="local-6989586621679076023"><span id="local-6989586621679076027"><span id="local-6989586621679076031"><span id="local-6989586621679076035"><span id="local-6989586621679076039"><span id="local-6989586621679076043"><span id="local-6989586621679076047"><span id="local-6989586621679076051"><span class="annot"><span class="annottext">Int -&gt; AsNum a
+AsNum a -&gt; Int
+AsNum a -&gt; [AsNum a]
+AsNum a -&gt; AsNum a
+AsNum a -&gt; AsNum a -&gt; [AsNum a]
+AsNum a -&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+(AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a)
+-&gt; (Int -&gt; AsNum a)
+-&gt; (AsNum a -&gt; Int)
+-&gt; (AsNum a -&gt; [AsNum a])
+-&gt; (AsNum a -&gt; AsNum a -&gt; [AsNum a])
+-&gt; (AsNum a -&gt; AsNum a -&gt; [AsNum a])
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a])
+-&gt; Enum (AsNum a)
+forall a. Enum a =&gt; Int -&gt; AsNum a
+forall a. Enum a =&gt; AsNum a -&gt; Int
+forall a. Enum a =&gt; AsNum a -&gt; [AsNum a]
+forall a. Enum a =&gt; AsNum a -&gt; AsNum a
+forall a. Enum a =&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+forall a. Enum a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+$csucc :: forall a. Enum a =&gt; AsNum a -&gt; AsNum a
+succ :: AsNum a -&gt; AsNum a
+$cpred :: forall a. Enum a =&gt; AsNum a -&gt; AsNum a
+pred :: AsNum a -&gt; AsNum a
+$ctoEnum :: forall a. Enum a =&gt; Int -&gt; AsNum a
+toEnum :: Int -&gt; AsNum a
+$cfromEnum :: forall a. Enum a =&gt; AsNum a -&gt; Int
+fromEnum :: AsNum a -&gt; Int
+$cenumFrom :: forall a. Enum a =&gt; AsNum a -&gt; [AsNum a]
+enumFrom :: AsNum a -&gt; [AsNum a]
+$cenumFromThen :: forall a. Enum a =&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+enumFromThen :: AsNum a -&gt; AsNum a -&gt; [AsNum a]
+$cenumFromTo :: forall a. Enum a =&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+enumFromTo :: AsNum a -&gt; AsNum a -&gt; [AsNum a]
+$cenumFromThenTo :: forall a. Enum a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+enumFromThenTo :: AsNum a -&gt; AsNum a -&gt; AsNum a -&gt; [AsNum a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076058"><span id="local-6989586621679076062"><span class="annot"><span class="annottext">AsNum a
+AsNum a -&gt; AsNum a -&gt; Bounded (AsNum a)
+forall a. a -&gt; a -&gt; Bounded a
+forall a. Bounded a =&gt; AsNum a
+$cminBound :: forall a. Bounded a =&gt; AsNum a
+minBound :: AsNum a
+$cmaxBound :: forall a. Bounded a =&gt; AsNum a
+maxBound :: AsNum a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076072"><span id="local-6989586621679076076"><span id="local-6989586621679076080"><span id="local-6989586621679076084"><span id="local-6989586621679076088"><span id="local-6989586621679076092"><span class="annot"><span class="annottext">Ord (AsNum a)
+Ord (AsNum a) =&gt;
+((AsNum a, AsNum a) -&gt; [AsNum a])
+-&gt; ((AsNum a, AsNum a) -&gt; AsNum a -&gt; Int)
+-&gt; ((AsNum a, AsNum a) -&gt; AsNum a -&gt; Int)
+-&gt; ((AsNum a, AsNum a) -&gt; AsNum a -&gt; Bool)
+-&gt; ((AsNum a, AsNum a) -&gt; Int)
+-&gt; ((AsNum a, AsNum a) -&gt; Int)
+-&gt; Ix (AsNum a)
+(AsNum a, AsNum a) -&gt; Int
+(AsNum a, AsNum a) -&gt; [AsNum a]
+(AsNum a, AsNum a) -&gt; AsNum a -&gt; Bool
+(AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+forall a.
+Ord a =&gt;
+((a, a) -&gt; [a])
+-&gt; ((a, a) -&gt; a -&gt; Int)
+-&gt; ((a, a) -&gt; a -&gt; Int)
+-&gt; ((a, a) -&gt; a -&gt; Bool)
+-&gt; ((a, a) -&gt; Int)
+-&gt; ((a, a) -&gt; Int)
+-&gt; Ix a
+forall a. Ix a =&gt; Ord (AsNum a)
+forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; Int
+forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; [AsNum a]
+forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; AsNum a -&gt; Bool
+forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+$crange :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; [AsNum a]
+range :: (AsNum a, AsNum a) -&gt; [AsNum a]
+$cindex :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+index :: (AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+$cunsafeIndex :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+unsafeIndex :: (AsNum a, AsNum a) -&gt; AsNum a -&gt; Int
+$cinRange :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; AsNum a -&gt; Bool
+inRange :: (AsNum a, AsNum a) -&gt; AsNum a -&gt; Bool
+$crangeSize :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; Int
+rangeSize :: (AsNum a, AsNum a) -&gt; Int
+$cunsafeRangeSize :: forall a. Ix a =&gt; (AsNum a, AsNum a) -&gt; Int
+unsafeRangeSize :: (AsNum a, AsNum a) -&gt; Int
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ix</span></span></span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-93"></span><span>     </span><span id="local-6989586621679076100"><span id="local-6989586621679076104"><span id="local-6989586621679076108"><span id="local-6989586621679076112"><span id="local-6989586621679076116"><span id="local-6989586621679076120"><span id="local-6989586621679076124"><span class="annot"><span class="annottext">Integer -&gt; AsNum a
+AsNum a -&gt; AsNum a
+AsNum a -&gt; AsNum a -&gt; AsNum a
+(AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a)
+-&gt; (Integer -&gt; AsNum a)
+-&gt; Num (AsNum a)
+forall a. Num a =&gt; Integer -&gt; AsNum a
+forall a. Num a =&gt; AsNum a -&gt; AsNum a
+forall a. Num a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a.
+(a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Integer -&gt; a)
+-&gt; Num a
+$c+ :: forall a. Num a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
++ :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$c- :: forall a. Num a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+- :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$c* :: forall a. Num a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+* :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$cnegate :: forall a. Num a =&gt; AsNum a -&gt; AsNum a
+negate :: AsNum a -&gt; AsNum a
+$cabs :: forall a. Num a =&gt; AsNum a -&gt; AsNum a
+abs :: AsNum a -&gt; AsNum a
+$csignum :: forall a. Num a =&gt; AsNum a -&gt; AsNum a
+signum :: AsNum a -&gt; AsNum a
+$cfromInteger :: forall a. Num a =&gt; Integer -&gt; AsNum a
+fromInteger :: Integer -&gt; AsNum a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076137"><span class="annot"><span class="annottext">Num (AsNum a)
+Ord (AsNum a)
+(Num (AsNum a), Ord (AsNum a)) =&gt;
+(AsNum a -&gt; Rational) -&gt; Real (AsNum a)
+AsNum a -&gt; Rational
+forall a. (Num a, Ord a) =&gt; (a -&gt; Rational) -&gt; Real a
+forall a. Real a =&gt; Num (AsNum a)
+forall a. Real a =&gt; Ord (AsNum a)
+forall a. Real a =&gt; AsNum a -&gt; Rational
+$ctoRational :: forall a. Real a =&gt; AsNum a -&gt; Rational
+toRational :: AsNum a -&gt; Rational
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Real</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076152"><span id="local-6989586621679076156"><span id="local-6989586621679076160"><span id="local-6989586621679076164"><span id="local-6989586621679076168"><span id="local-6989586621679076172"><span id="local-6989586621679076176"><span class="annot"><span class="annottext">Enum (AsNum a)
+Real (AsNum a)
+(Real (AsNum a), Enum (AsNum a)) =&gt;
+(AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; AsNum a)
+-&gt; (AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a))
+-&gt; (AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a))
+-&gt; (AsNum a -&gt; Integer)
+-&gt; Integral (AsNum a)
+AsNum a -&gt; Integer
+AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a. Integral a =&gt; Enum (AsNum a)
+forall a. Integral a =&gt; Real (AsNum a)
+forall a. Integral a =&gt; AsNum a -&gt; Integer
+forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a.
+(Real a, Enum a) =&gt;
+(a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; (a, a))
+-&gt; (a -&gt; a -&gt; (a, a))
+-&gt; (a -&gt; Integer)
+-&gt; Integral a
+$cquot :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+quot :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$crem :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+rem :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$cdiv :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+div :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$cmod :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; AsNum a
+mod :: AsNum a -&gt; AsNum a -&gt; AsNum a
+$cquotRem :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+quotRem :: AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+$cdivMod :: forall a. Integral a =&gt; AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+divMod :: AsNum a -&gt; AsNum a -&gt; (AsNum a, AsNum a)
+$ctoInteger :: forall a. Integral a =&gt; AsNum a -&gt; Integer
+toInteger :: AsNum a -&gt; Integer
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Integral</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679075866"><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679075866"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.Class.html#AsNum"><span class="hs-identifier hs-type">AsNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679075866"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679076192"><span class="annot"><span class="annottext">zero :: AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-var hs-var hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsNum a
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-97"></span><span>  </span><span id="local-6989586621679076194"><span class="annot"><span class="annottext">/+/ :: AsNum a -&gt; AsNum a -&gt; AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/+/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(+)</span></span><span>
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621679076196"><span class="annot"><span class="annottext">one :: AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var hs-var hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsNum a
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-99"></span><span>  </span><span id="local-6989586621679076198"><span class="annot"><span class="annottext">/*/ :: AsNum a -&gt; AsNum a -&gt; AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/*/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(*)</span></span><span>
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span>  </span><span id="local-6989586621679076202"><span class="annot"><span class="annottext">msum :: [AsNum a] -&gt; AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(AsNum a -&gt; AsNum a -&gt; AsNum a) -&gt; AsNum a -&gt; [AsNum a] -&gt; AsNum a
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="annottext">AsNum a
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-102"></span><span>  </span><span id="local-6989586621679076206"><span class="annot"><span class="annottext">mprod :: [AsNum a] -&gt; AsNum a
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var hs-var hs-var hs-var">mprod</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(AsNum a -&gt; AsNum a -&gt; AsNum a) -&gt; AsNum a -&gt; [AsNum a] -&gt; AsNum a
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">AsNum a -&gt; AsNum a -&gt; AsNum a
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="annot"><span class="annottext">AsNum a
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span class="annot"><span class="hs-comment">-- | Trivial</span></span><span>
+</span><span id="line-105"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076208"><span id="local-6989586621679076212"><span id="local-6989586621679076215"><span id="local-6989586621679076218"><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-106"></span><span>  </span><span id="local-6989586621679076222"><span class="annot"><span class="annottext">msum :: [()] -&gt; ()
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span class="annot"><span class="annottext">[()]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>  </span><span id="local-6989586621679076223"><span class="annot"><span class="annottext">mprod :: [()] -&gt; ()
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var hs-var hs-var hs-var">mprod</span></a></span></span><span> </span><span class="annot"><span class="annottext">[()]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span class="annot"><span class="hs-comment">-- | Product</span></span><span>
+</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679075871"><span id="local-6989586621679075872"><span id="local-6989586621679076227"><span id="local-6989586621679076231"><span id="local-6989586621679076234"><span id="local-6989586621679076237"><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679075871"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679075872"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679075871"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679075872"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-111"></span><span>  </span><span id="local-6989586621679076243"><span class="annot"><span class="annottext">msum :: [(a, b)] -&gt; (a, b)
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span id="local-6989586621679076244"><span class="annot"><span class="annottext">[(a, b)]
+</span><a href="#local-6989586621679076244"><span class="hs-identifier hs-var">xys</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076245"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679076245"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076246"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679076246"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(a, b)] -&gt; ([a], [b])
+forall a b. [(a, b)] -&gt; ([a], [b])
+</span><span class="hs-identifier hs-var">unzip</span></span><span> </span><span class="annot"><span class="annottext">[(a, b)]
+</span><a href="#local-6989586621679076244"><span class="hs-identifier hs-var">xys</span></a></span><span> </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679076245"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679076246"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-112"></span><span>  </span><span id="local-6989586621679076250"><span class="annot"><span class="annottext">mprod :: [(a, b)] -&gt; (a, b)
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var hs-var hs-var hs-var">mprod</span></a></span></span><span> </span><span id="local-6989586621679076251"><span class="annot"><span class="annottext">[(a, b)]
+</span><a href="#local-6989586621679076251"><span class="hs-identifier hs-var">xys</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076252"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679076252"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076253"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679076253"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(a, b)] -&gt; ([a], [b])
+forall a b. [(a, b)] -&gt; ([a], [b])
+</span><span class="hs-identifier hs-var">unzip</span></span><span> </span><span class="annot"><span class="annottext">[(a, b)]
+</span><a href="#local-6989586621679076251"><span class="hs-identifier hs-var">xys</span></a></span><span> </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a] -&gt; a
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var">mprod</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679076252"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#mprod"><span class="hs-identifier hs-var">mprod</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679076253"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="annot"><span class="hs-comment">-- | @('/+/') = ('&lt;|&gt;'); ('/*/') = liftA2 ('&lt;&gt;')@</span></span><span>
+</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679075877"><span id="local-6989586621679076260"><span id="local-6989586621679076264"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679075877"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679075877"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-116"></span><span>  </span><span id="local-6989586621679076268"><span class="annot"><span class="annottext">zero :: Maybe a
+</span><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-var hs-var hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-117"></span><span>  </span><span id="local-6989586621679076270"><span class="annot"><span class="annottext">one :: Maybe a
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var hs-var hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">a
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-118"></span><span>  </span><span id="local-6989586621679076273"><span class="annot"><span class="annottext">/+/ :: Maybe a -&gt; Maybe a -&gt; Maybe a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/+/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; Maybe a -&gt; Maybe a
+forall a. Maybe a -&gt; Maybe a -&gt; Maybe a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">(&lt;|&gt;)</span></span><span>
+</span><span id="line-119"></span><span>  </span><span id="local-6989586621679076277"><span class="annot"><span class="annottext">/*/ :: Maybe a -&gt; Maybe a -&gt; Maybe a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/*/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; a) -&gt; Maybe a -&gt; Maybe a -&gt; Maybe a
+forall a b c. (a -&gt; b -&gt; c) -&gt; Maybe a -&gt; Maybe b -&gt; Maybe c
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(&lt;&gt;)</span></span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><span class="hs-comment">-- | @('/+/') = ('++'); ('/*/') = liftA2 ('&lt;&gt;')@</span></span><span>
+</span><span id="line-122"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679075887"><span id="local-6989586621679076285"><span id="local-6989586621679076289"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679075887"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679075887"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-123"></span><span>  </span><span id="local-6989586621679076292"><span class="annot"><span class="annottext">zero :: [a]
+</span><a href="Data.DoubleMonoid.Class.html#zero"><span class="hs-identifier hs-var hs-var hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-124"></span><span>  </span><span id="local-6989586621679076294"><span class="annot"><span class="annottext">one :: [a]
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var hs-var hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span class="hs-special">]</span><span>
+</span><span id="line-125"></span><span>  </span><span id="local-6989586621679076297"><span class="annot"><span class="annottext">/+/ :: [a] -&gt; [a] -&gt; [a]
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2B%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/+/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">(&lt;|&gt;)</span></span><span>
+</span><span id="line-126"></span><span>  </span><span id="local-6989586621679076301"><span class="annot"><span class="annottext">/*/ :: [a] -&gt; [a] -&gt; [a]
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">(/*/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; a) -&gt; [a] -&gt; [a] -&gt; [a]
+forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(&lt;&gt;)</span></span><span>
+</span><span id="line-127"></span></pre></body></html>

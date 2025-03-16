@@ -1,0 +1,603 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -fplugin GHC.TypeLits.KnownNat.Solver #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE TypeApplications #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE DefaultSignatures #-}</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Finitary.Enum</span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier">Enum</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#describeEnum"><span class="hs-identifier">describeEnum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#eqDefault"><span class="hs-identifier">eqDefault</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#compareDefault"><span class="hs-identifier">compareDefault</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#enumList"><span class="hs-identifier">enumList</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#enum"><span class="hs-identifier">enum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#coenum"><span class="hs-identifier">coenum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#cardinality"><span class="hs-identifier">cardinality</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Data.Finitary.Enum.html#ptraverseFunction"><span class="hs-identifier">ptraverseFunction</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor.Clown</span></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Int</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Contravariant.Divisible</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">KnownNat</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">natVal</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Finite</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shift</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">unshift</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">finites</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finitary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Finitary</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Enum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html"><span class="hs-identifier">Data.Profunctor.FinFn</span></a></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Contravariant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Contravariant</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Profunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="annot"><span class="hs-comment">-- | @Enum x@ is @Finitary x@ but you can't get @Cardinality n@ at type level.</span></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">class</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Enum"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-var">Enum</span></a></span></span><span> </span><span id="local-6989586621679161711"><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>  </span><span id="enumeration"><span class="annot"><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-type">enumeration</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679161972"><span class="annot"><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var hs-var">enumeration</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; FinFn x x)
+-&gt; FinFn x x
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="annot"><span class="annottext">(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; FinFn x x
+forall (n :: Nat).
+KnownNat n =&gt;
+(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; FinFn x x
+forall (n :: Nat) a b.
+KnownNat n =&gt;
+(a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#makeFinFn"><span class="hs-identifier hs-var">makeFinFn</span></a></span></span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span>  </span><span id="withEnum"><span class="annot"><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-type">withEnum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679161717"><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161715"><span class="annot"><a href="#local-6989586621679161715"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679161715"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679161715"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679161715"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161717"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161717"><span class="hs-identifier hs-type">r</span></a></span></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">default</span><span> </span><span id="withEnum"><span class="annot"><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-type">withEnum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679161724"><span class="annot"><span class="hs-identifier hs-type">Finitary</span></span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161723"><span class="annot"><a href="#local-6989586621679161723"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679161723"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679161723"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679161723"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161711"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161724"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161724"><span class="hs-identifier hs-type">r</span></a></span></span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679161978"><span class="annot"><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var">withEnum</span></a></span><span> </span><span id="local-6989586621679161985"><span class="annot"><span class="annottext">forall (n :: Nat).
+KnownNat n =&gt;
+(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r
+</span><a href="#local-6989586621679161985"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; Finite (Cardinality x)) -&gt; (Finite (Cardinality x) -&gt; x) -&gt; r
+forall (n :: Nat).
+KnownNat n =&gt;
+(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r
+</span><a href="#local-6989586621679161985"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite (Cardinality x)
+forall a. Finitary a =&gt; a -&gt; Finite (Cardinality a)
+</span><span class="hs-identifier hs-var">toFinite</span></span><span> </span><span class="annot"><span class="annottext">Finite (Cardinality x) -&gt; x
+forall a. Finitary a =&gt; Finite (Cardinality a) -&gt; a
+</span><span class="hs-identifier hs-var">fromFinite</span></span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Data.Finitary.Enum.html#eqDefault"><span class="hs-identifier hs-type">eqDefault</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161728"><span class="annot"><a href="#local-6989586621679161728"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161728"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161728"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161728"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-51"></span><span id="eqDefault"><span class="annot"><span class="annottext">eqDefault :: forall x. Enum x =&gt; x -&gt; x -&gt; Bool
+</span><a href="Data.Finitary.Enum.html#eqDefault"><span class="hs-identifier hs-var hs-var">eqDefault</span></a></span></span><span> </span><span id="local-6989586621679161990"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679161990"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679161991"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679161991"><span class="hs-identifier hs-var">x2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; Bool)
+-&gt; Bool
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679161997"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679161997"><span class="hs-identifier hs-var">toF</span></a></span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679161997"><span class="hs-identifier hs-var">toF</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679161990"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679161997"><span class="hs-identifier hs-var">toF</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679161991"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="Data.Finitary.Enum.html#compareDefault"><span class="hs-identifier hs-type">compareDefault</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161735"><span class="annot"><a href="#local-6989586621679161735"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161735"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161735"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161735"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ordering</span></span><span>
+</span><span id="line-54"></span><span id="compareDefault"><span class="annot"><span class="annottext">compareDefault :: forall x. Enum x =&gt; x -&gt; x -&gt; Ordering
+</span><a href="Data.Finitary.Enum.html#compareDefault"><span class="hs-identifier hs-var hs-var">compareDefault</span></a></span></span><span> </span><span id="local-6989586621679162000"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679162000"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679162001"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679162001"><span class="hs-identifier hs-var">x2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; Ordering)
+-&gt; Ordering
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679162007"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162007"><span class="hs-identifier hs-var">toF</span></a></span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Ordering
+forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162007"><span class="hs-identifier hs-var">toF</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679162000"><span class="hs-identifier hs-var">x1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162007"><span class="hs-identifier hs-var">toF</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679162001"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span id="local-6989586621679161741"><span id="local-6989586621679161742"><span class="annot"><a href="Data.Finitary.Enum.html#enum"><span class="hs-identifier hs-type">enum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161741"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="annot"><a href="#local-6989586621679161742"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161742"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161741"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-57"></span><span id="enum"><span class="annot"><span class="annottext">enum :: forall x (f :: * -&gt; *). (Enum x, Alternative f) =&gt; f x
+</span><a href="Data.Finitary.Enum.html#enum"><span class="hs-identifier hs-var hs-var">enum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; f x)
+-&gt; f x
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679162022"><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162022"><span class="hs-identifier hs-var">from</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[f x] -&gt; f x
+forall (t :: * -&gt; *) (f :: * -&gt; *) a.
+(Foldable t, Alternative f) =&gt;
+t (f a) -&gt; f a
+</span><span class="hs-identifier hs-var">asum</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; f x
+forall a. a -&gt; f a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(x -&gt; f x) -&gt; (Finite n -&gt; x) -&gt; Finite n -&gt; f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162022"><span class="hs-identifier hs-var">from</span></a></span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; f x) -&gt; [Finite n] -&gt; [f x]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+forall (n :: Nat). KnownNat n =&gt; [Finite n]
+</span><span class="hs-identifier hs-var">finites</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span id="local-6989586621679161760"><span id="local-6989586621679161761"><span class="annot"><a href="Data.Finitary.Enum.html#coenum"><span class="hs-identifier hs-type">coenum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161760"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decidable</span></span><span> </span><span class="annot"><a href="#local-6989586621679161761"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Divisible</span></span><span> </span><span class="annot"><a href="#local-6989586621679161761"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161761"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161760"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-60"></span><span id="coenum"><span class="annot"><span class="annottext">coenum :: forall x (f :: * -&gt; *). (Enum x, Decidable f, Divisible f) =&gt; f x
+</span><a href="Data.Finitary.Enum.html#coenum"><span class="hs-identifier hs-var hs-var">coenum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; f x)
+-&gt; f x
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679162039"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162039"><span class="hs-identifier hs-var">to</span></a></span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(x -&gt; Finite n) -&gt; f (Finite n) -&gt; f x
+forall a' a. (a' -&gt; a) -&gt; f a -&gt; f a'
+forall (f :: * -&gt; *) a' a.
+Contravariant f =&gt;
+(a' -&gt; a) -&gt; f a -&gt; f a'
+</span><span class="hs-identifier hs-var">contramap</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162039"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">(f (Finite n) -&gt; f x) -&gt; f (Finite n) -&gt; f x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Clown f (Finite n) (Finite n) -&gt; f (Finite n)
+forall {k1} {k2} (f :: k1 -&gt; *) (a :: k1) (b :: k2).
+Clown f a b -&gt; f a
+</span><span class="hs-identifier hs-var">runClown</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Clown f (Finite n) (Finite n)
+forall (n :: Nat) (p :: * -&gt; * -&gt; *).
+(KnownNat n, Cartesian p, Cocartesian p) =&gt;
+p (Finite n) (Finite n)
+</span><a href="Data.Profunctor.Cartesian.html#describeFinite"><span class="hs-identifier hs-var">describeFinite</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Data.Finitary.Enum.html#cardinality"><span class="hs-identifier hs-type">cardinality</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161788"><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679161789"><span class="annot"><a href="#local-6989586621679161789"><span class="hs-identifier hs-type">proxy</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161789"><span class="hs-identifier hs-type">proxy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-63"></span><span id="cardinality"><span class="annot"><span class="annottext">cardinality :: forall x (proxy :: * -&gt; *). Enum x =&gt; proxy x -&gt; Int
+</span><a href="Data.Finitary.Enum.html#cardinality"><span class="hs-identifier hs-var hs-var">cardinality</span></a></span></span><span> </span><span class="annot"><span class="annottext">proxy x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><span class="annottext">(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; Int
+forall (n :: Nat).
+KnownNat n =&gt;
+(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; Int
+</span><a href="#local-6989586621679162045"><span class="hs-identifier hs-var">getN</span></a></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-65"></span><span>    </span><span class="annot"><a href="#local-6989586621679162045"><span class="hs-identifier hs-type">getN</span></a></span><span> </span><span class="hs-glyph">::</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679162048"><span class="annot"><a href="#local-6989586621679162048"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679162048"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162048"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162048"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161788"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679162045"><span class="annot"><span class="annottext">getN :: forall (n :: Nat).
+KnownNat n =&gt;
+(x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; Int
+</span><a href="#local-6989586621679162045"><span class="hs-identifier hs-var hs-var">getN</span></a></span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Nat -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (n :: Nat) (proxy :: Nat -&gt; *). KnownNat n =&gt; proxy n -&gt; Nat
+</span><span class="hs-identifier hs-var">natVal</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679162048"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="annottext">Any n
+forall a. HasCallStack =&gt; a
+</span><span class="hs-identifier hs-var">undefined</span></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Data.Finitary.Enum.html#enumList"><span class="hs-identifier hs-type">enumList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161801"><span class="annot"><a href="#local-6989586621679161801"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161801"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679161801"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-69"></span><span id="enumList"><span class="annot"><span class="annottext">enumList :: forall x. Enum x =&gt; [x]
+</span><a href="Data.Finitary.Enum.html#enumList"><span class="hs-identifier hs-var hs-var">enumList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; [x])
+-&gt; [x]
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679162063"><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162063"><span class="hs-identifier hs-var">from</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162063"><span class="hs-identifier hs-var">from</span></a></span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; x) -&gt; [Finite n] -&gt; [x]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+forall (n :: Nat). KnownNat n =&gt; [Finite n]
+</span><span class="hs-identifier hs-var">finites</span></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span id="local-6989586621679161804"><span id="local-6989586621679161805"><span class="annot"><a href="Data.Finitary.Enum.html#describeEnum"><span class="hs-identifier hs-type">describeEnum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161804"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161805"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161805"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161805"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161804"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161804"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-72"></span><span id="describeEnum"><span class="annot"><span class="annottext">describeEnum :: forall x (p :: * -&gt; * -&gt; *).
+(Enum x, Cartesian p, Cocartesian p) =&gt;
+p x x
+</span><a href="Data.Finitary.Enum.html#describeEnum"><span class="hs-identifier hs-var hs-var">describeEnum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; p x x)
+-&gt; p x x
+forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat).
+  KnownNat n =&gt;
+  (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; p x x)
+ -&gt; p x x)
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; p x x)
+-&gt; p x x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162075"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162075"><span class="hs-identifier hs-var">to</span></a></span></span><span> </span><span id="local-6989586621679162076"><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162076"><span class="hs-identifier hs-var">from</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(x -&gt; Finite n)
+-&gt; (Finite n -&gt; x) -&gt; p (Finite n) (Finite n) -&gt; p x x
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+</span><span class="hs-identifier hs-var">dimap</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162075"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162076"><span class="hs-identifier hs-var">from</span></a></span><span> </span><span class="annot"><span class="annottext">p (Finite n) (Finite n)
+forall (n :: Nat) (p :: * -&gt; * -&gt; *).
+(KnownNat n, Cartesian p, Cocartesian p) =&gt;
+p (Finite n) (Finite n)
+</span><a href="Data.Profunctor.Cartesian.html#describeFinite"><span class="hs-identifier hs-var">describeFinite</span></a></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="annot"><a href="Data.Finitary.Enum.html#ptraverseFunction"><span class="hs-identifier hs-type">ptraverseFunction</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679161816"><span class="annot"><a href="#local-6989586621679161816"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679161817"><span class="annot"><a href="#local-6989586621679161817"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679161818"><span class="annot"><a href="#local-6989586621679161818"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679161819"><span class="annot"><a href="#local-6989586621679161819"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161816"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161817"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161817"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161818"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161819"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161817"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161816"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161818"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161816"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679161819"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span id="ptraverseFunction"><span class="annot"><span class="annottext">ptraverseFunction :: forall x (p :: * -&gt; * -&gt; *) a b.
+(Enum x, Cartesian p) =&gt;
+p a b -&gt; p (x -&gt; a) (x -&gt; b)
+</span><a href="Data.Finitary.Enum.html#ptraverseFunction"><span class="hs-identifier hs-var hs-var">ptraverseFunction</span></a></span></span><span> </span><span id="local-6989586621679162082"><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679162082"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679161816"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat).
+  KnownNat n =&gt;
+  (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; p (x -&gt; a) (x -&gt; b))
+ -&gt; p (x -&gt; a) (x -&gt; b))
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; p (x -&gt; a) (x -&gt; b))
+-&gt; p (x -&gt; a) (x -&gt; b)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162087"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162087"><span class="hs-identifier hs-var">to</span></a></span></span><span> </span><span id="local-6989586621679162088"><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162088"><span class="hs-identifier hs-var">from</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((x -&gt; a) -&gt; Finite n -&gt; a)
+-&gt; ((Finite n -&gt; b) -&gt; x -&gt; b)
+-&gt; p (Finite n -&gt; a) (Finite n -&gt; b)
+-&gt; p (x -&gt; a) (x -&gt; b)
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+</span><span class="hs-identifier hs-var">dimap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(x -&gt; a) -&gt; (Finite n -&gt; x) -&gt; Finite n -&gt; a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162088"><span class="hs-identifier hs-var">from</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Finite n -&gt; b) -&gt; (x -&gt; Finite n) -&gt; x -&gt; b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162087"><span class="hs-identifier hs-var">to</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">p a b -&gt; p (Finite n -&gt; a) (Finite n -&gt; b)
+forall (n :: Nat) a b.
+KnownNat n =&gt;
+p a b -&gt; p (Finite n -&gt; a) (Finite n -&gt; b)
+forall (p :: * -&gt; * -&gt; *) (n :: Nat) a b.
+(Cartesian p, KnownNat n) =&gt;
+p a b -&gt; p (Finite n -&gt; a) (Finite n -&gt; b)
+</span><a href="Data.Profunctor.Cartesian.html#proPower"><span class="hs-identifier hs-var">proPower</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679162082"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162094"><span id="local-6989586621679162098"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span></span></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162107"><span id="local-6989586621679162111"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679161832"><span id="local-6989586621679161833"><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161832"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161833"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679161832"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161833"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679162129"><span class="annot"><span class="annottext">enumeration :: FinFn (Either x y) (Either x y)
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var hs-var hs-var hs-var">enumeration</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn x x
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn x x -&gt; FinFn y y -&gt; FinFn (Either x y) (Either x y)
+forall a b a' b'.
+FinFn a b -&gt; FinFn a' b' -&gt; FinFn (Either a a') (Either b b')
+forall (p :: * -&gt; * -&gt; *) a b a' b'.
+Cocartesian p =&gt;
+p a b -&gt; p a' b' -&gt; p (Either a a') (Either b b')
+</span><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn y y
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span id="local-6989586621679162132"><span class="annot"><span class="annottext">withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Either x y -&gt; Finite n) -&gt; (Finite n -&gt; Either x y) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var hs-var hs-var">withEnum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn (Either x y) (Either x y)
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (Either x y -&gt; Finite n) -&gt; (Finite n -&gt; Either x y) -&gt; r)
+-&gt; r
+forall a b r.
+FinFn a b
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r)
+-&gt; r
+</span><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-var">withFinFn</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (Either x y) (Either x y)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679161849"><span id="local-6989586621679161850"><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161849"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161850"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161849"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161850"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>  </span><span id="local-6989586621679162150"><span class="annot"><span class="annottext">enumeration :: FinFn (x, y) (x, y)
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var hs-var hs-var hs-var">enumeration</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn x x
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn x x -&gt; FinFn y y -&gt; FinFn (x, y) (x, y)
+forall a b a' b'. FinFn a b -&gt; FinFn a' b' -&gt; FinFn (a, a') (b, b')
+forall (p :: * -&gt; * -&gt; *) a b a' b'.
+Cartesian p =&gt;
+p a b -&gt; p a' b' -&gt; p (a, a') (b, b')
+</span><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn y y
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679162153"><span class="annot"><span class="annottext">withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ ((x, y) -&gt; Finite n) -&gt; (Finite n -&gt; (x, y)) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var hs-var hs-var">withEnum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn (x, y) (x, y)
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    ((x, y) -&gt; Finite n) -&gt; (Finite n -&gt; (x, y)) -&gt; r)
+-&gt; r
+forall a b r.
+FinFn a b
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r)
+-&gt; r
+</span><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-var">withFinFn</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x, y) (x, y)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679161863"><span id="local-6989586621679161864"><span id="local-6989586621679161865"><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161863"><span class="hs-identifier hs-type">x1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161864"><span class="hs-identifier hs-type">x2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161865"><span class="hs-identifier hs-type">x3</span></a></span><span class="hs-special">)</span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161863"><span class="hs-identifier hs-type">x1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161864"><span class="hs-identifier hs-type">x2</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161865"><span class="hs-identifier hs-type">x3</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679162171"><span class="annot"><span class="annottext">enumeration :: FinFn (x1, x2, x3) (x1, x2, x3)
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var hs-var hs-var hs-var">enumeration</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((x1, x2, x3) -&gt; (x1, (x2, x3)))
+-&gt; ((x1, (x2, x3)) -&gt; (x1, x2, x3))
+-&gt; FinFn x1 x1
+-&gt; FinFn (x2, x3) (x2, x3)
+-&gt; FinFn (x1, x2, x3) (x1, x2, x3)
+forall a a1 a2 b1 b2 b.
+(a -&gt; (a1, a2))
+-&gt; ((b1, b2) -&gt; b) -&gt; FinFn a1 b1 -&gt; FinFn a2 b2 -&gt; FinFn a b
+forall (p :: * -&gt; * -&gt; *) a a1 a2 b1 b2 b.
+Cartesian p =&gt;
+(a -&gt; (a1, a2)) -&gt; ((b1, b2) -&gt; b) -&gt; p a1 b1 -&gt; p a2 b2 -&gt; p a b
+</span><a href="Data.Profunctor.Cartesian.html#proProduct"><span class="hs-identifier hs-var">proProduct</span></a></span><span> </span><span class="annot"><span class="annottext">(x1, x2, x3) -&gt; (x1, (x2, x3))
+forall {a} {a} {b}. (a, a, b) -&gt; (a, (a, b))
+</span><a href="#local-6989586621679162173"><span class="hs-identifier hs-var">from</span></a></span><span> </span><span class="annot"><span class="annottext">(x1, (x2, x3)) -&gt; (x1, x2, x3)
+forall {a} {b} {c}. (a, (b, c)) -&gt; (a, b, c)
+</span><a href="#local-6989586621679162174"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn x1 x1
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x2, x3) (x2, x3)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679162173"><span class="annot"><span class="annottext">from :: (a, a, b) -&gt; (a, (a, b))
+</span><a href="#local-6989586621679162173"><span class="hs-identifier hs-var hs-var">from</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162175"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162175"><span class="hs-identifier hs-var">x1</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162176"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162176"><span class="hs-identifier hs-var">x2</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162177"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162177"><span class="hs-identifier hs-var">x3</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162175"><span class="hs-identifier hs-var">x1</span></a></span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162176"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162177"><span class="hs-identifier hs-var">x3</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679162174"><span class="annot"><span class="annottext">to :: (a, (b, c)) -&gt; (a, b, c)
+</span><a href="#local-6989586621679162174"><span class="hs-identifier hs-var hs-var">to</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162178"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162178"><span class="hs-identifier hs-var">x1</span></a></span></span><span class="hs-special">,</span><span class="hs-special">(</span><span id="local-6989586621679162179"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162179"><span class="hs-identifier hs-var">x2</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162180"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679162180"><span class="hs-identifier hs-var">x3</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162178"><span class="hs-identifier hs-var">x1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162179"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679162180"><span class="hs-identifier hs-var">x3</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621679162182"><span class="annot"><span class="annottext">withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ ((x1, x2, x3) -&gt; Finite n) -&gt; (Finite n -&gt; (x1, x2, x3)) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var hs-var hs-var">withEnum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn (x1, x2, x3) (x1, x2, x3)
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    ((x1, x2, x3) -&gt; Finite n) -&gt; (Finite n -&gt; (x1, x2, x3)) -&gt; r)
+-&gt; r
+forall a b r.
+FinFn a b
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r)
+-&gt; r
+</span><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-var">withFinFn</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x1, x2, x3) (x1, x2, x3)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-92"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679161888"><span id="local-6989586621679161889"><span id="local-6989586621679161890"><span id="local-6989586621679161891"><span class="hs-special">(</span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161888"><span class="hs-identifier hs-type">x1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161889"><span class="hs-identifier hs-type">x2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161890"><span class="hs-identifier hs-type">x3</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161891"><span class="hs-identifier hs-type">x4</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679161888"><span class="hs-identifier hs-type">x1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161889"><span class="hs-identifier hs-type">x2</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161890"><span class="hs-identifier hs-type">x3</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679161891"><span class="hs-identifier hs-type">x4</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-93"></span><span>  </span><span id="local-6989586621679162202"><span class="annot"><span class="annottext">enumeration :: FinFn (x1, x2, x3, x4) (x1, x2, x3, x4)
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var hs-var hs-var hs-var">enumeration</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((x1, x2, x3, x4) -&gt; ((x1, x2), (x3, x4)))
+-&gt; (((x1, x2), (x3, x4)) -&gt; (x1, x2, x3, x4))
+-&gt; FinFn (x1, x2) (x1, x2)
+-&gt; FinFn (x3, x4) (x3, x4)
+-&gt; FinFn (x1, x2, x3, x4) (x1, x2, x3, x4)
+forall a a1 a2 b1 b2 b.
+(a -&gt; (a1, a2))
+-&gt; ((b1, b2) -&gt; b) -&gt; FinFn a1 b1 -&gt; FinFn a2 b2 -&gt; FinFn a b
+forall (p :: * -&gt; * -&gt; *) a a1 a2 b1 b2 b.
+Cartesian p =&gt;
+(a -&gt; (a1, a2)) -&gt; ((b1, b2) -&gt; b) -&gt; p a1 b1 -&gt; p a2 b2 -&gt; p a b
+</span><a href="Data.Profunctor.Cartesian.html#proProduct"><span class="hs-identifier hs-var">proProduct</span></a></span><span> </span><span class="annot"><span class="annottext">(x1, x2, x3, x4) -&gt; ((x1, x2), (x3, x4))
+forall {a} {b} {a} {b}. (a, b, a, b) -&gt; ((a, b), (a, b))
+</span><a href="#local-6989586621679162203"><span class="hs-identifier hs-var">from</span></a></span><span> </span><span class="annot"><span class="annottext">((x1, x2), (x3, x4)) -&gt; (x1, x2, x3, x4)
+forall {a} {b} {c} {d}. ((a, b), (c, d)) -&gt; (a, b, c, d)
+</span><a href="#local-6989586621679162204"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x1, x2) (x1, x2)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x3, x4) (x3, x4)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621679162203"><span class="annot"><span class="annottext">from :: (a, b, a, b) -&gt; ((a, b), (a, b))
+</span><a href="#local-6989586621679162203"><span class="hs-identifier hs-var hs-var">from</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162205"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162205"><span class="hs-identifier hs-var">x1</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162206"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162206"><span class="hs-identifier hs-var">x2</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162207"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162207"><span class="hs-identifier hs-var">x3</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162208"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162208"><span class="hs-identifier hs-var">x4</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162205"><span class="hs-identifier hs-var">x1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162206"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162207"><span class="hs-identifier hs-var">x3</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162208"><span class="hs-identifier hs-var">x4</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679162204"><span class="annot"><span class="annottext">to :: ((a, b), (c, d)) -&gt; (a, b, c, d)
+</span><a href="#local-6989586621679162204"><span class="hs-identifier hs-var hs-var">to</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span id="local-6989586621679162209"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162209"><span class="hs-identifier hs-var">x1</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162210"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162210"><span class="hs-identifier hs-var">x2</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span class="hs-special">(</span><span id="local-6989586621679162211"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">x3</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162212"><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679162212"><span class="hs-identifier hs-var">x4</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162209"><span class="hs-identifier hs-var">x1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162210"><span class="hs-identifier hs-var">x2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">x3</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679162212"><span class="hs-identifier hs-var">x4</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679162214"><span class="annot"><span class="annottext">withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ ((x1, x2, x3, x4) -&gt; Finite n)
+ -&gt; (Finite n -&gt; (x1, x2, x3, x4)) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var hs-var hs-var">withEnum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FinFn (x1, x2, x3, x4) (x1, x2, x3, x4)
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    ((x1, x2, x3, x4) -&gt; Finite n)
+    -&gt; (Finite n -&gt; (x1, x2, x3, x4)) -&gt; r)
+-&gt; r
+forall a b r.
+FinFn a b
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r)
+-&gt; r
+</span><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-var">withFinFn</span></a></span><span> </span><span class="annot"><span class="annottext">FinFn (x1, x2, x3, x4) (x1, x2, x3, x4)
+forall x. Enum x =&gt; FinFn x x
+</span><a href="Data.Finitary.Enum.html#enumeration"><span class="hs-identifier hs-var">enumeration</span></a></span><span>
+</span><span id="line-97"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162221"><span id="local-6989586621679162225"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span></span><span>
+</span><span id="line-98"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162233"><span id="local-6989586621679162237"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ordering</span></span></span></span><span>
+</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679161904"><span id="local-6989586621679162247"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679161904"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679161904"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-100"></span><span>  </span><span id="local-6989586621679162252"><span class="annot"><span class="annottext">withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Maybe x -&gt; Finite n) -&gt; (Finite n -&gt; Maybe x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var hs-var hs-var hs-var">withEnum</span></a></span></span><span> </span><span id="local-6989586621679162253"><span class="annot"><span class="annottext">forall (n :: Nat).
+KnownNat n =&gt;
+(Maybe x -&gt; Finite n) -&gt; (Finite n -&gt; Maybe x) -&gt; r
+</span><a href="#local-6989586621679162253"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall x r.
+Enum x =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+-&gt; r
+</span><a href="Data.Finitary.Enum.html#withEnum"><span class="hs-identifier hs-var">withEnum</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679161904"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679162269"><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162269"><span class="hs-identifier hs-var">from</span></a></span></span><span> </span><span id="local-6989586621679162270"><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162270"><span class="hs-identifier hs-var">to</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Maybe x -&gt; Finite (n + 1)) -&gt; (Finite (n + 1) -&gt; Maybe x) -&gt; r
+forall (n :: Nat).
+KnownNat n =&gt;
+(Maybe x -&gt; Finite n) -&gt; (Finite n -&gt; Maybe x) -&gt; r
+</span><a href="#local-6989586621679162253"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite (n + 1)
+-&gt; (x -&gt; Finite (n + 1)) -&gt; Maybe x -&gt; Finite (n + 1)
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">Finite (n + 1)
+forall a. Bounded a =&gt; a
+</span><span class="hs-identifier hs-var">minBound</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n -&gt; Finite (n + 1)
+forall (n :: Nat). Finite n -&gt; Finite (n + 1)
+</span><span class="hs-identifier hs-var">shift</span></span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; Finite (n + 1))
+-&gt; (x -&gt; Finite n) -&gt; x -&gt; Finite (n + 1)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; Finite n
+</span><a href="#local-6989586621679162269"><span class="hs-identifier hs-var">from</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Finite n -&gt; x) -&gt; Maybe (Finite n) -&gt; Maybe x
+forall a b. (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; x
+</span><a href="#local-6989586621679162270"><span class="hs-identifier hs-var">to</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe (Finite n) -&gt; Maybe x)
+-&gt; (Finite (n + 1) -&gt; Maybe (Finite n))
+-&gt; Finite (n + 1)
+-&gt; Maybe x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Finite (n + 1) -&gt; Maybe (Finite n)
+forall (n :: Nat). Finite (n + 1) -&gt; Maybe (Finite n)
+</span><span class="hs-identifier hs-var">unshift</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162277"><span id="local-6989586621679162281"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span></span></span><span>
+</span><span id="line-103"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162289"><span id="local-6989586621679162293"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word16</span></span></span></span><span>
+</span><span id="line-104"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162301"><span id="local-6989586621679162305"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span></span></span><span>
+</span><span id="line-105"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162313"><span id="local-6989586621679162317"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span></span></span><span>
+</span><span id="line-106"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162325"><span id="local-6989586621679162329"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word</span></span></span></span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162337"><span id="local-6989586621679162341"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int8</span></span></span></span><span>
+</span><span id="line-109"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162349"><span id="local-6989586621679162353"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int16</span></span></span></span><span>
+</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162361"><span id="local-6989586621679162365"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int32</span></span></span></span><span>
+</span><span id="line-111"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162373"><span id="local-6989586621679162377"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int64</span></span></span></span><span>
+</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162385"><span id="local-6989586621679162389"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162397"><span id="local-6989586621679162401"><span class="annot"><a href="Data.Finitary.Enum.html#Enum"><span class="hs-identifier hs-type">Enum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span></span></span><span>
+</span><span id="line-115"></span></pre></body></html>
