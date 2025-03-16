@@ -31,8 +31,10 @@ jobs:
         uses: actions/cache/restore@v4
         id: restore-ghc
         with:
-          key: basis-${{ env.ghc-version }}
-          path: ~/.ghcup/
+          key: ghc-${{ env.ghc-version }}
+          path: |
+            /usr/local/.ghcup/
+            ~/.ghcup/
       
       - name: Restore cabal cache
         uses: actions/cache/restore@v4
