@@ -2,12 +2,12 @@ name: Build Haddocks
 on:
   # Trigger the workflow on every 1 week
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '16 8 * * 2'
   # Or trigger manually
   workflow_dispatch:
 
 env:
-  ghc-version: 9.8.2
+  ghc-version: 9.8.4
   cabal-version: 3.12.1.0
 
 jobs:
