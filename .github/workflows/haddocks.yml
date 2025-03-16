@@ -82,7 +82,7 @@ jobs:
       - name: Copy
         shell: bash
         run: |
-          cp -a projects/monad-gen/doc-output/ site-root/haddocks/
+          cp -a projects/monad-gen/doc-output site-root/haddocks/
       
       - name: Commit & Push
         run: |
