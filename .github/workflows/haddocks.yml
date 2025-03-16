@@ -74,9 +74,9 @@ jobs:
         run: |
           cd projects/monad-gen
           cabal haddock all \
-            --haddock-output-dir=./doc-output \
-            --haddock-hyperlink-source \
-            --haddock-html-location: http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html
+            "--haddock-output-dir=./doc-output" \
+            "--haddock-hyperlink-source" \
+            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
           cp -a doc-output/* ../../haddocks/
       
       - name: Commit & Push
