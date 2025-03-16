@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.DoubleMonoid.NearSemiring.Free</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.Class.html"><span class="hs-identifier">Data.DoubleMonoid.Class</span></a></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.LZ.Class.html"><span class="hs-identifier">Data.DoubleMonoid.LZ.Class</span></a></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Class.html"><span class="hs-identifier">Data.DoubleMonoid.NearSemiring.Class</span></a></span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="annot"><span class="hs-comment">-- | The free 'NearSemiring'</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">newtype</span><span> </span><span id="Forest"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-var">Forest</span></a></span></span><span> </span><span id="local-6989586621679077431"><span class="annot"><a href="#local-6989586621679077431"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SumOf"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Tree"><span class="hs-identifier hs-type">Tree</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077431"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-12"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077486"><span id="local-6989586621679077493"><span id="local-6989586621679077497"><span class="annot"><span class="annottext">Int -&gt; Forest a -&gt; ShowS
+[Forest a] -&gt; ShowS
+Forest a -&gt; String
+(Int -&gt; Forest a -&gt; ShowS)
+-&gt; (Forest a -&gt; String) -&gt; ([Forest a] -&gt; ShowS) -&gt; Show (Forest a)
+forall a. Show a =&gt; Int -&gt; Forest a -&gt; ShowS
+forall a. Show a =&gt; [Forest a] -&gt; ShowS
+forall a. Show a =&gt; Forest a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Forest a -&gt; ShowS
+showsPrec :: Int -&gt; Forest a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; Forest a -&gt; String
+show :: Forest a -&gt; String
+$cshowList :: forall a. Show a =&gt; [Forest a] -&gt; ShowS
+showList :: [Forest a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077503"><span id="local-6989586621679077509"><span class="annot"><span class="annottext">Forest a -&gt; Forest a -&gt; Bool
+(Forest a -&gt; Forest a -&gt; Bool)
+-&gt; (Forest a -&gt; Forest a -&gt; Bool) -&gt; Eq (Forest a)
+forall a. Eq a =&gt; Forest a -&gt; Forest a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; Forest a -&gt; Forest a -&gt; Bool
+== :: Forest a -&gt; Forest a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Forest a -&gt; Forest a -&gt; Bool
+/= :: Forest a -&gt; Forest a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077521"><span id="local-6989586621679077527"><span id="local-6989586621679077532"><span id="local-6989586621679077537"><span id="local-6989586621679077542"><span id="local-6989586621679077547"><span id="local-6989586621679077552"><span class="annot"><span class="annottext">Eq (Forest a)
+Eq (Forest a) =&gt;
+(Forest a -&gt; Forest a -&gt; Ordering)
+-&gt; (Forest a -&gt; Forest a -&gt; Bool)
+-&gt; (Forest a -&gt; Forest a -&gt; Bool)
+-&gt; (Forest a -&gt; Forest a -&gt; Bool)
+-&gt; (Forest a -&gt; Forest a -&gt; Bool)
+-&gt; (Forest a -&gt; Forest a -&gt; Forest a)
+-&gt; (Forest a -&gt; Forest a -&gt; Forest a)
+-&gt; Ord (Forest a)
+Forest a -&gt; Forest a -&gt; Bool
+Forest a -&gt; Forest a -&gt; Ordering
+Forest a -&gt; Forest a -&gt; Forest a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Forest a)
+forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Bool
+forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Ordering
+forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Forest a
+$ccompare :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Ordering
+compare :: Forest a -&gt; Forest a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Bool
+&lt; :: Forest a -&gt; Forest a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Bool
+&lt;= :: Forest a -&gt; Forest a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Bool
+&gt; :: Forest a -&gt; Forest a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Bool
+&gt;= :: Forest a -&gt; Forest a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Forest a
+max :: Forest a -&gt; Forest a -&gt; Forest a
+$cmin :: forall a. Ord a =&gt; Forest a -&gt; Forest a -&gt; Forest a
+min :: Forest a -&gt; Forest a -&gt; Forest a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077561"><span id="local-6989586621679077567"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Forest a -&gt; Forest b)
+-&gt; (forall a b. a -&gt; Forest b -&gt; Forest a) -&gt; Functor Forest
+forall a b. a -&gt; Forest b -&gt; Forest a
+forall a b. (a -&gt; b) -&gt; Forest a -&gt; Forest b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; Forest a -&gt; Forest b
+fmap :: forall a b. (a -&gt; b) -&gt; Forest a -&gt; Forest b
+$c&lt;$ :: forall a b. a -&gt; Forest b -&gt; Forest a
+&lt;$ :: forall a b. a -&gt; Forest b -&gt; Forest a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">data</span><span> </span><span id="Tree"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Tree"><span class="hs-identifier hs-var">Tree</span></a></span></span><span> </span><span id="local-6989586621679077432"><span class="annot"><a href="#local-6989586621679077432"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="One"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><a href="#local-6989586621679077432"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span id="%3A%2F%2A%2F"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-var">:/*/</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077432"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-15"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077576"><span id="local-6989586621679077581"><span id="local-6989586621679077584"><span class="annot"><span class="annottext">Int -&gt; Tree a -&gt; ShowS
+[Tree a] -&gt; ShowS
+Tree a -&gt; String
+(Int -&gt; Tree a -&gt; ShowS)
+-&gt; (Tree a -&gt; String) -&gt; ([Tree a] -&gt; ShowS) -&gt; Show (Tree a)
+forall a. Show a =&gt; Int -&gt; Tree a -&gt; ShowS
+forall a. Show a =&gt; [Tree a] -&gt; ShowS
+forall a. Show a =&gt; Tree a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Tree a -&gt; ShowS
+showsPrec :: Int -&gt; Tree a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; Tree a -&gt; String
+show :: Tree a -&gt; String
+$cshowList :: forall a. Show a =&gt; [Tree a] -&gt; ShowS
+showList :: [Tree a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077588"><span id="local-6989586621679077592"><span class="annot"><span class="annottext">Tree a -&gt; Tree a -&gt; Bool
+(Tree a -&gt; Tree a -&gt; Bool)
+-&gt; (Tree a -&gt; Tree a -&gt; Bool) -&gt; Eq (Tree a)
+forall a. Eq a =&gt; Tree a -&gt; Tree a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; Tree a -&gt; Tree a -&gt; Bool
+== :: Tree a -&gt; Tree a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Tree a -&gt; Tree a -&gt; Bool
+/= :: Tree a -&gt; Tree a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077599"><span id="local-6989586621679077603"><span id="local-6989586621679077607"><span id="local-6989586621679077610"><span id="local-6989586621679077613"><span id="local-6989586621679077616"><span id="local-6989586621679077619"><span class="annot"><span class="annottext">Eq (Tree a)
+Eq (Tree a) =&gt;
+(Tree a -&gt; Tree a -&gt; Ordering)
+-&gt; (Tree a -&gt; Tree a -&gt; Bool)
+-&gt; (Tree a -&gt; Tree a -&gt; Bool)
+-&gt; (Tree a -&gt; Tree a -&gt; Bool)
+-&gt; (Tree a -&gt; Tree a -&gt; Bool)
+-&gt; (Tree a -&gt; Tree a -&gt; Tree a)
+-&gt; (Tree a -&gt; Tree a -&gt; Tree a)
+-&gt; Ord (Tree a)
+Tree a -&gt; Tree a -&gt; Bool
+Tree a -&gt; Tree a -&gt; Ordering
+Tree a -&gt; Tree a -&gt; Tree a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Tree a)
+forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Bool
+forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Ordering
+forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Tree a
+$ccompare :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Ordering
+compare :: Tree a -&gt; Tree a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Bool
+&lt; :: Tree a -&gt; Tree a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Bool
+&lt;= :: Tree a -&gt; Tree a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Bool
+&gt; :: Tree a -&gt; Tree a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Bool
+&gt;= :: Tree a -&gt; Tree a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Tree a
+max :: Tree a -&gt; Tree a -&gt; Tree a
+$cmin :: forall a. Ord a =&gt; Tree a -&gt; Tree a -&gt; Tree a
+min :: Tree a -&gt; Tree a -&gt; Tree a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077622"><span id="local-6989586621679077625"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Tree a -&gt; Tree b)
+-&gt; (forall a b. a -&gt; Tree b -&gt; Tree a) -&gt; Functor Tree
+forall a b. a -&gt; Tree b -&gt; Tree a
+forall a b. (a -&gt; b) -&gt; Tree a -&gt; Tree b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; Tree a -&gt; Tree b
+fmap :: forall a b. (a -&gt; b) -&gt; Tree a -&gt; Tree b
+$c&lt;$ :: forall a b. a -&gt; Tree b -&gt; Tree a
+&lt;$ :: forall a b. a -&gt; Tree b -&gt; Tree a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077430"><span id="local-6989586621679077632"><span id="local-6989586621679077636"><span class="annot"><a href="Data.DoubleMonoid.Class.html#DoubleMonoid"><span class="hs-identifier hs-type">DoubleMonoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077430"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>  </span><span id="local-6989586621679077639"><span class="annot"><span class="annottext">zero :: Forest a
+</span><a href="#local-6989586621679077639"><span class="hs-identifier hs-var hs-var hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; Forest a
+forall a. [Tree a] -&gt; Forest a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-19"></span><span>  </span><span id="local-6989586621679077641"><span class="annot"><span class="annottext">one :: Forest a
+</span><a href="#local-6989586621679077641"><span class="hs-identifier hs-var hs-var hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; Forest a
+forall a. [Tree a] -&gt; Forest a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Tree a
+forall a. Tree a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679077643"><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077643"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679077644"><span class="annot"><span class="annottext">/+/ :: Forest a -&gt; Forest a -&gt; Forest a
+</span><a href="#local-6989586621679077644"><span class="hs-operator hs-var hs-var hs-var hs-var">/+/</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679077646"><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077646"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; Forest a
+forall a. [Tree a] -&gt; Forest a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077643"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; [Tree a] -&gt; [Tree a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077646"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>  </span><span id="local-6989586621679077647"><span class="annot"><span class="annottext">/*/ :: Forest a -&gt; Forest a -&gt; Forest a
+</span><a href="#local-6989586621679077647"><span class="hs-operator hs-var hs-var hs-var hs-var">(/*/)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Forest a -&gt; Forest a -&gt; Forest a
+forall a. Forest a -&gt; Forest a -&gt; Forest a
+</span><a href="#local-6989586621679077649"><span class="hs-identifier hs-var">multFF</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>      </span><span id="local-6989586621679077650"><span class="annot"><a href="#local-6989586621679077649"><span class="hs-identifier hs-type">multFF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077650"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077650"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077650"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-24"></span><span>      </span><span id="local-6989586621679077649"><span class="annot"><span class="annottext">multFF :: forall a. Forest a -&gt; Forest a -&gt; Forest a
+</span><a href="#local-6989586621679077649"><span class="hs-identifier hs-var hs-var">multFF</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679077653"><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077653"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679077654"><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077654"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; Forest a
+forall a. [Tree a] -&gt; Forest a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="annot"><span class="annottext">([Tree a] -&gt; Forest a) -&gt; [Tree a] -&gt; Forest a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077653"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; (Tree a -&gt; [Tree a]) -&gt; [Tree a]
+forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Tree a -&gt; Forest a -&gt; [Tree a]
+forall a. Tree a -&gt; Forest a -&gt; [Tree a]
+</span><a href="#local-6989586621679077655"><span class="hs-operator hs-var">`multTF`</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077654"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span>      </span><span id="local-6989586621679077442"><span class="annot"><a href="#local-6989586621679077655"><span class="hs-identifier hs-type">multTF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Tree"><span class="hs-identifier hs-type">Tree</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077442"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077442"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Tree"><span class="hs-identifier hs-type">Tree</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077442"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-27"></span><span>      </span><span id="local-6989586621679077655"><span class="annot"><span class="annottext">multTF :: forall a. Tree a -&gt; Forest a -&gt; [Tree a]
+</span><a href="#local-6989586621679077655"><span class="hs-identifier hs-var hs-var">multTF</span></a></span></span><span> </span><span class="annot"><span class="annottext">Tree a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679077656"><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077656"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077656"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-28"></span><span>      </span><span class="annot"><a href="#local-6989586621679077655"><span class="hs-identifier hs-var">multTF</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077657"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077657"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-type">:/*/</span></a></span><span> </span><span id="local-6989586621679077658"><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077658"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679077659"><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077659"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077657"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Forest a -&gt; Tree a
+forall a. a -&gt; Forest a -&gt; Tree a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-var">:/*/</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a -&gt; Forest a -&gt; Forest a
+forall a. Forest a -&gt; Forest a -&gt; Forest a
+</span><a href="#local-6989586621679077649"><span class="hs-identifier hs-var">multFF</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077658"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077659"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077448"><span id="local-6989586621679077663"><span class="annot"><a href="Data.DoubleMonoid.LZ.Class.html#DMLZ"><span class="hs-identifier hs-type">DMLZ</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077448"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077452"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Class.html#NearSemiring"><span class="hs-identifier hs-type">NearSemiring</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077452"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span id="local-6989586621679077453"><span id="local-6989586621679077454"><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#interpret"><span class="hs-identifier hs-type">interpret</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Class.html#NearSemiring"><span class="hs-identifier hs-type">NearSemiring</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077453"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679077454"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077453"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077454"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077453"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-34"></span><span id="interpret"><span class="annot"><span class="annottext">interpret :: forall b a. NearSemiring b =&gt; (a -&gt; b) -&gt; Forest a -&gt; b
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#interpret"><span class="hs-identifier hs-var hs-var">interpret</span></a></span></span><span> </span><span id="local-6989586621679077677"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077677"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Forest a -&gt; b
+</span><a href="#local-6989586621679077678"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621679077678"><span class="annot"><span class="annottext">go :: Forest a -&gt; b
+</span><a href="#local-6989586621679077678"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679077683"><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077683"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
+forall a. DoubleMonoid a =&gt; [a] -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Tree a -&gt; b
+</span><a href="#local-6989586621679077685"><span class="hs-identifier hs-var">go'</span></a></span><span> </span><span class="annot"><span class="annottext">(Tree a -&gt; b) -&gt; [Tree a] -&gt; [b]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Tree a]
+</span><a href="#local-6989586621679077683"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span id="local-6989586621679077685"><span class="annot"><span class="annottext">go' :: Tree a -&gt; b
+</span><a href="#local-6989586621679077685"><span class="hs-identifier hs-var hs-var">go'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Tree a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
+forall a. DoubleMonoid a =&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var">one</span></a></span><span>
+</span><span id="line-38"></span><span>    </span><span class="annot"><a href="#local-6989586621679077685"><span class="hs-identifier hs-var">go'</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077687"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077687"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-type">:/*/</span></a></span><span> </span><span id="local-6989586621679077688"><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077688"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077677"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077687"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; b
+forall a. DoubleMonoid a =&gt; a -&gt; a -&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#%2F%2A%2F"><span class="hs-operator hs-var">/*/</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a -&gt; b
+</span><a href="#local-6989586621679077678"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077688"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077694"><span id="local-6989586621679077698"><span id="local-6989586621679077701"><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679077705"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Forest a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span id="local-6989586621679077706"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077706"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Tree a] -&gt; Forest a
+forall a. [Tree a] -&gt; Forest a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077706"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Forest a -&gt; Tree a
+forall a. a -&gt; Forest a -&gt; Tree a
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-var">:/*/</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+forall a. DoubleMonoid a =&gt; a
+</span><a href="Data.DoubleMonoid.Class.html#one"><span class="hs-identifier hs-var">one</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679077709"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Forest (a -&gt; b) -&gt; Forest a -&gt; Forest b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Forest (a -&gt; b) -&gt; Forest a -&gt; Forest b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077714"><span id="local-6989586621679077717"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="Data.DoubleMonoid.NearSemiring.Free.html#Forest"><span class="hs-identifier hs-type">Forest</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679077721"><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077721"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679077722"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Forest a -&gt; (a -&gt; Forest b) -&gt; Forest b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;=</span></span></span><span> </span><span id="local-6989586621679077723"><span class="annot"><span class="annottext">a -&gt; Forest b
+</span><a href="#local-6989586621679077723"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Forest b) -&gt; Forest a -&gt; Forest b
+forall b a. NearSemiring b =&gt; (a -&gt; b) -&gt; Forest a -&gt; b
+</span><a href="Data.DoubleMonoid.NearSemiring.Free.html#interpret"><span class="hs-identifier hs-var">interpret</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Forest b
+</span><a href="#local-6989586621679077723"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Forest a
+</span><a href="#local-6989586621679077721"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-46"></span></pre></body></html>

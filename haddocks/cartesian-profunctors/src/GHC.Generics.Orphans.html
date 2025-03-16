@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleContexts #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">GHC.Generics.Orphans</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Generic1</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Generically1</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679164413"><span id="local-6989586621679164453"><span id="local-6989586621679164460"><span id="local-6989586621679164465"><span id="local-6989586621679164468"><span id="local-6989586621679164471"><span id="local-6989586621679164474"><span id="local-6989586621679164477"><span id="local-6989586621679164480"><span id="local-6989586621679164483"><span id="local-6989586621679164486"><span id="local-6989586621679164489"><span id="local-6989586621679164492"><span id="local-6989586621679164497"><span id="local-6989586621679164502"><span id="local-6989586621679164507"><span id="local-6989586621679164512"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generic1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164413"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164413"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164413"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-10"></span><span>  </span><span id="local-6989586621679164521"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Generically1 t a -&gt; m
+</span><a href="#local-6989586621679164521"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap</span></a></span></span><span> </span><span id="local-6989586621679164523"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679164523"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span id="local-6989586621679164525"><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679164525"><span class="hs-identifier hs-var">ta</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; Rep1 t a -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Rep1 t a -&gt; m
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679164523"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t a -&gt; Rep1 t a
+forall a. t a -&gt; Rep1 t a
+forall k (f :: k -&gt; *) (a :: k). Generic1 f =&gt; f a -&gt; Rep1 f a
+</span><span class="hs-identifier hs-var">from1</span></span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679164525"><span class="hs-identifier hs-var">ta</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679164435"><span id="local-6989586621679164538"><span id="local-6989586621679164544"><span id="local-6989586621679164549"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generic1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164435"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164435"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span class="annot"><a href="#local-6989586621679164435"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>  </span><span id="local-6989586621679164564"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Generically1 t a -&gt; f (Generically1 t b)
+</span><a href="#local-6989586621679164564"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679164566"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679164566"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span id="local-6989586621679164567"><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679164567"><span class="hs-identifier hs-var">ta</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t b -&gt; Generically1 t b
+forall {k} (f :: k -&gt; *) (a :: k). f a -&gt; Generically1 f a
+</span><span class="hs-identifier hs-var">Generically1</span></span><span> </span><span class="annot"><span class="annottext">(t b -&gt; Generically1 t b)
+-&gt; (Rep1 t b -&gt; t b) -&gt; Rep1 t b -&gt; Generically1 t b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Rep1 t b -&gt; t b
+forall a. Rep1 t a -&gt; t a
+forall k (f :: k -&gt; *) (a :: k). Generic1 f =&gt; Rep1 f a -&gt; f a
+</span><span class="hs-identifier hs-var">to1</span></span><span> </span><span class="annot"><span class="annottext">(Rep1 t b -&gt; Generically1 t b)
+-&gt; f (Rep1 t b) -&gt; f (Generically1 t b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; Rep1 t a -&gt; f (Rep1 t b)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Rep1 t a -&gt; f (Rep1 t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679164566"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t a -&gt; Rep1 t a
+forall a. t a -&gt; Rep1 t a
+forall k (f :: k -&gt; *) (a :: k). Generic1 f =&gt; f a -&gt; Rep1 f a
+</span><span class="hs-identifier hs-var">from1</span></span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679164567"><span class="hs-identifier hs-var">ta</span></a></span><span class="hs-special">)</span></pre></body></html>

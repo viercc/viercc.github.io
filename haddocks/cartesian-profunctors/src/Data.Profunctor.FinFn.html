@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE TypeApplications #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE FlexibleContexts #-}</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Profunctor.FinFn</span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier">FinFn</span></a></span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#makeFinFn"><span class="hs-identifier">makeFinFn</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier">withFinFn</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#applyFinFn"><span class="hs-identifier">applyFinFn</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#%3E%3E%3E%3E"><span class="hs-operator">(&gt;&gt;&gt;&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#%3C%3C%3C%3C"><span class="hs-operator">(&lt;&lt;&lt;&lt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#fromMap"><span class="hs-identifier">fromMap</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Category</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&gt;&gt;&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Map</span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Finite</span></span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finite.Internal.Integral</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Internal</span></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">data</span><span> </span><span id="FinFn"><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span></span><span> </span><span id="local-6989586621679162220"><span class="annot"><a href="#local-6989586621679162220"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679162221"><span class="annot"><a href="#local-6989586621679162221"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FinFn"><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162220"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162221"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><span class="hs-comment">-- | Safe construction</span></span><span>
+</span><span id="line-33"></span><span class="annot"><a href="Data.Profunctor.FinFn.html#makeFinFn"><span class="hs-identifier hs-type">makeFinFn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679162209"><span class="annot"><a href="#local-6989586621679162209"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679162210"><span class="annot"><a href="#local-6989586621679162210"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679162212"><span class="annot"><a href="#local-6989586621679162212"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-34"></span><span>             </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679162209"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-35"></span><span>          </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162210"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162209"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162209"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162212"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162210"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162212"><span class="hs-identifier hs-type">b</span></a></span><span>
+</span><span id="line-36"></span><span id="makeFinFn"><span class="annot"><span class="annottext">makeFinFn :: forall (n :: Nat) a b.
+KnownNat n =&gt;
+(a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#makeFinFn"><span class="hs-identifier hs-var hs-var">makeFinFn</span></a></span></span><span> </span><span id="local-6989586621679162391"><span class="annot"><span class="annottext">a -&gt; Finite n
+</span><a href="#local-6989586621679162391"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162392"><span class="annot"><span class="annottext">Finite n -&gt; b
+</span><a href="#local-6989586621679162392"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Nat -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679162393"><span class="hs-identifier hs-var">nvalue</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; Finite n) -&gt; a -&gt; Integer
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Finite n
+</span><a href="#local-6989586621679162391"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Finite n -&gt; b) -&gt; Integer -&gt; b
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; b
+</span><a href="#local-6989586621679162392"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679162393"><span class="annot"><span class="annottext">nvalue :: Nat
+</span><a href="#local-6989586621679162393"><span class="hs-identifier hs-var hs-var">nvalue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (proxy :: Nat -&gt; *). KnownNat n =&gt; proxy n -&gt; Nat
+</span><span class="hs-identifier hs-var">natVal</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679162209"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy n
+forall {k} (t :: k). Proxy t
+</span><span class="hs-identifier hs-var">Proxy</span></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | Safe pattern matching</span></span><span>
+</span><span id="line-40"></span><span id="local-6989586621679162228"><span id="local-6989586621679162229"><span id="local-6989586621679162231"><span class="annot"><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-type">withFinFn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162228"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162229"><span class="hs-identifier hs-type">b</span></a></span><span>
+</span><span id="line-41"></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679162230"><span class="annot"><a href="#local-6989586621679162230"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679162230"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162228"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162230"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162230"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162229"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162231"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162231"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-43"></span><span id="withFinFn"><span class="annot"><span class="annottext">withFinFn :: forall a b r.
+FinFn a b
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    (a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r)
+-&gt; r
+</span><a href="Data.Profunctor.FinFn.html#withFinFn"><span class="hs-identifier hs-var hs-var">withFinFn</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162399"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162399"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679162400"><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162400"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162401"><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162401"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679162402"><span class="annot"><span class="annottext">forall (n :: Nat).
+KnownNat n =&gt;
+(a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r
+</span><a href="#local-6989586621679162402"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Nat -&gt; SomeNat
+</span><span class="hs-identifier hs-var">someNatVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Nat
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162399"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-45"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">SomeNat</span></span><span> </span><span id="local-6989586621679162407"><span class="annot"><span class="annottext">Proxy n
+</span><a href="#local-6989586621679162407"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r
+forall (n :: Nat).
+KnownNat n =&gt;
+(a -&gt; Finite n) -&gt; (Finite n -&gt; b) -&gt; r
+</span><a href="#local-6989586621679162402"><span class="hs-identifier hs-var">user</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Proxy n -&gt; Integer -&gt; Finite n
+forall (n :: Nat). Proxy n -&gt; Integer -&gt; Finite n
+</span><a href="#local-6989586621679162408"><span class="hs-identifier hs-var">upcast</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy n
+</span><a href="#local-6989586621679162407"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Finite n) -&gt; (a -&gt; Integer) -&gt; a -&gt; Finite n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162400"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162401"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; b) -&gt; (Finite n -&gt; Integer) -&gt; Finite n -&gt; b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Proxy n -&gt; Finite n -&gt; Integer
+forall (n :: Nat). Proxy n -&gt; Finite n -&gt; Integer
+</span><a href="#local-6989586621679162410"><span class="hs-identifier hs-var">downcast</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy n
+</span><a href="#local-6989586621679162407"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679162238"><span class="annot"><a href="#local-6989586621679162408"><span class="hs-identifier hs-type">upcast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="annot"><a href="#local-6989586621679162238"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162238"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-48"></span><span>    </span><span id="local-6989586621679162408"><span class="annot"><span class="annottext">upcast :: forall (n :: Nat). Proxy n -&gt; Integer -&gt; Finite n
+</span><a href="#local-6989586621679162408"><span class="hs-identifier hs-var hs-var">upcast</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy n
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Finite n
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679162242"><span class="annot"><a href="#local-6989586621679162410"><span class="hs-identifier hs-type">downcast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="annot"><a href="#local-6989586621679162242"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679162242"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span></span><span>
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679162410"><span class="annot"><span class="annottext">downcast :: forall (n :: Nat). Proxy n -&gt; Finite n -&gt; Integer
+</span><a href="#local-6989586621679162410"><span class="hs-identifier hs-var hs-var">downcast</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy n
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Integer
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- | How I would say... 'applyFinFn' is nice, functor-ish.</span><span>
+</span><span id="line-53"></span><span class="hs-comment">--   It commutes with 'Profunctor', 'Cartesian', 'Cocartesian',</span><span>
+</span><span id="line-54"></span><span class="hs-comment">--   and composition '(&gt;&gt;&gt;&gt;)'.</span><span>
+</span><span id="line-55"></span><span id="local-6989586621679162245"><span id="local-6989586621679162246"><span class="annot"><a href="Data.Profunctor.FinFn.html#applyFinFn"><span class="hs-identifier hs-type">applyFinFn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162245"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162246"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162245"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162246"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-56"></span><span id="applyFinFn"><span class="annot"><span class="annottext">applyFinFn :: forall a b. FinFn a b -&gt; a -&gt; b
+</span><a href="Data.Profunctor.FinFn.html#applyFinFn"><span class="hs-identifier hs-var hs-var">applyFinFn</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679162415"><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162415"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162416"><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162416"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162415"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; a -&gt; b
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162416"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- | 'FinFn' composes like 'Control.Category.Category', but can't be a Category since</span><span>
+</span><span id="line-59"></span><span class="hs-comment">--   it does not have 'Control.Cateogory.id'.</span><span>
+</span><span id="line-60"></span><span id="local-6989586621679162255"><span id="local-6989586621679162256"><span id="local-6989586621679162257"><span class="annot"><a href="Data.Profunctor.FinFn.html#%3E%3E%3E%3E"><span class="hs-operator hs-type">(&gt;&gt;&gt;&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162255"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162256"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162256"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162257"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162255"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162257"><span class="hs-identifier hs-type">c</span></a></span></span></span></span><span>
+</span><span id="line-61"></span><span id="%3E%3E%3E%3E"><span class="annot"><span class="annottext">&gt;&gt;&gt;&gt; :: forall a b c. FinFn a b -&gt; FinFn b c -&gt; FinFn a c
+</span><a href="Data.Profunctor.FinFn.html#%3E%3E%3E%3E"><span class="hs-operator hs-var hs-var">(&gt;&gt;&gt;&gt;)</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162423"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162423"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679162424"><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162424"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162425"><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162425"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162426"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162426"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679162427"><span class="annot"><span class="annottext">b -&gt; Integer
+</span><a href="#local-6989586621679162427"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679162428"><span class="annot"><span class="annottext">Integer -&gt; c
+</span><a href="#local-6989586621679162428"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162423"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162426"><span class="hs-identifier hs-var">m</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; c) -&gt; FinFn a c
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162423"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162424"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162425"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; b) -&gt; (b -&gt; c) -&gt; Integer -&gt; c
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Integer
+</span><a href="#local-6989586621679162427"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Integer) -&gt; (Integer -&gt; c) -&gt; b -&gt; c
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; c
+</span><a href="#local-6989586621679162428"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; c) -&gt; FinFn a c
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162426"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162424"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Integer) -&gt; (Integer -&gt; Integer) -&gt; a -&gt; Integer
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162425"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; b) -&gt; (b -&gt; Integer) -&gt; Integer -&gt; Integer
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Integer
+</span><a href="#local-6989586621679162427"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; c
+</span><a href="#local-6989586621679162428"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">1</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#%3E%3E%3E%3E"><span class="hs-operator hs-type">&gt;&gt;&gt;&gt;</span></a></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | &gt; (&lt;&lt;&lt;&lt;) = flip (&gt;&gt;&gt;&gt;)</span></span><span>
+</span><span id="line-68"></span><span id="local-6989586621679162262"><span id="local-6989586621679162263"><span id="local-6989586621679162264"><span class="annot"><a href="Data.Profunctor.FinFn.html#%3C%3C%3C%3C"><span class="hs-operator hs-type">(&lt;&lt;&lt;&lt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162262"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162263"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162264"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162262"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162264"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162263"><span class="hs-identifier hs-type">c</span></a></span></span></span></span><span>
+</span><span id="line-69"></span><span id="%3C%3C%3C%3C"><span class="annot"><span class="annottext">&lt;&lt;&lt;&lt; :: forall b c a. FinFn b c -&gt; FinFn a b -&gt; FinFn a c
+</span><a href="Data.Profunctor.FinFn.html#%3C%3C%3C%3C"><span class="hs-operator hs-var hs-var">(&lt;&lt;&lt;&lt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FinFn a b -&gt; FinFn b c -&gt; FinFn a c)
+-&gt; FinFn b c -&gt; FinFn a b -&gt; FinFn a c
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">FinFn a b -&gt; FinFn b c -&gt; FinFn a c
+forall a b c. FinFn a b -&gt; FinFn b c -&gt; FinFn a c
+</span><a href="Data.Profunctor.FinFn.html#%3E%3E%3E%3E"><span class="hs-operator hs-var">(&gt;&gt;&gt;&gt;)</span></a></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">1</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#%3C%3C%3C%3C"><span class="hs-operator hs-type">&lt;&lt;&lt;&lt;</span></a></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><span class="hs-comment">-- * Special constructions</span></span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span class="annot"><span class="hs-comment">-- | &gt; applyFinFn . fromMap = flip Map.lookup</span></span><span>
+</span><span id="line-76"></span><span id="local-6989586621679162271"><span id="local-6989586621679162272"><span class="annot"><a href="Data.Profunctor.FinFn.html#fromMap"><span class="hs-identifier hs-type">fromMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679162271"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679162271"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162272"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162271"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679162272"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-77"></span><span id="fromMap"><span class="annot"><span class="annottext">fromMap :: forall a b. Ord a =&gt; Map a b -&gt; FinFn a (Maybe b)
+</span><a href="Data.Profunctor.FinFn.html#fromMap"><span class="hs-identifier hs-var hs-var">fromMap</span></a></span></span><span> </span><span id="local-6989586621679162439"><span class="annot"><span class="annottext">Map a b
+</span><a href="#local-6989586621679162439"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+-&gt; (a -&gt; Integer) -&gt; (Integer -&gt; Maybe b) -&gt; FinFn a (Maybe b)
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679162440"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Integer) -&gt; (a -&gt; Int) -&gt; a -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Int
+</span><a href="#local-6989586621679162441"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Maybe b
+</span><a href="#local-6989586621679162442"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe b) -&gt; (Integer -&gt; Int) -&gt; Integer -&gt; Maybe b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679162440"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679162440"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Map a b -&gt; Int
+forall k a. Map k a -&gt; Int
+</span><span class="hs-identifier hs-var">Map.size</span></span><span> </span><span class="annot"><span class="annottext">Map a b
+</span><a href="#local-6989586621679162439"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-80"></span><span>    </span><span id="local-6989586621679162441"><span class="annot"><span class="annottext">l :: a -&gt; Int
+</span><a href="#local-6989586621679162441"><span class="hs-identifier hs-var hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162451"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162451"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; (Int -&gt; Int) -&gt; Maybe Int -&gt; Int
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Maybe Int -&gt; Int) -&gt; Maybe Int -&gt; Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Map a b -&gt; Maybe Int
+forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe Int
+</span><span class="hs-identifier hs-var">Map.lookupIndex</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162451"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Map a b
+</span><a href="#local-6989586621679162439"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679162442"><span class="annot"><span class="annottext">r :: Int -&gt; Maybe b
+</span><a href="#local-6989586621679162442"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe b
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><a href="#local-6989586621679162442"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span id="local-6989586621679162459"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679162459"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; Maybe b
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Maybe b) -&gt; ((a, b) -&gt; b) -&gt; (a, b) -&gt; Maybe b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a, b) -&gt; b
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((a, b) -&gt; Maybe b) -&gt; (a, b) -&gt; Maybe b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Map a b -&gt; (a, b)
+forall k a. Int -&gt; Map k a -&gt; (k, a)
+</span><span class="hs-identifier hs-var">Map.elemAt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679162459"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map a b
+</span><a href="#local-6989586621679162439"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162464"><span id="local-6989586621679162468"><span id="local-6989586621679162471"><span id="local-6989586621679162477"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679162485"><span class="annot"><span class="annottext">dimap :: forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; FinFn b c -&gt; FinFn a d
+</span><a href="#local-6989586621679162485"><span class="hs-identifier hs-var hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span id="local-6989586621679162487"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679162487"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162488"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679162488"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162489"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162489"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679162490"><span class="annot"><span class="annottext">b -&gt; Integer
+</span><a href="#local-6989586621679162490"><span class="hs-identifier hs-var">l'</span></a></span></span><span> </span><span id="local-6989586621679162491"><span class="annot"><span class="annottext">Integer -&gt; c
+</span><a href="#local-6989586621679162491"><span class="hs-identifier hs-var">r'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; d) -&gt; FinFn a d
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162489"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679162487"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; (b -&gt; Integer) -&gt; a -&gt; Integer
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Integer
+</span><a href="#local-6989586621679162490"><span class="hs-identifier hs-var">l'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; c
+</span><a href="#local-6989586621679162491"><span class="hs-identifier hs-var">r'</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; c) -&gt; (c -&gt; d) -&gt; Integer -&gt; d
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k) (c :: k).
+Category cat =&gt;
+cat a b -&gt; cat b c -&gt; cat a c
+</span><span class="hs-operator hs-var">&gt;&gt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679162488"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162496"><span id="local-6989586621679162501"><span id="local-6989586621679162504"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679162511"><span class="annot"><span class="annottext">proUnit :: forall a. FinFn a ()
+</span><a href="#local-6989586621679162511"><span class="hs-identifier hs-var hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; ()) -&gt; FinFn a ()
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; a -&gt; Integer
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Integer -&gt; ()
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162515"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162515"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679162516"><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162516"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162517"><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162517"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679162518"><span class="annot"><span class="annottext">*** :: forall a b a' b'. FinFn a b -&gt; FinFn a' b' -&gt; FinFn (a, a') (b, b')
+</span><a href="#local-6989586621679162518"><span class="hs-operator hs-var hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162520"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162520"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679162521"><span class="annot"><span class="annottext">a' -&gt; Integer
+</span><a href="#local-6989586621679162521"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679162522"><span class="annot"><span class="annottext">Integer -&gt; b'
+</span><a href="#local-6989586621679162522"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+-&gt; ((a, a') -&gt; Integer)
+-&gt; (Integer -&gt; (b, b'))
+-&gt; FinFn (a, a') (b, b')
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162515"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162520"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a, a') -&gt; Integer
+</span><a href="#local-6989586621679162524"><span class="hs-identifier hs-var">ls</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (b, b')
+</span><a href="#local-6989586621679162525"><span class="hs-identifier hs-var">rt</span></a></span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-91"></span><span>      </span><span id="local-6989586621679162524"><span class="annot"><span class="annottext">ls :: (a, a') -&gt; Integer
+</span><a href="#local-6989586621679162524"><span class="hs-identifier hs-var hs-var">ls</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162528"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162528"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162529"><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679162529"><span class="hs-identifier hs-var">a'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162516"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162528"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162520"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Integer
+</span><a href="#local-6989586621679162521"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679162529"><span class="hs-identifier hs-var">a'</span></a></span><span>
+</span><span id="line-92"></span><span>      </span><span id="local-6989586621679162525"><span class="annot"><span class="annottext">rt :: Integer -&gt; (b, b')
+</span><a href="#local-6989586621679162525"><span class="hs-identifier hs-var hs-var">rt</span></a></span></span><span> </span><span id="local-6989586621679162530"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162530"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162533"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162533"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679162534"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162534"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162530"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; (Integer, Integer)
+forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
+</span><span class="hs-operator hs-var">`quotRem`</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162520"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-93"></span><span>             </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162517"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162533"><span class="hs-identifier hs-var">j</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; b'
+</span><a href="#local-6989586621679162522"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162534"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162540"><span id="local-6989586621679162545"><span id="local-6989586621679162548"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679162557"><span class="annot"><span class="annottext">proEmpty :: forall b. FinFn Void b
+</span><a href="#local-6989586621679162557"><span class="hs-identifier hs-var hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; (Void -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn Void b
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Void -&gt; Integer
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;empty function&quot;</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Integer -&gt; b
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;empty function&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-97"></span><span>  </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162561"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162561"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679162562"><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162562"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679162563"><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162563"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span id="local-6989586621679162564"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
+FinFn a b -&gt; FinFn a' b' -&gt; FinFn (Either a a') (Either b b')
+</span><a href="#local-6989586621679162564"><span class="hs-operator hs-var hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-type">FinFn</span></a></span><span> </span><span id="local-6989586621679162566"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162566"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679162567"><span class="annot"><span class="annottext">a' -&gt; Integer
+</span><a href="#local-6989586621679162567"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679162568"><span class="annot"><span class="annottext">Integer -&gt; b'
+</span><a href="#local-6989586621679162568"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer
+-&gt; (Either a a' -&gt; Integer)
+-&gt; (Integer -&gt; Either b b')
+-&gt; FinFn (Either a a') (Either b b')
+forall a b.
+Integer -&gt; (a -&gt; Integer) -&gt; (Integer -&gt; b) -&gt; FinFn a b
+</span><a href="Data.Profunctor.FinFn.html#FinFn"><span class="hs-identifier hs-var">FinFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162561"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162566"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either a a' -&gt; Integer
+</span><a href="#local-6989586621679162569"><span class="hs-identifier hs-var">ls</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Either b b'
+</span><a href="#local-6989586621679162570"><span class="hs-identifier hs-var">rt</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-99"></span><span>      </span><span id="local-6989586621679162569"><span class="annot"><span class="annottext">ls :: Either a a' -&gt; Integer
+</span><a href="#local-6989586621679162569"><span class="hs-identifier hs-var hs-var">ls</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Integer) -&gt; (a' -&gt; Integer) -&gt; Either a a' -&gt; Integer
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+</span><a href="#local-6989586621679162562"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162561"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer) -&gt; (a' -&gt; Integer) -&gt; a' -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Integer
+</span><a href="#local-6989586621679162567"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-100"></span><span>      </span><span id="local-6989586621679162570"><span class="annot"><span class="annottext">rt :: Integer -&gt; Either b b'
+</span><a href="#local-6989586621679162570"><span class="hs-identifier hs-var hs-var">rt</span></a></span></span><span> </span><span id="local-6989586621679162575"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162575"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162575"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162561"><span class="hs-identifier hs-var">n</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; b
+</span><a href="#local-6989586621679162563"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162575"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; b'
+</span><a href="#local-6989586621679162568"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162575"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679162561"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span></pre></body></html>

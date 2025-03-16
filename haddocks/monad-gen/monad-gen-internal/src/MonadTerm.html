@@ -1,0 +1,638 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">MonadTerm</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">data</span><span> </span><span id="Term"><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-var">Term</span></a></span></span><span> </span><span id="local-6989586621679178416"><span class="annot"><a href="#local-6989586621679178416"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679178417"><span class="annot"><a href="#local-6989586621679178417"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="In"><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178416"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178417"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Join"><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178416"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178416"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178417"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178463"><span id="local-6989586621679178469"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Term f a -&gt; Term f b)
+-&gt; (forall a b. a -&gt; Term f b -&gt; Term f a) -&gt; Functor (Term f)
+forall a b. a -&gt; Term f b -&gt; Term f a
+forall a b. (a -&gt; b) -&gt; Term f a -&gt; Term f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; Term f b -&gt; Term f a
+forall (f :: * -&gt; *) a b.
+Functor f =&gt;
+(a -&gt; b) -&gt; Term f a -&gt; Term f b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall (f :: * -&gt; *) a b.
+Functor f =&gt;
+(a -&gt; b) -&gt; Term f a -&gt; Term f b
+fmap :: forall a b. (a -&gt; b) -&gt; Term f a -&gt; Term f b
+$c&lt;$ :: forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; Term f b -&gt; Term f a
+&lt;$ :: forall a b. a -&gt; Term f b -&gt; Term f a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178476"><span id="local-6989586621679178482"><span id="local-6989586621679178491"><span id="local-6989586621679178496"><span id="local-6989586621679178501"><span id="local-6989586621679178504"><span id="local-6989586621679178507"><span id="local-6989586621679178510"><span id="local-6989586621679178513"><span id="local-6989586621679178516"><span id="local-6989586621679178519"><span id="local-6989586621679178524"><span id="local-6989586621679178527"><span id="local-6989586621679178532"><span id="local-6989586621679178537"><span id="local-6989586621679178542"><span id="local-6989586621679178547"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Term f m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Term f a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Term f a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Term f a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Term f a -&gt; a)
+-&gt; (forall a. Term f a -&gt; [a])
+-&gt; (forall a. Term f a -&gt; Bool)
+-&gt; (forall a. Term f a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Term f a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Term f a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Term f a -&gt; a)
+-&gt; (forall a. Num a =&gt; Term f a -&gt; a)
+-&gt; (forall a. Num a =&gt; Term f a -&gt; a)
+-&gt; Foldable (Term f)
+forall a. Eq a =&gt; a -&gt; Term f a -&gt; Bool
+forall a. Num a =&gt; Term f a -&gt; a
+forall a. Ord a =&gt; Term f a -&gt; a
+forall m. Monoid m =&gt; Term f m -&gt; m
+forall a. Term f a -&gt; Bool
+forall a. Term f a -&gt; Int
+forall a. Term f a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Term f a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+forall (f :: * -&gt; *) a. (Foldable f, Eq a) =&gt; a -&gt; Term f a -&gt; Bool
+forall (f :: * -&gt; *) a. (Foldable f, Num a) =&gt; Term f a -&gt; a
+forall (f :: * -&gt; *) a. (Foldable f, Ord a) =&gt; Term f a -&gt; a
+forall (f :: * -&gt; *) m. (Foldable f, Monoid m) =&gt; Term f m -&gt; m
+forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; Bool
+forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; Int
+forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; [a]
+forall (f :: * -&gt; *) a.
+Foldable f =&gt;
+(a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+forall (f :: * -&gt; *) m a.
+(Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Term f a -&gt; m
+forall (f :: * -&gt; *) b a.
+Foldable f =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+forall (f :: * -&gt; *) a b.
+Foldable f =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall (f :: * -&gt; *) m. (Foldable f, Monoid m) =&gt; Term f m -&gt; m
+fold :: forall m. Monoid m =&gt; Term f m -&gt; m
+$cfoldMap :: forall (f :: * -&gt; *) m a.
+(Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Term f a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Term f a -&gt; m
+$cfoldMap' :: forall (f :: * -&gt; *) m a.
+(Foldable f, Monoid m) =&gt;
+(a -&gt; m) -&gt; Term f a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Term f a -&gt; m
+$cfoldr :: forall (f :: * -&gt; *) a b.
+Foldable f =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+$cfoldr' :: forall (f :: * -&gt; *) a b.
+Foldable f =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+$cfoldl :: forall (f :: * -&gt; *) b a.
+Foldable f =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+$cfoldl' :: forall (f :: * -&gt; *) b a.
+Foldable f =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Term f a -&gt; b
+$cfoldr1 :: forall (f :: * -&gt; *) a.
+Foldable f =&gt;
+(a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+$cfoldl1 :: forall (f :: * -&gt; *) a.
+Foldable f =&gt;
+(a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Term f a -&gt; a
+$ctoList :: forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; [a]
+toList :: forall a. Term f a -&gt; [a]
+$cnull :: forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; Bool
+null :: forall a. Term f a -&gt; Bool
+$clength :: forall (f :: * -&gt; *) a. Foldable f =&gt; Term f a -&gt; Int
+length :: forall a. Term f a -&gt; Int
+$celem :: forall (f :: * -&gt; *) a. (Foldable f, Eq a) =&gt; a -&gt; Term f a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; Term f a -&gt; Bool
+$cmaximum :: forall (f :: * -&gt; *) a. (Foldable f, Ord a) =&gt; Term f a -&gt; a
+maximum :: forall a. Ord a =&gt; Term f a -&gt; a
+$cminimum :: forall (f :: * -&gt; *) a. (Foldable f, Ord a) =&gt; Term f a -&gt; a
+minimum :: forall a. Ord a =&gt; Term f a -&gt; a
+$csum :: forall (f :: * -&gt; *) a. (Foldable f, Num a) =&gt; Term f a -&gt; a
+sum :: forall a. Num a =&gt; Term f a -&gt; a
+$cproduct :: forall (f :: * -&gt; *) a. (Foldable f, Num a) =&gt; Term f a -&gt; a
+product :: forall a. Num a =&gt; Term f a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178560"><span id="local-6989586621679178573"><span id="local-6989586621679178578"><span id="local-6989586621679178583"><span class="annot"><span class="annottext">Functor (Term f)
+Foldable (Term f)
+(Functor (Term f), Foldable (Term f)) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; Term f a -&gt; f (Term f b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    Term f (f a) -&gt; f (Term f a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; Term f a -&gt; m (Term f b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    Term f (m a) -&gt; m (Term f a))
+-&gt; Traversable (Term f)
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (f :: * -&gt; *). Traversable f =&gt; Functor (Term f)
+forall (f :: * -&gt; *). Traversable f =&gt; Foldable (Term f)
+forall (f :: * -&gt; *) (m :: * -&gt; *) a.
+(Traversable f, Monad m) =&gt;
+Term f (m a) -&gt; m (Term f a)
+forall (f :: * -&gt; *) (f :: * -&gt; *) a.
+(Traversable f, Applicative f) =&gt;
+Term f (f a) -&gt; f (Term f a)
+forall (f :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable f, Monad m) =&gt;
+(a -&gt; m b) -&gt; Term f a -&gt; m (Term f b)
+forall (f :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable f, Applicative f) =&gt;
+(a -&gt; f b) -&gt; Term f a -&gt; f (Term f b)
+forall (m :: * -&gt; *) a. Monad m =&gt; Term f (m a) -&gt; m (Term f a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Term f (f a) -&gt; f (Term f a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Term f a -&gt; m (Term f b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Term f a -&gt; f (Term f b)
+$ctraverse :: forall (f :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable f, Applicative f) =&gt;
+(a -&gt; f b) -&gt; Term f a -&gt; f (Term f b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Term f a -&gt; f (Term f b)
+$csequenceA :: forall (f :: * -&gt; *) (f :: * -&gt; *) a.
+(Traversable f, Applicative f) =&gt;
+Term f (f a) -&gt; f (Term f a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Term f (f a) -&gt; f (Term f a)
+$cmapM :: forall (f :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable f, Monad m) =&gt;
+(a -&gt; m b) -&gt; Term f a -&gt; m (Term f b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Term f a -&gt; m (Term f b)
+$csequence :: forall (f :: * -&gt; *) (m :: * -&gt; *) a.
+(Traversable f, Monad m) =&gt;
+Term f (m a) -&gt; m (Term f a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Term f (m a) -&gt; m (Term f a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span id="local-6989586621679178378"><span id="local-6989586621679178379"><span id="local-6989586621679178594"><span id="local-6989586621679178604"><span id="local-6989586621679178608"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178377"><span class="annot"><a href="#local-6989586621679178377"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679178377"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178378"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178377"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679178379"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178378"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178379"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-14"></span><span id="local-6989586621679178384"><span id="local-6989586621679178385"><span id="local-6989586621679178616"><span id="local-6989586621679178623"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178383"><span class="annot"><a href="#local-6989586621679178383"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679178383"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178384"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178383"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679178385"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178384"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178385"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-15"></span><span id="local-6989586621679178391"><span id="local-6989586621679178392"><span id="local-6989586621679178636"><span id="local-6989586621679178644"><span id="local-6989586621679178651"><span id="local-6989586621679178656"><span id="local-6989586621679178661"><span id="local-6989586621679178666"><span id="local-6989586621679178671"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178389"><span class="annot"><a href="#local-6989586621679178389"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679178389"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178391"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178389"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178390"><span class="annot"><a href="#local-6989586621679178390"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679178390"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178391"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178390"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679178392"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178391"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178392"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span id="local-6989586621679178393"><span id="local-6989586621679178394"><span class="annot"><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-type">getSingle</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178393"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178394"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178393"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178394"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-18"></span><span id="getSingle"><span class="annot"><span class="annottext">getSingle :: forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var hs-var">getSingle</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178682"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178682"><span class="hs-identifier hs-var">fx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Maybe (f x)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178682"><span class="hs-identifier hs-var">fx</span></a></span><span>
+</span><span id="line-19"></span><span class="annot"><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (f x)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679178398"><span id="local-6989586621679178399"><span class="annot"><a href="MonadTerm.html#getJoinSingles"><span class="hs-identifier hs-type">getJoinSingles</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178398"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178398"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178399"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178398"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178398"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178399"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-22"></span><span id="getJoinSingles"><span class="annot"><span class="annottext">getJoinSingles :: forall (f :: * -&gt; *) x.
+Traversable f =&gt;
+Term f x -&gt; Maybe (f (f x))
+</span><a href="MonadTerm.html#getJoinSingles"><span class="hs-identifier hs-var hs-var">getJoinSingles</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178688"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178688"><span class="hs-identifier hs-var">ftx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; Maybe (f x)) -&gt; f (Term f x) -&gt; Maybe (f (f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Maybe (f x)
+forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178688"><span class="hs-identifier hs-var">ftx</span></a></span><span>
+</span><span id="line-23"></span><span class="annot"><a href="MonadTerm.html#getJoinSingles"><span class="hs-identifier hs-var">getJoinSingles</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (f (f x))
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">data</span><span> </span><span id="HasChange"><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="HasChange"><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="NoChanges"><span class="annot"><a href="MonadTerm.html#NoChanges"><span class="hs-identifier hs-var">NoChanges</span></a></span></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178693"><span id="local-6989586621679178695"><span id="local-6989586621679178699"><span class="annot"><span class="annottext">Int -&gt; HasChange -&gt; ShowS
+[HasChange] -&gt; ShowS
+HasChange -&gt; String
+(Int -&gt; HasChange -&gt; ShowS)
+-&gt; (HasChange -&gt; String)
+-&gt; ([HasChange] -&gt; ShowS)
+-&gt; Show HasChange
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; HasChange -&gt; ShowS
+showsPrec :: Int -&gt; HasChange -&gt; ShowS
+$cshow :: HasChange -&gt; String
+show :: HasChange -&gt; String
+$cshowList :: [HasChange] -&gt; ShowS
+showList :: [HasChange] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178702"><span id="local-6989586621679178704"><span class="annot"><span class="annottext">HasChange -&gt; HasChange -&gt; Bool
+(HasChange -&gt; HasChange -&gt; Bool)
+-&gt; (HasChange -&gt; HasChange -&gt; Bool) -&gt; Eq HasChange
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: HasChange -&gt; HasChange -&gt; Bool
+== :: HasChange -&gt; HasChange -&gt; Bool
+$c/= :: HasChange -&gt; HasChange -&gt; Bool
+/= :: HasChange -&gt; HasChange -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679178709"><span id="local-6989586621679178713"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-type">HasChange</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-29"></span><span>    </span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span><span> </span><span id="local-6989586621679178718"><span class="annot"><span class="annottext">&lt;&gt; :: HasChange -&gt; HasChange -&gt; HasChange
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span class="annot"><span class="annottext">HasChange
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span><span>
+</span><span id="line-30"></span><span>    </span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#NoChanges"><span class="hs-identifier hs-var">NoChanges</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span id="local-6989586621679178719"><span class="annot"><span class="annottext">HasChange
+</span><a href="#local-6989586621679178719"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HasChange
+</span><a href="#local-6989586621679178719"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679178724"><span id="local-6989586621679178728"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-type">HasChange</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>    </span><span id="local-6989586621679178731"><span class="annot"><span class="annottext">mempty :: HasChange
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#NoChanges"><span class="hs-identifier hs-var">NoChanges</span></a></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="annot"><a href="MonadTerm.html#reduce"><span class="hs-identifier hs-type">reduce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178407"><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178408"><span class="annot"><a href="#local-6989586621679178408"><span class="hs-identifier hs-type">y</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178408"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178408"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178409"><span class="annot"><a href="#local-6989586621679178409"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178409"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-type">HasChange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178409"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span id="reduce"><span class="annot"><span class="annottext">reduce :: forall (f :: * -&gt; *).
+Traversable f =&gt;
+(forall y. f (f y) -&gt; Maybe (f y))
+-&gt; forall x. Term f x -&gt; (HasChange, Term f x)
+</span><a href="MonadTerm.html#reduce"><span class="hs-identifier hs-var hs-var">reduce</span></a></span></span><span> </span><span id="local-6989586621679178735"><span class="annot"><span class="annottext">forall y. f (f y) -&gt; Maybe (f y)
+</span><a href="#local-6989586621679178735"><span class="hs-identifier hs-var">joinMaybe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; (HasChange, Term f x)
+forall x. Traversable f =&gt; Term f x -&gt; (HasChange, Term f x)
+</span><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-38"></span><span>    </span><span id="local-6989586621679178412"><span class="annot"><a href="#local-6989586621679178736"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178412"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-type">HasChange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178407"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178412"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679178736"><span class="annot"><span class="annottext">go :: forall x. Traversable f =&gt; Term f x -&gt; (HasChange, Term f x)
+</span><a href="#local-6989586621679178736"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178751"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178751"><span class="hs-identifier hs-var">fx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#NoChanges"><span class="hs-identifier hs-var">NoChanges</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Term f x
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178751"><span class="hs-identifier hs-var">fx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178752"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178752"><span class="hs-identifier hs-var">ftx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; (HasChange, Term f x))
+-&gt; f (Term f x) -&gt; (HasChange, f (Term f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; (HasChange, Term f x)
+forall x. Traversable f =&gt; Term f x -&gt; (HasChange, Term f x)
+</span><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178752"><span class="hs-identifier hs-var">ftx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-41"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679178753"><span class="annot"><span class="annottext">HasChange
+</span><a href="#local-6989586621679178753"><span class="hs-identifier hs-var">changed</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178754"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178754"><span class="hs-identifier hs-var">ftx'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; Maybe (f x)) -&gt; f (Term f x) -&gt; Maybe (f (f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Maybe (f x)
+forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178754"><span class="hs-identifier hs-var">ftx'</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (f (f x)) -&gt; (f (f x) -&gt; Maybe (f x)) -&gt; Maybe (f x)
+forall a b. Maybe a -&gt; (a -&gt; Maybe b) -&gt; Maybe b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">f (f x) -&gt; Maybe (f x)
+forall y. f (f y) -&gt; Maybe (f y)
+</span><a href="#local-6989586621679178735"><span class="hs-identifier hs-var">joinMaybe</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-42"></span><span>            </span><span class="annot"><span class="annottext">Maybe (f x)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><a href="#local-6989586621679178753"><span class="hs-identifier hs-var">changed</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f (Term f x) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178754"><span class="hs-identifier hs-var">ftx'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178755"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178755"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Term f x
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178755"><span class="hs-identifier hs-var">fx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>    </span><span class="annot"><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span id="local-6989586621679178756"><span class="annot"><span class="annottext">Term f (Term f (Term f x))
+</span><a href="#local-6989586621679178756"><span class="hs-identifier hs-var">ttx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; (HasChange, Term f (Term f x))
+forall x. Traversable f =&gt; Term f x -&gt; (HasChange, Term f x)
+</span><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f (Term f (Term f x)) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">Term f (Term f (Term f x))
+</span><a href="#local-6989586621679178756"><span class="hs-identifier hs-var">ttx</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-45"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178757"><span class="annot"><span class="annottext">Term f (Term f x)
+</span><a href="#local-6989586621679178757"><span class="hs-identifier hs-var">ttx'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(HasChange -&gt; HasChange)
+-&gt; (HasChange, Term f x) -&gt; (HasChange, Term f x)
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange -&gt; HasChange -&gt; HasChange
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#HasChange"><span class="hs-identifier hs-var">HasChange</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((HasChange, Term f x) -&gt; (HasChange, Term f x))
+-&gt; (HasChange, Term f x) -&gt; (HasChange, Term f x)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; (HasChange, Term f x)
+forall x. Traversable f =&gt; Term f x -&gt; (HasChange, Term f x)
+</span><a href="#local-6989586621679178736"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">Term f (Term f x)
+</span><a href="#local-6989586621679178757"><span class="hs-identifier hs-var">ttx'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>        </span><span class="annot"><span class="annottext">(HasChange, Term f (Term f x))
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><a href="MonadTerm.html#NoChanges"><span class="hs-identifier hs-var">NoChanges</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f (Term f (Term f x)) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">Term f (Term f (Term f x))
+</span><a href="#local-6989586621679178756"><span class="hs-identifier hs-var">ttx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-type">getBlockers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178431"><span class="annot"><a href="#local-6989586621679178431"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679178432"><span class="annot"><a href="#local-6989586621679178432"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679178434"><span class="annot"><a href="#local-6989586621679178434"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178431"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679178432"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178433"><span class="annot"><a href="#local-6989586621679178433"><span class="hs-identifier hs-type">z</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679178431"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178431"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178433"><span class="hs-identifier hs-type">z</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178432"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178431"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178434"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178432"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-49"></span><span id="getBlockers"><span class="annot"><span class="annottext">getBlockers :: forall (f :: * -&gt; *) r x.
+(Traversable f, Monoid r) =&gt;
+(forall z. f (f z) -&gt; r) -&gt; Term f x -&gt; r
+</span><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-var hs-var">getBlockers</span></a></span></span><span> </span><span class="annot"><span class="annottext">forall z. f (f z) -&gt; r
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">r
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-var">getBlockers</span></a></span><span> </span><span id="local-6989586621679178773"><span class="annot"><span class="annottext">forall z. f (f z) -&gt; r
+</span><a href="#local-6989586621679178773"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178774"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178774"><span class="hs-identifier hs-var">ftx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; Maybe (f x)) -&gt; f (Term f x) -&gt; Maybe (f (f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Maybe (f x)
+forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178774"><span class="hs-identifier hs-var">ftx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-51"></span><span>    </span><span class="annot"><span class="annottext">Maybe (f (f x))
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; r) -&gt; f (Term f x) -&gt; r
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; f a -&gt; m
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall z. f (f z) -&gt; r) -&gt; Term f x -&gt; r
+forall (f :: * -&gt; *) r x.
+(Traversable f, Monoid r) =&gt;
+(forall z. f (f z) -&gt; r) -&gt; Term f x -&gt; r
+</span><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-var">getBlockers</span></a></span><span> </span><span class="annot"><span class="annottext">f (f z) -&gt; r
+forall z. f (f z) -&gt; r
+</span><a href="#local-6989586621679178773"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178774"><span class="hs-identifier hs-var">ftx</span></a></span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178776"><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178776"><span class="hs-identifier hs-var">ffx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f (f x) -&gt; r
+forall z. f (f z) -&gt; r
+</span><a href="#local-6989586621679178773"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178776"><span class="hs-identifier hs-var">ffx</span></a></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-var">getBlockers</span></a></span><span> </span><span id="local-6989586621679178777"><span class="annot"><span class="annottext">forall z. f (f z) -&gt; r
+</span><a href="#local-6989586621679178777"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span id="local-6989586621679178778"><span class="annot"><span class="annottext">Term f (Term f (Term f x))
+</span><a href="#local-6989586621679178778"><span class="hs-identifier hs-var">ttx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall z. f (f z) -&gt; r) -&gt; Term f (Term f x) -&gt; r
+forall (f :: * -&gt; *) r x.
+(Traversable f, Monoid r) =&gt;
+(forall z. f (f z) -&gt; r) -&gt; Term f x -&gt; r
+</span><a href="MonadTerm.html#getBlockers"><span class="hs-identifier hs-var">getBlockers</span></a></span><span> </span><span class="annot"><span class="annottext">f (f z) -&gt; r
+forall z. f (f z) -&gt; r
+</span><a href="#local-6989586621679178777"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f (Term f (Term f x)) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">Term f (Term f (Term f x))
+</span><a href="#local-6989586621679178778"><span class="hs-identifier hs-var">ttx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span id="local-6989586621679178440"><span id="local-6989586621679178441"><span class="annot"><a href="MonadTerm.html#leftAssocTerm"><span class="hs-identifier hs-type">leftAssocTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679178440"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178440"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178440"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178440"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178441"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178440"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178441"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-56"></span><span id="leftAssocTerm"><span class="annot"><span class="annottext">leftAssocTerm :: forall (f :: * -&gt; *) x. Functor f =&gt; f (f (f x)) -&gt; Term f x
+</span><a href="MonadTerm.html#leftAssocTerm"><span class="hs-identifier hs-var hs-var">leftAssocTerm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">(Term f (Term f x) -&gt; Term f x)
+-&gt; (f (f (f x)) -&gt; Term f (Term f x)) -&gt; f (f (f x)) -&gt; Term f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Term f (Term f (Term f x)) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">(Term f (Term f (Term f x)) -&gt; Term f (Term f x))
+-&gt; (f (f (f x)) -&gt; Term f (Term f (Term f x)))
+-&gt; f (f (f x))
+-&gt; Term f (Term f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f (Term f (Term f x)) -&gt; Term f (Term f (Term f x))
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">(f (Term f (Term f x)) -&gt; Term f (Term f (Term f x)))
+-&gt; (f (f (f x)) -&gt; f (Term f (Term f x)))
+-&gt; f (f (f x))
+-&gt; Term f (Term f (Term f x))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f (f x) -&gt; Term f (Term f x))
+-&gt; f (f (f x)) -&gt; f (Term f (Term f x))
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f (Term f x) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">(f (Term f x) -&gt; Term f (Term f x))
+-&gt; (f (f x) -&gt; f (Term f x)) -&gt; f (f x) -&gt; Term f (Term f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Term f x) -&gt; f (f x) -&gt; f (Term f x)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; Term f x
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span id="local-6989586621679178784"><span id="local-6989586621679178785"><span class="annot"><a href="MonadTerm.html#rightAssocTerm"><span class="hs-identifier hs-type">rightAssocTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679178784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178785"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178785"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-59"></span><span id="rightAssocTerm"><span class="annot"><span class="annottext">rightAssocTerm :: forall (f :: * -&gt; *) x. Functor f =&gt; f (f (f x)) -&gt; Term f x
+</span><a href="MonadTerm.html#rightAssocTerm"><span class="hs-identifier hs-var hs-var">rightAssocTerm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">(Term f (Term f x) -&gt; Term f x)
+-&gt; (f (f (f x)) -&gt; Term f (Term f x)) -&gt; f (f (f x)) -&gt; Term f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Term f (Term f x) -&gt; Term f x)
+-&gt; Term f (Term f (Term f x)) -&gt; Term f (Term f x)
+forall a b. (a -&gt; b) -&gt; Term f a -&gt; Term f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Term f (Term f x) -&gt; Term f x
+forall (f :: * -&gt; *) x. Term f (Term f x) -&gt; Term f x
+</span><a href="MonadTerm.html#Join"><span class="hs-identifier hs-var">Join</span></a></span><span> </span><span class="annot"><span class="annottext">(Term f (Term f (Term f x)) -&gt; Term f (Term f x))
+-&gt; (f (f (f x)) -&gt; Term f (Term f (Term f x)))
+-&gt; f (f (f x))
+-&gt; Term f (Term f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f (Term f (Term f x)) -&gt; Term f (Term f (Term f x))
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">(f (Term f (Term f x)) -&gt; Term f (Term f (Term f x)))
+-&gt; (f (f (f x)) -&gt; f (Term f (Term f x)))
+-&gt; f (f (f x))
+-&gt; Term f (Term f (Term f x))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f (f x) -&gt; Term f (Term f x))
+-&gt; f (f (f x)) -&gt; f (Term f (Term f x))
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f (Term f x) -&gt; Term f (Term f x)
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span> </span><span class="annot"><span class="annottext">(f (Term f x) -&gt; Term f (Term f x))
+-&gt; (f (f x) -&gt; f (Term f x)) -&gt; f (f x) -&gt; Term f (Term f x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Term f x) -&gt; f (f x) -&gt; f (Term f x)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; Term f x
+forall (f :: * -&gt; *) x. f x -&gt; Term f x
+</span><a href="MonadTerm.html#In"><span class="hs-identifier hs-var">In</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">data</span><span> </span><span id="ReductionResult"><span class="annot"><a href="MonadTerm.html#ReductionResult"><span class="hs-identifier hs-var">ReductionResult</span></a></span></span><span> </span><span id="local-6989586621679178455"><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679178456"><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Reduced"><span class="annot"><a href="MonadTerm.html#Reduced"><span class="hs-identifier hs-var">Reduced</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="ReducedAlmost"><span class="annot"><a href="MonadTerm.html#ReducedAlmost"><span class="hs-identifier hs-var">ReducedAlmost</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Unreduced"><span class="annot"><a href="MonadTerm.html#Unreduced"><span class="hs-identifier hs-var">Unreduced</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178455"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178456"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span id="local-6989586621679178449"><span class="annot"><a href="MonadTerm.html#reduceEquation"><span class="hs-identifier hs-type">reduceEquation</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178450"><span class="annot"><a href="#local-6989586621679178450"><span class="hs-identifier hs-type">z</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178450"><span class="hs-identifier hs-type">z</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178450"><span class="hs-identifier hs-type">z</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679178451"><span class="annot"><a href="#local-6989586621679178451"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178451"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178451"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="MonadTerm.html#ReductionResult"><span class="hs-identifier hs-type">ReductionResult</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178449"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178451"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-64"></span><span id="reduceEquation"><span class="annot"><span class="annottext">reduceEquation :: forall (f :: * -&gt; *).
+Traversable f =&gt;
+(forall z. f (f z) -&gt; Maybe (f z))
+-&gt; forall x. Term f x -&gt; Term f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#reduceEquation"><span class="hs-identifier hs-var hs-var">reduceEquation</span></a></span></span><span> </span><span id="local-6989586621679178802"><span class="annot"><span class="annottext">forall z. f (f z) -&gt; Maybe (f z)
+</span><a href="#local-6989586621679178802"><span class="hs-identifier hs-var">joinMaybe</span></a></span></span><span> </span><span id="local-6989586621679178803"><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178803"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621679178804"><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178804"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178807"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178807"><span class="hs-identifier hs-var">f1</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178808"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178808"><span class="hs-identifier hs-var">f2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f x -&gt; f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. f x -&gt; f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#Reduced"><span class="hs-identifier hs-var">Reduced</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178807"><span class="hs-identifier hs-var">f1</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178808"><span class="hs-identifier hs-var">f2</span></a></span><span>
+</span><span id="line-66"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178809"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178809"><span class="hs-identifier hs-var">f1</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178810"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178810"><span class="hs-identifier hs-var">ftx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; Maybe (f x)) -&gt; f (Term f x) -&gt; Maybe (f (f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Maybe (f x)
+forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178810"><span class="hs-identifier hs-var">ftx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-67"></span><span>        </span><span class="annot"><span class="annottext">Maybe (f (f x))
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Term f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. Term f x -&gt; Term f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#Unreduced"><span class="hs-identifier hs-var">Unreduced</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span><span>
+</span><span id="line-68"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178811"><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178811"><span class="hs-identifier hs-var">ffx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f (f x) -&gt; f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. f (f x) -&gt; f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#ReducedAlmost"><span class="hs-identifier hs-var">ReducedAlmost</span></a></span><span> </span><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178811"><span class="hs-identifier hs-var">ffx</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178809"><span class="hs-identifier hs-var">f1</span></a></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Term f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. Term f x -&gt; Term f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#Unreduced"><span class="hs-identifier hs-var">Unreduced</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#Join"><span class="hs-identifier hs-type">Join</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178812"><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178812"><span class="hs-identifier hs-var">ftx</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="MonadTerm.html#In"><span class="hs-identifier hs-type">In</span></a></span><span> </span><span id="local-6989586621679178813"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178813"><span class="hs-identifier hs-var">f2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Term f x -&gt; Maybe (f x)) -&gt; f (Term f x) -&gt; Maybe (f (f x))
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; f a -&gt; f (f b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Maybe (f x)
+forall (f :: * -&gt; *) x. Term f x -&gt; Maybe (f x)
+</span><a href="MonadTerm.html#getSingle"><span class="hs-identifier hs-var">getSingle</span></a></span><span> </span><span class="annot"><span class="annottext">f (Term f x)
+</span><a href="#local-6989586621679178812"><span class="hs-identifier hs-var">ftx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-71"></span><span>        </span><span class="annot"><span class="annottext">Maybe (f (f x))
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Term f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. Term f x -&gt; Term f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#Unreduced"><span class="hs-identifier hs-var">Unreduced</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span><span>
+</span><span id="line-72"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178814"><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178814"><span class="hs-identifier hs-var">ffx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f (f x) -&gt; f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. f (f x) -&gt; f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#ReducedAlmost"><span class="hs-identifier hs-var">ReducedAlmost</span></a></span><span> </span><span class="annot"><span class="annottext">f (f x)
+</span><a href="#local-6989586621679178814"><span class="hs-identifier hs-var">ffx</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679178813"><span class="hs-identifier hs-var">f2</span></a></span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term f x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Term f x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term f x -&gt; Term f x -&gt; ReductionResult f x
+forall (f :: * -&gt; *) x. Term f x -&gt; Term f x -&gt; ReductionResult f x
+</span><a href="MonadTerm.html#Unreduced"><span class="hs-identifier hs-var">Unreduced</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178805"><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178805"><span class="hs-identifier hs-var">t1'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall z. f (f z) -&gt; Maybe (f z))
+-&gt; forall x. Term f x -&gt; (HasChange, Term f x)
+forall (f :: * -&gt; *).
+Traversable f =&gt;
+(forall y. f (f y) -&gt; Maybe (f y))
+-&gt; forall x. Term f x -&gt; (HasChange, Term f x)
+</span><a href="MonadTerm.html#reduce"><span class="hs-identifier hs-var">reduce</span></a></span><span> </span><span class="annot"><span class="annottext">f (f y) -&gt; Maybe (f y)
+forall z. f (f z) -&gt; Maybe (f z)
+</span><a href="#local-6989586621679178802"><span class="hs-identifier hs-var">joinMaybe</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178803"><span class="hs-identifier hs-var">t1</span></a></span><span>
+</span><span id="line-76"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasChange
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178806"><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178806"><span class="hs-identifier hs-var">t2'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall z. f (f z) -&gt; Maybe (f z))
+-&gt; forall x. Term f x -&gt; (HasChange, Term f x)
+forall (f :: * -&gt; *).
+Traversable f =&gt;
+(forall y. f (f y) -&gt; Maybe (f y))
+-&gt; forall x. Term f x -&gt; (HasChange, Term f x)
+</span><a href="MonadTerm.html#reduce"><span class="hs-identifier hs-var">reduce</span></a></span><span> </span><span class="annot"><span class="annottext">f (f y) -&gt; Maybe (f y)
+forall z. f (f z) -&gt; Maybe (f z)
+</span><a href="#local-6989586621679178802"><span class="hs-identifier hs-var">joinMaybe</span></a></span><span> </span><span class="annot"><span class="annottext">Term f x
+</span><a href="#local-6989586621679178804"><span class="hs-identifier hs-var">t2</span></a></span></pre></body></html>
