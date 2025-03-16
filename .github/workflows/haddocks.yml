@@ -49,6 +49,7 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
         with:
+          ref:  master
           path: site-root
       
       - name: "Fetch functor-monad"
@@ -114,7 +115,7 @@ jobs:
           cp -a projects/polynomial-functor/doc-output/* site-root/haddocks
           cp -a projects/monad-gen/doc-output/* site-root/haddocks
       
-      - name: Commit & Push
+      - name: Commit & Push & Publish
         run: |
           cd site-root
           git config user.name "github-actions[bot]"
@@ -122,3 +123,6 @@ jobs:
           git add haddocks
           git commit -m "haddock generated"
           git push
+          git switch -c publish
+          git merge --ff master
+          git push -u origin publish
