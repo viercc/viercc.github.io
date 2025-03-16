@@ -84,9 +84,10 @@ jobs:
       - name: Build
         shell: bash
         env:
-          cabal-opts: --haddock-output-dir=./doc-output \
-            --haddock-hyperlink-source \
-            --haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html
+          cabal-opts: >
+            "--haddock-output-dir=./doc-output"
+            "--haddock-hyperlink-source"
+            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
         run: |
           set -e
           (cd projects/functor-monad && cabal haddock all ${{ env.cabal-opts }})
