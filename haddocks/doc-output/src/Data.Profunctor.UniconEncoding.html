@@ -1,0 +1,665 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE LambdaCase #-}</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Profunctor.UniconEncoding</span><span class="hs-special">(</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier">Unicon</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier">Encoding</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#encodeId"><span class="hs-identifier">encodeId</span></a></span><span>
+</span><span id="line-8"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Profunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- | Universal container. Any container type with finite maximum length and</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--   finite number of possible shapes can be encoded into @Unicon@.</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">data</span><span> </span><span id="Unicon"><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier hs-var">Unicon</span></a></span></span><span> </span><span id="local-6989586621679162998"><span class="annot"><a href="#local-6989586621679162998"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MkUnicon"><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679162998"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163117"><span id="local-6989586621679163123"><span class="annot"><span class="annottext">Unicon a -&gt; Unicon a -&gt; Bool
+(Unicon a -&gt; Unicon a -&gt; Bool)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Bool) -&gt; Eq (Unicon a)
+forall a. Eq a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+== :: Unicon a -&gt; Unicon a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+/= :: Unicon a -&gt; Unicon a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163132"><span id="local-6989586621679163138"><span id="local-6989586621679163142"><span id="local-6989586621679163146"><span id="local-6989586621679163149"><span id="local-6989586621679163152"><span id="local-6989586621679163155"><span class="annot"><span class="annottext">Eq (Unicon a)
+Eq (Unicon a) =&gt;
+(Unicon a -&gt; Unicon a -&gt; Ordering)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Bool)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Bool)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Bool)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Bool)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Unicon a -&gt; Unicon a)
+-&gt; Ord (Unicon a)
+Unicon a -&gt; Unicon a -&gt; Bool
+Unicon a -&gt; Unicon a -&gt; Ordering
+Unicon a -&gt; Unicon a -&gt; Unicon a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Unicon a)
+forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Ordering
+forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Unicon a
+$ccompare :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Ordering
+compare :: Unicon a -&gt; Unicon a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+&lt; :: Unicon a -&gt; Unicon a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+&lt;= :: Unicon a -&gt; Unicon a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+&gt; :: Unicon a -&gt; Unicon a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Bool
+&gt;= :: Unicon a -&gt; Unicon a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Unicon a
+max :: Unicon a -&gt; Unicon a -&gt; Unicon a
+$cmin :: forall a. Ord a =&gt; Unicon a -&gt; Unicon a -&gt; Unicon a
+min :: Unicon a -&gt; Unicon a -&gt; Unicon a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163161"><span id="local-6989586621679163168"><span id="local-6989586621679163172"><span class="annot"><span class="annottext">Int -&gt; Unicon a -&gt; ShowS
+[Unicon a] -&gt; ShowS
+Unicon a -&gt; String
+(Int -&gt; Unicon a -&gt; ShowS)
+-&gt; (Unicon a -&gt; String) -&gt; ([Unicon a] -&gt; ShowS) -&gt; Show (Unicon a)
+forall a. Show a =&gt; Int -&gt; Unicon a -&gt; ShowS
+forall a. Show a =&gt; [Unicon a] -&gt; ShowS
+forall a. Show a =&gt; Unicon a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Unicon a -&gt; ShowS
+showsPrec :: Int -&gt; Unicon a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; Unicon a -&gt; String
+show :: Unicon a -&gt; String
+$cshowList :: forall a. Show a =&gt; [Unicon a] -&gt; ShowS
+showList :: [Unicon a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163177"><span id="local-6989586621679163181"><span id="local-6989586621679163184"><span id="local-6989586621679163195"><span class="annot"><span class="annottext">ReadPrec [Unicon a]
+ReadPrec (Unicon a)
+Int -&gt; ReadS (Unicon a)
+ReadS [Unicon a]
+(Int -&gt; ReadS (Unicon a))
+-&gt; ReadS [Unicon a]
+-&gt; ReadPrec (Unicon a)
+-&gt; ReadPrec [Unicon a]
+-&gt; Read (Unicon a)
+forall a. Read a =&gt; ReadPrec [Unicon a]
+forall a. Read a =&gt; ReadPrec (Unicon a)
+forall a. Read a =&gt; Int -&gt; ReadS (Unicon a)
+forall a. Read a =&gt; ReadS [Unicon a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (Unicon a)
+readsPrec :: Int -&gt; ReadS (Unicon a)
+$creadList :: forall a. Read a =&gt; ReadS [Unicon a]
+readList :: ReadS [Unicon a]
+$creadPrec :: forall a. Read a =&gt; ReadPrec (Unicon a)
+readPrec :: ReadPrec (Unicon a)
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [Unicon a]
+readListPrec :: ReadPrec [Unicon a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163199"><span id="local-6989586621679163203"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Unicon a -&gt; Unicon b)
+-&gt; (forall a b. a -&gt; Unicon b -&gt; Unicon a) -&gt; Functor Unicon
+forall a b. a -&gt; Unicon b -&gt; Unicon a
+forall a b. (a -&gt; b) -&gt; Unicon a -&gt; Unicon b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; Unicon a -&gt; Unicon b
+fmap :: forall a b. (a -&gt; b) -&gt; Unicon a -&gt; Unicon b
+$c&lt;$ :: forall a b. a -&gt; Unicon b -&gt; Unicon a
+&lt;$ :: forall a b. a -&gt; Unicon b -&gt; Unicon a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163208"><span id="local-6989586621679163214"><span id="local-6989586621679163220"><span id="local-6989586621679163225"><span id="local-6989586621679163228"><span id="local-6989586621679163231"><span id="local-6989586621679163234"><span id="local-6989586621679163237"><span id="local-6989586621679163240"><span id="local-6989586621679163243"><span id="local-6989586621679163246"><span id="local-6989586621679163249"><span id="local-6989586621679163252"><span id="local-6989586621679163257"><span id="local-6989586621679163262"><span id="local-6989586621679163267"><span id="local-6989586621679163272"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Unicon m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a)
+-&gt; (forall a. Unicon a -&gt; [a])
+-&gt; (forall a. Unicon a -&gt; Bool)
+-&gt; (forall a. Unicon a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Unicon a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Unicon a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Unicon a -&gt; a)
+-&gt; (forall a. Num a =&gt; Unicon a -&gt; a)
+-&gt; (forall a. Num a =&gt; Unicon a -&gt; a)
+-&gt; Foldable Unicon
+forall a. Eq a =&gt; a -&gt; Unicon a -&gt; Bool
+forall a. Num a =&gt; Unicon a -&gt; a
+forall a. Ord a =&gt; Unicon a -&gt; a
+forall m. Monoid m =&gt; Unicon m -&gt; m
+forall a. Unicon a -&gt; Bool
+forall a. Unicon a -&gt; Int
+forall a. Unicon a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; Unicon m -&gt; m
+fold :: forall m. Monoid m =&gt; Unicon m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Unicon a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Unicon a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Unicon a -&gt; a
+$ctoList :: forall a. Unicon a -&gt; [a]
+toList :: forall a. Unicon a -&gt; [a]
+$cnull :: forall a. Unicon a -&gt; Bool
+null :: forall a. Unicon a -&gt; Bool
+$clength :: forall a. Unicon a -&gt; Int
+length :: forall a. Unicon a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; Unicon a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; Unicon a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; Unicon a -&gt; a
+maximum :: forall a. Ord a =&gt; Unicon a -&gt; a
+$cminimum :: forall a. Ord a =&gt; Unicon a -&gt; a
+minimum :: forall a. Ord a =&gt; Unicon a -&gt; a
+$csum :: forall a. Num a =&gt; Unicon a -&gt; a
+sum :: forall a. Num a =&gt; Unicon a -&gt; a
+$cproduct :: forall a. Num a =&gt; Unicon a -&gt; a
+product :: forall a. Num a =&gt; Unicon a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163282"><span id="local-6989586621679163290"><span id="local-6989586621679163296"><span id="local-6989586621679163301"><span class="annot"><span class="annottext">Functor Unicon
+Foldable Unicon
+(Functor Unicon, Foldable Unicon) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; Unicon a -&gt; f (Unicon b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    Unicon (f a) -&gt; f (Unicon a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; Unicon a -&gt; m (Unicon b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    Unicon (m a) -&gt; m (Unicon a))
+-&gt; Traversable Unicon
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; Unicon (m a) -&gt; m (Unicon a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Unicon (f a) -&gt; f (Unicon a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Unicon a -&gt; m (Unicon b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Unicon a -&gt; f (Unicon b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Unicon a -&gt; f (Unicon b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Unicon a -&gt; f (Unicon b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Unicon (f a) -&gt; f (Unicon a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Unicon (f a) -&gt; f (Unicon a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Unicon a -&gt; m (Unicon b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Unicon a -&gt; m (Unicon b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Unicon (m a) -&gt; m (Unicon a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Unicon (m a) -&gt; m (Unicon a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier hs-type">Unicon</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>  </span><span id="local-6989586621679163315"><span class="annot"><span class="annottext">liftEq :: forall a b. (a -&gt; b -&gt; Bool) -&gt; Unicon a -&gt; Unicon b -&gt; Bool
+</span><a href="#local-6989586621679163315"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftEq</span></a></span></span><span> </span><span id="local-6989586621679163317"><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679163317"><span class="hs-identifier hs-var">eq</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163318"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163318"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span id="local-6989586621679163319"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163319"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163320"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163320"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163321"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679163321"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163318"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163320"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall a b. (a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall (f :: * -&gt; *) a b.
+Eq1 f =&gt;
+(a -&gt; b -&gt; Bool) -&gt; f a -&gt; f b -&gt; Bool
+</span><span class="hs-identifier hs-var">liftEq</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679163317"><span class="hs-identifier hs-var">eq</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163319"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679163321"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier hs-type">Unicon</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621679163335"><span class="annot"><span class="annottext">liftCompare :: forall a b.
+(a -&gt; b -&gt; Ordering) -&gt; Unicon a -&gt; Unicon b -&gt; Ordering
+</span><a href="#local-6989586621679163335"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftCompare</span></a></span></span><span> </span><span id="local-6989586621679163337"><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679163337"><span class="hs-identifier hs-var">cmp</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163338"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163338"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span id="local-6989586621679163339"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163339"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163340"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163340"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163341"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679163341"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Ordering
+forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163338"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163340"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; Ordering) -&gt; [a] -&gt; [b] -&gt; Ordering
+forall a b. (a -&gt; b -&gt; Ordering) -&gt; [a] -&gt; [b] -&gt; Ordering
+forall (f :: * -&gt; *) a b.
+Ord1 f =&gt;
+(a -&gt; b -&gt; Ordering) -&gt; f a -&gt; f b -&gt; Ordering
+</span><span class="hs-identifier hs-var">liftCompare</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679163337"><span class="hs-identifier hs-var">cmp</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163339"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679163341"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- instance Matchable Unicon</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><span class="hs-comment">-- | Encoding into @Unicon a@ with partial decoding function.</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">data</span><span> </span><span id="Encoding"><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span></span><span> </span><span id="local-6989586621679162996"><span class="annot"><a href="#local-6989586621679162996"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679162995"><span class="annot"><a href="#local-6989586621679162995"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679162997"><span class="annot"><a href="#local-6989586621679162997"><span class="hs-identifier hs-type">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Encoding"><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162995"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier hs-type">Unicon</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162996"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Unicon"><span class="hs-identifier hs-type">Unicon</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162996"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162997"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679162996"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163345"><span id="local-6989586621679163349"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Encoding a s a -&gt; Encoding a s b)
+-&gt; (forall a b. a -&gt; Encoding a s b -&gt; Encoding a s a)
+-&gt; Functor (Encoding a s)
+forall a b. a -&gt; Encoding a s b -&gt; Encoding a s a
+forall a b. (a -&gt; b) -&gt; Encoding a s a -&gt; Encoding a s b
+forall a s a b. a -&gt; Encoding a s b -&gt; Encoding a s a
+forall a s a b. (a -&gt; b) -&gt; Encoding a s a -&gt; Encoding a s b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a s a b. (a -&gt; b) -&gt; Encoding a s a -&gt; Encoding a s b
+fmap :: forall a b. (a -&gt; b) -&gt; Encoding a s a -&gt; Encoding a s b
+$c&lt;$ :: forall a s a b. a -&gt; Encoding a s b -&gt; Encoding a s a
+&lt;$ :: forall a b. a -&gt; Encoding a s b -&gt; Encoding a s a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span id="local-6989586621679162993"><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#encodeId"><span class="hs-identifier hs-type">encodeId</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162993"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162993"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679162993"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-33"></span><span id="encodeId"><span class="annot"><span class="annottext">encodeId :: forall a. Encoding a a a
+</span><a href="Data.Profunctor.UniconEncoding.html#encodeId"><span class="hs-identifier hs-var hs-var">encodeId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; (a -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (a, [a]))
+-&gt; Encoding a a a
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679163355"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163355"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163355"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Unicon a -&gt; Maybe (a, [a])) -&gt; Encoding a a a)
+-&gt; (Unicon a -&gt; Maybe (a, [a])) -&gt; Encoding a a a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163356"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163356"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679163357"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163357"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a, [a]) -&gt; Maybe (a, [a])
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163356"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163357"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">Unicon a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (a, [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163031"><span id="local-6989586621679163360"><span id="local-6989586621679163364"><span id="local-6989586621679163367"><span id="local-6989586621679163373"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163031"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-38"></span><span>  </span><span id="local-6989586621679163382"><span class="annot"><span class="annottext">dimap :: forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; Encoding a b c -&gt; Encoding a a d
+</span><a href="#local-6989586621679163382"><span class="hs-identifier hs-var hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span id="local-6989586621679163384"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679163384"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679163385"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679163385"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span id="local-6989586621679163386"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163386"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679163387"><span class="annot"><span class="annottext">b -&gt; Unicon a
+</span><a href="#local-6989586621679163387"><span class="hs-identifier hs-var">enc</span></a></span></span><span> </span><span id="local-6989586621679163388"><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (c, [a])
+</span><a href="#local-6989586621679163388"><span class="hs-identifier hs-var">dec</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; (a -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (d, [a]))
+-&gt; Encoding a a d
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163386"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; Unicon a
+</span><a href="#local-6989586621679163387"><span class="hs-identifier hs-var">enc</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Unicon a) -&gt; (a -&gt; b) -&gt; a -&gt; Unicon a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679163384"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((c, [a]) -&gt; (d, [a])) -&gt; Maybe (c, [a]) -&gt; Maybe (d, [a])
+forall a b. (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(c -&gt; d) -&gt; (c, [a]) -&gt; (d, [a])
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679163385"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Maybe (c, [a]) -&gt; Maybe (d, [a]))
+-&gt; (Unicon a -&gt; Maybe (c, [a])) -&gt; Unicon a -&gt; Maybe (d, [a])
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (c, [a])
+</span><a href="#local-6989586621679163388"><span class="hs-identifier hs-var">dec</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163067"><span id="local-6989586621679163395"><span id="local-6989586621679163400"><span id="local-6989586621679163403"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163067"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679163408"><span class="annot"><span class="annottext">proUnit :: forall a. Encoding a a ()
+</span><a href="#local-6989586621679163408"><span class="hs-identifier hs-var hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; (a -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe ((), [a]))
+-&gt; Encoding a a ()
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Unicon a -&gt; a -&gt; Unicon a
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Unicon a
+forall {a}. Unicon a
+</span><a href="#local-6989586621679163411"><span class="hs-identifier hs-var">one</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe ((), [a])
+forall {a}. Unicon a -&gt; Maybe ((), [a])
+</span><a href="#local-6989586621679163412"><span class="hs-identifier hs-var">matchOne</span></a></span><span>
+</span><span id="line-42"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>      </span><span id="local-6989586621679163411"><span class="annot"><span class="annottext">one :: Unicon a
+</span><a href="#local-6989586621679163411"><span class="hs-identifier hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-44"></span><span>      </span><span id="local-6989586621679163412"><span class="annot"><span class="annottext">matchOne :: Unicon a -&gt; Maybe ((), [a])
+</span><a href="#local-6989586621679163412"><span class="hs-identifier hs-var hs-var">matchOne</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span id="local-6989586621679163415"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163415"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((), [a]) -&gt; Maybe ((), [a])
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163415"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>      </span><span class="annot"><a href="#local-6989586621679163412"><span class="hs-identifier hs-var">matchOne</span></a></span><span> </span><span class="annot"><span class="annottext">Unicon a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ((), [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span>  </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span id="local-6989586621679163417"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163417"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679163418"><span class="annot"><span class="annottext">a -&gt; Unicon a
+</span><a href="#local-6989586621679163418"><span class="hs-identifier hs-var">enc</span></a></span></span><span> </span><span id="local-6989586621679163419"><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b, [a])
+</span><a href="#local-6989586621679163419"><span class="hs-identifier hs-var">dec</span></a></span></span><span> </span><span id="local-6989586621679163420"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
+Encoding a a b -&gt; Encoding a a' b' -&gt; Encoding a (a, a') (b, b')
+</span><a href="#local-6989586621679163420"><span class="hs-operator hs-var hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span id="local-6989586621679163422"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163422"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679163423"><span class="annot"><span class="annottext">a' -&gt; Unicon a
+</span><a href="#local-6989586621679163423"><span class="hs-identifier hs-var">enc'</span></a></span></span><span> </span><span id="local-6989586621679163424"><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b', [a])
+</span><a href="#local-6989586621679163424"><span class="hs-identifier hs-var">dec'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; ((a, a') -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe ((b, b'), [a]))
+-&gt; Encoding a (a, a') (b, b')
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163422"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163417"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a, a') -&gt; Unicon a
+</span><a href="#local-6989586621679163426"><span class="hs-identifier hs-var">encPair</span></a></span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe ((b, b'), [a])
+</span><a href="#local-6989586621679163427"><span class="hs-identifier hs-var">decPair</span></a></span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>      </span><span id="local-6989586621679163426"><span class="annot"><span class="annottext">encPair :: (a, a') -&gt; Unicon a
+</span><a href="#local-6989586621679163426"><span class="hs-identifier hs-var hs-var">encPair</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163430"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163430"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679163431"><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679163431"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Unicon a
+</span><a href="#local-6989586621679163418"><span class="hs-identifier hs-var">enc</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163430"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">a' -&gt; Unicon a
+</span><a href="#local-6989586621679163423"><span class="hs-identifier hs-var">enc'</span></a></span><span> </span><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679163431"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-50"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163432"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163432"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span id="local-6989586621679163433"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163433"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163434"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163434"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163435"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163435"><span class="hs-identifier hs-var">as'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163432"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163422"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163434"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163433"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163435"><span class="hs-identifier hs-var">as'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>      </span><span id="local-6989586621679163427"><span class="annot"><span class="annottext">decPair :: Unicon a -&gt; Maybe ((b, b'), [a])
+</span><a href="#local-6989586621679163427"><span class="hs-identifier hs-var hs-var">decPair</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163446"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163446"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679163447"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163447"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163446"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ((b, b'), [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-53"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163446"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163417"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163422"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ((b, b'), [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-54"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-55"></span><span>              </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679163451"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163451"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679163452"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163452"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; (Int, Int)
+forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
+</span><span class="hs-identifier hs-var">quotRem</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163446"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163422"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-56"></span><span>              </span><span class="hs-special">(</span><span id="local-6989586621679163454"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679163454"><span class="hs-identifier hs-var">t1</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163455"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163455"><span class="hs-identifier hs-var">as'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b, [a])
+</span><a href="#local-6989586621679163419"><span class="hs-identifier hs-var">dec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163451"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163447"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>              </span><span class="hs-special">(</span><span id="local-6989586621679163456"><span class="annot"><span class="annottext">b'
+</span><a href="#local-6989586621679163456"><span class="hs-identifier hs-var">t2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679163457"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163457"><span class="hs-identifier hs-var">as''</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b', [a])
+</span><a href="#local-6989586621679163424"><span class="hs-identifier hs-var">dec'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163452"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163455"><span class="hs-identifier hs-var">as'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>              </span><span class="annot"><span class="annottext">((b, b'), [a]) -&gt; Maybe ((b, b'), [a])
+forall a. a -&gt; Maybe a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679163454"><span class="hs-identifier hs-var">t1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b'
+</span><a href="#local-6989586621679163456"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163457"><span class="hs-identifier hs-var">as''</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679163102"><span id="local-6989586621679163462"><span id="local-6989586621679163467"><span id="local-6989586621679163470"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679163102"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679163477"><span class="annot"><span class="annottext">proEmpty :: forall b. Encoding a Void b
+</span><a href="#local-6989586621679163477"><span class="hs-identifier hs-var hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; (Void -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (b, [a]))
+-&gt; Encoding a Void b
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Void -&gt; Unicon a
+forall b. Void -&gt; b
+forall (p :: * -&gt; * -&gt; *) b. Cocartesian p =&gt; p Void b
+</span><a href="Data.Profunctor.Cartesian.html#proEmpty"><span class="hs-identifier hs-var">proEmpty</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe (b, [a]) -&gt; Unicon a -&gt; Maybe (b, [a])
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Maybe (b, [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>  </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span id="local-6989586621679163480"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span id="local-6989586621679163481"><span class="annot"><span class="annottext">a -&gt; Unicon a
+</span><a href="#local-6989586621679163481"><span class="hs-identifier hs-var">enc</span></a></span></span><span> </span><span id="local-6989586621679163482"><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b, [a])
+</span><a href="#local-6989586621679163482"><span class="hs-identifier hs-var">dec</span></a></span></span><span> </span><span id="local-6989586621679163483"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
+Encoding a a b
+-&gt; Encoding a a' b' -&gt; Encoding a (Either a a') (Either b b')
+</span><a href="#local-6989586621679163483"><span class="hs-operator hs-var hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-type">Encoding</span></a></span><span> </span><span id="local-6989586621679163485"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163485"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679163486"><span class="annot"><span class="annottext">a' -&gt; Unicon a
+</span><a href="#local-6989586621679163486"><span class="hs-identifier hs-var">enc'</span></a></span></span><span> </span><span id="local-6989586621679163487"><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b', [a])
+</span><a href="#local-6989586621679163487"><span class="hs-identifier hs-var">dec'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+-&gt; (Either a a' -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (Either b b', [a]))
+-&gt; Encoding a (Either a a') (Either b b')
+forall a s t.
+Int
+-&gt; (s -&gt; Unicon a)
+-&gt; (Unicon a -&gt; Maybe (t, [a]))
+-&gt; Encoding a s t
+</span><a href="Data.Profunctor.UniconEncoding.html#Encoding"><span class="hs-identifier hs-var">Encoding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163485"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either a a' -&gt; Unicon a
+</span><a href="#local-6989586621679163488"><span class="hs-identifier hs-var">encSum</span></a></span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (Either b b', [a])
+</span><a href="#local-6989586621679163489"><span class="hs-identifier hs-var">decSum</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-64"></span><span>      </span><span id="local-6989586621679163488"><span class="annot"><span class="annottext">encSum :: Either a a' -&gt; Unicon a
+</span><a href="#local-6989586621679163488"><span class="hs-identifier hs-var hs-var">encSum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679163491"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163491"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Unicon a
+</span><a href="#local-6989586621679163481"><span class="hs-identifier hs-var">enc</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679163491"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-65"></span><span>      </span><span class="annot"><a href="#local-6989586621679163488"><span class="hs-identifier hs-var">encSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679163492"><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679163492"><span class="hs-identifier hs-var">s'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a' -&gt; Unicon a
+</span><a href="#local-6989586621679163486"><span class="hs-identifier hs-var">enc'</span></a></span><span> </span><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679163492"><span class="hs-identifier hs-var">s'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-66"></span><span>        </span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163493"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163493"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679163494"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">as'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163493"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163494"><span class="hs-identifier hs-var">as'</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span>      </span><span id="local-6989586621679163489"><span class="annot"><span class="annottext">decSum :: Unicon a -&gt; Maybe (Either b b', [a])
+</span><a href="#local-6989586621679163489"><span class="hs-identifier hs-var hs-var">decSum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-type">MkUnicon</span></a></span><span> </span><span id="local-6989586621679163505"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679163506"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163506"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Either b b', [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-70"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; Either b b') -&gt; (b, [a]) -&gt; (Either b b', [a])
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">((b, [a]) -&gt; (Either b b', [a]))
+-&gt; Maybe (b, [a]) -&gt; Maybe (Either b b', [a])
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b, [a])
+</span><a href="#local-6989586621679163482"><span class="hs-identifier hs-var">dec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163506"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163485"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Either b b') -&gt; (b', [a]) -&gt; (Either b b', [a])
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">((b', [a]) -&gt; (Either b b', [a]))
+-&gt; Maybe (b', [a]) -&gt; Maybe (Either b b', [a])
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Unicon a -&gt; Maybe (b', [a])
+</span><a href="#local-6989586621679163487"><span class="hs-identifier hs-var">dec'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Unicon a
+forall a. Int -&gt; [a] -&gt; Unicon a
+</span><a href="Data.Profunctor.UniconEncoding.html#MkUnicon"><span class="hs-identifier hs-var">MkUnicon</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163505"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679163480"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679163506"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Either b b', [a])
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span></pre></body></html>

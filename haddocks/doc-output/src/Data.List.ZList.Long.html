@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.List.ZList.Long</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.List.ZList.html"><span class="hs-identifier">Data.List.ZList</span></a></span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="annot"><span class="hs-comment">-- | @ZList@ sans @'Nend', 'Zend', 'Cons' a 'Nend'@ </span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">data</span><span> </span><span id="ZList%27"><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-var">ZList'</span></a></span></span><span> </span><span id="local-6989586621679077859"><span class="annot"><a href="#local-6989586621679077859"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Zxz"><span class="annot"><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-var">Zxz</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077859"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="ZLong"><span class="annot"><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-var">ZLong</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077859"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077859"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier hs-type">ZList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077859"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077867"><span id="local-6989586621679077877"><span id="local-6989586621679077881"><span class="annot"><span class="annottext">Int -&gt; ZList' a -&gt; ShowS
+[ZList' a] -&gt; ShowS
+ZList' a -&gt; String
+(Int -&gt; ZList' a -&gt; ShowS)
+-&gt; (ZList' a -&gt; String) -&gt; ([ZList' a] -&gt; ShowS) -&gt; Show (ZList' a)
+forall a. Show a =&gt; Int -&gt; ZList' a -&gt; ShowS
+forall a. Show a =&gt; [ZList' a] -&gt; ShowS
+forall a. Show a =&gt; ZList' a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; ZList' a -&gt; ShowS
+showsPrec :: Int -&gt; ZList' a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; ZList' a -&gt; String
+show :: ZList' a -&gt; String
+$cshowList :: forall a. Show a =&gt; [ZList' a] -&gt; ShowS
+showList :: [ZList' a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077886"><span id="local-6989586621679077893"><span class="annot"><span class="annottext">ZList' a -&gt; ZList' a -&gt; Bool
+(ZList' a -&gt; ZList' a -&gt; Bool)
+-&gt; (ZList' a -&gt; ZList' a -&gt; Bool) -&gt; Eq (ZList' a)
+forall a. Eq a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+== :: ZList' a -&gt; ZList' a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+/= :: ZList' a -&gt; ZList' a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077902"><span id="local-6989586621679077909"><span id="local-6989586621679077915"><span id="local-6989586621679077919"><span id="local-6989586621679077922"><span id="local-6989586621679077925"><span id="local-6989586621679077928"><span class="annot"><span class="annottext">Eq (ZList' a)
+Eq (ZList' a) =&gt;
+(ZList' a -&gt; ZList' a -&gt; Ordering)
+-&gt; (ZList' a -&gt; ZList' a -&gt; Bool)
+-&gt; (ZList' a -&gt; ZList' a -&gt; Bool)
+-&gt; (ZList' a -&gt; ZList' a -&gt; Bool)
+-&gt; (ZList' a -&gt; ZList' a -&gt; Bool)
+-&gt; (ZList' a -&gt; ZList' a -&gt; ZList' a)
+-&gt; (ZList' a -&gt; ZList' a -&gt; ZList' a)
+-&gt; Ord (ZList' a)
+ZList' a -&gt; ZList' a -&gt; Bool
+ZList' a -&gt; ZList' a -&gt; Ordering
+ZList' a -&gt; ZList' a -&gt; ZList' a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (ZList' a)
+forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Ordering
+forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; ZList' a
+$ccompare :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Ordering
+compare :: ZList' a -&gt; ZList' a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+&lt; :: ZList' a -&gt; ZList' a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+&lt;= :: ZList' a -&gt; ZList' a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+&gt; :: ZList' a -&gt; ZList' a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; Bool
+&gt;= :: ZList' a -&gt; ZList' a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; ZList' a
+max :: ZList' a -&gt; ZList' a -&gt; ZList' a
+$cmin :: forall a. Ord a =&gt; ZList' a -&gt; ZList' a -&gt; ZList' a
+min :: ZList' a -&gt; ZList' a -&gt; ZList' a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077933"><span id="local-6989586621679077937"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; ZList' a -&gt; ZList' b)
+-&gt; (forall a b. a -&gt; ZList' b -&gt; ZList' a) -&gt; Functor ZList'
+forall a b. a -&gt; ZList' b -&gt; ZList' a
+forall a b. (a -&gt; b) -&gt; ZList' a -&gt; ZList' b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; ZList' a -&gt; ZList' b
+fmap :: forall a b. (a -&gt; b) -&gt; ZList' a -&gt; ZList' b
+$c&lt;$ :: forall a b. a -&gt; ZList' b -&gt; ZList' a
+&lt;$ :: forall a b. a -&gt; ZList' b -&gt; ZList' a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077942"><span id="local-6989586621679077948"><span id="local-6989586621679077956"><span id="local-6989586621679077961"><span id="local-6989586621679077964"><span id="local-6989586621679077967"><span id="local-6989586621679077970"><span id="local-6989586621679077973"><span id="local-6989586621679077976"><span id="local-6989586621679077979"><span id="local-6989586621679077982"><span id="local-6989586621679077984"><span id="local-6989586621679077987"><span id="local-6989586621679077992"><span id="local-6989586621679077997"><span id="local-6989586621679078002"><span id="local-6989586621679078007"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; ZList' m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a)
+-&gt; (forall a. ZList' a -&gt; [a])
+-&gt; (forall a. ZList' a -&gt; Bool)
+-&gt; (forall a. ZList' a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; ZList' a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; ZList' a -&gt; a)
+-&gt; (forall a. Ord a =&gt; ZList' a -&gt; a)
+-&gt; (forall a. Num a =&gt; ZList' a -&gt; a)
+-&gt; (forall a. Num a =&gt; ZList' a -&gt; a)
+-&gt; Foldable ZList'
+forall a. Eq a =&gt; a -&gt; ZList' a -&gt; Bool
+forall a. Num a =&gt; ZList' a -&gt; a
+forall a. Ord a =&gt; ZList' a -&gt; a
+forall m. Monoid m =&gt; ZList' m -&gt; m
+forall a. ZList' a -&gt; Bool
+forall a. ZList' a -&gt; Int
+forall a. ZList' a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; ZList' m -&gt; m
+fold :: forall m. Monoid m =&gt; ZList' m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ZList' a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ZList' a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; ZList' a -&gt; a
+$ctoList :: forall a. ZList' a -&gt; [a]
+toList :: forall a. ZList' a -&gt; [a]
+$cnull :: forall a. ZList' a -&gt; Bool
+null :: forall a. ZList' a -&gt; Bool
+$clength :: forall a. ZList' a -&gt; Int
+length :: forall a. ZList' a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; ZList' a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; ZList' a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; ZList' a -&gt; a
+maximum :: forall a. Ord a =&gt; ZList' a -&gt; a
+$cminimum :: forall a. Ord a =&gt; ZList' a -&gt; a
+minimum :: forall a. Ord a =&gt; ZList' a -&gt; a
+$csum :: forall a. Num a =&gt; ZList' a -&gt; a
+sum :: forall a. Num a =&gt; ZList' a -&gt; a
+$cproduct :: forall a. Num a =&gt; ZList' a -&gt; a
+product :: forall a. Num a =&gt; ZList' a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078017"><span id="local-6989586621679078027"><span id="local-6989586621679078033"><span id="local-6989586621679078038"><span class="annot"><span class="annottext">Functor ZList'
+Foldable ZList'
+(Functor ZList', Foldable ZList') =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; ZList' a -&gt; f (ZList' b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    ZList' (f a) -&gt; f (ZList' a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; ZList' a -&gt; m (ZList' b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    ZList' (m a) -&gt; m (ZList' a))
+-&gt; Traversable ZList'
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; ZList' (m a) -&gt; m (ZList' a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ZList' (f a) -&gt; f (ZList' a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ZList' a -&gt; m (ZList' b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ZList' a -&gt; f (ZList' b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ZList' a -&gt; f (ZList' b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ZList' a -&gt; f (ZList' b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ZList' (f a) -&gt; f (ZList' a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ZList' (f a) -&gt; f (ZList' a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ZList' a -&gt; m (ZList' b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ZList' a -&gt; m (ZList' b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; ZList' (m a) -&gt; m (ZList' a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; ZList' (m a) -&gt; m (ZList' a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span id="local-6989586621679077850"><span class="annot"><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-type">toZList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077850"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier hs-type">ZList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077850"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-11"></span><span id="toZList"><span class="annot"><span class="annottext">toZList :: forall a. ZList' a -&gt; ZList a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var hs-var">toZList</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-type">Zxz</span></a></span><span> </span><span id="local-6989586621679078045"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078045"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ZList a -&gt; ZList a
+forall a. a -&gt; ZList a -&gt; ZList a
+</span><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078045"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">ZList a
+forall a. ZList a
+</span><a href="Data.List.ZList.html#Zend"><span class="hs-identifier hs-var">Zend</span></a></span><span>
+</span><span id="line-12"></span><span class="annot"><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">toZList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-type">ZLong</span></a></span><span> </span><span id="local-6989586621679078046"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078046"><span class="hs-identifier hs-var">a0</span></a></span></span><span> </span><span id="local-6989586621679078047"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078047"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679078048"><span class="annot"><span class="annottext">ZList a
+</span><a href="#local-6989586621679078048"><span class="hs-keyword hs-var">as</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ZList a -&gt; ZList a
+forall a. a -&gt; ZList a -&gt; ZList a
+</span><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078046"><span class="hs-identifier hs-var">a0</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; ZList a -&gt; ZList a
+forall a. a -&gt; ZList a -&gt; ZList a
+</span><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078047"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">ZList a
+</span><a href="#local-6989586621679078048"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077857"><span id="local-6989586621679078051"><span id="local-6989586621679078055"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077857"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-type">Zxz</span></a></span><span> </span><span id="local-6989586621679078062"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078062"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679078063"><span class="annot"><span class="annottext">&lt;&gt; :: ZList' a -&gt; ZList' a -&gt; ZList' a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span class="annot"><span class="annottext">ZList' a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ZList' a
+forall a. a -&gt; ZList' a
+</span><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-var">Zxz</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078062"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-type">ZLong</span></a></span><span> </span><span id="local-6989586621679078064"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078064"><span class="hs-identifier hs-var">a0</span></a></span></span><span> </span><span id="local-6989586621679078065"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078065"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679078066"><span class="annot"><span class="annottext">ZList a
+</span><a href="#local-6989586621679078066"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span id="local-6989586621679078067"><span class="annot"><span class="annottext">ZList' a
+</span><a href="#local-6989586621679078067"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; ZList a -&gt; ZList' a
+forall a. a -&gt; a -&gt; ZList a -&gt; ZList' a
+</span><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-var">ZLong</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078064"><span class="hs-identifier hs-var">a0</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078065"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ZList a
+</span><a href="#local-6989586621679078066"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">ZList a -&gt; ZList a -&gt; ZList a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ZList' a -&gt; ZList a
+forall a. ZList' a -&gt; ZList a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">toZList</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' a
+</span><a href="#local-6989586621679078067"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span></pre></body></html>
