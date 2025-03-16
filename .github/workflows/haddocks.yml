@@ -34,12 +34,12 @@ jobs:
         with:
           path: main
       
-      - name: "Fetch polynomial-functors"
+      - name: "Fetch polynomial-functor"
         uses: actions/checkout@v4
         with:
-          repository: viercc/polynomial-functors
+          repository: viercc/polynomial-functor
           ref: main
-          path: projects/polynomial-functors
+          path: projects/polynomial-functor
       
       - name: "Fetch monad-gen"
         uses: actions/checkout@v4
