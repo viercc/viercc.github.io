@@ -112,8 +112,10 @@ jobs:
         uses: actions/cache/save@v4
         id: save-ghc
         with:
-          key: basis-${{ env.ghc-version }}
-          path: ~/.ghcup/
+          key: ghc-${{ env.ghc-version }}
+          path: |
+            /usr/local/.ghcup/
+            ~/.ghcup/
 
   publish-results:
     name: "Publish built docs"
