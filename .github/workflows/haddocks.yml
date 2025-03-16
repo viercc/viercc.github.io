@@ -8,7 +8,7 @@ on:
 
 env:
   ghc-version: 9.8.4
-  cabal-version: 3.12.1.0
+  cabal-version: 3.14.1.1
 
 jobs:
   build-docs:
@@ -82,7 +82,7 @@ jobs:
       - name: Copy
         shell: bash
         run: |
-          cp -a projects/monad-gen/doc-output site-root/haddocks/
+          cp -a projects/monad-gen/doc-output/* site-root/haddocks
       
       - name: Commit & Push
         run: |
