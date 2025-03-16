@@ -48,7 +48,7 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
         with:
-          path: main
+          path: site-root
       
       - name: "Fetch polynomial-functor"
         uses: actions/checkout@v4
@@ -72,15 +72,21 @@ jobs:
       - name: Build (monad-gen)
         shell: bash
         run: |
+          set -e
           cd projects/monad-gen
           cabal haddock all \
             "--haddock-output-dir=./doc-output" \
             "--haddock-hyperlink-source" \
             "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
-          cp -a doc-output/* ../../haddocks/
+      
+      - name: Copy
+        shell: bash
+        run: |
+          cp -a projects/monad-gen/doc-output/* site-root/haddocks/
       
       - name: Commit & Push
         run: |
+          cd site-root
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add haddocks
