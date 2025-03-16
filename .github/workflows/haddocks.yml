@@ -18,8 +18,8 @@ jobs:
       - name: Get Date
         id: get-date
         run: |
-          echo "date=$(/bin/date -u \"+%Y%m%d\")" >> $GITHUB_OUTPUT
-          echo "hour=$(/bin/date -u \"+%H\")" >> $GITHUB_OUTPUT
+          /bin/date -u "+date=%Y%m%d" >> $GITHUB_OUTPUT
+          /bin/date -u "+hour=%H" >> $GITHUB_OUTPUT
         shell: bash
       
       - name: Restore dependency cache
