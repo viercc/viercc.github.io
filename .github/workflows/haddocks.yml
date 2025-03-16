@@ -125,4 +125,5 @@ jobs:
           git push
           git switch -c publish
           git merge --ff master
+          git fetch origin/publish
           git push -u origin publish
