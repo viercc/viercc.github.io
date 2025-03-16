@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# OPTIONS_GHC -fplugin GHC.TypeLits.Normalise #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Functor.Polynomial</span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier">Poly</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Eq1</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">eq1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Ord1</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">compare1</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Type</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Type.Equality</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(:~:)</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SNat</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats.Extra</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Sized</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SV</span></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.GADT.Compare</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finitary</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.GADT.HasFinitary.html"><span class="hs-identifier">Data.GADT.HasFinitary</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- | Uniformly represented polynomial functor.</span><span>
+</span><span id="line-27"></span><span class="hs-comment">--</span><span>
+</span><span id="line-28"></span><span class="hs-comment">--   Given a @'HasFinitary' tag@ instance, @Poly tag@ is a polynomial functor.</span><span>
+</span><span id="line-29"></span><span class="hs-comment">--   When @tag@ is the inverse images of @&#945; :: U -&gt; Type@, @Poly@ is isomorphic to:</span><span>
+</span><span id="line-30"></span><span class="hs-comment">--</span><span>
+</span><span id="line-31"></span><span class="hs-comment">--   &gt; Poly tag x</span><span>
+</span><span id="line-32"></span><span class="hs-comment">--   &gt;  = &#8721;{n :: Type} (tag n, x^n)</span><span>
+</span><span id="line-33"></span><span class="hs-comment">--   &gt;  = &#8721;{n :: Type} &#8721;{u :: U, &#945;(u) == n} x^n</span><span>
+</span><span id="line-34"></span><span class="hs-comment">--   &gt;  = &#8721;{u :: U} x^(&#945;(u))</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">data</span><span> </span><span id="Poly"><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-var">Poly</span></a></span></span><span> </span><span id="local-6989586621679133856"><span class="annot"><a href="#local-6989586621679133856"><span class="hs-identifier hs-type">tag</span></a></span></span><span> </span><span id="local-6989586621679133857"><span class="annot"><a href="#local-6989586621679133857"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679133767"><span id="local-6989586621679133769"><span id="local-6989586621679133858"><span id="P"><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-var">P</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679133767"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133858"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133858"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133769"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133767"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133769"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span id="local-6989586621679133701"><span id="local-6989586621679133861"><span id="local-6989586621679133863"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133701"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133726"><span id="local-6989586621679133868"><span id="local-6989586621679133875"><span id="local-6989586621679133880"><span id="local-6989586621679133883"><span id="local-6989586621679133886"><span id="local-6989586621679133889"><span id="local-6989586621679133892"><span id="local-6989586621679133895"><span id="local-6989586621679133898"><span id="local-6989586621679133903"><span id="local-6989586621679133908"><span id="local-6989586621679133913"><span id="local-6989586621679133918"><span id="local-6989586621679133923"><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133726"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133726"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679133928"><span class="annot"><span class="annottext">null :: forall a. Poly tag a -&gt; Bool
+</span><a href="#local-6989586621679133928"><span class="hs-identifier hs-var hs-var hs-var hs-var">null</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679133931"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133931"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">tag n -&gt; SNat (Cardinality n)
+forall (tag :: * -&gt; *) a.
+HasFinitary tag =&gt;
+tag a -&gt; SNat (Cardinality a)
+</span><a href="Data.GADT.HasFinitary.html#toSNat"><span class="hs-identifier hs-var">toSNat</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133931"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><span class="annottext">SNat (Cardinality n)
+</span><span class="hs-identifier hs-var">Zero</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-44"></span><span>    </span><span class="annot"><span class="annottext">SNat (Cardinality n)
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679133935"><span class="annot"><span class="annottext">length :: forall a. Poly tag a -&gt; Int
+</span><a href="#local-6989586621679133935"><span class="hs-identifier hs-var hs-var hs-var hs-var">length</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679133942"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133942"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SNat (Cardinality n) -&gt; Natural
+forall (n :: Natural). SNat n -&gt; Natural
+</span><span class="hs-identifier hs-var">fromSNat</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">tag n -&gt; SNat (Cardinality n)
+forall (tag :: * -&gt; *) a.
+HasFinitary tag =&gt;
+tag a -&gt; SNat (Cardinality a)
+</span><a href="Data.GADT.HasFinitary.html#toSNat"><span class="hs-identifier hs-var">toSNat</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133942"><span class="hs-identifier hs-var">tag</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679133945"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Poly tag a -&gt; m
+</span><a href="#local-6989586621679133945"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldMap</span></a></span></span><span> </span><span id="local-6989586621679133947"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679133947"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679133952"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133952"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679133953"><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679133953"><span class="hs-identifier hs-var">rep</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(n -&gt; m) -&gt; [n] -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679133947"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; (n -&gt; a) -&gt; n -&gt; m
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679133953"><span class="hs-identifier hs-var">rep</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">tag n -&gt; [n]
+forall (tag :: * -&gt; *) a. HasFinitary tag =&gt; tag a -&gt; [a]
+</span><a href="Data.GADT.HasFinitary.html#toInhabitants"><span class="hs-identifier hs-var">toInhabitants</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133952"><span class="hs-identifier hs-var">tag</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133761"><span id="local-6989586621679133963"><span id="local-6989586621679133969"><span id="local-6989586621679133974"><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133761"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133761"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621679133982"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Poly tag a -&gt; f (Poly tag b)
+</span><a href="#local-6989586621679133982"><span class="hs-identifier hs-var hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679133984"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679133984"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679133987"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133987"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679133988"><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679133988"><span class="hs-identifier hs-var">rep</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">tag n -&gt; (n -&gt; b) -&gt; Poly tag b
+forall (tag :: * -&gt; *) n x. tag n -&gt; (n -&gt; x) -&gt; Poly tag x
+</span><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-var">P</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133987"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="annot"><span class="annottext">((n -&gt; b) -&gt; Poly tag b) -&gt; f (n -&gt; b) -&gt; f (Poly tag b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">tag n -&gt; (Finitary n =&gt; f (n -&gt; b)) -&gt; f (n -&gt; b)
+forall n r. tag n -&gt; (Finitary n =&gt; r) -&gt; r
+forall (tag :: * -&gt; *) n r.
+HasFinitary tag =&gt;
+tag n -&gt; (Finitary n =&gt; r) -&gt; r
+</span><a href="Data.GADT.HasFinitary.html#withFinitary"><span class="hs-identifier hs-var">withFinitary</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679133987"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; (n -&gt; a) -&gt; f (n -&gt; b)
+forall n (g :: * -&gt; *) a b.
+(Finitary n, Applicative g) =&gt;
+(a -&gt; g b) -&gt; (n -&gt; a) -&gt; g (n -&gt; b)
+</span><a href="Data.Functor.Polynomial.html#traverseFiniteFn"><span class="hs-identifier hs-var">traverseFiniteFn</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679133984"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679133988"><span class="hs-identifier hs-var">rep</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span id="local-6989586621679133777"><span id="local-6989586621679133778"><span id="local-6989586621679133779"><span id="local-6989586621679133780"><span class="annot"><a href="Data.Functor.Polynomial.html#traverseFiniteFn"><span class="hs-identifier hs-type">traverseFiniteFn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finitary</span></span><span> </span><span class="annot"><a href="#local-6989586621679133777"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679133778"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133779"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133778"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133780"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133777"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133779"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133778"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133777"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133780"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-53"></span><span id="traverseFiniteFn"><span class="annot"><span class="annottext">traverseFiniteFn :: forall n (g :: * -&gt; *) a b.
+(Finitary n, Applicative g) =&gt;
+(a -&gt; g b) -&gt; (n -&gt; a) -&gt; g (n -&gt; b)
+</span><a href="Data.Functor.Polynomial.html#traverseFiniteFn"><span class="hs-identifier hs-var hs-var">traverseFiniteFn</span></a></span></span><span> </span><span id="local-6989586621679134009"><span class="annot"><span class="annottext">a -&gt; g b
+</span><a href="#local-6989586621679134009"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679134010"><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134010"><span class="hs-identifier hs-var">fromN</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector (Cardinality n) b -&gt; n -&gt; b
+forall {a} {a}. Finitary a =&gt; Vector (Cardinality a) a -&gt; a -&gt; a
+</span><a href="#local-6989586621679134011"><span class="hs-identifier hs-var">indexByN</span></a></span><span> </span><span class="annot"><span class="annottext">(Vector (Cardinality n) b -&gt; n -&gt; b)
+-&gt; g (Vector (Cardinality n) b) -&gt; g (n -&gt; b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; g b)
+-&gt; Vector Vector (Cardinality n) a -&gt; g (Vector (Cardinality n) b)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b)
+-&gt; Vector Vector (Cardinality n) a
+-&gt; f (Vector Vector (Cardinality n) b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; g b
+</span><a href="#local-6989586621679134009"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Finite (Cardinality n) -&gt; a) -&gt; Vector Vector (Cardinality n) a
+forall (n :: Natural) a.
+KnownNat n =&gt;
+(Finite n -&gt; a) -&gt; Vector n a
+</span><span class="hs-identifier hs-var">SV.generate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134010"><span class="hs-identifier hs-var">fromN</span></a></span><span> </span><span class="annot"><span class="annottext">(n -&gt; a)
+-&gt; (Finite (Cardinality n) -&gt; n) -&gt; Finite (Cardinality n) -&gt; a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Finite (Cardinality n) -&gt; n
+forall a. Finitary a =&gt; Finite (Cardinality a) -&gt; a
+</span><span class="hs-identifier hs-var">fromFinite</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679134011"><span class="annot"><span class="annottext">indexByN :: Vector (Cardinality a) a -&gt; a -&gt; a
+</span><a href="#local-6989586621679134011"><span class="hs-identifier hs-var hs-var">indexByN</span></a></span></span><span> </span><span id="local-6989586621679134021"><span class="annot"><span class="annottext">Vector (Cardinality a) a
+</span><a href="#local-6989586621679134021"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679134022"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134022"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector (Cardinality a) a -&gt; Finite (Cardinality a) -&gt; a
+forall (n :: Natural) a. Vector n a -&gt; Finite n -&gt; a
+</span><span class="hs-identifier hs-var">SV.index</span></span><span> </span><span class="annot"><span class="annottext">Vector (Cardinality a) a
+</span><a href="#local-6989586621679134021"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Finite (Cardinality a)
+forall a. Finitary a =&gt; a -&gt; Finite (Cardinality a)
+</span><span class="hs-identifier hs-var">toFinite</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134022"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133802"><span id="local-6989586621679133803"><span id="local-6989586621679134030"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679133802"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">GEq</span></span><span> </span><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133802"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679134037"><span class="annot"><span class="annottext">== :: Poly tag x -&gt; Poly tag x -&gt; Bool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(==)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Poly tag x -&gt; Poly tag x -&gt; Bool
+forall (f :: * -&gt; *) a. (Eq1 f, Eq a) =&gt; f a -&gt; f a -&gt; Bool
+</span><span class="hs-identifier hs-var">eq1</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133805"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GEq</span></span><span> </span><span class="annot"><a href="#local-6989586621679133805"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133805"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133805"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679134044"><span class="annot"><span class="annottext">liftEq :: forall a b. (a -&gt; b -&gt; Bool) -&gt; Poly tag a -&gt; Poly tag b -&gt; Bool
+</span><a href="#local-6989586621679134044"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftEq</span></a></span></span><span> </span><span id="local-6989586621679134046"><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679134046"><span class="hs-identifier hs-var">eq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Poly tag a -&gt; Poly tag b -&gt; Bool
+</span><a href="#local-6989586621679134047"><span class="hs-identifier hs-var">eqP</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-63"></span><span>      </span><span id="local-6989586621679134047"><span class="annot"><span class="annottext">eqP :: Poly tag a -&gt; Poly tag b -&gt; Bool
+</span><a href="#local-6989586621679134047"><span class="hs-identifier hs-var hs-var">eqP</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679134048"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134048"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679134049"><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134049"><span class="hs-identifier hs-var">rep</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679134051"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134051"><span class="hs-identifier hs-var">tag'</span></a></span></span><span> </span><span id="local-6989586621679134052"><span class="annot"><span class="annottext">n -&gt; b
+</span><a href="#local-6989586621679134052"><span class="hs-identifier hs-var">rep'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">tag n -&gt; tag n -&gt; Maybe (n :~: n)
+forall a b. tag a -&gt; tag b -&gt; Maybe (a :~: b)
+forall k (f :: k -&gt; *) (a :: k) (b :: k).
+GEq f =&gt;
+f a -&gt; f b -&gt; Maybe (a :~: b)
+</span><span class="hs-identifier hs-var">geq</span></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134048"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134051"><span class="hs-identifier hs-var">tag'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-64"></span><span>        </span><span class="annot"><span class="annottext">Maybe (n :~: n)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-65"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">n :~: n
+</span><span class="hs-identifier hs-var">Refl</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(n -&gt; Bool) -&gt; [n] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134059"><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679134059"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134049"><span class="hs-identifier hs-var">rep</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679134059"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679134046"><span class="hs-operator hs-var">`eq`</span></a></span><span> </span><span class="annot"><span class="annottext">n -&gt; b
+</span><a href="#local-6989586621679134052"><span class="hs-identifier hs-var">rep'</span></a></span><span> </span><span class="annot"><span class="annottext">n
+n
+</span><a href="#local-6989586621679134059"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">tag n -&gt; [n]
+forall (tag :: * -&gt; *) a. HasFinitary tag =&gt; tag a -&gt; [a]
+</span><a href="Data.GADT.HasFinitary.html#toInhabitants"><span class="hs-identifier hs-var">toInhabitants</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134048"><span class="hs-identifier hs-var">tag</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | **Does not preserve** the order through 'toPoly' and 'fromPoly'</span></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133830"><span id="local-6989586621679133831"><span id="local-6989586621679134069"><span id="local-6989586621679134073"><span id="local-6989586621679134076"><span id="local-6989586621679134079"><span id="local-6989586621679134082"><span id="local-6989586621679134085"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679133830"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">GCompare</span></span><span> </span><span class="annot"><a href="#local-6989586621679133831"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133831"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133831"><span class="hs-identifier hs-type">tag</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133830"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>  </span><span id="local-6989586621679134093"><span class="annot"><span class="annottext">compare :: Poly tag x -&gt; Poly tag x -&gt; Ordering
+</span><a href="#local-6989586621679134093"><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Poly tag x -&gt; Poly tag x -&gt; Ordering
+forall (f :: * -&gt; *) a. (Ord1 f, Ord a) =&gt; f a -&gt; f a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare1</span></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><span class="hs-comment">-- | **Does not preserve** the order through 'toPoly' and 'fromPoly'</span></span><span>
+</span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133833"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GCompare</span></span><span> </span><span class="annot"><a href="#local-6989586621679133833"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.GADT.HasFinitary.html#HasFinitary"><span class="hs-identifier hs-type">HasFinitary</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133833"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#Poly"><span class="hs-identifier hs-type">Poly</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133833"><span class="hs-identifier hs-type">tag</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>  </span><span id="local-6989586621679134104"><span class="annot"><span class="annottext">liftCompare :: forall a b.
+(a -&gt; b -&gt; Ordering) -&gt; Poly tag a -&gt; Poly tag b -&gt; Ordering
+</span><a href="#local-6989586621679134104"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftCompare</span></a></span></span><span> </span><span id="local-6989586621679134106"><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679134106"><span class="hs-identifier hs-var">cmpX</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Poly tag a -&gt; Poly tag b -&gt; Ordering
+</span><a href="#local-6989586621679134107"><span class="hs-identifier hs-var">cmpP</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span>      </span><span id="local-6989586621679134107"><span class="annot"><span class="annottext">cmpP :: Poly tag a -&gt; Poly tag b -&gt; Ordering
+</span><a href="#local-6989586621679134107"><span class="hs-identifier hs-var hs-var">cmpP</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679134108"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134108"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span id="local-6989586621679134109"><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134109"><span class="hs-identifier hs-var">rep</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span> </span><span id="local-6989586621679134111"><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134111"><span class="hs-identifier hs-var">tag'</span></a></span></span><span> </span><span id="local-6989586621679134112"><span class="annot"><span class="annottext">n -&gt; b
+</span><a href="#local-6989586621679134112"><span class="hs-identifier hs-var">rep'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">tag n -&gt; tag n -&gt; GOrdering n n
+forall a b. tag a -&gt; tag b -&gt; GOrdering a b
+forall k (f :: k -&gt; *) (a :: k) (b :: k).
+GCompare f =&gt;
+f a -&gt; f b -&gt; GOrdering a b
+</span><span class="hs-identifier hs-var">gcompare</span></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134108"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134111"><span class="hs-identifier hs-var">tag'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-76"></span><span>        </span><span class="annot"><span class="annottext">GOrdering n n
+</span><span class="hs-identifier hs-var">GLT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span>
+</span><span id="line-77"></span><span>        </span><span class="annot"><span class="annottext">GOrdering n n
+</span><span class="hs-identifier hs-var">GEQ</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(n -&gt; Ordering -&gt; Ordering) -&gt; Ordering -&gt; [n] -&gt; Ordering
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: * -&gt; *) a b.
+Foldable t =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldr</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134122"><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679134123"><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679134123"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+</span><a href="#local-6989586621679134109"><span class="hs-identifier hs-var">rep</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679134106"><span class="hs-operator hs-var">`cmpX`</span></a></span><span> </span><span class="annot"><span class="annottext">n -&gt; b
+</span><a href="#local-6989586621679134112"><span class="hs-identifier hs-var">rep'</span></a></span><span> </span><span class="annot"><span class="annottext">n
+n
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><a href="#local-6989586621679134123"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">EQ</span></span><span> </span><span class="annot"><span class="annottext">([n] -&gt; Ordering) -&gt; [n] -&gt; Ordering
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">tag n -&gt; [n]
+forall (tag :: * -&gt; *) a. HasFinitary tag =&gt; tag a -&gt; [a]
+</span><a href="Data.GADT.HasFinitary.html#toInhabitants"><span class="hs-identifier hs-var">toInhabitants</span></a></span><span> </span><span class="annot"><span class="annottext">tag n
+</span><a href="#local-6989586621679134108"><span class="hs-identifier hs-var">tag</span></a></span><span>
+</span><span id="line-78"></span><span>        </span><span class="annot"><span class="annottext">GOrdering n n
+</span><span class="hs-identifier hs-var">GGT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span>
+</span><span id="line-79"></span></pre></body></html>

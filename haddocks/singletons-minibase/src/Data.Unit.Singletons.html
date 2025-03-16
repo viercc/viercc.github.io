@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Unit.Singletons</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Type</span></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons</span></span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Data.Unit.Singletons.html#SUnit"><span class="hs-identifier hs-type">SUnit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">data</span><span> </span><span id="SUnit"><span class="annot"><a href="Data.Unit.Singletons.html#SUnit"><span class="hs-identifier hs-var">SUnit</span></a></span></span><span> </span><span id="local-6989586621679086831"><span class="annot"><a href="#local-6989586621679086831"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-10"></span><span>  </span><span id="SU"><span class="annot"><a href="Data.Unit.Singletons.html#SU"><span class="hs-identifier hs-var">SU</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Unit.Singletons.html#SUnit"><span class="hs-identifier hs-type">SUnit</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Sing"><span class="annot"><span class="hs-identifier hs-var">Sing</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Unit.Singletons.html#SUnit"><span class="hs-identifier hs-type">SUnit</span></a></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679086836"><span class="annot"><span class="annottext">sing :: Sing '()
+</span><a href="#local-6989586621679086836"><span class="hs-identifier hs-var hs-var hs-var hs-var">sing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing '()
+SUnit '()
+</span><a href="Data.Unit.Singletons.html#SU"><span class="hs-identifier hs-var">SU</span></a></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingKind</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Demote"><span class="annot"><span class="hs-identifier hs-var">Demote</span></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span>  </span><span id="local-6989586621679086842"><span class="annot"><span class="annottext">fromSing :: forall (a :: ()). Sing a -&gt; Demote ()
+</span><a href="#local-6989586621679086842"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSing</span></a></span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>  </span><span id="local-6989586621679086844"><span class="annot"><span class="annottext">toSing :: Demote () -&gt; SomeSing ()
+</span><a href="#local-6989586621679086844"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSing</span></a></span></span><span> </span><span class="annot"><span class="annottext">Demote ()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing '() -&gt; SomeSing ()
+forall k (a :: k). Sing a -&gt; SomeSing k
+</span><span class="hs-identifier hs-var">SomeSing</span></span><span> </span><span class="annot"><span class="annottext">Sing '()
+SUnit '()
+</span><a href="Data.Unit.Singletons.html#SU"><span class="hs-identifier hs-var">SU</span></a></span></pre></body></html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.InternalCategory.Discrete</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.InternalCategory.html"><span class="hs-identifier">Data.InternalCategory</span></a></span><span>
+</span><span id="line-5"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Data.InternalQuiver.html#IQuiver"><span class="hs-identifier">IQuiver</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.InternalCategory.html#ICategory"><span class="hs-identifier">ICategory</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.InternalCategory.html#Path"><span class="hs-identifier">Path</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.html#Path"><span class="hs-identifier">Path</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">newtype</span><span> </span><span id="Disc"><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-var">Disc</span></a></span></span><span> </span><span id="local-6989586621679140440"><span class="annot"><a href="#local-6989586621679140440"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Disc"><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-var">Disc</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679140440"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679140445"><span id="local-6989586621679140450"><span id="local-6989586621679140454"><span class="annot"><span class="annottext">Int -&gt; Disc a -&gt; ShowS
+[Disc a] -&gt; ShowS
+Disc a -&gt; String
+(Int -&gt; Disc a -&gt; ShowS)
+-&gt; (Disc a -&gt; String) -&gt; ([Disc a] -&gt; ShowS) -&gt; Show (Disc a)
+forall a. Show a =&gt; Int -&gt; Disc a -&gt; ShowS
+forall a. Show a =&gt; [Disc a] -&gt; ShowS
+forall a. Show a =&gt; Disc a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Disc a -&gt; ShowS
+showsPrec :: Int -&gt; Disc a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; Disc a -&gt; String
+show :: Disc a -&gt; String
+$cshowList :: forall a. Show a =&gt; [Disc a] -&gt; ShowS
+showList :: [Disc a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140459"><span id="local-6989586621679140463"><span id="local-6989586621679140466"><span id="local-6989586621679140473"><span class="annot"><span class="annottext">ReadPrec [Disc a]
+ReadPrec (Disc a)
+Int -&gt; ReadS (Disc a)
+ReadS [Disc a]
+(Int -&gt; ReadS (Disc a))
+-&gt; ReadS [Disc a]
+-&gt; ReadPrec (Disc a)
+-&gt; ReadPrec [Disc a]
+-&gt; Read (Disc a)
+forall a. Read a =&gt; ReadPrec [Disc a]
+forall a. Read a =&gt; ReadPrec (Disc a)
+forall a. Read a =&gt; Int -&gt; ReadS (Disc a)
+forall a. Read a =&gt; ReadS [Disc a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (Disc a)
+readsPrec :: Int -&gt; ReadS (Disc a)
+$creadList :: forall a. Read a =&gt; ReadS [Disc a]
+readList :: ReadS [Disc a]
+$creadPrec :: forall a. Read a =&gt; ReadPrec (Disc a)
+readPrec :: ReadPrec (Disc a)
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [Disc a]
+readListPrec :: ReadPrec [Disc a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679140478"><span id="local-6989586621679140482"><span class="annot"><span class="annottext">Disc a -&gt; Disc a -&gt; Bool
+(Disc a -&gt; Disc a -&gt; Bool)
+-&gt; (Disc a -&gt; Disc a -&gt; Bool) -&gt; Eq (Disc a)
+forall a. Eq a =&gt; Disc a -&gt; Disc a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; Disc a -&gt; Disc a -&gt; Bool
+== :: Disc a -&gt; Disc a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Disc a -&gt; Disc a -&gt; Bool
+/= :: Disc a -&gt; Disc a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140492"><span id="local-6989586621679140496"><span id="local-6989586621679140500"><span id="local-6989586621679140504"><span id="local-6989586621679140508"><span id="local-6989586621679140512"><span id="local-6989586621679140516"><span class="annot"><span class="annottext">Eq (Disc a)
+Eq (Disc a) =&gt;
+(Disc a -&gt; Disc a -&gt; Ordering)
+-&gt; (Disc a -&gt; Disc a -&gt; Bool)
+-&gt; (Disc a -&gt; Disc a -&gt; Bool)
+-&gt; (Disc a -&gt; Disc a -&gt; Bool)
+-&gt; (Disc a -&gt; Disc a -&gt; Bool)
+-&gt; (Disc a -&gt; Disc a -&gt; Disc a)
+-&gt; (Disc a -&gt; Disc a -&gt; Disc a)
+-&gt; Ord (Disc a)
+Disc a -&gt; Disc a -&gt; Bool
+Disc a -&gt; Disc a -&gt; Ordering
+Disc a -&gt; Disc a -&gt; Disc a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Disc a)
+forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Bool
+forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Ordering
+forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Disc a
+$ccompare :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Ordering
+compare :: Disc a -&gt; Disc a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Bool
+&lt; :: Disc a -&gt; Disc a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Bool
+&lt;= :: Disc a -&gt; Disc a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Bool
+&gt; :: Disc a -&gt; Disc a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Bool
+&gt;= :: Disc a -&gt; Disc a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Disc a
+max :: Disc a -&gt; Disc a -&gt; Disc a
+$cmin :: forall a. Ord a =&gt; Disc a -&gt; Disc a -&gt; Disc a
+min :: Disc a -&gt; Disc a -&gt; Disc a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140524"><span id="local-6989586621679140528"><span id="local-6989586621679140532"><span id="local-6989586621679140536"><span id="local-6989586621679140540"><span id="local-6989586621679140544"><span id="local-6989586621679140548"><span id="local-6989586621679140552"><span class="annot"><span class="annottext">Int -&gt; Disc a
+Disc a -&gt; Int
+Disc a -&gt; [Disc a]
+Disc a -&gt; Disc a
+Disc a -&gt; Disc a -&gt; [Disc a]
+Disc a -&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+(Disc a -&gt; Disc a)
+-&gt; (Disc a -&gt; Disc a)
+-&gt; (Int -&gt; Disc a)
+-&gt; (Disc a -&gt; Int)
+-&gt; (Disc a -&gt; [Disc a])
+-&gt; (Disc a -&gt; Disc a -&gt; [Disc a])
+-&gt; (Disc a -&gt; Disc a -&gt; [Disc a])
+-&gt; (Disc a -&gt; Disc a -&gt; Disc a -&gt; [Disc a])
+-&gt; Enum (Disc a)
+forall a. Enum a =&gt; Int -&gt; Disc a
+forall a. Enum a =&gt; Disc a -&gt; Int
+forall a. Enum a =&gt; Disc a -&gt; [Disc a]
+forall a. Enum a =&gt; Disc a -&gt; Disc a
+forall a. Enum a =&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+forall a. Enum a =&gt; Disc a -&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+$csucc :: forall a. Enum a =&gt; Disc a -&gt; Disc a
+succ :: Disc a -&gt; Disc a
+$cpred :: forall a. Enum a =&gt; Disc a -&gt; Disc a
+pred :: Disc a -&gt; Disc a
+$ctoEnum :: forall a. Enum a =&gt; Int -&gt; Disc a
+toEnum :: Int -&gt; Disc a
+$cfromEnum :: forall a. Enum a =&gt; Disc a -&gt; Int
+fromEnum :: Disc a -&gt; Int
+$cenumFrom :: forall a. Enum a =&gt; Disc a -&gt; [Disc a]
+enumFrom :: Disc a -&gt; [Disc a]
+$cenumFromThen :: forall a. Enum a =&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+enumFromThen :: Disc a -&gt; Disc a -&gt; [Disc a]
+$cenumFromTo :: forall a. Enum a =&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+enumFromTo :: Disc a -&gt; Disc a -&gt; [Disc a]
+$cenumFromThenTo :: forall a. Enum a =&gt; Disc a -&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+enumFromThenTo :: Disc a -&gt; Disc a -&gt; Disc a -&gt; [Disc a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140559"><span id="local-6989586621679140563"><span class="annot"><span class="annottext">Disc a
+Disc a -&gt; Disc a -&gt; Bounded (Disc a)
+forall a. a -&gt; a -&gt; Bounded a
+forall a. Bounded a =&gt; Disc a
+$cminBound :: forall a. Bounded a =&gt; Disc a
+minBound :: Disc a
+$cmaxBound :: forall a. Bounded a =&gt; Disc a
+maxBound :: Disc a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679140433"><span class="annot"><a href="Data.InternalQuiver.html#IQuiver"><span class="hs-identifier hs-type">IQuiver</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140433"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-type">Disc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140433"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>  </span><span id="local-6989586621679140572"><span class="annot"><span class="annottext">src :: Disc a -&gt; a
+</span><a href="#local-6989586621679140572"><span class="hs-identifier hs-var hs-var hs-var hs-var">src</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-type">Disc</span></a></span><span> </span><span id="local-6989586621679140574"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140574"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140574"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span id="local-6989586621679140575"><span class="annot"><span class="annottext">tgt :: Disc a -&gt; a
+</span><a href="#local-6989586621679140575"><span class="hs-identifier hs-var hs-var hs-var hs-var">tgt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-type">Disc</span></a></span><span> </span><span id="local-6989586621679140577"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140577"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140577"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679140439"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679140439"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.InternalCategory.html#ICategory"><span class="hs-identifier hs-type">ICategory</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140439"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-type">Disc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140439"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>  </span><span id="local-6989586621679140584"><span class="annot"><span class="annottext">foldPath :: Path a (Disc a) -&gt; Disc a
+</span><a href="#local-6989586621679140584"><span class="hs-identifier hs-var hs-var hs-var hs-var">foldPath</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.InternalCategory.html#Path"><span class="hs-identifier hs-type">Path</span></a></span><span> </span><span id="local-6989586621679140586"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140586"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Disc a]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Disc a
+forall a. a -&gt; Disc a
+</span><a href="Data.InternalCategory.Discrete.html#Disc"><span class="hs-identifier hs-var">Disc</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140586"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-17"></span></pre></body></html>

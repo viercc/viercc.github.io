@@ -1,0 +1,768 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE MultiParamTypeClasses #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Functor.Flip1</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">AutoLift</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Reflected1</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Free</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MonadFree</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Type</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- | Swaps the order of parameters. 'Flip1' is like 'Data.Bifunctor.Flip.Flip' but has</span><span>
+</span><span id="line-22"></span><span class="hs-comment">--   an additional parameter.</span><span>
+</span><span id="line-23"></span><span class="hs-comment">--</span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- &gt; newtype Flip1 t a b c = Flip1 {unFlip1 :: t b a c}</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679126416"><span id="local-6989586621679126417"><span id="local-6989586621679126418"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126416"><span class="hs-identifier hs-type">k1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679126417"><span class="hs-identifier hs-type">k2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679126418"><span class="hs-identifier hs-type">k3</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679126417"><span class="hs-identifier hs-type">k2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679126416"><span class="hs-identifier hs-type">k1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679126418"><span class="hs-identifier hs-type">k3</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span></span></span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">newtype</span><span> </span><span id="Flip1"><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-var">Flip1</span></a></span></span><span> </span><span id="local-6989586621679126419"><span class="annot"><a href="#local-6989586621679126419"><span class="hs-identifier hs-type">t</span></a></span></span><span> </span><span id="local-6989586621679126420"><span class="annot"><a href="#local-6989586621679126420"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679126421"><span class="annot"><a href="#local-6989586621679126421"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679126422"><span class="annot"><a href="#local-6989586621679126422"><span class="hs-identifier hs-type">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Flip1"><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-var">Flip1</span></a></span></span><span> </span><span class="hs-special">{</span><span id="unFlip1"><span class="annot"><span class="annottext">forall k1 k2 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Flip1 t a b c -&gt; t b a c
+</span><a href="Data.Functor.Flip1.html#unFlip1"><span class="hs-identifier hs-var hs-var">unFlip1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679126419"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126421"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126420"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126422"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679126808"><span id="local-6989586621679126811"><span class="annot"><span class="annottext">Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+(Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool) -&gt; Eq (Flip1 t a b c)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Eq (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$c== :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Eq (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+== :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$c/= :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Eq (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+/= :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679126820"><span id="local-6989586621679126823"><span id="local-6989586621679126826"><span id="local-6989586621679126830"><span id="local-6989586621679126833"><span id="local-6989586621679126836"><span id="local-6989586621679126839"><span class="annot"><span class="annottext">Eq (Flip1 t a b c)
+Eq (Flip1 t a b c) =&gt;
+(Flip1 t a b c -&gt; Flip1 t a b c -&gt; Ordering)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c)
+-&gt; (Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c)
+-&gt; Ord (Flip1 t a b c)
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Ordering
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Eq (Flip1 t a b c)
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Ordering
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+$ccompare :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Ordering
+compare :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Ordering
+$c&lt; :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+&lt; :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$c&lt;= :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+&lt;= :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$c&gt; :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+&gt; :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$c&gt;= :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+&gt;= :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Bool
+$cmax :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+max :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+$cmin :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Ord (t b a c) =&gt;
+Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+min :: Flip1 t a b c -&gt; Flip1 t a b c -&gt; Flip1 t a b c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679126845"><span id="local-6989586621679126850"><span id="local-6989586621679126854"><span class="annot"><span class="annottext">Int -&gt; Flip1 t a b c -&gt; ShowS
+[Flip1 t a b c] -&gt; ShowS
+Flip1 t a b c -&gt; String
+(Int -&gt; Flip1 t a b c -&gt; ShowS)
+-&gt; (Flip1 t a b c -&gt; String)
+-&gt; ([Flip1 t a b c] -&gt; ShowS)
+-&gt; Show (Flip1 t a b c)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+Int -&gt; Flip1 t a b c -&gt; ShowS
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+[Flip1 t a b c] -&gt; ShowS
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+Flip1 t a b c -&gt; String
+$cshowsPrec :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+Int -&gt; Flip1 t a b c -&gt; ShowS
+showsPrec :: Int -&gt; Flip1 t a b c -&gt; ShowS
+$cshow :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+Flip1 t a b c -&gt; String
+show :: Flip1 t a b c -&gt; String
+$cshowList :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Show (t b a c) =&gt;
+[Flip1 t a b c] -&gt; ShowS
+showList :: [Flip1 t a b c] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679126859"><span id="local-6989586621679126863"><span id="local-6989586621679126866"><span id="local-6989586621679126875"><span class="annot"><span class="annottext">ReadPrec [Flip1 t a b c]
+ReadPrec (Flip1 t a b c)
+Int -&gt; ReadS (Flip1 t a b c)
+ReadS [Flip1 t a b c]
+(Int -&gt; ReadS (Flip1 t a b c))
+-&gt; ReadS [Flip1 t a b c]
+-&gt; ReadPrec (Flip1 t a b c)
+-&gt; ReadPrec [Flip1 t a b c]
+-&gt; Read (Flip1 t a b c)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadPrec [Flip1 t a b c]
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadPrec (Flip1 t a b c)
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+Int -&gt; ReadS (Flip1 t a b c)
+forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadS [Flip1 t a b c]
+$creadsPrec :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+Int -&gt; ReadS (Flip1 t a b c)
+readsPrec :: Int -&gt; ReadS (Flip1 t a b c)
+$creadList :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadS [Flip1 t a b c]
+readList :: ReadS [Flip1 t a b c]
+$creadPrec :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadPrec (Flip1 t a b c)
+readPrec :: ReadPrec (Flip1 t a b c)
+$creadListPrec :: forall k2 k1 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Read (t b a c) =&gt;
+ReadPrec [Flip1 t a b c]
+readListPrec :: ReadPrec [Flip1 t a b c]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679126888"><span id="local-6989586621679126895"><span id="local-6989586621679126901"><span id="local-6989586621679126906"><span class="annot"><span class="annottext">Functor (Flip1 t a b)
+Foldable (Flip1 t a b)
+(Functor (Flip1 t a b), Foldable (Flip1 t a b)) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; Flip1 t a b a -&gt; f (Flip1 t a b b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    Flip1 t a b (f a) -&gt; f (Flip1 t a b a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; Flip1 t a b a -&gt; m (Flip1 t a b b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    Flip1 t a b (m a) -&gt; m (Flip1 t a b a))
+-&gt; Traversable (Flip1 t a b)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1).
+Traversable (t b a) =&gt;
+Functor (Flip1 t a b)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1).
+Traversable (t b a) =&gt;
+Foldable (Flip1 t a b)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (m :: * -&gt; *) a.
+(Traversable (t b a), Monad m) =&gt;
+Flip1 t a b (m a) -&gt; m (Flip1 t a b a)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (f :: * -&gt; *) a.
+(Traversable (t b a), Applicative f) =&gt;
+Flip1 t a b (f a) -&gt; f (Flip1 t a b a)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (m :: * -&gt; *) a b.
+(Traversable (t b a), Monad m) =&gt;
+(a -&gt; m b) -&gt; Flip1 t a b a -&gt; m (Flip1 t a b b)
+forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (f :: * -&gt; *) a b.
+(Traversable (t b a), Applicative f) =&gt;
+(a -&gt; f b) -&gt; Flip1 t a b a -&gt; f (Flip1 t a b b)
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a.
+Monad m =&gt;
+Flip1 t a b (m a) -&gt; m (Flip1 t a b a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Flip1 t a b (f a) -&gt; f (Flip1 t a b a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Flip1 t a b a -&gt; m (Flip1 t a b b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Flip1 t a b a -&gt; f (Flip1 t a b b)
+$ctraverse :: forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (f :: * -&gt; *) a b.
+(Traversable (t b a), Applicative f) =&gt;
+(a -&gt; f b) -&gt; Flip1 t a b a -&gt; f (Flip1 t a b b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Flip1 t a b a -&gt; f (Flip1 t a b b)
+$csequenceA :: forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (f :: * -&gt; *) a.
+(Traversable (t b a), Applicative f) =&gt;
+Flip1 t a b (f a) -&gt; f (Flip1 t a b a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Flip1 t a b (f a) -&gt; f (Flip1 t a b a)
+$cmapM :: forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (m :: * -&gt; *) a b.
+(Traversable (t b a), Monad m) =&gt;
+(a -&gt; m b) -&gt; Flip1 t a b a -&gt; m (Flip1 t a b b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Flip1 t a b a -&gt; m (Flip1 t a b b)
+$csequence :: forall k2 k1 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (a :: k2) (b :: k1)
+       (m :: * -&gt; *) a.
+(Traversable (t b a), Monad m) =&gt;
+Flip1 t a b (m a) -&gt; m (Flip1 t a b a)
+sequence :: forall (m :: * -&gt; *) a.
+Monad m =&gt;
+Flip1 t a b (m a) -&gt; m (Flip1 t a b a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621679126916"><span id="local-6989586621679126920"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b)
+-&gt; (forall a b. a -&gt; Flip1 t a b b -&gt; Flip1 t a b a)
+-&gt; Functor (Flip1 t a b)
+forall a b. a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+forall a b. (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Functor (t b a) =&gt;
+a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Functor (t b a) =&gt;
+(a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Functor (t b a) =&gt;
+(a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+fmap :: forall a b. (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+$c&lt;$ :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Functor (t b a) =&gt;
+a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+&lt;$ :: forall a b. a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679126928"><span class="annot"><span class="annottext">(forall a. Eq a =&gt; Eq (Flip1 t a b a)) =&gt;
+(forall a b.
+ (a -&gt; b -&gt; Bool) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Bool)
+-&gt; Eq1 (Flip1 t a b)
+forall a. Eq a =&gt; Eq (Flip1 t a b a)
+forall a b.
+(a -&gt; b -&gt; Bool) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Bool
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Eq1 (t b a), Eq a) =&gt;
+Eq (Flip1 t a b a)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Eq1 (t b a) =&gt;
+(a -&gt; b -&gt; Bool) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Bool
+forall (f :: * -&gt; *).
+(forall a. Eq a =&gt; Eq (f a)) =&gt;
+(forall a b. (a -&gt; b -&gt; Bool) -&gt; f a -&gt; f b -&gt; Bool) -&gt; Eq1 f
+$cliftEq :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Eq1 (t b a) =&gt;
+(a -&gt; b -&gt; Bool) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Bool
+liftEq :: forall a b.
+(a -&gt; b -&gt; Bool) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">Eq1</span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679126942"><span class="annot"><span class="annottext">Eq1 (Flip1 t a b)
+(Eq1 (Flip1 t a b), forall a. Ord a =&gt; Ord (Flip1 t a b a)) =&gt;
+(forall a b.
+ (a -&gt; b -&gt; Ordering) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Ordering)
+-&gt; Ord1 (Flip1 t a b)
+forall a. Ord a =&gt; Ord (Flip1 t a b a)
+forall a b.
+(a -&gt; b -&gt; Ordering) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Ordering
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+Ord1 (t b a) =&gt;
+Eq1 (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Ord1 (t b a), Ord a) =&gt;
+Ord (Flip1 t a b a)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Ord1 (t b a) =&gt;
+(a -&gt; b -&gt; Ordering) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Ordering
+forall (f :: * -&gt; *).
+(Eq1 f, forall a. Ord a =&gt; Ord (f a)) =&gt;
+(forall a b. (a -&gt; b -&gt; Ordering) -&gt; f a -&gt; f b -&gt; Ordering)
+-&gt; Ord1 f
+$cliftCompare :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Ord1 (t b a) =&gt;
+(a -&gt; b -&gt; Ordering) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Ordering
+liftCompare :: forall a b.
+(a -&gt; b -&gt; Ordering) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Ordering
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Ord1</span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>      </span><span id="local-6989586621679126954"><span id="local-6989586621679126962"><span id="local-6989586621679126970"><span id="local-6989586621679126976"><span id="local-6989586621679126980"><span id="local-6989586621679126984"><span id="local-6989586621679126988"><span id="local-6989586621679126992"><span id="local-6989586621679126996"><span id="local-6989586621679127000"><span id="local-6989586621679127004"><span id="local-6989586621679127008"><span id="local-6989586621679127014"><span id="local-6989586621679127022"><span id="local-6989586621679127030"><span id="local-6989586621679127038"><span id="local-6989586621679127046"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Flip1 t a b m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Flip1 t a b a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Flip1 t a b a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a)
+-&gt; (forall a. Flip1 t a b a -&gt; [a])
+-&gt; (forall a. Flip1 t a b a -&gt; Bool)
+-&gt; (forall a. Flip1 t a b a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Flip1 t a b a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Flip1 t a b a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Flip1 t a b a -&gt; a)
+-&gt; (forall a. Num a =&gt; Flip1 t a b a -&gt; a)
+-&gt; (forall a. Num a =&gt; Flip1 t a b a -&gt; a)
+-&gt; Foldable (Flip1 t a b)
+forall a. Eq a =&gt; a -&gt; Flip1 t a b a -&gt; Bool
+forall a. Num a =&gt; Flip1 t a b a -&gt; a
+forall a. Ord a =&gt; Flip1 t a b a -&gt; a
+forall m. Monoid m =&gt; Flip1 t a b m -&gt; m
+forall a. Flip1 t a b a -&gt; Bool
+forall a. Flip1 t a b a -&gt; Int
+forall a. Flip1 t a b a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Eq a) =&gt;
+a -&gt; Flip1 t a b a -&gt; Bool
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Num a) =&gt;
+Flip1 t a b a -&gt; a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Ord a) =&gt;
+Flip1 t a b a -&gt; a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) m.
+(Foldable (t b a), Monoid m) =&gt;
+Flip1 t a b m -&gt; m
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; Bool
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; Int
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; [a]
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+(a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) m a.
+(Foldable (t b a), Monoid m) =&gt;
+(a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) b a.
+Foldable (t b a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Foldable (t b a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) m.
+(Foldable (t b a), Monoid m) =&gt;
+Flip1 t a b m -&gt; m
+fold :: forall m. Monoid m =&gt; Flip1 t a b m -&gt; m
+$cfoldMap :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) m a.
+(Foldable (t b a), Monoid m) =&gt;
+(a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+$cfoldMap' :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) m a.
+(Foldable (t b a), Monoid m) =&gt;
+(a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Flip1 t a b a -&gt; m
+$cfoldr :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Foldable (t b a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+$cfoldr' :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Foldable (t b a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+$cfoldl :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) b a.
+Foldable (t b a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+$cfoldl' :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) b a.
+Foldable (t b a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Flip1 t a b a -&gt; b
+$cfoldr1 :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+(a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+$cfoldl1 :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+(a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Flip1 t a b a -&gt; a
+$ctoList :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; [a]
+toList :: forall a. Flip1 t a b a -&gt; [a]
+$cnull :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; Bool
+null :: forall a. Flip1 t a b a -&gt; Bool
+$clength :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Foldable (t b a) =&gt;
+Flip1 t a b a -&gt; Int
+length :: forall a. Flip1 t a b a -&gt; Int
+$celem :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Eq a) =&gt;
+a -&gt; Flip1 t a b a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; Flip1 t a b a -&gt; Bool
+$cmaximum :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Ord a) =&gt;
+Flip1 t a b a -&gt; a
+maximum :: forall a. Ord a =&gt; Flip1 t a b a -&gt; a
+$cminimum :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Ord a) =&gt;
+Flip1 t a b a -&gt; a
+minimum :: forall a. Ord a =&gt; Flip1 t a b a -&gt; a
+$csum :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Num a) =&gt;
+Flip1 t a b a -&gt; a
+sum :: forall a. Num a =&gt; Flip1 t a b a -&gt; a
+$cproduct :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+(Foldable (t b a), Num a) =&gt;
+Flip1 t a b a -&gt; a
+product :: forall a. Num a =&gt; Flip1 t a b a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-33"></span><span>      </span><span id="local-6989586621679127057"><span id="local-6989586621679127061"><span id="local-6989586621679127065"><span id="local-6989586621679127069"><span id="local-6989586621679127073"><span class="annot"><span class="annottext">Functor (Flip1 t a b)
+Functor (Flip1 t a b) =&gt;
+(forall a. a -&gt; Flip1 t a b a)
+-&gt; (forall a b.
+    Flip1 t a b (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b c)
+-&gt; (forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b)
+-&gt; (forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b a)
+-&gt; Applicative (Flip1 t a b)
+forall a. a -&gt; Flip1 t a b a
+forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+forall a b. Flip1 t a b (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+forall a b c.
+(a -&gt; b -&gt; c) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b c
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+Applicative (t b a) =&gt;
+Functor (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Applicative (t b a) =&gt;
+a -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b c.
+Applicative (t b a) =&gt;
+(a -&gt; b -&gt; c) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+$cpure :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Applicative (t b a) =&gt;
+a -&gt; Flip1 t a b a
+pure :: forall a. a -&gt; Flip1 t a b a
+$c&lt;*&gt; :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+&lt;*&gt; :: forall a b. Flip1 t a b (a -&gt; b) -&gt; Flip1 t a b a -&gt; Flip1 t a b b
+$cliftA2 :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b c.
+Applicative (t b a) =&gt;
+(a -&gt; b -&gt; c) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b c
+liftA2 :: forall a b c.
+(a -&gt; b -&gt; c) -&gt; Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b c
+$c*&gt; :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+*&gt; :: forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+$c&lt;* :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Applicative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+&lt;* :: forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-34"></span><span>      </span><span id="local-6989586621679127083"><span id="local-6989586621679127087"><span id="local-6989586621679127091"><span id="local-6989586621679127095"><span class="annot"><span class="annottext">Applicative (Flip1 t a b)
+Applicative (Flip1 t a b) =&gt;
+(forall a. Flip1 t a b a)
+-&gt; (forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a)
+-&gt; (forall a. Flip1 t a b a -&gt; Flip1 t a b [a])
+-&gt; (forall a. Flip1 t a b a -&gt; Flip1 t a b [a])
+-&gt; Alternative (Flip1 t a b)
+forall a. Flip1 t a b a
+forall a. Flip1 t a b a -&gt; Flip1 t a b [a]
+forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+Alternative (t b a) =&gt;
+Applicative (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b [a]
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+forall (f :: * -&gt; *).
+Applicative f =&gt;
+(forall a. f a)
+-&gt; (forall a. f a -&gt; f a -&gt; f a)
+-&gt; (forall a. f a -&gt; f [a])
+-&gt; (forall a. f a -&gt; f [a])
+-&gt; Alternative f
+$cempty :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a
+empty :: forall a. Flip1 t a b a
+$c&lt;|&gt; :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+&lt;|&gt; :: forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+$csome :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b [a]
+some :: forall a. Flip1 t a b a -&gt; Flip1 t a b [a]
+$cmany :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Alternative (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b [a]
+many :: forall a. Flip1 t a b a -&gt; Flip1 t a b [a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Alternative</span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679127106"><span id="local-6989586621679127110"><span id="local-6989586621679127114"><span class="annot"><span class="annottext">Applicative (Flip1 t a b)
+Applicative (Flip1 t a b) =&gt;
+(forall a b.
+ Flip1 t a b a -&gt; (a -&gt; Flip1 t a b b) -&gt; Flip1 t a b b)
+-&gt; (forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b)
+-&gt; (forall a. a -&gt; Flip1 t a b a)
+-&gt; Monad (Flip1 t a b)
+forall a. a -&gt; Flip1 t a b a
+forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+forall a b. Flip1 t a b a -&gt; (a -&gt; Flip1 t a b b) -&gt; Flip1 t a b b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+Monad (t b a) =&gt;
+Applicative (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Monad (t b a) =&gt;
+a -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Monad (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Monad (t b a) =&gt;
+Flip1 t a b a -&gt; (a -&gt; Flip1 t a b b) -&gt; Flip1 t a b b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+$c&gt;&gt;= :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Monad (t b a) =&gt;
+Flip1 t a b a -&gt; (a -&gt; Flip1 t a b b) -&gt; Flip1 t a b b
+&gt;&gt;= :: forall a b. Flip1 t a b a -&gt; (a -&gt; Flip1 t a b b) -&gt; Flip1 t a b b
+$c&gt;&gt; :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a b.
+Monad (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+&gt;&gt; :: forall a b. Flip1 t a b a -&gt; Flip1 t a b b -&gt; Flip1 t a b b
+$creturn :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+Monad (t b a) =&gt;
+a -&gt; Flip1 t a b a
+return :: forall a. a -&gt; Flip1 t a b a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-36"></span><span>      </span><span id="local-6989586621679127128"><span id="local-6989586621679127132"><span class="annot"><span class="annottext">Monad (Flip1 t a b)
+Alternative (Flip1 t a b)
+(Alternative (Flip1 t a b), Monad (Flip1 t a b)) =&gt;
+(forall a. Flip1 t a b a)
+-&gt; (forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a)
+-&gt; MonadPlus (Flip1 t a b)
+forall a. Flip1 t a b a
+forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+MonadPlus (t b a) =&gt;
+Monad (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+MonadPlus (t b a) =&gt;
+Alternative (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadPlus (t b a) =&gt;
+Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadPlus (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+forall (m :: * -&gt; *).
+(Alternative m, Monad m) =&gt;
+(forall a. m a) -&gt; (forall a. m a -&gt; m a -&gt; m a) -&gt; MonadPlus m
+$cmzero :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadPlus (t b a) =&gt;
+Flip1 t a b a
+mzero :: forall a. Flip1 t a b a
+$cmplus :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadPlus (t b a) =&gt;
+Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+mplus :: forall a. Flip1 t a b a -&gt; Flip1 t a b a -&gt; Flip1 t a b a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">MonadPlus</span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621679127144"><span class="annot"><span class="annottext">Monad (Flip1 t a b)
+Monad (Flip1 t a b) =&gt;
+(forall a. String -&gt; Flip1 t a b a) -&gt; MonadFail (Flip1 t a b)
+forall a. String -&gt; Flip1 t a b a
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2).
+MonadFail (t b a) =&gt;
+Monad (Flip1 t a b)
+forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadFail (t b a) =&gt;
+String -&gt; Flip1 t a b a
+forall (m :: * -&gt; *).
+Monad m =&gt;
+(forall a. String -&gt; m a) -&gt; MonadFail m
+$cfail :: forall k1 k2 (t :: k1 -&gt; k2 -&gt; * -&gt; *) (b :: k1) (a :: k2) a.
+MonadFail (t b a) =&gt;
+String -&gt; Flip1 t a b a
+fail :: forall a. String -&gt; Flip1 t a b a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">MonadFail</span></span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126419"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126421"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126420"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span id="local-6989586621679127155"><span id="local-6989586621679127162"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679126753"><span id="local-6989586621679126754"><span id="local-6989586621679126755"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Reflected1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126753"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126754"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679126740"><span class="annot"><a href="#local-6989586621679126740"><span class="hs-identifier hs-type">c</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679126740"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126753"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126754"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126740"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-45"></span><span>      </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679126741"><span class="annot"><a href="#local-6989586621679126741"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679126742"><span class="annot"><a href="#local-6989586621679126742"><span class="hs-identifier hs-type">y</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="annot"><a href="#local-6989586621679126741"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126742"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126753"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126754"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126741"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126753"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126754"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126742"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Show1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126753"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126754"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span id="local-6989586621679127174"><span id="local-6989586621679127181"><span id="local-6989586621679127187"><span id="local-6989586621679127193"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621679126781"><span id="local-6989586621679126782"><span id="local-6989586621679126783"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Reflected1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126781"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126783"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126782"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679126767"><span class="annot"><a href="#local-6989586621679126767"><span class="hs-identifier hs-type">c</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="annot"><a href="#local-6989586621679126767"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126781"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126782"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126783"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126767"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-53"></span><span>      </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679126768"><span class="annot"><a href="#local-6989586621679126768"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span id="local-6989586621679126769"><span class="annot"><a href="#local-6989586621679126769"><span class="hs-identifier hs-type">y</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="annot"><a href="#local-6989586621679126768"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126769"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Coercible</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126781"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126782"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126783"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126768"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126781"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126782"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126783"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126769"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Read1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126781"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126783"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126782"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679126796"><span id="local-6989586621679126797"><span id="local-6989586621679126798"><span id="local-6989586621679126799"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679126796"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadFree</span></span><span> </span><span class="annot"><a href="#local-6989586621679126796"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679126797"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126798"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126799"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadFree</span></span><span> </span><span class="annot"><a href="#local-6989586621679126796"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-type">Flip1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126797"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126799"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679126798"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679127211"><span class="annot"><span class="annottext">wrap :: forall a. h (Flip1 t f g a) -&gt; Flip1 t f g a
+</span><a href="#local-6989586621679127211"><span class="hs-identifier hs-var hs-var hs-var hs-var">wrap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t g f a -&gt; Flip1 t f g a
+forall k1 k2 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+t b a c -&gt; Flip1 t a b c
+</span><a href="Data.Functor.Flip1.html#Flip1"><span class="hs-identifier hs-var">Flip1</span></a></span><span> </span><span class="annot"><span class="annottext">(t g f a -&gt; Flip1 t f g a)
+-&gt; (h (Flip1 t f g a) -&gt; t g f a)
+-&gt; h (Flip1 t f g a)
+-&gt; Flip1 t f g a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">h (t g f a) -&gt; t g f a
+forall a. h (t g f a) -&gt; t g f a
+forall (f :: * -&gt; *) (m :: * -&gt; *) a.
+MonadFree f m =&gt;
+f (m a) -&gt; m a
+</span><span class="hs-identifier hs-var">wrap</span></span><span> </span><span class="annot"><span class="annottext">(h (t g f a) -&gt; t g f a)
+-&gt; (h (Flip1 t f g a) -&gt; h (t g f a))
+-&gt; h (Flip1 t f g a)
+-&gt; t g f a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Flip1 t f g a -&gt; t g f a) -&gt; h (Flip1 t f g a) -&gt; h (t g f a)
+forall a b. (a -&gt; b) -&gt; h a -&gt; h b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Flip1 t f g a -&gt; t g f a
+forall k1 k2 k3 (t :: k1 -&gt; k2 -&gt; k3 -&gt; *) (a :: k2) (b :: k1)
+       (c :: k3).
+Flip1 t a b c -&gt; t b a c
+</span><a href="Data.Functor.Flip1.html#unFlip1"><span class="hs-identifier hs-var">unFlip1</span></a></span><span>
+</span><span id="line-59"></span></pre></body></html>

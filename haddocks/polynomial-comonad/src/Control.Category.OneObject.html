@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Category.OneObject</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">id</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Category</span></span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">newtype</span><span> </span><span id="OneObject"><span class="annot"><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-var">OneObject</span></a></span></span><span> </span><span id="local-6989586621679138263"><span class="annot"><a href="#local-6989586621679138263"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679138264"><span class="annot"><a href="#local-6989586621679138264"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679138265"><span class="annot"><a href="#local-6989586621679138265"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="OneObject"><span class="annot"><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-var">OneObject</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679138263"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-9"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679138274"><span id="local-6989586621679138279"><span id="local-6989586621679138283"><span class="annot"><span class="annottext">Int -&gt; OneObject m a b -&gt; ShowS
+[OneObject m a b] -&gt; ShowS
+OneObject m a b -&gt; String
+(Int -&gt; OneObject m a b -&gt; ShowS)
+-&gt; (OneObject m a b -&gt; String)
+-&gt; ([OneObject m a b] -&gt; ShowS)
+-&gt; Show (OneObject m a b)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall m (a :: ()) (b :: ()).
+Show m =&gt;
+Int -&gt; OneObject m a b -&gt; ShowS
+forall m (a :: ()) (b :: ()). Show m =&gt; [OneObject m a b] -&gt; ShowS
+forall m (a :: ()) (b :: ()). Show m =&gt; OneObject m a b -&gt; String
+$cshowsPrec :: forall m (a :: ()) (b :: ()).
+Show m =&gt;
+Int -&gt; OneObject m a b -&gt; ShowS
+showsPrec :: Int -&gt; OneObject m a b -&gt; ShowS
+$cshow :: forall m (a :: ()) (b :: ()). Show m =&gt; OneObject m a b -&gt; String
+show :: OneObject m a b -&gt; String
+$cshowList :: forall m (a :: ()) (b :: ()). Show m =&gt; [OneObject m a b] -&gt; ShowS
+showList :: [OneObject m a b] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679138288"><span id="local-6989586621679138292"><span class="annot"><span class="annottext">OneObject m a b -&gt; OneObject m a b -&gt; Bool
+(OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; Eq (OneObject m a b)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall m (a :: ()) (b :: ()).
+Eq m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$c== :: forall m (a :: ()) (b :: ()).
+Eq m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+== :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$c/= :: forall m (a :: ()) (b :: ()).
+Eq m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+/= :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679138302"><span id="local-6989586621679138306"><span id="local-6989586621679138310"><span id="local-6989586621679138314"><span id="local-6989586621679138318"><span id="local-6989586621679138322"><span id="local-6989586621679138326"><span class="annot"><span class="annottext">Eq (OneObject m a b)
+Eq (OneObject m a b) =&gt;
+(OneObject m a b -&gt; OneObject m a b -&gt; Ordering)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; Bool)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b)
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b)
+-&gt; Ord (OneObject m a b)
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+OneObject m a b -&gt; OneObject m a b -&gt; Ordering
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall m (a :: ()) (b :: ()). Ord m =&gt; Eq (OneObject m a b)
+forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Ordering
+forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+$ccompare :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Ordering
+compare :: OneObject m a b -&gt; OneObject m a b -&gt; Ordering
+$c&lt; :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+&lt; :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$c&lt;= :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+&lt;= :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$c&gt; :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+&gt; :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$c&gt;= :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; Bool
+&gt;= :: OneObject m a b -&gt; OneObject m a b -&gt; Bool
+$cmax :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+max :: OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+$cmin :: forall m (a :: ()) (b :: ()).
+Ord m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+min :: OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679138334"><span id="local-6989586621679138338"><span id="local-6989586621679138344"><span class="annot"><span class="annottext">NonEmpty (OneObject m a b) -&gt; OneObject m a b
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+(OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b)
+-&gt; (NonEmpty (OneObject m a b) -&gt; OneObject m a b)
+-&gt; (forall b.
+    Integral b =&gt;
+    b -&gt; OneObject m a b -&gt; OneObject m a b)
+-&gt; Semigroup (OneObject m a b)
+forall b. Integral b =&gt; b -&gt; OneObject m a b -&gt; OneObject m a b
+forall a.
+(a -&gt; a -&gt; a)
+-&gt; (NonEmpty a -&gt; a)
+-&gt; (forall b. Integral b =&gt; b -&gt; a -&gt; a)
+-&gt; Semigroup a
+forall m (a :: ()) (b :: ()).
+Semigroup m =&gt;
+NonEmpty (OneObject m a b) -&gt; OneObject m a b
+forall m (a :: ()) (b :: ()).
+Semigroup m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+forall m (a :: ()) (b :: ()) b.
+(Semigroup m, Integral b) =&gt;
+b -&gt; OneObject m a b -&gt; OneObject m a b
+$c&lt;&gt; :: forall m (a :: ()) (b :: ()).
+Semigroup m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+&lt;&gt; :: OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+$csconcat :: forall m (a :: ()) (b :: ()).
+Semigroup m =&gt;
+NonEmpty (OneObject m a b) -&gt; OneObject m a b
+sconcat :: NonEmpty (OneObject m a b) -&gt; OneObject m a b
+$cstimes :: forall m (a :: ()) (b :: ()) b.
+(Semigroup m, Integral b) =&gt;
+b -&gt; OneObject m a b -&gt; OneObject m a b
+stimes :: forall b. Integral b =&gt; b -&gt; OneObject m a b -&gt; OneObject m a b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679138356"><span id="local-6989586621679138360"><span id="local-6989586621679138364"><span class="annot"><span class="annottext">Semigroup (OneObject m a b)
+OneObject m a b
+Semigroup (OneObject m a b) =&gt;
+OneObject m a b
+-&gt; (OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b)
+-&gt; ([OneObject m a b] -&gt; OneObject m a b)
+-&gt; Monoid (OneObject m a b)
+[OneObject m a b] -&gt; OneObject m a b
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+forall a.
+Semigroup a =&gt;
+a -&gt; (a -&gt; a -&gt; a) -&gt; ([a] -&gt; a) -&gt; Monoid a
+forall m (a :: ()) (b :: ()).
+Monoid m =&gt;
+Semigroup (OneObject m a b)
+forall m (a :: ()) (b :: ()). Monoid m =&gt; OneObject m a b
+forall m (a :: ()) (b :: ()).
+Monoid m =&gt;
+[OneObject m a b] -&gt; OneObject m a b
+forall m (a :: ()) (b :: ()).
+Monoid m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+$cmempty :: forall m (a :: ()) (b :: ()). Monoid m =&gt; OneObject m a b
+mempty :: OneObject m a b
+$cmappend :: forall m (a :: ()) (b :: ()).
+Monoid m =&gt;
+OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+mappend :: OneObject m a b -&gt; OneObject m a b -&gt; OneObject m a b
+$cmconcat :: forall m (a :: ()) (b :: ()).
+Monoid m =&gt;
+[OneObject m a b] -&gt; OneObject m a b
+mconcat :: [OneObject m a b] -&gt; OneObject m a b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679138261"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679138261"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Category</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-type">OneObject</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679138261"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>    </span><span id="local-6989586621679138377"><span class="annot"><span class="annottext">id :: forall (a :: ()). OneObject m a a
+</span><a href="#local-6989586621679138377"><span class="hs-identifier hs-var hs-var hs-var hs-var">id</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m -&gt; OneObject m a a
+forall m (a :: ()) (b :: ()). m -&gt; OneObject m a b
+</span><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-var">OneObject</span></a></span><span> </span><span class="annot"><span class="annottext">m
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-14"></span><span>    </span><span class="annot"><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-type">OneObject</span></a></span><span> </span><span id="local-6989586621679138380"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679138380"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679138381"><span class="annot"><span class="annottext">. :: forall (b :: ()) (c :: ()) (a :: ()).
+OneObject m b c -&gt; OneObject m a b -&gt; OneObject m a c
+</span><a href="#local-6989586621679138381"><span class="hs-operator hs-var hs-var hs-var hs-var">.</span></a></span></span><span> </span><span class="annot"><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-type">OneObject</span></a></span><span> </span><span id="local-6989586621679138383"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679138383"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m -&gt; OneObject m a c
+forall m (a :: ()) (b :: ()). m -&gt; OneObject m a b
+</span><a href="Control.Category.OneObject.html#OneObject"><span class="hs-identifier hs-var">OneObject</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679138380"><span class="hs-identifier hs-var">m1</span></a></span><span> </span><span class="annot"><span class="annottext">m -&gt; m -&gt; m
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679138383"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span></pre></body></html>

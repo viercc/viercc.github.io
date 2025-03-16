@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE NoStarIsType #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# OPTIONS_GHC -fplugin GHC.TypeLits.Normalise #-}</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Finite.Extra</span><span>
+</span><span id="line-8"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Finite</span></span><span>
+</span><span id="line-9"></span><span>    </span><span class="annot"><a href="Data.Finite.Extra.html#absurdFinite"><span class="hs-identifier">absurdFinite</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Finite.Extra.html#boringFinite"><span class="hs-identifier">boringFinite</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>    </span><span class="annot"><a href="Data.Finite.Extra.html#combineSumS"><span class="hs-identifier">combineSumS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><a href="Data.Finite.Extra.html#separateSumS"><span class="hs-identifier">separateSumS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>    </span><span class="annot"><a href="Data.Finite.Extra.html#combineProductS"><span class="hs-identifier">combineProductS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>    </span><span class="annot"><a href="Data.Finite.Extra.html#separateProductS"><span class="hs-identifier">separateProductS</span></a></span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="annot"><span class="hs-comment">-- | @'Finite' 0@ is morally an uninhabited type like @Void@.</span></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679086738"><span class="annot"><a href="Data.Finite.Extra.html#absurdFinite"><span class="hs-identifier hs-type">absurdFinite</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086738"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-22"></span><span id="absurdFinite"><span class="annot"><span class="annottext">absurdFinite :: forall a. Finite 0 -&gt; a
+</span><a href="Data.Finite.Extra.html#absurdFinite"><span class="hs-identifier hs-var hs-var">absurdFinite</span></a></span></span><span> </span><span id="local-6989586621679086798"><span class="annot"><span class="annottext">Finite 0
+</span><a href="#local-6989586621679086798"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; a
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;absurdFinite: x = &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Finite 0 -&gt; [Char]
+forall a. Show a =&gt; a -&gt; [Char]
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Finite 0
+</span><a href="#local-6989586621679086798"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><span class="hs-comment">-- | @'Finite' 1@ is a singleton type</span></span><span>
+</span><span id="line-25"></span><span class="annot"><a href="Data.Finite.Extra.html#boringFinite"><span class="hs-identifier hs-type">boringFinite</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-26"></span><span id="boringFinite"><span class="annot"><span class="annottext">boringFinite :: Finite 1
+</span><a href="Data.Finite.Extra.html#boringFinite"><span class="hs-identifier hs-var hs-var">boringFinite</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite 1
+forall a. Bounded a =&gt; a
+</span><span class="hs-identifier hs-var">minBound</span></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><span class="hs-comment">-- | 'combineSum' but uses 'SNat' instead of 'KnownNat'</span></span><span>
+</span><span id="line-29"></span><span id="local-6989586621679086748"><span id="local-6989586621679086750"><span class="annot"><a href="Data.Finite.Extra.html#combineSumS"><span class="hs-identifier hs-type">combineSumS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086748"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086750"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086748"><span class="hs-identifier hs-type">l</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086750"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086748"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><a href="#local-6989586621679086750"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-30"></span><span id="combineSumS"><span class="annot"><span class="annottext">combineSumS :: forall (l :: Nat) (r :: Nat).
+SNat l -&gt; SNat r -&gt; Either (Finite l) (Finite r) -&gt; Finite (l + r)
+</span><a href="Data.Finite.Extra.html#combineSumS"><span class="hs-identifier hs-var hs-var">combineSumS</span></a></span></span><span> </span><span class="annot"><span class="annottext">SNat l
+</span><span class="hs-identifier hs-var">SNat</span></span><span> </span><span class="annot"><span class="annottext">SNat r
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either (Finite l) (Finite r) -&gt; Finite (l + r)
+forall (n :: Nat) (m :: Nat).
+KnownNat n =&gt;
+Either (Finite n) (Finite m) -&gt; Finite (n + m)
+</span><span class="hs-identifier hs-var">combineSum</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><span class="hs-comment">-- | 'separateSum' but uses 'SNat' instead of 'KnownNat'</span></span><span>
+</span><span id="line-33"></span><span id="local-6989586621679086755"><span id="local-6989586621679086756"><span class="annot"><a href="Data.Finite.Extra.html#separateSumS"><span class="hs-identifier hs-type">separateSumS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086755"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086756"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086755"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><a href="#local-6989586621679086756"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086755"><span class="hs-identifier hs-type">l</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086756"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-34"></span><span id="separateSumS"><span class="annot"><span class="annottext">separateSumS :: forall (l :: Nat) (r :: Nat).
+SNat l -&gt; SNat r -&gt; Finite (l + r) -&gt; Either (Finite l) (Finite r)
+</span><a href="Data.Finite.Extra.html#separateSumS"><span class="hs-identifier hs-var hs-var">separateSumS</span></a></span></span><span> </span><span class="annot"><span class="annottext">SNat l
+</span><span class="hs-identifier hs-var">SNat</span></span><span> </span><span class="annot"><span class="annottext">SNat r
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite (l + r) -&gt; Either (Finite l) (Finite r)
+forall (n :: Nat) (m :: Nat).
+KnownNat n =&gt;
+Finite (n + m) -&gt; Either (Finite n) (Finite m)
+</span><span class="hs-identifier hs-var">separateSum</span></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="annot"><span class="hs-comment">-- | 'separateProduct' but uses 'SNat' instead of 'KnownNat'</span></span><span>
+</span><span id="line-37"></span><span id="local-6989586621679086761"><span id="local-6989586621679086762"><span class="annot"><a href="Data.Finite.Extra.html#separateProductS"><span class="hs-identifier hs-type">separateProductS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086761"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086762"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086761"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">*</span></span><span> </span><span class="annot"><a href="#local-6989586621679086762"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086761"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086762"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-38"></span><span id="separateProductS"><span class="annot"><span class="annottext">separateProductS :: forall (n :: Nat) (m :: Nat).
+SNat n -&gt; SNat m -&gt; Finite (n * m) -&gt; (Finite n, Finite m)
+</span><a href="Data.Finite.Extra.html#separateProductS"><span class="hs-identifier hs-var hs-var">separateProductS</span></a></span></span><span> </span><span id="local-6989586621679086810"><span class="annot"><span class="annottext">SNat n
+</span><a href="#local-6989586621679086810"><span class="hs-identifier hs-var">sn</span></a></span></span><span> </span><span class="annot"><span class="annottext">SNat m
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat n
+-&gt; (KnownNat n =&gt; Finite (n * m) -&gt; (Finite n, Finite m))
+-&gt; Finite (n * m)
+-&gt; (Finite n, Finite m)
+forall (n :: Nat) r. SNat n -&gt; (KnownNat n =&gt; r) -&gt; r
+</span><span class="hs-identifier hs-var">withKnownNat</span></span><span> </span><span class="annot"><span class="annottext">SNat n
+</span><a href="#local-6989586621679086810"><span class="hs-identifier hs-var">sn</span></a></span><span> </span><span class="annot"><span class="annottext">KnownNat n =&gt; Finite (n * m) -&gt; (Finite n, Finite m)
+Finite (n * m) -&gt; (Finite n, Finite m)
+forall (n :: Nat) (m :: Nat).
+KnownNat n =&gt;
+Finite (n * m) -&gt; (Finite n, Finite m)
+</span><span class="hs-identifier hs-var">separateProduct</span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><span class="hs-comment">-- | 'combineProduct' but uses 'SNat' instead of 'KnownNat'</span></span><span>
+</span><span id="line-41"></span><span id="local-6989586621679086770"><span id="local-6989586621679086771"><span class="annot"><a href="Data.Finite.Extra.html#combineProductS"><span class="hs-identifier hs-type">combineProductS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086770"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086771"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086770"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679086771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086770"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">*</span></span><span> </span><span class="annot"><a href="#local-6989586621679086771"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-42"></span><span id="combineProductS"><span class="annot"><span class="annottext">combineProductS :: forall (n :: Nat) (m :: Nat).
+SNat n -&gt; SNat m -&gt; (Finite n, Finite m) -&gt; Finite (n * m)
+</span><a href="Data.Finite.Extra.html#combineProductS"><span class="hs-identifier hs-var hs-var">combineProductS</span></a></span></span><span> </span><span id="local-6989586621679086815"><span class="annot"><span class="annottext">SNat n
+</span><a href="#local-6989586621679086815"><span class="hs-identifier hs-var">sn</span></a></span></span><span> </span><span class="annot"><span class="annottext">SNat m
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat n
+-&gt; (KnownNat n =&gt; (Finite n, Finite m) -&gt; Finite (n * m))
+-&gt; (Finite n, Finite m)
+-&gt; Finite (n * m)
+forall (n :: Nat) r. SNat n -&gt; (KnownNat n =&gt; r) -&gt; r
+</span><span class="hs-identifier hs-var">withKnownNat</span></span><span> </span><span class="annot"><span class="annottext">SNat n
+</span><a href="#local-6989586621679086815"><span class="hs-identifier hs-var">sn</span></a></span><span> </span><span class="annot"><span class="annottext">KnownNat n =&gt; (Finite n, Finite m) -&gt; Finite (n * m)
+(Finite n, Finite m) -&gt; Finite (n * m)
+forall (n :: Nat) (m :: Nat).
+KnownNat n =&gt;
+(Finite n, Finite m) -&gt; Finite (n * m)
+</span><span class="hs-identifier hs-var">combineProduct</span></span><span>
+</span><span id="line-43"></span></pre></body></html>

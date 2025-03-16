@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE KindSignatures #-}</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="annot"><span class="hs-comment">-- | Composition of two @FFunctor@s</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FFunctor.FCompose</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.html"><span class="hs-identifier">FFunctor</span></a></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- | Composision of @FFunctor@s.</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--   Just like any functor, composition of two @FFunctor@ is @FFunctor@ again.</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">newtype</span><span> </span><span id="FCompose"><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span></span><span> </span><span id="local-6989586621679128695"><span class="annot"><a href="#local-6989586621679128695"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679128696"><span class="annot"><a href="#local-6989586621679128696"><span class="hs-identifier hs-type">gg</span></a></span></span><span> </span><span id="local-6989586621679128697"><span class="annot"><a href="#local-6989586621679128697"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span id="local-6989586621679128698"><span class="annot"><a href="#local-6989586621679128698"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FCompose"><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getFCompose"><span class="annot"><span class="annottext">forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var hs-var">getFCompose</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679128695"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679128696"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128697"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679128698"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679128824"><span id="local-6989586621679128829"><span id="local-6989586621679128833"><span class="annot"><span class="annottext">Int -&gt; FCompose ff gg h x -&gt; ShowS
+[FCompose ff gg h x] -&gt; ShowS
+FCompose ff gg h x -&gt; String
+(Int -&gt; FCompose ff gg h x -&gt; ShowS)
+-&gt; (FCompose ff gg h x -&gt; String)
+-&gt; ([FCompose ff gg h x] -&gt; ShowS)
+-&gt; Show (FCompose ff gg h x)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+Int -&gt; FCompose ff gg h x -&gt; ShowS
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+[FCompose ff gg h x] -&gt; ShowS
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; String
+$cshowsPrec :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+Int -&gt; FCompose ff gg h x -&gt; ShowS
+showsPrec :: Int -&gt; FCompose ff gg h x -&gt; ShowS
+$cshow :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; String
+show :: FCompose ff gg h x -&gt; String
+$cshowList :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Show (ff (gg h) x) =&gt;
+[FCompose ff gg h x] -&gt; ShowS
+showList :: [FCompose ff gg h x] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679128838"><span id="local-6989586621679128842"><span class="annot"><span class="annottext">FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+(FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; Eq (FCompose ff gg h x)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Eq (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$c== :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Eq (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+== :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$c/= :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Eq (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+/= :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679128852"><span id="local-6989586621679128856"><span id="local-6989586621679128860"><span id="local-6989586621679128864"><span id="local-6989586621679128868"><span id="local-6989586621679128872"><span id="local-6989586621679128876"><span class="annot"><span class="annottext">Eq (FCompose ff gg h x)
+Eq (FCompose ff gg h x) =&gt;
+(FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Ordering)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x)
+-&gt; (FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x)
+-&gt; Ord (FCompose ff gg h x)
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Ordering
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+Eq (FCompose ff gg h x)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Ordering
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+$ccompare :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Ordering
+compare :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Ordering
+$c&lt; :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+&lt; :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$c&lt;= :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+&lt;= :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$c&gt; :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+&gt; :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$c&gt;= :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+&gt;= :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; Bool
+$cmax :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+max :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+$cmin :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+Ord (ff (gg h) x) =&gt;
+FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+min :: FCompose ff gg h x -&gt; FCompose ff gg h x -&gt; FCompose ff gg h x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679128884"><span id="local-6989586621679128890"><span id="local-6989586621679128895"><span id="local-6989586621679128900"><span id="local-6989586621679128903"><span id="local-6989586621679128906"><span id="local-6989586621679128909"><span id="local-6989586621679128912"><span id="local-6989586621679128915"><span id="local-6989586621679128918"><span id="local-6989586621679128921"><span id="local-6989586621679128924"><span id="local-6989586621679128927"><span id="local-6989586621679128932"><span id="local-6989586621679128937"><span id="local-6989586621679128942"><span id="local-6989586621679128947"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; FCompose ff gg h m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FCompose ff gg h a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FCompose ff gg h a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a)
+-&gt; (forall a. FCompose ff gg h a -&gt; [a])
+-&gt; (forall a. FCompose ff gg h a -&gt; Bool)
+-&gt; (forall a. FCompose ff gg h a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; FCompose ff gg h a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; FCompose ff gg h a -&gt; a)
+-&gt; (forall a. Ord a =&gt; FCompose ff gg h a -&gt; a)
+-&gt; (forall a. Num a =&gt; FCompose ff gg h a -&gt; a)
+-&gt; (forall a. Num a =&gt; FCompose ff gg h a -&gt; a)
+-&gt; Foldable (FCompose ff gg h)
+forall a. Eq a =&gt; a -&gt; FCompose ff gg h a -&gt; Bool
+forall a. Num a =&gt; FCompose ff gg h a -&gt; a
+forall a. Ord a =&gt; FCompose ff gg h a -&gt; a
+forall m. Monoid m =&gt; FCompose ff gg h m -&gt; m
+forall a. FCompose ff gg h a -&gt; Bool
+forall a. FCompose ff gg h a -&gt; Int
+forall a. FCompose ff gg h a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+forall (t :: FUNCTOR).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Eq a) =&gt;
+a -&gt; FCompose ff gg h a -&gt; Bool
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Num a) =&gt;
+FCompose ff gg h a -&gt; a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Ord a) =&gt;
+FCompose ff gg h a -&gt; a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) m.
+(Foldable (ff (gg h)), Monoid m) =&gt;
+FCompose ff gg h m -&gt; m
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; Bool
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; Int
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; [a]
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) m a.
+(Foldable (ff (gg h)), Monoid m) =&gt;
+(a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) b a.
+Foldable (ff (gg h)) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a b.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+$cfold :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) m.
+(Foldable (ff (gg h)), Monoid m) =&gt;
+FCompose ff gg h m -&gt; m
+fold :: forall m. Monoid m =&gt; FCompose ff gg h m -&gt; m
+$cfoldMap :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) m a.
+(Foldable (ff (gg h)), Monoid m) =&gt;
+(a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+$cfoldMap' :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) m a.
+(Foldable (ff (gg h)), Monoid m) =&gt;
+(a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FCompose ff gg h a -&gt; m
+$cfoldr :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a b.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+$cfoldr' :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a b.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+$cfoldl :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) b a.
+Foldable (ff (gg h)) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+$cfoldl' :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) b a.
+Foldable (ff (gg h)) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FCompose ff gg h a -&gt; b
+$cfoldr1 :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+$cfoldl1 :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+(a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; FCompose ff gg h a -&gt; a
+$ctoList :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; [a]
+toList :: forall a. FCompose ff gg h a -&gt; [a]
+$cnull :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; Bool
+null :: forall a. FCompose ff gg h a -&gt; Bool
+$clength :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+Foldable (ff (gg h)) =&gt;
+FCompose ff gg h a -&gt; Int
+length :: forall a. FCompose ff gg h a -&gt; Int
+$celem :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Eq a) =&gt;
+a -&gt; FCompose ff gg h a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; FCompose ff gg h a -&gt; Bool
+$cmaximum :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Ord a) =&gt;
+FCompose ff gg h a -&gt; a
+maximum :: forall a. Ord a =&gt; FCompose ff gg h a -&gt; a
+$cminimum :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Ord a) =&gt;
+FCompose ff gg h a -&gt; a
+minimum :: forall a. Ord a =&gt; FCompose ff gg h a -&gt; a
+$csum :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Num a) =&gt;
+FCompose ff gg h a -&gt; a
+sum :: forall a. Num a =&gt; FCompose ff gg h a -&gt; a
+$cproduct :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) a.
+(Foldable (ff (gg h)), Num a) =&gt;
+FCompose ff gg h a -&gt; a
+product :: forall a. Num a =&gt; FCompose ff gg h a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679128963"><span id="local-6989586621679128970"><span id="local-6989586621679128976"><span id="local-6989586621679128981"><span class="annot"><span class="annottext">Functor (FCompose ff gg h)
+Foldable (FCompose ff gg h)
+(Functor (FCompose ff gg h), Foldable (FCompose ff gg h)) =&gt;
+(forall (f :: FUNCTOR) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; FCompose ff gg h a -&gt; f (FCompose ff gg h b))
+-&gt; (forall (f :: FUNCTOR) a.
+    Applicative f =&gt;
+    FCompose ff gg h (f a) -&gt; f (FCompose ff gg h a))
+-&gt; (forall (m :: FUNCTOR) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; FCompose ff gg h a -&gt; m (FCompose ff gg h b))
+-&gt; (forall (m :: FUNCTOR) a.
+    Monad m =&gt;
+    FCompose ff gg h (m a) -&gt; m (FCompose ff gg h a))
+-&gt; Traversable (FCompose ff gg h)
+forall (t :: FUNCTOR).
+(Functor t, Foldable t) =&gt;
+(forall (f :: FUNCTOR) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: FUNCTOR) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: FUNCTOR) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: FUNCTOR) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: FUNCTOR) a.
+Monad m =&gt;
+FCompose ff gg h (m a) -&gt; m (FCompose ff gg h a)
+forall (f :: FUNCTOR) a.
+Applicative f =&gt;
+FCompose ff gg h (f a) -&gt; f (FCompose ff gg h a)
+forall (m :: FUNCTOR) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; FCompose ff gg h a -&gt; m (FCompose ff gg h b)
+forall (f :: FUNCTOR) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; FCompose ff gg h a -&gt; f (FCompose ff gg h b)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR).
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h) =&gt;
+Functor (FCompose ff gg h)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR).
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h) =&gt;
+Foldable (FCompose ff gg h)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (m :: FUNCTOR) a.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Monad m) =&gt;
+FCompose ff gg h (m a) -&gt; m (FCompose ff gg h a)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (f :: FUNCTOR) a.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Applicative f) =&gt;
+FCompose ff gg h (f a) -&gt; f (FCompose ff gg h a)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (m :: FUNCTOR) a b.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Monad m) =&gt;
+(a -&gt; m b) -&gt; FCompose ff gg h a -&gt; m (FCompose ff gg h b)
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (f :: FUNCTOR) a b.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Applicative f) =&gt;
+(a -&gt; f b) -&gt; FCompose ff gg h a -&gt; f (FCompose ff gg h b)
+$ctraverse :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (f :: FUNCTOR) a b.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Applicative f) =&gt;
+(a -&gt; f b) -&gt; FCompose ff gg h a -&gt; f (FCompose ff gg h b)
+traverse :: forall (f :: FUNCTOR) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; FCompose ff gg h a -&gt; f (FCompose ff gg h b)
+$csequenceA :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (f :: FUNCTOR) a.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Applicative f) =&gt;
+FCompose ff gg h (f a) -&gt; f (FCompose ff gg h a)
+sequenceA :: forall (f :: FUNCTOR) a.
+Applicative f =&gt;
+FCompose ff gg h (f a) -&gt; f (FCompose ff gg h a)
+$cmapM :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (m :: FUNCTOR) a b.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Monad m) =&gt;
+(a -&gt; m b) -&gt; FCompose ff gg h a -&gt; m (FCompose ff gg h b)
+mapM :: forall (m :: FUNCTOR) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; FCompose ff gg h a -&gt; m (FCompose ff gg h b)
+$csequence :: forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) (m :: FUNCTOR) a.
+(FFunctor ff, FFunctor gg, Traversable (ff (gg h)), Functor h,
+ Monad m) =&gt;
+FCompose ff gg h (m a) -&gt; m (FCompose ff gg h a)
+sequence :: forall (m :: FUNCTOR) a.
+Monad m =&gt;
+FCompose ff gg h (m a) -&gt; m (FCompose ff gg h a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679128992"><span id="local-6989586621679128998"><span class="hs-keyword">deriving</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-keyword">via</span><span> </span><span id="local-6989586621679128787"><span id="local-6989586621679128788"><span id="local-6989586621679128789"><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679128787"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679128788"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="FFunctor.html#FF"><span class="hs-identifier hs-type">FF</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679128789"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128787"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128788"><span class="hs-identifier hs-type">gg</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679128789"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128787"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128788"><span class="hs-identifier hs-type">gg</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128789"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679128810"><span id="local-6989586621679128811"><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128810"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128811"><span class="hs-identifier hs-type">gg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128810"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679128811"><span class="hs-identifier hs-type">gg</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621679129018"><span class="annot"><span class="annottext">ffmap :: forall (g :: FUNCTOR) (h :: FUNCTOR) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; FCompose ff gg g x -&gt; FCompose ff gg h x
+</span><a href="#local-6989586621679129018"><span class="hs-identifier hs-var hs-var hs-var hs-var">ffmap</span></a></span></span><span> </span><span id="local-6989586621679129020"><span class="annot"><span class="annottext">g ~&gt; h
+</span><a href="#local-6989586621679129020"><span class="hs-identifier hs-var">gh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (gg h) x -&gt; FCompose ff gg h x
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+ff (gg h) x -&gt; FCompose ff gg h x
+</span><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-var">FCompose</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (gg h) x -&gt; FCompose ff gg h x)
+-&gt; (FCompose ff gg g x -&gt; ff (gg h) x)
+-&gt; FCompose ff gg g x
+-&gt; FCompose ff gg h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(gg g ~&gt; gg h) -&gt; ff (gg g) x -&gt; ff (gg h) x
+forall (g :: FUNCTOR) (h :: FUNCTOR) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: FUNCTOR) (h :: FUNCTOR) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g ~&gt; h) -&gt; gg g x -&gt; gg h x
+forall (g :: FUNCTOR) (h :: FUNCTOR) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; gg g x -&gt; gg h x
+forall (ff :: FF) (g :: FUNCTOR) (h :: FUNCTOR) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">g x -&gt; h x
+g ~&gt; h
+</span><a href="#local-6989586621679129020"><span class="hs-identifier hs-var">gh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ff (gg g) x -&gt; ff (gg h) x)
+-&gt; (FCompose ff gg g x -&gt; ff (gg g) x)
+-&gt; FCompose ff gg g x
+-&gt; ff (gg h) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">FCompose ff gg g x -&gt; ff (gg g) x
+forall (ff :: FF) (gg :: FF) (h :: FUNCTOR) x.
+FCompose ff gg h x -&gt; ff (gg h) x
+</span><a href="FFunctor.FCompose.html#getFCompose"><span class="hs-identifier hs-var">getFCompose</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><span class="hs-comment">-- | Infix type operator for @FCompose@</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">type</span><span> </span><span id="%229A"><span class="annot"><a href="FFunctor.FCompose.html#%229A"><span class="hs-operator hs-var">(&#8858;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">7</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html#%229A"><span class="hs-operator hs-type">&#8858;</span></a></span><span>
+</span><span id="line-32"></span></pre></body></html>

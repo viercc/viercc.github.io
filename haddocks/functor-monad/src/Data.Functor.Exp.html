@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{- | Exponentiation of a @Functor@ by a @Functor@.
+
+For reference:
+
+Powers of polynomial monads by David Spivak &lt;https://topos.site/blog/2023/09/powers-of-polynomial-monads/&gt;
+
+-}</span></span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-10"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-11"></span><span class="hs-pragma">{-# LANGUAGE LambdaCase #-}</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Functor.Exp</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.html"><span class="hs-identifier">FFunctor</span></a></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(:*:)</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.html"><span class="hs-identifier">FMonad</span></a></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FStrong.html"><span class="hs-identifier">FStrong</span></a></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Day</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Day</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">newtype</span><span> </span><span id="Exp1"><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span></span><span> </span><span id="local-6989586621679133770"><span class="annot"><a href="#local-6989586621679133770"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679133771"><span class="annot"><a href="#local-6989586621679133771"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679133772"><span class="annot"><a href="#local-6989586621679133772"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Exp1"><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="unExp1"><span class="annot"><span class="annottext">forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var hs-var">unExp1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679133774"><span class="annot"><a href="#local-6989586621679133774"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679133770"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133774"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133772"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133774"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133771"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133774"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679133973"><span id="local-6989586621679133975"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b)
+-&gt; (forall a b. a -&gt; Exp1 f g b -&gt; Exp1 f g a)
+-&gt; Functor (Exp1 f g)
+forall a b. a -&gt; Exp1 f g b -&gt; Exp1 f g a
+forall a b. (a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+a -&gt; Exp1 f g b -&gt; Exp1 f g a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+$cfmap :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+(a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+fmap :: forall a b. (a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+$c&lt;$ :: forall (f :: * -&gt; *) (g :: * -&gt; *) a b.
+a -&gt; Exp1 f g b -&gt; Exp1 f g a
+&lt;$ :: forall a b. a -&gt; Exp1 f g b -&gt; Exp1 f g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">type</span><span> </span><span id="%3A%5E%3A"><span class="annot"><a href="Data.Functor.Exp.html#%3A%5E%3A"><span class="hs-operator hs-var">(:^:)</span></a></span></span><span> </span><span id="local-6989586621679133979"><span class="annot"><a href="#local-6989586621679133979"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679133980"><span class="annot"><a href="#local-6989586621679133980"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133980"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133979"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><a href="Data.Functor.Exp.html#toExp1"><span class="hs-identifier hs-type">toExp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679133789"><span class="annot"><a href="#local-6989586621679133789"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679133788"><span class="annot"><a href="#local-6989586621679133788"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679133790"><span class="annot"><a href="#local-6989586621679133790"><span class="hs-identifier hs-type">h</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133788"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133789"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="#local-6989586621679133788"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133790"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133788"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133789"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133790"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span id="toExp1"><span class="annot"><span class="annottext">toExp1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *).
+Functor g =&gt;
+((f :*: g) ~&gt; h) -&gt; g ~&gt; Exp1 f h
+</span><a href="Data.Functor.Exp.html#toExp1"><span class="hs-identifier hs-var hs-var">toExp1</span></a></span></span><span> </span><span id="local-6989586621679133983"><span class="annot"><span class="annottext">(f :*: g) ~&gt; h
+</span><a href="#local-6989586621679133983"><span class="hs-identifier hs-var">fg2h</span></a></span></span><span> </span><span id="local-6989586621679133984"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679133984"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (x -&gt; r) -&gt; h r) -&gt; Exp1 f h x
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133986"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679133986"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679133987"><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679133987"><span class="hs-identifier hs-var">xr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(:*:) f g r -&gt; h r
+(f :*: g) ~&gt; h
+</span><a href="#local-6989586621679133983"><span class="hs-identifier hs-var">fg2h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679133986"><span class="hs-identifier hs-var">fr</span></a></span><span> </span><span class="annot"><span class="annottext">f r -&gt; g r -&gt; (:*:) f g r
+forall k (f :: k -&gt; *) (g :: k -&gt; *) (p :: k).
+f p -&gt; g p -&gt; (:*:) f g p
+</span><span class="hs-operator hs-var">:*:</span></span><span> </span><span class="annot"><span class="annottext">(x -&gt; r) -&gt; g x -&gt; g r
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679133987"><span class="hs-identifier hs-var">xr</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679133984"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Data.Functor.Exp.html#fromExp1"><span class="hs-identifier hs-type">fromExp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679133802"><span class="annot"><a href="#local-6989586621679133802"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679133801"><span class="annot"><a href="#local-6989586621679133801"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679133803"><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">h</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133801"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133802"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133802"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="#local-6989586621679133801"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133803"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span id="fromExp1"><span class="annot"><span class="annottext">fromExp1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *).
+(g ~&gt; Exp1 f h) -&gt; (f :*: g) ~&gt; h
+</span><a href="Data.Functor.Exp.html#fromExp1"><span class="hs-identifier hs-var hs-var">fromExp1</span></a></span></span><span> </span><span id="local-6989586621679133990"><span class="annot"><span class="annottext">g ~&gt; Exp1 f h
+</span><a href="#local-6989586621679133990"><span class="hs-identifier hs-var">g2fh</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679133991"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679133991"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span id="local-6989586621679133992"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679133992"><span class="hs-identifier hs-var">gx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Exp1 f h x -&gt; forall r. f r -&gt; (x -&gt; r) -&gt; h r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var">unExp1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g x -&gt; Exp1 f h x
+g ~&gt; Exp1 f h
+</span><a href="#local-6989586621679133990"><span class="hs-identifier hs-var">g2fh</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679133992"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679133991"><span class="hs-identifier hs-var">fx</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span id="local-6989586621679133809"><span id="local-6989586621679133810"><span class="annot"><a href="Data.Functor.Exp.html#evalExp1"><span class="hs-identifier hs-type">evalExp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133809"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133809"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133810"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133810"><span class="hs-identifier hs-type">g</span></a></span></span></span><span>
+</span><span id="line-35"></span><span id="evalExp1"><span class="annot"><span class="annottext">evalExp1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) x. (:*:) f (Exp1 f g) x -&gt; g x
+</span><a href="Data.Functor.Exp.html#evalExp1"><span class="hs-identifier hs-var hs-var">evalExp1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Exp1 f g ~&gt; Exp1 f g) -&gt; (f :*: Exp1 f g) ~&gt; g
+forall (f :: * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *).
+(g ~&gt; Exp1 f h) -&gt; (f :*: g) ~&gt; h
+</span><a href="Data.Functor.Exp.html#fromExp1"><span class="hs-identifier hs-var">fromExp1</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g x -&gt; Exp1 f g x
+forall a. a -&gt; a
+Exp1 f g ~&gt; Exp1 f g
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span id="local-6989586621679133816"><span id="local-6989586621679133817"><span class="annot"><a href="Data.Functor.Exp.html#coevalExp1"><span class="hs-identifier hs-type">coevalExp1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133816"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133816"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133817"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679133817"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="#local-6989586621679133816"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-38"></span><span id="coevalExp1"><span class="annot"><span class="annottext">coevalExp1 :: forall (g :: * -&gt; *) (f :: * -&gt; *).
+Functor g =&gt;
+g ~&gt; Exp1 f (f :*: g)
+</span><a href="Data.Functor.Exp.html#coevalExp1"><span class="hs-identifier hs-var hs-var">coevalExp1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((f :*: g) ~&gt; (f :*: g)) -&gt; g ~&gt; Exp1 f (f :*: g)
+forall (f :: * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *).
+Functor g =&gt;
+((f :*: g) ~&gt; h) -&gt; g ~&gt; Exp1 f h
+</span><a href="Data.Functor.Exp.html#toExp1"><span class="hs-identifier hs-var">toExp1</span></a></span><span> </span><span class="annot"><span class="annottext">(:*:) f g x -&gt; (:*:) f g x
+forall a. a -&gt; a
+(f :*: g) ~&gt; (f :*: g)
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span id="local-6989586621679133822"><span id="local-6989586621679133823"><span id="local-6989586621679133824"><span id="local-6989586621679133825"><span class="annot"><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-type">fromExp1'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133822"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133822"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133823"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133824"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133822"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133825"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133823"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679133825"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133824"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-41"></span><span id="fromExp1%27"><span class="annot"><span class="annottext">fromExp1' :: forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+Functor f =&gt;
+Exp1 f g b -&gt; f a -&gt; g (Either a b)
+</span><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-var hs-var">fromExp1'</span></a></span></span><span> </span><span id="local-6989586621679134001"><span class="annot"><span class="annottext">Exp1 f g b
+</span><a href="#local-6989586621679134001"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679134002"><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679134002"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Exp1 f g b -&gt; forall r. f r -&gt; (b -&gt; r) -&gt; g r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var">unExp1</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g b
+</span><a href="#local-6989586621679134001"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Either a b
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Either a b) -&gt; f a -&gt; f (Either a b)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679134002"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either a b
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span id="local-6989586621679133835"><span id="local-6989586621679133836"><span id="local-6989586621679133838"><span class="annot"><a href="Data.Functor.Exp.html#toExp1%27"><span class="hs-identifier hs-type">toExp1'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133835"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679133837"><span class="annot"><a href="#local-6989586621679133837"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679133836"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133837"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679133835"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679133837"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133838"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133836"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133835"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133838"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
+</span><span id="line-44"></span><span id="toExp1%27"><span class="annot"><span class="annottext">toExp1' :: forall (g :: * -&gt; *) (f :: * -&gt; *) b.
+Functor g =&gt;
+(forall a. f a -&gt; g (Either a b)) -&gt; Exp1 f g b
+</span><a href="Data.Functor.Exp.html#toExp1%27"><span class="hs-identifier hs-var hs-var">toExp1'</span></a></span></span><span> </span><span id="local-6989586621679134006"><span class="annot"><span class="annottext">forall a. f a -&gt; g (Either a b)
+</span><a href="#local-6989586621679134006"><span class="hs-identifier hs-var">fg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b)
+-&gt; (forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134008"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134008"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134009"><span class="annot"><span class="annottext">b -&gt; r
+</span><a href="#local-6989586621679134009"><span class="hs-identifier hs-var">br</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(r -&gt; r) -&gt; (b -&gt; r) -&gt; Either r b -&gt; r
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">r -&gt; r
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; r
+</span><a href="#local-6989586621679134009"><span class="hs-identifier hs-var">br</span></a></span><span> </span><span class="annot"><span class="annottext">(Either r b -&gt; r) -&gt; g (Either r b) -&gt; g r
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">f r -&gt; g (Either r b)
+forall a. f a -&gt; g (Either a b)
+</span><a href="#local-6989586621679134006"><span class="hs-identifier hs-var">fg</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134008"><span class="hs-identifier hs-var">fr</span></a></span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133864"><span id="local-6989586621679133865"><span id="local-6989586621679134018"><span id="local-6989586621679134022"><span id="local-6989586621679134025"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133864"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133865"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133864"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133865"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679134030"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Exp1 f g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span id="local-6989586621679134031"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134031"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a)
+-&gt; (forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">f r
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679134033"><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134033"><span class="hs-identifier hs-var">ar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">r -&gt; g r
+forall a. a -&gt; g a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134033"><span class="hs-identifier hs-var">ar</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134031"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679134036"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Exp1 f g (a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Exp1 f g (a -&gt; b) -&gt; Exp1 f g a -&gt; Exp1 f g b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133868"><span id="local-6989586621679133869"><span id="local-6989586621679134043"><span id="local-6989586621679134046"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133868"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133869"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133868"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133869"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679134050"><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134050"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span id="local-6989586621679134051"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Exp1 f g a -&gt; (a -&gt; Exp1 f g b) -&gt; Exp1 f g b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;=</span></span></span><span> </span><span id="local-6989586621679134052"><span class="annot"><span class="annottext">a -&gt; Exp1 f g b
+</span><a href="#local-6989586621679134052"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b)
+-&gt; (forall r. f r -&gt; (b -&gt; r) -&gt; g r) -&gt; Exp1 f g b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134056"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134056"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134057"><span class="annot"><span class="annottext">b -&gt; r
+</span><a href="#local-6989586621679134057"><span class="hs-identifier hs-var">br</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="annottext">Exp1 f g a -&gt; f r -&gt; g (Either r a)
+forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+Functor f =&gt;
+Exp1 f g b -&gt; f a -&gt; g (Either a b)
+</span><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-var">fromExp1'</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134050"><span class="hs-identifier hs-var">ma</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134056"><span class="hs-identifier hs-var">fr</span></a></span><span> </span><span class="annot"><span class="annottext">g (Either r a) -&gt; (Either r a -&gt; g r) -&gt; g r
+forall a b. g a -&gt; (a -&gt; g b) -&gt; g b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-53"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679134058"><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679134058"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">r -&gt; g r
+forall a. a -&gt; g a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679134058"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-54"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679134059"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134059"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Exp1 f g b -&gt; forall r. f r -&gt; (b -&gt; r) -&gt; g r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var">unExp1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Exp1 f g b
+</span><a href="#local-6989586621679134052"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134059"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134056"><span class="hs-identifier hs-var">fr</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; r
+</span><a href="#local-6989586621679134057"><span class="hs-identifier hs-var">br</span></a></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="annot"><span class="hs-comment">-- | Equivalent to @'Data.Monoid.Alt' (Exp1 f g) a@</span></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133892"><span id="local-6989586621679133893"><span id="local-6989586621679133894"><span id="local-6989586621679134064"><span id="local-6989586621679134068"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133892"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133893"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133892"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133893"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133894"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679134075"><span class="annot"><span class="annottext">&lt;&gt; :: Exp1 f g a -&gt; Exp1 f g a -&gt; Exp1 f g a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Exp1 f g a -&gt; Exp1 f g a -&gt; Exp1 f g a
+forall a. Exp1 f g a -&gt; Exp1 f g a -&gt; Exp1 f g a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">(&lt;|&gt;)</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | Equivalent to @'Data.Monoid.Alt' (Exp1 f g) a@</span></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133904"><span id="local-6989586621679133905"><span id="local-6989586621679133906"><span id="local-6989586621679134083"><span id="local-6989586621679134087"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133904"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133905"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133904"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133905"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133906"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>  </span><span id="local-6989586621679134091"><span class="annot"><span class="annottext">mempty :: Exp1 f g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Exp1 f g a
+forall a. Exp1 f g a
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a
+</span><span class="hs-identifier hs-var">empty</span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133896"><span id="local-6989586621679133897"><span id="local-6989586621679134101"><span id="local-6989586621679134104"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133896"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679133897"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133896"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133897"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679134109"><span class="annot"><span class="annottext">empty :: forall a. Exp1 f g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">empty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a)
+-&gt; (forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134112"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134112"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; r
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">r -&gt; g r
+forall a. a -&gt; g a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f r -&gt; r
+forall a. f a -&gt; a
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134112"><span class="hs-identifier hs-var">fr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679134114"><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134114"><span class="hs-identifier hs-var">m1</span></a></span></span><span> </span><span id="local-6989586621679134115"><span class="annot"><span class="annottext">&lt;|&gt; :: forall a. Exp1 f g a -&gt; Exp1 f g a -&gt; Exp1 f g a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;|&gt;</span></span></span><span> </span><span id="local-6989586621679134116"><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134116"><span class="hs-identifier hs-var">m2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a)
+-&gt; (forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134121"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134121"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134122"><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">ar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><span class="annottext">Exp1 f g a -&gt; f (f r) -&gt; g (Either (f r) a)
+forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+Functor f =&gt;
+Exp1 f g b -&gt; f a -&gt; g (Either a b)
+</span><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-var">fromExp1'</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134114"><span class="hs-identifier hs-var">m1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f r -&gt; f (f r)
+forall a. f a -&gt; f (f a)
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; w (w a)
+</span><span class="hs-identifier hs-var">duplicate</span></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134121"><span class="hs-identifier hs-var">fr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">g (Either (f r) a) -&gt; (Either (f r) a -&gt; g r) -&gt; g r
+forall a b. g a -&gt; (a -&gt; g b) -&gt; g b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-68"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679134124"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134124"><span class="hs-identifier hs-var">fr'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var">unExp1</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134116"><span class="hs-identifier hs-var">m2</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134124"><span class="hs-identifier hs-var">fr'</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">ar</span></a></span><span>
+</span><span id="line-69"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679134125"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134125"><span class="hs-identifier hs-var">a</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">r -&gt; g r
+forall a. a -&gt; g a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134122"><span class="hs-identifier hs-var">ar</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134125"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133926"><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133926"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>  </span><span id="local-6989586621679134133"><span class="annot"><span class="annottext">ffmap :: forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Exp1 f g x -&gt; Exp1 f h x
+</span><a href="#local-6989586621679134133"><span class="hs-identifier hs-var hs-var hs-var hs-var">ffmap</span></a></span></span><span> </span><span id="local-6989586621679134135"><span class="annot"><span class="annottext">g ~&gt; h
+</span><a href="#local-6989586621679134135"><span class="hs-identifier hs-var">gh</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span id="local-6989586621679134136"><span class="annot"><span class="annottext">forall r. f r -&gt; (x -&gt; r) -&gt; g r
+</span><a href="#local-6989586621679134136"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (x -&gt; r) -&gt; h r) -&gt; Exp1 f h x
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (x -&gt; r) -&gt; h r) -&gt; Exp1 f h x)
+-&gt; (forall r. f r -&gt; (x -&gt; r) -&gt; h r) -&gt; Exp1 f h x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134137"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134137"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134138"><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134138"><span class="hs-identifier hs-var">ar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">g r -&gt; h r
+g ~&gt; h
+</span><a href="#local-6989586621679134135"><span class="hs-identifier hs-var">gh</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f r -&gt; (x -&gt; r) -&gt; g r
+forall r. f r -&gt; (x -&gt; r) -&gt; g r
+</span><a href="#local-6989586621679134136"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134137"><span class="hs-identifier hs-var">fr</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134138"><span class="hs-identifier hs-var">ar</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span class="annot"><span class="hs-comment">-- | @g ~ Exp1 Proxy g@; @Exp1 f (Exp1 f g) ~ Exp1 (f :*: f) g@</span></span><span>
+</span><span id="line-76"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133938"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133938"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133938"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-77"></span><span>  </span><span id="local-6989586621679134147"><span class="annot"><span class="annottext">fpure :: forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; Exp1 f g
+</span><a href="#local-6989586621679134147"><span class="hs-identifier hs-var hs-var hs-var hs-var">fpure</span></a></span></span><span> </span><span id="local-6989586621679134149"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679134149"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (x -&gt; r) -&gt; g r) -&gt; Exp1 f g x
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (x -&gt; r) -&gt; g r) -&gt; Exp1 f g x)
+-&gt; (forall r. f r -&gt; (x -&gt; r) -&gt; g r) -&gt; Exp1 f g x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">f r
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679134151"><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134151"><span class="hs-identifier hs-var">br</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134151"><span class="hs-identifier hs-var">br</span></a></span><span> </span><span class="annot"><span class="annottext">(x -&gt; r) -&gt; g x -&gt; g r
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679134149"><span class="hs-identifier hs-var">gx</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679134154"><span class="annot"><span class="annottext">fbind :: forall (g :: * -&gt; *) (h :: * -&gt; *) a.
+(Functor g, Functor h) =&gt;
+(g ~&gt; Exp1 f h) -&gt; Exp1 f g a -&gt; Exp1 f h a
+</span><a href="#local-6989586621679134154"><span class="hs-identifier hs-var hs-var hs-var hs-var">fbind</span></a></span></span><span> </span><span id="local-6989586621679134156"><span class="annot"><span class="annottext">g ~&gt; Exp1 f h
+</span><a href="#local-6989586621679134156"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679134157"><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134157"><span class="hs-identifier hs-var">fgx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (a -&gt; r) -&gt; h r) -&gt; Exp1 f h a
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (a -&gt; r) -&gt; h r) -&gt; Exp1 f h a)
+-&gt; (forall r. f r -&gt; (a -&gt; r) -&gt; h r) -&gt; Exp1 f h a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134159"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134159"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134160"><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134160"><span class="hs-identifier hs-var">yr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><span class="annottext">Exp1 f h (Either r a) -&gt; forall r. f r -&gt; (Either r a -&gt; r) -&gt; h r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+Exp1 f g a -&gt; forall r. f r -&gt; (a -&gt; r) -&gt; g r
+</span><a href="Data.Functor.Exp.html#unExp1"><span class="hs-identifier hs-var">unExp1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g (Either r a) -&gt; Exp1 f h (Either r a)
+g ~&gt; Exp1 f h
+</span><a href="#local-6989586621679134156"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Exp1 f g a -&gt; f r -&gt; g (Either r a)
+forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+Functor f =&gt;
+Exp1 f g b -&gt; f a -&gt; g (Either a b)
+</span><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-var">fromExp1'</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g a
+</span><a href="#local-6989586621679134157"><span class="hs-identifier hs-var">fgx</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134159"><span class="hs-identifier hs-var">fr</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134159"><span class="hs-identifier hs-var">fr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(r -&gt; r) -&gt; (a -&gt; r) -&gt; Either r a -&gt; r
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">r -&gt; r
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; r
+</span><a href="#local-6989586621679134160"><span class="hs-identifier hs-var">yr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679133957"><span id="local-6989586621679134166"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679133957"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-type">Exp1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133957"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>  </span><span id="local-6989586621679134175"><span class="annot"><span class="annottext">fstrength :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+Functor g =&gt;
+Day (Exp1 f g) h ~&gt; Exp1 f (Day g h)
+</span><a href="#local-6989586621679134175"><span class="hs-identifier hs-var hs-var hs-var hs-var">fstrength</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Day</span></span><span> </span><span id="local-6989586621679134178"><span class="annot"><span class="annottext">Exp1 f g b
+</span><a href="#local-6989586621679134178"><span class="hs-identifier hs-var">mb</span></a></span></span><span> </span><span id="local-6989586621679134179"><span class="annot"><span class="annottext">h c
+</span><a href="#local-6989586621679134179"><span class="hs-identifier hs-var">hc</span></a></span></span><span> </span><span id="local-6989586621679134180"><span class="annot"><span class="annottext">b -&gt; c -&gt; x
+</span><a href="#local-6989586621679134180"><span class="hs-identifier hs-var">op</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-83"></span><span>    </span><span class="annot"><span class="annottext">(forall r. f r -&gt; (x -&gt; r) -&gt; Day g h r) -&gt; Exp1 f (Day g h) x
+forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+(forall r. f r -&gt; (a -&gt; r) -&gt; g r) -&gt; Exp1 f g a
+</span><a href="Data.Functor.Exp.html#Exp1"><span class="hs-identifier hs-var">Exp1</span></a></span><span> </span><span class="annot"><span class="annottext">((forall r. f r -&gt; (x -&gt; r) -&gt; Day g h r) -&gt; Exp1 f (Day g h) x)
+-&gt; (forall r. f r -&gt; (x -&gt; r) -&gt; Day g h r) -&gt; Exp1 f (Day g h) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134182"><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134182"><span class="hs-identifier hs-var">fr</span></a></span></span><span> </span><span id="local-6989586621679134183"><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134183"><span class="hs-identifier hs-var">ar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-84"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679134184"><span class="annot"><span class="annottext">op' :: Either r b -&gt; c -&gt; r
+</span><a href="#local-6989586621679134184"><span class="hs-identifier hs-var hs-var">op'</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679134185"><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679134185"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">c
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679134185"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-85"></span><span>          </span><span class="annot"><a href="#local-6989586621679134184"><span class="hs-identifier hs-var">op'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679134186"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679134186"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679134187"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679134187"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; r
+</span><a href="#local-6989586621679134183"><span class="hs-identifier hs-var">ar</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; c -&gt; x
+</span><a href="#local-6989586621679134180"><span class="hs-identifier hs-var">op</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679134186"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679134187"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-86"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">g (Either r b) -&gt; h c -&gt; (Either r b -&gt; c -&gt; r) -&gt; Day g h r
+forall (f :: * -&gt; *) (g :: * -&gt; *) a b c.
+f b -&gt; g c -&gt; (b -&gt; c -&gt; a) -&gt; Day f g a
+</span><span class="hs-identifier hs-var">Day</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Exp1 f g b -&gt; f r -&gt; g (Either r b)
+forall (f :: * -&gt; *) (g :: * -&gt; *) b a.
+Functor f =&gt;
+Exp1 f g b -&gt; f a -&gt; g (Either a b)
+</span><a href="Data.Functor.Exp.html#fromExp1%27"><span class="hs-identifier hs-var">fromExp1'</span></a></span><span> </span><span class="annot"><span class="annottext">Exp1 f g b
+</span><a href="#local-6989586621679134178"><span class="hs-identifier hs-var">mb</span></a></span><span> </span><span class="annot"><span class="annottext">f r
+</span><a href="#local-6989586621679134182"><span class="hs-identifier hs-var">fr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">h c
+</span><a href="#local-6989586621679134179"><span class="hs-identifier hs-var">hc</span></a></span><span> </span><span class="annot"><span class="annottext">Either r b -&gt; c -&gt; r
+</span><a href="#local-6989586621679134184"><span class="hs-identifier hs-var">op'</span></a></span><span>
+</span><span id="line-87"></span></pre></body></html>

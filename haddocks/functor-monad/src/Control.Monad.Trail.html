@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="annot"><span class="hs-comment">-- | 'Trail' type which makes an ordinary 'Monad' out of 'FMonad'</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Control.Monad.Trail</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier">Trail</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FMonad.html"><span class="hs-identifier">FMonad</span></a></span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- | For any @'FMonad' mm@, @Trail mm@ is a 'Monad'.</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--</span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- ==== Example</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- @Trail mm@ can become variantions of @Monad@ for different @FMonad mm@.</span><span>
+</span><span id="line-18"></span><span class="hs-comment">--</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- * @mm = 'Data.Functor.Compose.Compose' m@</span><span>
+</span><span id="line-20"></span><span class="hs-comment">--</span><span>
+</span><span id="line-21"></span><span class="hs-comment">--     For any @Monad m@, @Trail (Compose m)@ is isomorphic to @m@.</span><span>
+</span><span id="line-22"></span><span class="hs-comment">--</span><span>
+</span><span id="line-23"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-24"></span><span class="hs-comment">--     Trail (Compose m) a</span><span>
+</span><span id="line-25"></span><span class="hs-comment">--       ~ Compose m ((,) a) ()</span><span>
+</span><span id="line-26"></span><span class="hs-comment">--       ~ m (a, ())</span><span>
+</span><span id="line-27"></span><span class="hs-comment">--       ~ m a</span><span>
+</span><span id="line-28"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-29"></span><span class="hs-comment">--</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- * @mm = 'Control.Monad.Free.Free'@</span><span>
+</span><span id="line-31"></span><span class="hs-comment">--</span><span>
+</span><span id="line-32"></span><span class="hs-comment">--     @Trail Free@ is isomorphic to the list monad @[]@.</span><span>
+</span><span id="line-33"></span><span class="hs-comment">--</span><span>
+</span><span id="line-34"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-35"></span><span class="hs-comment">--     Trail Free a</span><span>
+</span><span id="line-36"></span><span class="hs-comment">--       ~ Free ((,) a) ()</span><span>
+</span><span id="line-37"></span><span class="hs-comment">--       ~ [a]</span><span>
+</span><span id="line-38"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-39"></span><span class="hs-comment">--</span><span>
+</span><span id="line-40"></span><span class="hs-comment">--</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- * @mm = 'FMonad.FreeT.FreeT'' m@</span><span>
+</span><span id="line-42"></span><span class="hs-comment">--</span><span>
+</span><span id="line-43"></span><span class="hs-comment">--     For any @Monad m@, @Trail (FreeT' m)@ is isomorphic to @ListT m@,</span><span>
+</span><span id="line-44"></span><span class="hs-comment">--     where @ListT@ is so-called \&quot;ListT done right.\&quot;</span><span>
+</span><span id="line-45"></span><span class="hs-comment">--</span><span>
+</span><span id="line-46"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-47"></span><span class="hs-comment">--     Trail (FreeT' m) a</span><span>
+</span><span id="line-48"></span><span class="hs-comment">--       ~ FreeT ((,) a) m ()</span><span>
+</span><span id="line-49"></span><span class="hs-comment">--       ~ ListT m a</span><span>
+</span><span id="line-50"></span><span class="hs-comment">--     @</span><span>
+</span><span id="line-51"></span><span class="hs-comment">--</span><span>
+</span><span id="line-52"></span><span class="hs-comment">--     See more for examples\/ListTVia.hs</span><span>
+</span><span id="line-53"></span><span class="hs-keyword">newtype</span><span> </span><span id="Trail"><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-var">Trail</span></a></span></span><span> </span><span id="local-6989586621679131389"><span class="annot"><a href="#local-6989586621679131389"><span class="hs-identifier hs-type">mm</span></a></span></span><span> </span><span id="local-6989586621679131390"><span class="annot"><a href="#local-6989586621679131390"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Trail"><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-var">Trail</span></a></span></span><span> </span><span class="hs-special">{</span><span id="runTrail"><span class="annot"><span class="annottext">forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. Trail mm a -&gt; mm ((,) a) ()
+</span><a href="Control.Monad.Trail.html#runTrail"><span class="hs-identifier hs-var hs-var">runTrail</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679131389"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679131390"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679131401"><span id="local-6989586621679131469"><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131401"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-type">Trail</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131401"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679131477"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Trail mm a -&gt; Trail mm b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679131478"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679131478"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">mm ((,) b) () -&gt; Trail mm b
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. mm ((,) a) () -&gt; Trail mm a
+</span><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-var">Trail</span></a></span><span> </span><span class="annot"><span class="annottext">(mm ((,) b) () -&gt; Trail mm b)
+-&gt; (Trail mm a -&gt; mm ((,) b) ()) -&gt; Trail mm a -&gt; Trail mm b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((,) a ~&gt; (,) b) -&gt; mm ((,) a) () -&gt; mm ((,) b) ()
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; (a, x) -&gt; (b, x)
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679131478"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(mm ((,) a) () -&gt; mm ((,) b) ())
+-&gt; (Trail mm a -&gt; mm ((,) a) ()) -&gt; Trail mm a -&gt; mm ((,) b) ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Trail mm a -&gt; mm ((,) a) ()
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. Trail mm a -&gt; mm ((,) a) ()
+</span><a href="Control.Monad.Trail.html#runTrail"><span class="hs-identifier hs-var">runTrail</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- f :: a -&gt; b</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- first f :: forall c. (a, c) -&gt; (b, c)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679131433"><span id="local-6989586621679131491"><span id="local-6989586621679131495"><span id="local-6989586621679131498"><span class="hs-special">(</span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131433"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-type">Trail</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131433"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>  </span><span id="local-6989586621679131504"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Trail mm a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span id="local-6989586621679131505"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679131505"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">mm ((,) a) () -&gt; Trail mm a
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. mm ((,) a) () -&gt; Trail mm a
+</span><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-var">Trail</span></a></span><span> </span><span class="annot"><span class="annottext">(mm ((,) a) () -&gt; Trail mm a) -&gt; mm ((,) a) () -&gt; Trail mm a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(a, ()) -&gt; mm ((,) a) ()
+(,) a ~&gt; mm ((,) a)
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; mm g
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad ff, Functor g) =&gt;
+g ~&gt; ff g
+</span><a href="FMonad.html#fpure"><span class="hs-identifier hs-var">fpure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679131505"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>  </span><span id="local-6989586621679131509"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Trail mm (a -&gt; b) -&gt; Trail mm a -&gt; Trail mm b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Trail mm (a -&gt; b) -&gt; Trail mm a -&gt; Trail mm b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679131440"><span id="local-6989586621679131515"><span id="local-6989586621679131518"><span class="hs-special">(</span><span class="annot"><a href="FMonad.html#FMonad"><span class="hs-identifier hs-type">FMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131440"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-type">Trail</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131440"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679131529"><span class="annot"><span class="annottext">Trail mm a
+</span><a href="#local-6989586621679131529"><span class="hs-identifier hs-var">ma</span></a></span></span><span> </span><span id="local-6989586621679131530"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Trail mm a -&gt; (a -&gt; Trail mm b) -&gt; Trail mm b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;=</span></span></span><span> </span><span id="local-6989586621679131531"><span class="annot"><span class="annottext">a -&gt; Trail mm b
+</span><a href="#local-6989586621679131531"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">mm ((,) b) () -&gt; Trail mm b
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. mm ((,) a) () -&gt; Trail mm a
+</span><a href="Control.Monad.Trail.html#Trail"><span class="hs-identifier hs-var">Trail</span></a></span><span> </span><span class="annot"><span class="annottext">(mm ((,) b) () -&gt; Trail mm b)
+-&gt; (Trail mm a -&gt; mm ((,) b) ()) -&gt; Trail mm a -&gt; Trail mm b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">mm (mm ((,) b)) () -&gt; mm ((,) b) ()
+mm (mm ((,) b)) ~&gt; mm ((,) b)
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *).
+(FMonad ff, Functor g) =&gt;
+ff (ff g) ~&gt; ff g
+</span><a href="FMonad.html#fjoin"><span class="hs-identifier hs-var">fjoin</span></a></span><span> </span><span class="annot"><span class="annottext">(mm (mm ((,) b)) () -&gt; mm ((,) b) ())
+-&gt; (Trail mm a -&gt; mm (mm ((,) b)) ())
+-&gt; Trail mm a
+-&gt; mm ((,) b) ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((,) a ~&gt; mm ((,) b)) -&gt; mm ((,) a) () -&gt; mm (mm ((,) b)) ()
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; mm g x -&gt; mm h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(mm ((,) b) (), x) -&gt; mm ((,) b) x
+forall (f :: * -&gt; *) x. Functor f =&gt; (f (), x) -&gt; f x
+</span><a href="Control.Monad.Trail.html#plug"><span class="hs-identifier hs-var">plug</span></a></span><span> </span><span class="annot"><span class="annottext">((mm ((,) b) (), x) -&gt; mm ((,) b) x)
+-&gt; ((a, x) -&gt; (mm ((,) b) (), x)) -&gt; (a, x) -&gt; mm ((,) b) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; mm ((,) b) ()) -&gt; (a, x) -&gt; (mm ((,) b) (), x)
+forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Trail mm b -&gt; mm ((,) b) ()
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. Trail mm a -&gt; mm ((,) a) ()
+</span><a href="Control.Monad.Trail.html#runTrail"><span class="hs-identifier hs-var">runTrail</span></a></span><span> </span><span class="annot"><span class="annottext">(Trail mm b -&gt; mm ((,) b) ())
+-&gt; (a -&gt; Trail mm b) -&gt; a -&gt; mm ((,) b) ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Trail mm b
+</span><a href="#local-6989586621679131531"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(mm ((,) a) () -&gt; mm (mm ((,) b)) ())
+-&gt; (Trail mm a -&gt; mm ((,) a) ())
+-&gt; Trail mm a
+-&gt; mm (mm ((,) b)) ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Trail mm a -&gt; mm ((,) a) ()
+forall (mm :: (* -&gt; *) -&gt; * -&gt; *) a. Trail mm a -&gt; mm ((,) a) ()
+</span><a href="Control.Monad.Trail.html#runTrail"><span class="hs-identifier hs-var">runTrail</span></a></span><span> </span><span class="annot"><span class="annottext">(Trail mm a -&gt; Trail mm b) -&gt; Trail mm a -&gt; Trail mm b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Trail mm a
+</span><a href="#local-6989586621679131529"><span class="hs-identifier hs-var">ma</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Control.Monad.Trail.html#plug"><span class="hs-identifier hs-type">plug</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679131459"><span class="annot"><a href="#local-6989586621679131459"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679131460"><span class="annot"><a href="#local-6989586621679131460"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679131459"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679131459"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679131460"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679131459"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131460"><span class="hs-identifier hs-type">x</span></a></span><span>
+</span><span id="line-69"></span><span id="plug"><span class="annot"><span class="annottext">plug :: forall (f :: * -&gt; *) x. Functor f =&gt; (f (), x) -&gt; f x
+</span><a href="Control.Monad.Trail.html#plug"><span class="hs-identifier hs-var hs-var">plug</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679131538"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679131538"><span class="hs-identifier hs-var">f_</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679131539"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679131539"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679131539"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; f () -&gt; f x
+forall a b. a -&gt; f b -&gt; f a
+forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679131538"><span class="hs-identifier hs-var">f_</span></a></span><span>
+</span><span id="line-70"></span></pre></body></html>

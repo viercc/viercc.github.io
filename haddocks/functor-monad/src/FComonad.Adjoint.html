@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ExistentialQuantification #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-10"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FComonad.Adjoint</span><span class="hs-special">(</span><span class="annot"><a href="FComonad.Adjoint.html#Adjoint"><span class="hs-identifier">Adjoint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#adjoint"><span class="hs-identifier">adjoint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#runAdjoint"><span class="hs-identifier">runAdjoint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier">AdjointT</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#fffmap"><span class="hs-identifier">fffmap</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#ungeneralize"><span class="hs-identifier">ungeneralize</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Identity</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">IdentityT</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.html"><span class="hs-identifier">FFunctor</span></a></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FComonad.html"><span class="hs-identifier">FComonad</span></a></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FStrong.html"><span class="hs-identifier">FStrong</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.FCompose.html"><span class="hs-identifier">FFunctor.FCompose</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="FFunctor.Adjunction.html"><span class="hs-identifier">FFunctor.Adjunction</span></a></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">newtype</span><span> </span><span id="AdjointT"><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span></span><span> </span><span id="local-6989586621679137374"><span class="annot"><a href="#local-6989586621679137374"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679137375"><span class="annot"><a href="#local-6989586621679137375"><span class="hs-identifier hs-type">uu</span></a></span></span><span> </span><span id="local-6989586621679137376"><span class="annot"><a href="#local-6989586621679137376"><span class="hs-identifier hs-type">ww</span></a></span></span><span> </span><span id="local-6989586621679137377"><span class="annot"><a href="#local-6989586621679137377"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679137378"><span class="annot"><a href="#local-6989586621679137378"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="AdjointT"><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runAdjointT"><span class="annot"><span class="annottext">forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+</span><a href="FComonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var hs-var">runAdjointT</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679137374"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679137376"><span class="hs-identifier hs-type">ww</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679137375"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137377"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679137378"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679137545"><span id="local-6989586621679137548"><span class="annot"><span class="annottext">(forall a b.
+ (a -&gt; b) -&gt; AdjointT ff uu ww g a -&gt; AdjointT ff uu ww g b)
+-&gt; (forall a b.
+    a -&gt; AdjointT ff uu ww g b -&gt; AdjointT ff uu ww g a)
+-&gt; Functor (AdjointT ff uu ww g)
+forall a b. a -&gt; AdjointT ff uu ww g b -&gt; AdjointT ff uu ww g a
+forall a b.
+(a -&gt; b) -&gt; AdjointT ff uu ww g a -&gt; AdjointT ff uu ww g b
+forall k (ff :: k -&gt; * -&gt; *) k k (uu :: k -&gt; k) (ww :: k -&gt; k)
+       (g :: k) a b.
+Functor (ff (ww (uu g))) =&gt;
+a -&gt; AdjointT ff uu ww g b -&gt; AdjointT ff uu ww g a
+forall k (ff :: k -&gt; * -&gt; *) k k (uu :: k -&gt; k) (ww :: k -&gt; k)
+       (g :: k) a b.
+Functor (ff (ww (uu g))) =&gt;
+(a -&gt; b) -&gt; AdjointT ff uu ww g a -&gt; AdjointT ff uu ww g b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall k (ff :: k -&gt; * -&gt; *) k k (uu :: k -&gt; k) (ww :: k -&gt; k)
+       (g :: k) a b.
+Functor (ff (ww (uu g))) =&gt;
+(a -&gt; b) -&gt; AdjointT ff uu ww g a -&gt; AdjointT ff uu ww g b
+fmap :: forall a b.
+(a -&gt; b) -&gt; AdjointT ff uu ww g a -&gt; AdjointT ff uu ww g b
+$c&lt;$ :: forall k (ff :: k -&gt; * -&gt; *) k k (uu :: k -&gt; k) (ww :: k -&gt; k)
+       (g :: k) a b.
+Functor (ff (ww (uu g))) =&gt;
+a -&gt; AdjointT ff uu ww g b -&gt; AdjointT ff uu ww g a
+&lt;$ :: forall a b. a -&gt; AdjointT ff uu ww g b -&gt; AdjointT ff uu ww g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">type</span><span> </span><span id="Adjoint"><span class="annot"><a href="FComonad.Adjoint.html#Adjoint"><span class="hs-identifier hs-var">Adjoint</span></a></span></span><span> </span><span id="local-6989586621679137552"><span class="annot"><a href="#local-6989586621679137552"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679137553"><span class="annot"><a href="#local-6989586621679137553"><span class="hs-identifier hs-type">uu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137552"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137553"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IdentityT</span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span id="local-6989586621679137564"><span class="hs-keyword">deriving</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">via</span><span> </span><span id="local-6989586621679137429"><span id="local-6989586621679137430"><span id="local-6989586621679137431"><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137429"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137430"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679137431"><span class="hs-identifier hs-type">uu</span></a></span></span></span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137429"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137430"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137431"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137429"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137431"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137430"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span id="local-6989586621679137587"><span id="local-6989586621679137594"><span class="hs-keyword">deriving</span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">via</span><span> </span><span id="local-6989586621679137443"><span id="local-6989586621679137444"><span id="local-6989586621679137445"><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.FCompose.html#FCompose"><span class="hs-identifier hs-type">FCompose</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137443"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137444"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679137445"><span class="hs-identifier hs-type">uu</span></a></span></span></span></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-keyword">instance</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137443"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137444"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137445"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FStrong.html#FStrong"><span class="hs-identifier hs-type">FStrong</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137443"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137445"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137444"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679137457"><span id="local-6989586621679137458"><span id="local-6989586621679137459"><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Adjunction.html#Adjunction"><span class="hs-identifier hs-type">Adjunction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137457"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137458"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FComonad.html#FComonad"><span class="hs-identifier hs-type">FComonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137459"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FComonad.html#FComonad"><span class="hs-identifier hs-type">FComonad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137457"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137458"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137459"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-35"></span><span>    </span><span id="local-6989586621679137623"><span class="annot"><span class="annottext">fextract :: forall (g :: * -&gt; *). Functor g =&gt; AdjointT ff uu ww g ~&gt; g
+</span><a href="#local-6989586621679137623"><span class="hs-identifier hs-var hs-var hs-var hs-var">fextract</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (uu g) x -&gt; g x
+ff (uu g) ~&gt; g
+forall (g :: * -&gt; *). Functor g =&gt; ff (uu g) ~&gt; g
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+ff (uu g) ~&gt; g
+</span><a href="FFunctor.Adjunction.html#counit"><span class="hs-identifier hs-var">counit</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (uu g) x -&gt; g x)
+-&gt; (AdjointT ff uu ww g x -&gt; ff (uu g) x)
+-&gt; AdjointT ff uu ww g x
+-&gt; g x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(ww (uu g) ~&gt; uu g) -&gt; ff (ww (uu g)) x -&gt; ff (uu g) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">ww (uu g) x -&gt; uu g x
+ww (uu g) ~&gt; uu g
+forall (g :: * -&gt; *). Functor g =&gt; ww g ~&gt; g
+forall (ff :: FF) (g :: * -&gt; *).
+(FComonad ff, Functor g) =&gt;
+ff g ~&gt; g
+</span><a href="FComonad.html#fextract"><span class="hs-identifier hs-var">fextract</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (ww (uu g)) x -&gt; ff (uu g) x)
+-&gt; (AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x)
+-&gt; AdjointT ff uu ww g x
+-&gt; ff (uu g) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+</span><a href="FComonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621679137642"><span class="annot"><span class="annottext">fextend :: forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(AdjointT ff uu ww g ~&gt; h)
+-&gt; AdjointT ff uu ww g ~&gt; AdjointT ff uu ww h
+</span><a href="#local-6989586621679137642"><span class="hs-identifier hs-var hs-var hs-var hs-var">fextend</span></a></span></span><span> </span><span id="local-6989586621679137644"><span class="annot"><span class="annottext">AdjointT ff uu ww g ~&gt; h
+</span><a href="#local-6989586621679137644"><span class="hs-identifier hs-var">tr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ff (ww (uu g)) ~&gt; h)
+-&gt; AdjointT ff uu ww (ff (ww (uu g))) x -&gt; AdjointT ff uu ww h x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; AdjointT ff uu ww g x -&gt; AdjointT ff uu ww h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">AdjointT ff uu ww g x -&gt; h x
+AdjointT ff uu ww g ~&gt; h
+</span><a href="#local-6989586621679137644"><span class="hs-identifier hs-var">tr</span></a></span><span> </span><span class="annot"><span class="annottext">(AdjointT ff uu ww g x -&gt; h x)
+-&gt; (ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x)
+-&gt; ff (ww (uu g)) x
+-&gt; h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x
+</span><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(AdjointT ff uu ww (ff (ww (uu g))) x -&gt; AdjointT ff uu ww h x)
+-&gt; (AdjointT ff uu ww g x -&gt; AdjointT ff uu ww (ff (ww (uu g))) x)
+-&gt; AdjointT ff uu ww g x
+-&gt; AdjointT ff uu ww h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ff (ww (uu (ff (ww (uu g))))) x
+-&gt; AdjointT ff uu ww (ff (ww (uu g))) x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x
+</span><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (ww (uu (ff (ww (uu g))))) x
+ -&gt; AdjointT ff uu ww (ff (ww (uu g))) x)
+-&gt; (AdjointT ff uu ww g x -&gt; ff (ww (uu (ff (ww (uu g))))) x)
+-&gt; AdjointT ff uu ww g x
+-&gt; AdjointT ff uu ww (ff (ww (uu g))) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(ww (uu g) ~&gt; ww (uu (ff (ww (uu g)))))
+-&gt; ff (ww (uu g)) x -&gt; ff (ww (uu (ff (ww (uu g))))) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ww (uu g) ~&gt; uu (ff (ww (uu g))))
+-&gt; ww (uu g) ~&gt; ww (uu (ff (ww (uu g))))
+forall (g :: * -&gt; *) (h :: * -&gt; *).
+(Functor g, Functor h) =&gt;
+(ww g ~&gt; h) -&gt; ww g ~&gt; ww h
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *).
+(FComonad ff, Functor g, Functor h) =&gt;
+(ff g ~&gt; h) -&gt; ff g ~&gt; ff h
+</span><a href="FComonad.html#fextend"><span class="hs-identifier hs-var">fextend</span></a></span><span> </span><span class="annot"><span class="annottext">ww (uu g) x -&gt; uu (ff (ww (uu g))) x
+ww (uu g) ~&gt; uu (ff (ww (uu g)))
+forall (g :: * -&gt; *). Functor g =&gt; g ~&gt; uu (ff g)
+forall (ff :: FF) (uu :: FF) (g :: * -&gt; *).
+(Adjunction ff uu, Functor g) =&gt;
+g ~&gt; uu (ff g)
+</span><a href="FFunctor.Adjunction.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ff (ww (uu g)) x -&gt; ff (ww (uu (ff (ww (uu g))))) x)
+-&gt; (AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x)
+-&gt; AdjointT ff uu ww g x
+-&gt; ff (ww (uu (ff (ww (uu g))))) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+</span><a href="FComonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span id="local-6989586621679137474"><span id="local-6989586621679137475"><span id="local-6989586621679137476"><span class="annot"><a href="FComonad.Adjoint.html#adjoint"><span class="hs-identifier hs-type">adjoint</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137474"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137475"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679137476"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679137474"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679137475"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137476"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#Adjoint"><span class="hs-identifier hs-type">Adjoint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137474"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137475"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137476"><span class="hs-identifier hs-type">x</span></a></span></span></span></span><span>
+</span><span id="line-39"></span><span id="adjoint"><span class="annot"><span class="annottext">adjoint :: forall (ff :: FF) (uu :: FF) (x :: * -&gt; *).
+(FFunctor ff, FFunctor uu, Functor x) =&gt;
+ff (uu x) ~&gt; Adjoint ff uu x
+</span><a href="FComonad.Adjoint.html#adjoint"><span class="hs-identifier hs-var hs-var">adjoint</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (IdentityT (uu x)) x -&gt; AdjointT ff uu IdentityT x x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x
+</span><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (IdentityT (uu x)) x -&gt; AdjointT ff uu IdentityT x x)
+-&gt; (ff (uu x) x -&gt; ff (IdentityT (uu x)) x)
+-&gt; ff (uu x) x
+-&gt; AdjointT ff uu IdentityT x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(uu x ~&gt; IdentityT (uu x))
+-&gt; ff (uu x) x -&gt; ff (IdentityT (uu x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">uu x x -&gt; IdentityT (uu x) x
+uu x ~&gt; IdentityT (uu x)
+forall {k} (f :: k -&gt; *) (a :: k). f a -&gt; IdentityT f a
+</span><span class="hs-identifier hs-var">IdentityT</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span id="local-6989586621679137488"><span id="local-6989586621679137489"><span id="local-6989586621679137490"><span class="annot"><a href="FComonad.Adjoint.html#runAdjoint"><span class="hs-identifier hs-type">runAdjoint</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137488"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137489"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679137490"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#Adjoint"><span class="hs-identifier hs-type">Adjoint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137488"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137489"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137490"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137488"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679137489"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137490"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-42"></span><span id="runAdjoint"><span class="annot"><span class="annottext">runAdjoint :: forall (ff :: FF) (uu :: FF) (x :: * -&gt; *).
+(FFunctor ff, FFunctor uu, Functor x) =&gt;
+Adjoint ff uu x ~&gt; ff (uu x)
+</span><a href="FComonad.Adjoint.html#runAdjoint"><span class="hs-identifier hs-var hs-var">runAdjoint</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(IdentityT (uu x) ~&gt; uu x)
+-&gt; ff (IdentityT (uu x)) x -&gt; ff (uu x) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">IdentityT (uu x) x -&gt; uu x x
+IdentityT (uu x) ~&gt; uu x
+forall {k} (f :: k -&gt; *) (a :: k). IdentityT f a -&gt; f a
+</span><span class="hs-identifier hs-var">runIdentityT</span></span><span> </span><span class="annot"><span class="annottext">(ff (IdentityT (uu x)) x -&gt; ff (uu x) x)
+-&gt; (Adjoint ff uu x x -&gt; ff (IdentityT (uu x)) x)
+-&gt; Adjoint ff uu x x
+-&gt; ff (uu x) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Adjoint ff uu x x -&gt; ff (IdentityT (uu x)) x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+</span><a href="FComonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="FComonad.Adjoint.html#fffmap"><span class="hs-identifier hs-type">fffmap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679137499"><span class="annot"><a href="#local-6989586621679137499"><span class="hs-identifier hs-type">mm</span></a></span></span><span> </span><span id="local-6989586621679137500"><span class="annot"><a href="#local-6989586621679137500"><span class="hs-identifier hs-type">nn</span></a></span></span><span> </span><span id="local-6989586621679137501"><span class="annot"><a href="#local-6989586621679137501"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679137502"><span class="annot"><a href="#local-6989586621679137502"><span class="hs-identifier hs-type">uu</span></a></span></span><span> </span><span id="local-6989586621679137503"><span class="annot"><a href="#local-6989586621679137503"><span class="hs-identifier hs-type">x</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-45"></span><span>     </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137499"><span class="hs-identifier hs-type">mm</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137500"><span class="hs-identifier hs-type">nn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137501"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137502"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679137503"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679137504"><span class="annot"><a href="#local-6989586621679137504"><span class="hs-identifier hs-type">y</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679137504"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679137499"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137504"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137500"><span class="hs-identifier hs-type">nn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137504"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137501"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137502"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137499"><span class="hs-identifier hs-type">mm</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137503"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137501"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137502"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137500"><span class="hs-identifier hs-type">nn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137503"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span id="fffmap"><span class="annot"><span class="annottext">fffmap :: forall (mm :: FF) (nn :: FF) (ff :: FF) (uu :: FF) (x :: * -&gt; *).
+(FFunctor mm, FFunctor nn, FFunctor ff, FFunctor uu, Functor x) =&gt;
+(forall (y :: * -&gt; *). Functor y =&gt; mm y ~&gt; nn y)
+-&gt; AdjointT ff uu mm x ~&gt; AdjointT ff uu nn x
+</span><a href="FComonad.Adjoint.html#fffmap"><span class="hs-identifier hs-var hs-var">fffmap</span></a></span></span><span> </span><span id="local-6989586621679137687"><span class="annot"><span class="annottext">forall (y :: * -&gt; *). Functor y =&gt; mm y ~&gt; nn y
+</span><a href="#local-6989586621679137687"><span class="hs-identifier hs-var">trans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ff (nn (uu x)) x -&gt; AdjointT ff uu nn x x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+ff (ww (uu g)) x -&gt; AdjointT ff uu ww g x
+</span><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-var">AdjointT</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (nn (uu x)) x -&gt; AdjointT ff uu nn x x)
+-&gt; (AdjointT ff uu mm x x -&gt; ff (nn (uu x)) x)
+-&gt; AdjointT ff uu mm x x
+-&gt; AdjointT ff uu nn x x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(mm (uu x) ~&gt; nn (uu x)) -&gt; ff (mm (uu x)) x -&gt; ff (nn (uu x)) x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><a href="FFunctor.html#ffmap"><span class="hs-identifier hs-var">ffmap</span></a></span><span> </span><span class="annot"><span class="annottext">mm (uu x) x -&gt; nn (uu x) x
+mm (uu x) ~&gt; nn (uu x)
+forall (y :: * -&gt; *). Functor y =&gt; mm y ~&gt; nn y
+</span><a href="#local-6989586621679137687"><span class="hs-identifier hs-var">trans</span></a></span><span> </span><span class="annot"><span class="annottext">(ff (mm (uu x)) x -&gt; ff (nn (uu x)) x)
+-&gt; (AdjointT ff uu mm x x -&gt; ff (mm (uu x)) x)
+-&gt; AdjointT ff uu mm x x
+-&gt; ff (nn (uu x)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">AdjointT ff uu mm x x -&gt; ff (mm (uu x)) x
+forall {k} {k} {k} {k} (ff :: k -&gt; k -&gt; *) (uu :: k -&gt; k)
+       (ww :: k -&gt; k) (g :: k) (x :: k).
+AdjointT ff uu ww g x -&gt; ff (ww (uu g)) x
+</span><a href="FComonad.Adjoint.html#runAdjointT"><span class="hs-identifier hs-var">runAdjointT</span></a></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span id="local-6989586621679137512"><span id="local-6989586621679137513"><span id="local-6989586621679137514"><span id="local-6989586621679137515"><span class="annot"><a href="FComonad.Adjoint.html#ungeneralize"><span class="hs-identifier hs-type">ungeneralize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FComonad.html#FComonad"><span class="hs-identifier hs-type">FComonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137512"><span class="hs-identifier hs-type">ww</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137513"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="FFunctor.html#FFunctor"><span class="hs-identifier hs-type">FFunctor</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137514"><span class="hs-identifier hs-type">uu</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679137515"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#AdjointT"><span class="hs-identifier hs-type">AdjointT</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137513"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137514"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137512"><span class="hs-identifier hs-type">ww</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137515"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="FFunctor.html#~%3E"><span class="hs-operator hs-type">~&gt;</span></a></span><span> </span><span class="annot"><a href="FComonad.Adjoint.html#Adjoint"><span class="hs-identifier hs-type">Adjoint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137513"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137514"><span class="hs-identifier hs-type">uu</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679137515"><span class="hs-identifier hs-type">x</span></a></span></span></span></span></span><span>
+</span><span id="line-51"></span><span id="ungeneralize"><span class="annot"><span class="annottext">ungeneralize :: forall (ww :: FF) (ff :: FF) (uu :: FF) (x :: * -&gt; *).
+(FComonad ww, FFunctor ff, FFunctor uu, Functor x) =&gt;
+AdjointT ff uu ww x ~&gt; Adjoint ff uu x
+</span><a href="FComonad.Adjoint.html#ungeneralize"><span class="hs-identifier hs-var hs-var">ungeneralize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (y :: * -&gt; *). Functor y =&gt; ww y ~&gt; IdentityT y)
+-&gt; AdjointT ff uu ww x ~&gt; AdjointT ff uu IdentityT x
+forall (mm :: FF) (nn :: FF) (ff :: FF) (uu :: FF) (x :: * -&gt; *).
+(FFunctor mm, FFunctor nn, FFunctor ff, FFunctor uu, Functor x) =&gt;
+(forall (y :: * -&gt; *). Functor y =&gt; mm y ~&gt; nn y)
+-&gt; AdjointT ff uu mm x ~&gt; AdjointT ff uu nn x
+</span><a href="FComonad.Adjoint.html#fffmap"><span class="hs-identifier hs-var">fffmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">y x -&gt; IdentityT y x
+forall {k} (f :: k -&gt; *) (a :: k). f a -&gt; IdentityT f a
+</span><span class="hs-identifier hs-var">IdentityT</span></span><span> </span><span class="annot"><span class="annottext">(y x -&gt; IdentityT y x)
+-&gt; (ww y x -&gt; y x) -&gt; ww y x -&gt; IdentityT y x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ww y x -&gt; y x
+ww y ~&gt; y
+forall (g :: * -&gt; *). Functor g =&gt; ww g ~&gt; g
+forall (ff :: FF) (g :: * -&gt; *).
+(FComonad ff, Functor g) =&gt;
+ff g ~&gt; g
+</span><a href="FComonad.html#fextract"><span class="hs-identifier hs-var">fextract</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span></pre></body></html>
