@@ -22,6 +22,22 @@ jobs:
           echo "hour=$(/bin/date -u \"+%H\")" >> $GITHUB_OUTPUT
         shell: bash
       
+      - name: Restore dependency cache
+        uses: actions/cache@v4
+        id: restore-build-cache
+        with:
+          key: c-${{ steps.get-date.outputs.date }}-${{steps.get-date.outputs.hour}}
+          restore-keys: |
+            c-
+            c-${{ steps.get-date.outputs.date }}-
+          path: |
+            ~/.ghcup/ghc
+            ~/.ghcup/bin
+            ~/.cabal/packages
+            ~/.cabal/store
+            projects/monad-gen/dist-newstyle
+            projects/polynomial-functors/dist-newstyle
+      
       - name: Setup Haskell
         id: setup
         uses: haskell-actions/setup@v2.7.10
@@ -47,20 +63,6 @@ jobs:
           repository: viercc/monad-gen
           ref: main
           path: projects/monad-gen
-      
-      - name: Restore dependency cache
-        uses: actions/cache@v4
-        id: restore-build-cache
-        with:
-          key: c-${{ steps.get-date.outputs.date }}-${{steps.get-date.outputs.hour}}
-          restore-keys: |
-            c-
-            c-${{ steps.get-date.outputs.date }}-
-          path: |
-            ~/.cabal/packages
-            ~/.cabal/store
-            projects/monad-gen/dist-newstyle
-            projects/polynomial-functors/dist-newstyle
       
       - name: Cabal Update
         run: |
