@@ -28,8 +28,8 @@ jobs:
         with:
           key: c-${{ steps.get-date.outputs.date }}-${{steps.get-date.outputs.hour}}
           restore-keys: |
-            c-
             c-${{ steps.get-date.outputs.date }}-
+            c-
           path: |
             ~/.ghcup/ghc
             ~/.ghcup/bin
