@@ -28,7 +28,7 @@
 
         <main role="main">
             <h1>Softwares</h1>
-            <h2 id="haskellのライブラリ">Haskellのライブラリ</h2>
+            <h2 id="haskellのライブラリhackageに登録中">Haskellのライブラリ(Hackageに登録中)</h2>
 <h3 id="trie-simple">trie-simple</h3>
 <ul>
 <li>trie-simple <a href="https://hackage.haskell.org/package/trie-simple"><img src="https://img.shields.io/hackage/v/trie-simple.svg" alt="At Hackage" /></a></li>
@@ -69,16 +69,9 @@
 <ul>
 <li>記事: <a href="./posts/2020-08-23-fmonad.html">Functor上のモナド、FMonadについて</a></li>
 <li>記事: <a href="./posts/2022-10-16-trail-monad.html">Trail: 踏跡モナド</a></li>
-<li><a href="https://viercc.github.io/haddocks/functor-monad/index.html">Documentation</a> (latest, home-built)</li>
 </ul></li>
-<li>free-applicative-t <a href="https://hackage.haskell.org/package/free-applicative-t"><img src="https://img.shields.io/hackage/v/free-applicative-t.svg" alt="At Hackage" /></a>
-<ul>
-<li><a href="https://viercc.github.io/haddocks/free-applicative-t/index.html">Documentation</a> (latest, home-built)</li>
-</ul></li>
-<li>day-comonoid <a href="https://hackage.haskell.org/package/day-comonoid"><img src="https://img.shields.io/hackage/v/day-comonoid.svg" alt="At Hackage" /></a>
-<ul>
-<li><a href="https://viercc.github.io/haddocks/day-comonoid/index.html">Documentation</a> (latest, home-built)</li>
-</ul></li>
+<li>free-applicative-t <a href="https://hackage.haskell.org/package/free-applicative-t"><img src="https://img.shields.io/hackage/v/free-applicative-t.svg" alt="At Hackage" /></a></li>
+<li>day-comonoid <a href="https://hackage.haskell.org/package/day-comonoid"><img src="https://img.shields.io/hackage/v/day-comonoid.svg" alt="At Hackage" /></a></li>
 </ul></li>
 <li><a href="https://github.com/viercc/functor-monad">GitHub</a></li>
 </ul>
@@ -87,21 +80,66 @@
 <li>monad-ideals <a href="https://hackage.haskell.org/package/monad-ideals"><img src="https://img.shields.io/hackage/v/monad-ideals.svg" alt="At Hackage" /></a></li>
 <li><a href="https://github.com/viercc/monad-ideals">GitHub</a></li>
 </ul>
-<h3 id="polynomial-functors">polynomial-functors</h3>
+<h2 id="haskellのライブラリ実験中">Haskellのライブラリ(実験中)</h2>
 <p>完成度などの理由によりHackageには登録していません</p>
+<h3 id="cartesian-profunctors">cartesian-profunctors</h3>
+<p>積<code>(,)</code>や和<code>(+)</code>で組み立てることができる<code>Profunctor</code>を表す、
+<code>Cartesian</code>と<code>Cocartesian</code>を定義するパッケージです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Profunctor</span> p <span class="ot">=&gt;</span> <span class="dt">Cartesian</span> p <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  proUnit ::</span> p a ()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (***) ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (a,a') (b,b')</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Profunctor</span> p <span class="ot">=&gt;</span> <span class="dt">Cocartesian</span> p <span class="kw">where</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">  proEmpty ::</span> p <span class="dt">Void</span> b</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ot">  (+++) ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (<span class="dt">Either</span> a a') (<span class="dt">Either</span> b b')</span></code></pre></div>
+<p>また、「<code>Profunctor</code>で<code>traverse</code>できる」ことを表す<code>PTraversable</code>を提供します。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Ord1</span> t, <span class="dt">Traversable</span> t) <span class="ot">=&gt;</span> <span class="dt">PTraversable</span> t <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ptraverseWith ::</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Cartesian</span> p, <span class="dt">Cocartesian</span> p) <span class="ot">=&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    (as <span class="ot">-&gt;</span> t a) <span class="ot">-&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    (t b <span class="ot">-&gt;</span> bs) <span class="ot">-&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    p a b <span class="ot">-&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    p as bs</span></code></pre></div>
 <ul>
-<li>パッケージ
+<li><a href="https://github.com/viercc/monad-gen/tree/master/cartesian-profunctors">GitHub</a></li>
+<li><a href="https://viercc.github.io/haddocks/cartesian-profunctors/">haddock</a></li>
+</ul>
+<p>わりあい出来てはいるのですが、</p>
+<ol type="1">
+<li>既存のライブラリ<a href="https://hackage.haskell.org/package/one-liner">one-liner</a>, <a href="https://hackage.haskell.org/package/product-profunctors">product-profunctors</a>とかなり重複してしまっていること</li>
+<li><code>Cartesian</code>と<code>Cocartesian</code>の間の理論的な関係の不明瞭さ（<code>Alternative</code>と<code>Applicative</code>の分配法則のような問題がある）</li>
+</ol>
+<p>といった理由でHackageにはありません。</p>
+<h3 id="nat-map">nat-map</h3>
+<p>通常の<code>Map</code>から、キーと値を<code>Functor</code>である<code>f,g</code>に拡張した
+<code>NatMap f g</code>を提供します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">NatMap</span> (<span class="ot">f ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>) (<span class="ot">g ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lookup</span><span class="ot"> ::</span> (<span class="dt">WeakOrd</span> f, <span class="dt">Foldable</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">NatMap</span> f g <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (g a) </span></code></pre></div>
+<p>こちらも割と自信をもって使える状態なのですが、
+<code>cartesian-profunctors</code>に強く依存して作ってしまったのでHackageにありません。</p>
 <ul>
-<li>polynomial-functors: 多項式関手を表す型クラス<code>Polynomial</code></li>
-<li>finite-polynomial: 有限な多項式を表すデータ<code>Poly</code>、その多項式関手への実現(<code>Ev :: Poly -&gt; Type -&gt; Type</code>)、
-有限な多項式関手に<code>Applicative</code>や<code>Monad</code>を自動で定める方法、など</li>
-<li>polynomial-comonad: “多項式コモナドと圏は1対1に対応する”
+<li><a href="https://github.com/viercc/monad-gen/tree/master/nat-map">GitHub</a></li>
+<li><a href="https://viercc.github.io/haddocks/nat-map/">haddock</a></li>
+</ul>
+<h3 id="polynomial-functors">polynomial-functors</h3>
+<p>多項式関手に関連する実験的なライブラリ(たち)を作っています。</p>
 <ul>
-<li><a href="./posts/2024-09-06-directed-containers-explained.html">解説: Directed Containers as Categoires</a></li>
+<li><p><a href="https://github.com/viercc/polynomial-functors">GitHub</a></p></li>
+<li><p>polynomial-functor (<a href="https://viercc.github.io/haddocks/polynomial-functor/">haddock</a>)</p>
+<ul>
+<li>多項式関手を表す型クラス<code>Polynomial</code></li>
+</ul></li>
+<li><p>finite-polynomial (<a href="https://viercc.github.io/haddocks/finite-polynomial/">haddock</a>)</p>
+<ul>
+<li>有限な多項式を表すデータ<code>Poly</code>、その多項式関手への実現(<code>Ev :: Poly -&gt; Type -&gt; Type</code>)</li>
+<li>有限な多項式関手に<code>Applicative</code>や<code>Monad</code>を定める</li>
+</ul></li>
+<li><p>polynomial-comonad (<a href="https://viercc.github.io/haddocks/polynomial-comonad/">haddock</a>)</p>
+<ul>
+<li><a href="./posts/2024-09-06-directed-containers-explained.html">Directed Containers as Categoires</a>をsingletons(とpolynomial-functor)を使って実装</li>
 <li><a href="./posts/2025-02-21-travel-flow-monad.html">TravelコモナドとFlowモナド</a></li>
 </ul></li>
-</ul></li>
-<li><a href="https://github.com/viercc/polynomial-functors">GitHub</a></li>
 </ul>
         </main>
 
