@@ -114,11 +114,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add haddocks
-          (git commit -m "haddock generated" && echo "changed=true" >> $GITHUB_OUTPUT) || echo "changed=false" >> $GITHUB_OUTPUT
+          (git commit -m "haddock generated" && (echo "changed=true" >> $GITHUB_OUTPUT)) || (echo "changed=false" >> $GITHUB_OUTPUT)
       
       - name: Push and Publish
         run: |
-          echo ${{ steps.commit_changes.outputs.changed == true }}
+          cd site-root
+          echo ${{ steps.commit_changes.outputs.changed }}
           # push to master
           git push origin master:master
           # sync publish branch to master
