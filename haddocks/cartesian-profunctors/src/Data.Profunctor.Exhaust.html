@@ -8,9 +8,9 @@
 </span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span>
 </span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
 </span><span id="line-10"></span><span>
-</span><span id="line-11"></span><span class="hs-keyword">data</span><span> </span><span id="Exhaust"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span></span><span> </span><span id="local-6989586621679162024"><span class="annot"><a href="#local-6989586621679162024"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679162025"><span class="annot"><a href="#local-6989586621679162025"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Absurd"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162024"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span>                 </span><span class="hs-glyph">|</span><span> </span><span id="Exhaust"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162025"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162025"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162099"><span id="local-6989586621679162101"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Exhaust a a -&gt; Exhaust a b)
+</span><span id="line-11"></span><span class="hs-keyword">data</span><span> </span><span id="Exhaust"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span></span><span> </span><span id="local-6989586621679162035"><span class="annot"><a href="#local-6989586621679162035"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679162036"><span class="annot"><a href="#local-6989586621679162036"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Absurd"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162035"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>                 </span><span class="hs-glyph">|</span><span> </span><span id="Exhaust"><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679162036"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679162036"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679162110"><span id="local-6989586621679162112"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Exhaust a a -&gt; Exhaust a b)
 -&gt; (forall a b. a -&gt; Exhaust a b -&gt; Exhaust a a)
 -&gt; Functor (Exhaust a)
 forall a b. a -&gt; Exhaust a b -&gt; Exhaust a a
@@ -26,122 +26,122 @@ $c&lt;$ :: forall a a b. a -&gt; Exhaust a b -&gt; Exhaust a a
 &lt;$ :: forall a b. a -&gt; Exhaust a b -&gt; Exhaust a a
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-14"></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162105"><span id="local-6989586621679162111"><span id="local-6989586621679162117"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-16"></span><span>  </span><span id="local-6989586621679162123"><span class="annot"><span class="annottext">lmap :: forall a b c. (a -&gt; b) -&gt; Exhaust b c -&gt; Exhaust a c
-</span><a href="#local-6989586621679162123"><span class="hs-identifier hs-var hs-var hs-var hs-var">lmap</span></a></span></span><span> </span><span id="local-6989586621679162125"><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679162125"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162126"><span class="annot"><span class="annottext">b -&gt; Void
-</span><a href="#local-6989586621679162126"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; Exhaust a c
+</span><span id="line-15"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162116"><span id="local-6989586621679162122"><span id="local-6989586621679162128"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>  </span><span id="local-6989586621679162134"><span class="annot"><span class="annottext">lmap :: forall a b c. (a -&gt; b) -&gt; Exhaust b c -&gt; Exhaust a c
+</span><a href="#local-6989586621679162134"><span class="hs-identifier hs-var hs-var hs-var hs-var">lmap</span></a></span></span><span> </span><span id="local-6989586621679162136"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679162136"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162137"><span class="annot"><span class="annottext">b -&gt; Void
+</span><a href="#local-6989586621679162137"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; Exhaust a c
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; Void
-</span><a href="#local-6989586621679162126"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Void) -&gt; (a -&gt; b) -&gt; a -&gt; Void
+</span><a href="#local-6989586621679162137"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Void) -&gt; (a -&gt; b) -&gt; a -&gt; Void
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679162125"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679162136"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">lmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162128"><span class="annot"><span class="annottext">(c -&gt; Bool) -&gt; c
-</span><a href="#local-6989586621679162128"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162139"><span class="annot"><span class="annottext">(c -&gt; Bool) -&gt; c
+</span><a href="#local-6989586621679162139"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">(c -&gt; Bool) -&gt; c
-</span><a href="#local-6989586621679162128"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><a href="#local-6989586621679162139"><span class="hs-identifier hs-var">g</span></a></span><span>
 </span><span id="line-18"></span><span>  </span><span>
-</span><span id="line-19"></span><span>  </span><span id="local-6989586621679162129"><span class="annot"><span class="annottext">rmap :: forall b c a. (b -&gt; c) -&gt; Exhaust a b -&gt; Exhaust a c
-</span><a href="#local-6989586621679162129"><span class="hs-identifier hs-var hs-var hs-var hs-var">rmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162131"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162131"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; Exhaust a c
+</span><span id="line-19"></span><span>  </span><span id="local-6989586621679162140"><span class="annot"><span class="annottext">rmap :: forall b c a. (b -&gt; c) -&gt; Exhaust a b -&gt; Exhaust a c
+</span><a href="#local-6989586621679162140"><span class="hs-identifier hs-var hs-var hs-var hs-var">rmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162142"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679162142"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; Exhaust a c
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162131"><span class="hs-identifier hs-var">f</span></a></span><span>
-</span><span id="line-20"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">rmap</span></span><span> </span><span id="local-6989586621679162132"><span class="annot"><span class="annottext">b -&gt; c
-</span><a href="#local-6989586621679162132"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162133"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162133"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c
+</span><a href="#local-6989586621679162142"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">rmap</span></span><span> </span><span id="local-6989586621679162143"><span class="annot"><span class="annottext">b -&gt; c
+</span><a href="#local-6989586621679162143"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162144"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
+</span><a href="#local-6989586621679162144"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">(((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c)
 -&gt; ((c -&gt; Bool) -&gt; c) -&gt; Exhaust a c
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162134"><span class="annot"><span class="annottext">c -&gt; Bool
-</span><a href="#local-6989586621679162134"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; c
-</span><a href="#local-6989586621679162132"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; c) -&gt; b -&gt; c
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162145"><span class="annot"><span class="annottext">c -&gt; Bool
+</span><a href="#local-6989586621679162145"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; c
+</span><a href="#local-6989586621679162143"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; c) -&gt; b -&gt; c
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162133"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">c -&gt; Bool
-</span><a href="#local-6989586621679162134"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(c -&gt; Bool) -&gt; (b -&gt; c) -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679162144"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">c -&gt; Bool
+</span><a href="#local-6989586621679162145"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(c -&gt; Bool) -&gt; (b -&gt; c) -&gt; b -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
-</span><a href="#local-6989586621679162132"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679162143"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span>
-</span><span id="line-22"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162139"><span id="local-6989586621679162144"><span id="local-6989586621679162147"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-23"></span><span>  </span><span id="local-6989586621679162152"><span class="annot"><span class="annottext">proUnit :: forall a. Exhaust a ()
-</span><a href="#local-6989586621679162152"><span class="hs-identifier hs-var hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((() -&gt; Bool) -&gt; ()) -&gt; Exhaust a ()
+</span><span id="line-22"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162150"><span id="local-6989586621679162155"><span id="local-6989586621679162158"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>  </span><span id="local-6989586621679162163"><span class="annot"><span class="annottext">proUnit :: forall a. Exhaust a ()
+</span><a href="#local-6989586621679162163"><span class="hs-identifier hs-var hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((() -&gt; Bool) -&gt; ()) -&gt; Exhaust a ()
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">() -&gt; Bool
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162154"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162154"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span id="local-6989586621679162155"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162165"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679162165"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span id="local-6989586621679162166"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
 Exhaust a b -&gt; Exhaust a' b' -&gt; Exhaust (a, a') (b, b')
-</span><a href="#local-6989586621679162155"><span class="hs-operator hs-var hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><span class="annottext">Exhaust a' b'
+</span><a href="#local-6989586621679162166"><span class="hs-operator hs-var hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><span class="annottext">Exhaust a' b'
 </span><span class="hs-identifier">_</span></span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void) -&gt; Exhaust (a, a') (b, b')
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
-</span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679162157"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679162157"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">a'
+</span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679162168"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162168"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">a'
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162154"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679162157"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679162165"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679162168"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162158"><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679162158"><span class="hs-identifier hs-var">q</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void) -&gt; Exhaust (a, a') (b, b')
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162169"><span class="annot"><span class="annottext">a' -&gt; Void
+</span><a href="#local-6989586621679162169"><span class="hs-identifier hs-var">q</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void) -&gt; Exhaust (a, a') (b, b')
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span id="local-6989586621679162159"><span class="annot"><span class="annottext">a'
-</span><a href="#local-6989586621679162159"><span class="hs-identifier hs-var">a'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679162158"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">a'
-</span><a href="#local-6989586621679162159"><span class="hs-identifier hs-var">a'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162160"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162160"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162161"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162161"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(((b, b') -&gt; Bool) -&gt; (b, b')) -&gt; Exhaust (a, a') (b, b')
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span id="local-6989586621679162170"><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679162170"><span class="hs-identifier hs-var">a'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
+</span><a href="#local-6989586621679162169"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">a'
+</span><a href="#local-6989586621679162170"><span class="hs-identifier hs-var">a'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162171"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
+</span><a href="#local-6989586621679162171"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162172"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
+</span><a href="#local-6989586621679162172"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(((b, b') -&gt; Bool) -&gt; (b, b')) -&gt; Exhaust (a, a') (b, b')
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">((b, b') -&gt; Bool) -&gt; (b, b')
-</span><a href="#local-6989586621679162162"><span class="hs-identifier hs-var">pq</span></a></span><span>
+</span><a href="#local-6989586621679162173"><span class="hs-identifier hs-var">pq</span></a></span><span>
 </span><span id="line-27"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>      </span><span id="local-6989586621679162162"><span class="annot"><span class="annottext">pq :: ((b, b') -&gt; Bool) -&gt; (b, b')
-</span><a href="#local-6989586621679162162"><span class="hs-identifier hs-var hs-var">pq</span></a></span></span><span> </span><span id="local-6989586621679162163"><span class="annot"><span class="annottext">(b, b') -&gt; Bool
-</span><a href="#local-6989586621679162163"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-29"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679162164"><span class="annot"><span class="annottext">subQuery :: b -&gt; b'
-</span><a href="#local-6989586621679162164"><span class="hs-identifier hs-var hs-var">subQuery</span></a></span></span><span> </span><span id="local-6989586621679162165"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162165"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162161"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">((b' -&gt; Bool) -&gt; b') -&gt; (b' -&gt; Bool) -&gt; b'
+</span><span id="line-28"></span><span>      </span><span id="local-6989586621679162173"><span class="annot"><span class="annottext">pq :: ((b, b') -&gt; Bool) -&gt; (b, b')
+</span><a href="#local-6989586621679162173"><span class="hs-identifier hs-var hs-var">pq</span></a></span></span><span> </span><span id="local-6989586621679162174"><span class="annot"><span class="annottext">(b, b') -&gt; Bool
+</span><a href="#local-6989586621679162174"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-29"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679162175"><span class="annot"><span class="annottext">subQuery :: b -&gt; b'
+</span><a href="#local-6989586621679162175"><span class="hs-identifier hs-var hs-var">subQuery</span></a></span></span><span> </span><span id="local-6989586621679162176"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162176"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
+</span><a href="#local-6989586621679162172"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">((b' -&gt; Bool) -&gt; b') -&gt; (b' -&gt; Bool) -&gt; b'
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162166"><span class="annot"><span class="annottext">b'
-</span><a href="#local-6989586621679162166"><span class="hs-identifier hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b, b') -&gt; Bool
-</span><a href="#local-6989586621679162163"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162165"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b'
-</span><a href="#local-6989586621679162166"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-30"></span><span>            </span><span id="local-6989586621679162167"><span class="annot"><span class="annottext">bGot :: b
-</span><a href="#local-6989586621679162167"><span class="hs-identifier hs-var hs-var">bGot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162160"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">((b -&gt; Bool) -&gt; b) -&gt; (b -&gt; Bool) -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162177"><span class="annot"><span class="annottext">b'
+</span><a href="#local-6989586621679162177"><span class="hs-identifier hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b, b') -&gt; Bool
+</span><a href="#local-6989586621679162174"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162176"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b'
+</span><a href="#local-6989586621679162177"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>            </span><span id="local-6989586621679162178"><span class="annot"><span class="annottext">bGot :: b
+</span><a href="#local-6989586621679162178"><span class="hs-identifier hs-var hs-var">bGot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
+</span><a href="#local-6989586621679162171"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">((b -&gt; Bool) -&gt; b) -&gt; (b -&gt; Bool) -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162168"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162168"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b, b') -&gt; Bool
-</span><a href="#local-6989586621679162163"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162168"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b -&gt; b'
-</span><a href="#local-6989586621679162164"><span class="hs-identifier hs-var">subQuery</span></a></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162168"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162179"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162179"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b, b') -&gt; Bool
+</span><a href="#local-6989586621679162174"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162179"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b -&gt; b'
+</span><a href="#local-6989586621679162175"><span class="hs-identifier hs-var">subQuery</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162179"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-31"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162167"><span class="hs-identifier hs-var">bGot</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b -&gt; b'
-</span><a href="#local-6989586621679162164"><span class="hs-identifier hs-var">subQuery</span></a></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679162167"><span class="hs-identifier hs-var">bGot</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679162178"><span class="hs-identifier hs-var">bGot</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b -&gt; b'
+</span><a href="#local-6989586621679162175"><span class="hs-identifier hs-var">subQuery</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679162178"><span class="hs-identifier hs-var">bGot</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162173"><span id="local-6989586621679162178"><span id="local-6989586621679162181"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-34"></span><span>  </span><span id="local-6989586621679162186"><span class="annot"><span class="annottext">proEmpty :: forall b. Exhaust Void b
-</span><a href="#local-6989586621679162186"><span class="hs-identifier hs-var hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Void -&gt; Void) -&gt; Exhaust Void b
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679162184"><span id="local-6989586621679162189"><span id="local-6989586621679162192"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679162197"><span class="annot"><span class="annottext">proEmpty :: forall b. Exhaust Void b
+</span><a href="#local-6989586621679162197"><span class="hs-identifier hs-var hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Void -&gt; Void) -&gt; Exhaust Void b
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">Void -&gt; Void
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span>
-</span><span id="line-35"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162189"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162189"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span id="local-6989586621679162190"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
+</span><span id="line-35"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162200"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span id="local-6989586621679162201"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
 Exhaust a b -&gt; Exhaust a' b' -&gt; Exhaust (Either a a') (Either b b')
-</span><a href="#local-6989586621679162190"><span class="hs-operator hs-var hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162192"><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679162192"><span class="hs-identifier hs-var">q</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either a a' -&gt; Void) -&gt; Exhaust (Either a a') (Either b b')
+</span><a href="#local-6989586621679162201"><span class="hs-operator hs-var hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span id="local-6989586621679162203"><span class="annot"><span class="annottext">a' -&gt; Void
+</span><a href="#local-6989586621679162203"><span class="hs-identifier hs-var">q</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either a a' -&gt; Void) -&gt; Exhaust (Either a a') (Either b b')
 forall a b. (a -&gt; Void) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-var">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">((Either a a' -&gt; Void) -&gt; Exhaust (Either a a') (Either b b'))
 -&gt; (Either a a' -&gt; Void) -&gt; Exhaust (Either a a') (Either b b')
@@ -149,11 +149,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; (a' -&gt; Void) -&gt; Either a a' -&gt; Void
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679162189"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679162192"><span class="hs-identifier hs-var">q</span></a></span><span>
+</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
+</span><a href="#local-6989586621679162203"><span class="hs-identifier hs-var">q</span></a></span><span>
 </span><span id="line-36"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><span class="hs-identifier">_</span></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162194"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162194"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Either b b' -&gt; Bool) -&gt; Either b b')
+</span><span class="hs-identifier">_</span></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162205"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
+</span><a href="#local-6989586621679162205"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">(((Either b b' -&gt; Bool) -&gt; Either b b')
@@ -161,20 +161,20 @@ forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 -&gt; ((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162195"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162195"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162206"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162206"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Either b b') -&gt; b' -&gt; Either b b'
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162194"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162195"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b' -&gt; Either b b') -&gt; b' -&gt; Bool
+</span><a href="#local-6989586621679162205"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162206"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b' -&gt; Either b b') -&gt; b' -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162196"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162196"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162207"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
+</span><a href="#local-6989586621679162207"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Absurd"><span class="hs-identifier hs-type">Absurd</span></a></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Void
 </span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
@@ -183,21 +183,21 @@ forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 -&gt; ((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162197"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162197"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162208"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162208"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Either b b') -&gt; b -&gt; Either b b'
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162196"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162197"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b -&gt; Either b b') -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679162207"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162208"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b -&gt; Either b b') -&gt; b -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162198"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162198"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162199"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162199"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Either b b' -&gt; Bool) -&gt; Either b b')
+</span><span id="line-38"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162209"><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
+</span><a href="#local-6989586621679162209"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#%2B%2B%2B"><span class="hs-operator hs-var">+++</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-type">Exhaust</span></a></span><span> </span><span id="local-6989586621679162210"><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
+</span><a href="#local-6989586621679162210"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 </span><a href="Data.Profunctor.Exhaust.html#Exhaust"><span class="hs-identifier hs-var">Exhaust</span></a></span><span> </span><span class="annot"><span class="annottext">(((Either b b' -&gt; Bool) -&gt; Either b b')
@@ -205,38 +205,38 @@ forall a b. ((b -&gt; Bool) -&gt; b) -&gt; Exhaust a b
 -&gt; ((Either b b' -&gt; Bool) -&gt; Either b b')
 -&gt; Exhaust (Either a a') (Either b b')
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162200"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-39"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679162201"><span class="annot"><span class="annottext">x :: Either b b
-</span><a href="#local-6989586621679162201"><span class="hs-identifier hs-var hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679162211"><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">cond</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679162212"><span class="annot"><span class="annottext">x :: Either b b
+</span><a href="#local-6989586621679162212"><span class="hs-identifier hs-var hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Either b b) -&gt; b -&gt; Either b b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Bool) -&gt; b
-</span><a href="#local-6989586621679162198"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b -&gt; Either b b') -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679162209"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b -&gt; Either b b') -&gt; b -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b b'
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span>
-</span><span id="line-40"></span><span>        </span><span id="local-6989586621679162202"><span class="annot"><span class="annottext">y :: Either a b'
-</span><a href="#local-6989586621679162202"><span class="hs-identifier hs-var hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either a b'
+</span><span id="line-40"></span><span>        </span><span id="local-6989586621679162213"><span class="annot"><span class="annottext">y :: Either a b'
+</span><a href="#local-6989586621679162213"><span class="hs-identifier hs-var hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either a b'
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Either a b') -&gt; b' -&gt; Either a b'
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(b' -&gt; Bool) -&gt; b'
-</span><a href="#local-6989586621679162199"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b' -&gt; Either b b') -&gt; b' -&gt; Bool
+</span><a href="#local-6989586621679162210"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">(Either b b' -&gt; Bool) -&gt; (b' -&gt; Either b b') -&gt; b' -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
 </span><span id="line-41"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Either b b' -&gt; Bool
-</span><a href="#local-6989586621679162200"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">Either b b'
+</span><a href="#local-6989586621679162211"><span class="hs-identifier hs-var">cond</span></a></span><span> </span><span class="annot"><span class="annottext">Either b b'
 forall {b}. Either b b
-</span><a href="#local-6989586621679162201"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Either b b'
+</span><a href="#local-6989586621679162212"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Either b b'
 forall {b}. Either b b
-</span><a href="#local-6989586621679162201"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Either b b'
+</span><a href="#local-6989586621679162212"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Either b b'
 forall {a}. Either a b'
-</span><a href="#local-6989586621679162202"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><a href="#local-6989586621679162213"><span class="hs-identifier hs-var">y</span></a></span><span>
 </span><span id="line-42"></span></pre></body></html>
