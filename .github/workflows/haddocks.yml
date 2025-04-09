@@ -117,8 +117,8 @@ jobs:
           (git commit -m "haddock generated" && echo "changed=true" >> $GITHUB_OUTPUT) || echo "changed=false" >> $GITHUB_OUTPUT
       
       - name: Push and Publish
-        if: ${{ steps.commit_changes.outputs.changed == true }}
         run: |
+          echo ${{ steps.commit_changes.outputs.changed == true }}
           # push to master
           git push origin master:master
           # sync publish branch to master
