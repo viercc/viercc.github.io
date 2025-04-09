@@ -125,5 +125,6 @@ jobs:
           # sync publish branch to master
           git fetch origin publish:publish
           git switch publish
+          git pull # I'm not sure its needed?
           git merge --ff master
           git push origin publish:publish
