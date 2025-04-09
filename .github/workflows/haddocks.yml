@@ -114,17 +114,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add haddocks
-          (git commit -m "haddock generated" && (echo "changed=true" >> $GITHUB_OUTPUT)) || (echo "changed=false" >> $GITHUB_OUTPUT)
-      
-      - name: Push and Publish
-        run: |
-          cd site-root
-          echo ${{ steps.commit_changes.outputs.changed }}
-          # push to master
-          git push origin master:master
-          # sync publish branch to master
-          git fetch origin publish:publish
-          git switch publish
-          git pull # I'm not sure its needed?
-          git merge --ff master
-          git push origin publish:publish
+          git commit -m "haddock generated"
