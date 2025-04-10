@@ -35,7 +35,7 @@
                 <li>Posted on 2021-05-17</li>
             
             
-                <li>Last modified on 2025-02-22</li>
+                <li>Last modified on 2025-04-10</li>
             
             
             
@@ -49,6 +49,7 @@
 <li><a href="#ストリング図" id="toc-ストリング図">ストリング図</a></li>
 <li><a href="#ストリング図でmonad" id="toc-ストリング図でmonad">ストリング図でMonad</a></li>
 <li><a href="#ストリング図でstateモナド" id="toc-ストリング図でstateモナド">ストリング図で<code>State</code>モナド</a></li>
+<li><a href="#変更履歴" id="toc-変更履歴">変更履歴</a></li>
 </ul></div>
 <h2 id="いまさらモナド">いまさらモナド</h2>
 <p>この記事はHaskellにおけるモナドの解説です。
@@ -89,21 +90,39 @@
 <p>ストリング図が表すものは、<code>Functor</code>の間の自然変換です。
 改めて明示的に定義するなら、
 <code>Functor f</code>と<code>Functor g</code>に対して、型<code>∀a. f a -&gt; g a</code>が付くような関数が、<code>f</code>から<code>g</code>への自然変換です。</p>
-<p>自然変換<code>tf :: ∀a. f a -&gt; f' a</code>を、以下の図のように描くことにします。</p>
+<p>ストリング図において、自然変換<code>tf :: ∀a. f a -&gt; g a</code>は以下の図のように
+いくつかの線が上下に出ているノードとして表します。
+ここで、自然変換は「上から下に」向いているものとして描きます。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+上側に出ている線が自然変換の引数側の<code>Functor</code>である<code>f</code>に、
+下側に出ている線が返り値側の<code>Functor</code>である<code>g</code>に相当します。</p>
 <figure>
 <img src="../images/string/1.png" alt="ストリング図" />
 <figcaption aria-hidden="true">ストリング図</figcaption>
 </figure>
-<p>図の中で、それぞれの線はある<code>Functor</code>に、線を結ぶ丸が自然変換<code>tf</code>に対応しています。</p>
-<p>“何もしない”自然変換<code>id :: ∀a. f a -&gt; f a</code>は、ただの線で描きます。</p>
+<p>“何もしない”自然変換<code>id :: ∀a. f a -&gt; f a</code>はただの線で描きます。</p>
 <figure>
 <img src="../images/string/id.png" alt="ストリング図(id)" />
 <figcaption aria-hidden="true">ストリング図(id)</figcaption>
 </figure>
-<p>加えて、<code>∀a. f (g a) -&gt; h a</code>のように<code>Functor</code>がネストしているような場合も、
-<code>f (g a)</code>と<code>Compose f g a</code>を同一視して、“<code>Compose f g</code>から<code>h</code>への自然変換”とみなすことにします。
-何段ネストしていてもこれは変わらないことにしましょう。</p>
-<p>このようなネストした<code>Functor</code>間の自然変換は、以下の図のように描くことにします。</p>
+<p>更に、<code>∀a. f (g (h a)) -&gt; p (q a)</code>のように<code>Functor</code>がネストしているような場合も、
+<code>f (g (h a))</code>と<code>Compose f (Compose g h) a</code>を、<code>p (q a)</code>と<code>Compose p q</code>を同一視して、<code>Compose f (Compose g h)</code>から<code>Compose p q</code>への自然変換とみなすことにします。
+何段ネストしていても同様に考え、更に<code>Compose</code>がどのような順で結合しているのかも特に気にしません。つまり、</p>
+<ul>
+<li>以下の<code>Functor</code>はどれも区別せず、3つの関手<code>f, g, h</code>がその順で合成されたものと考える
+<ul>
+<li><code>Compose f (Compose g h)</code></li>
+<li><code>Compose (Compose f g) h</code></li>
+</ul></li>
+<li>以下の<code>Functor</code>はどれも区別せず、4つの関手<code>f, g, h, k</code>がその順で合成されたものと考える
+<ul>
+<li><code>Compose f (Compose g (Compose h k))</code></li>
+<li><code>Compose (Compose f g) (Compose h k)</code></li>
+<li><code>Compose (Compose (Compose f g) h) k</code></li>
+</ul></li>
+<li>……任意の個数で同様……</li>
+</ul>
+<p>となっています。</p>
+<p>このようなネストした<code>Functor</code>間の自然変換は、下図のように描くことにします。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <figure>
 <img src="../images/string/2.png" alt="ストリング図(合成Functor1)" />
 <figcaption aria-hidden="true">ストリング図(合成Functor1)</figcaption>
@@ -112,9 +131,9 @@
 <img src="../images/string/3.png" alt="ストリング図(合成Functor2)" />
 <figcaption aria-hidden="true">ストリング図(合成Functor2)</figcaption>
 </figure>
-<p>上に突き出している端がそれぞれ<code>h, g, f</code>なのは、この自然変換が<code>Functor</code>の合成<code>f ∘ g ∘ h</code>を入力にとることを表していて、
-下に突き出している端が<code>q, p</code>なのは、<code>p ∘ q</code>を出力することを表しています。
-合成が<em>逆順</em>なのに注意してください。</p>
+<p>上に突き出している端が左から<code>h, g, f</code>なのは、この自然変換が<code>Functor</code>の合成<code>Compose f (Compose g h)</code>を入力にとることを表していて、
+下に突き出している端が左から<code>q, p</code>なのは、<code>Compose p q</code>を出力することを表しています。
+合成が<em>Haskellとは逆順</em>なのに注意してください。</p>
 <p>さらに、“0個の<code>Functor</code>のネスト”をも、<code>Identity</code>と同一視します。
 つまり、<code>pure :: ∀a. a -&gt; f a</code>も<code>Identity</code>から<code>f</code>への自然変換とみなして、次の図のように書くことにします。このとき、図でうすく描いたような、<code>Identity</code>を表す線は引かないことにします。
 （これによって後で困ることはありません！）</p>
@@ -287,6 +306,22 @@
 <img src="../images/string/state-assoc.png" alt="Stateのモナド則(結合法則)" />
 <figcaption aria-hidden="true">Stateのモナド則(結合法則)</figcaption>
 </figure>
+<h2 id="変更履歴">変更履歴</h2>
+<ul>
+<li><strong>2025-04-10</strong>: “ストリング図(合成Functor2)”にあった誤りを修正 (Thanks: <span class="citation" data-cites="Kory__3">@Kory__3</span> (<a href="https://x.com/Kory__3/status/1910318309662490891">tweet</a>)), ほか説明を書き直す</li>
+</ul>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>ストリング図において自然変換が「上から下」なのか「下から上」なのかは
+（どちらかに決める必要はありますが）どちらでもよく、どちらに決める流儀も実際にあるようです。
+この説明は「このブログ内では『上から下』という規約に統一する」という宣言です。
+（筆者はどのような分野や著者がどの流儀であるのかはよく知っていません。）<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>関手の合成の向きの左右も、自然変換の上下と同様にどちらでもよく、
+どちらに決める流儀もやはり実際にあるようです。
+これは「このブログ内では『左から右』という規約に統一する」という宣言です。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
     </section>
 </article>
 
