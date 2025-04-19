@@ -85,9 +85,9 @@ jobs:
         shell: bash
         env:
           cabal-opts: >
-            "--haddock-output-dir=./doc-output"
-            "--haddock-hyperlink-source"
-            "--haddock-html-location=http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html"
+            --haddock-output-dir='./doc-output'
+            --haddock-hyperlink-source
+            --haddock-html-location='http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html'
         run: |
           set -e
           (cd projects/functor-monad && cabal haddock all ${{ env.cabal-opts }})
@@ -115,3 +115,22 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add haddocks
           git commit -m "haddock generated"
+          git push
+
+  publish-by-git:
+    name: "Publish the generated haddock"
+    runs-on: ubuntu-latest
+    needs: build-docs
+
+    steps:
+      - name: Checkout publish root
+        uses: actions/checkout@v4
+        with:
+          ref: publish
+      
+      - name: Merge master to publish
+        id: merge_master
+        run: |
+          git fetch origin master:master
+          git merge --ff-only master
+          git push
