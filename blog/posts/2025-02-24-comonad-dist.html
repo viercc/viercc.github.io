@@ -40,6 +40,8 @@
                 <li>Posted on 2025-03-04</li>
             
             
+                <li>Last modified on 2025-05-21</li>
+            
             
             
                 <li class="post-tags">tags: <a title="All pages tagged 'monad'." href="../tags/monad.html" rel="tag">monad</a>, <a title="All pages tagged 'comonad'." href="../tags/comonad.html" rel="tag">comonad</a>, <a title="All pages tagged 'distributive-law'." href="../tags/distributive-law.html" rel="tag">distributive-law</a>, <a title="All pages tagged 'string-diagram'." href="../tags/string-diagram.html" rel="tag">string-diagram</a></li>
@@ -65,6 +67,7 @@
 <li><a href="#任意のコモナドwのstore_sに対する分配法則" id="toc-任意のコモナドwのstore_sに対する分配法則">任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_S</span>に対する分配法則</a></li>
 <li><a href="#store_sのstore_tに対する分配法則" id="toc-store_sのstore_tに対する分配法則"><span class="math inline">\Store_S</span>の<span class="math inline">\Store_T</span>に対する分配法則</a></li>
 </ul></li>
+<li><a href="#修正履歴" id="toc-修正履歴">修正履歴</a></li>
 <li><a href="#参考文献" id="toc-参考文献">参考文献</a></li>
 </ul></div>
 <pre class="math-block"><code>% basic set manipulation
@@ -286,7 +289,7 @@
 </dd>
 </dl>
 <p>コモナド変換子の一部は、モナド変換子と同様に「合成コモナド」として（つまり、分配法則を使って）得られます。
-<a href="https://hackage.haskell.org/package/comonad-5.0.9/">comonad</a>ライブラリ内にあるものとしては、以下の2つがそのようなモナド変換子です。</p>
+<a href="https://hackage.haskell.org/package/comonad-5.0.9/">comonad</a>ライブラリ内にあるものとしては、以下の2つがそのようなコモナド変換子です。</p>
 <ul>
 <li><p><a href="https://hackage.haskell.org/package/comonad-5.0.9/docs/Control-Comonad-Env.html#g:3">EnvT</a>コモナド変換子は、
 <code>EnvT e w</code>が<code>Env e</code>と任意のコモナド<code>w</code>の合成コモナド<code>Env e ∘ w</code>であることに由来する</p>
@@ -407,9 +410,10 @@
 合成コモナドです。</p>
 <pre class="math-block"><code>\begin{align*}
   &amp; \theta_{\mathtt{TracedT}} : \forall X. W (B \to X) \to (B \to W X) \\
-  &amp; \theta_{\mathtt{TracedT}} w_f = \lambda (b : B). \map_{W} (b^{*}) w_xf
+  &amp; \theta_{\mathtt{TracedT}} w_f = \lambda (b : B). \map_{W} (b^{*}) w_f
 \end{align*}</code></pre>
-<p>ただし、<span class="math inline">b^{*}</span>は<span class="math inline">\lambda (f : B \to X). f(b)</span>を意味するものとします。</p>
+<p>ただし、<span class="math inline">b^{*}</span>は<span class="math inline">(\lambda f. f(b)) : \forall Z. (B \to Z) \to Z</span>を意味し、
+具体的な集合<span class="math inline">Z</span>は文脈から補われている（“型推論”されている）ものとして扱います。</p>
 <details>
 <summary>
 証明
@@ -789,6 +793,23 @@ type Dist2''''' = S -> S -> S -> Either S S
 <p>探索によって見つけた分配法則のうち1つが、前節の「任意のコモナド<span class="math inline">W</span>の<span class="math inline">\Store_{S'}</span>に対する分配法則<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>」
 の<span class="math inline">W</span>へ<span class="math inline">\Store_S</span>を、<span class="math inline">S'</span>に<span class="math inline">T</span>を代入して得られる分配法則であることは確認しています。
 残り3つがどのように説明できるものであるのかは今後の課題としたく思います。</p>
+<h2 id="修正履歴">修正履歴</h2>
+<ul>
+<li><p><strong>2025-05-21</strong>: 説明をより正確に ＆ タイポ修正</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="st">-ただし、\\(b^{*}\\)は\\(\lambda (f : B \to X). f(b)\\)を意味するものとします。</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="va">+ただし、\\(b^{*}\\)は\\( (\lambda f. f(b)) : \forall Z. (B \to Z) \to Z \\)を意味し、</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="va">+具体的な集合\\(Z\\)は文脈から補われている（&quot;型推論&quot;されている）ものとして扱います。</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>コモナド変換子の一部は、モナド変換子と同様に「合成コモナド」として（つまり、分配法則を使って）得られます。</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="st">-[comonad](https://hackage.haskell.org/package/comonad-5.0.9/)ライブラリ内にあるものとしては、以下の2つがそのようなモナド変換子です。</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="va">+[comonad](https://hackage.haskell.org/package/comonad-5.0.9/)ライブラリ内にあるものとしては、以下の2つがそのようなコモナド変換子です。</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>```math-block</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>\begin{align*}</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  &amp; \theta_{\mathtt{TracedT}} : \forall X. W (B \to X) \to (B \to W X) \\</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="st">-  &amp; \theta_{\mathtt{TracedT}} w_f = \lambda (b : B). \map_{W} (b^{*}) w_xf</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="va">+  &amp; \theta_{\mathtt{TracedT}} w_f = \lambda (b : B). \map_{W} (b^{*}) w_f</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>\end{align*}</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>```</span></code></pre></div></li>
+</ul>
 <h2 id="参考文献">参考文献</h2>
 <ul>
 <li><p>分配法則について</p>
