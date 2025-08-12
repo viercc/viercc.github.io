@@ -30,8 +30,8 @@
 </span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="ModelFinder.Sig.Mono.html"><span class="hs-identifier">ModelFinder.Sig.Mono</span></a></span><span>
 </span><span id="line-31"></span><span>
 </span><span id="line-32"></span><span class="annot"><span class="hs-comment">-- | Signature of functions which defines group structure on @a@.</span></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="GroupOp"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupOp"><span class="hs-identifier hs-var">GroupOp</span></a></span></span><span> </span><span id="local-6989586621679140344"><span class="annot"><a href="#local-6989586621679140344"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Ident"><span class="annot"><a href="ModelFinder.Examples.Group.html#Ident"><span class="hs-identifier hs-var">Ident</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Inv"><span class="annot"><a href="ModelFinder.Examples.Group.html#Inv"><span class="hs-identifier hs-var">Inv</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679140344"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Mul"><span class="annot"><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-var">Mul</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679140344"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140344"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679140508"><span id="local-6989586621679140515"><span id="local-6989586621679140519"><span class="annot"><span class="annottext">Int -&gt; GroupOp a -&gt; ShowS
+</span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="GroupOp"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupOp"><span class="hs-identifier hs-var">GroupOp</span></a></span></span><span> </span><span id="local-6989586621679140348"><span class="annot"><a href="#local-6989586621679140348"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Ident"><span class="annot"><a href="ModelFinder.Examples.Group.html#Ident"><span class="hs-identifier hs-var">Ident</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Inv"><span class="annot"><a href="ModelFinder.Examples.Group.html#Inv"><span class="hs-identifier hs-var">Inv</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679140348"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Mul"><span class="annot"><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-var">Mul</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679140348"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140348"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679140512"><span id="local-6989586621679140519"><span id="local-6989586621679140523"><span class="annot"><span class="annottext">Int -&gt; GroupOp a -&gt; ShowS
 [GroupOp a] -&gt; ShowS
 GroupOp a -&gt; String
 (Int -&gt; GroupOp a -&gt; ShowS)
@@ -49,7 +49,7 @@ $cshow :: forall a. Show a =&gt; GroupOp a -&gt; String
 show :: GroupOp a -&gt; String
 $cshowList :: forall a. Show a =&gt; [GroupOp a] -&gt; ShowS
 showList :: [GroupOp a] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140524"><span id="local-6989586621679140529"><span class="annot"><span class="annottext">GroupOp a -&gt; GroupOp a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140528"><span id="local-6989586621679140533"><span class="annot"><span class="annottext">GroupOp a -&gt; GroupOp a -&gt; Bool
 (GroupOp a -&gt; GroupOp a -&gt; Bool)
 -&gt; (GroupOp a -&gt; GroupOp a -&gt; Bool) -&gt; Eq (GroupOp a)
 forall a. Eq a =&gt; GroupOp a -&gt; GroupOp a -&gt; Bool
@@ -58,7 +58,7 @@ $c== :: forall a. Eq a =&gt; GroupOp a -&gt; GroupOp a -&gt; Bool
 == :: GroupOp a -&gt; GroupOp a -&gt; Bool
 $c/= :: forall a. Eq a =&gt; GroupOp a -&gt; GroupOp a -&gt; Bool
 /= :: GroupOp a -&gt; GroupOp a -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140538"><span id="local-6989586621679140543"><span id="local-6989586621679140548"><span id="local-6989586621679140551"><span id="local-6989586621679140554"><span id="local-6989586621679140557"><span id="local-6989586621679140560"><span class="annot"><span class="annottext">Eq (GroupOp a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679140542"><span id="local-6989586621679140547"><span id="local-6989586621679140552"><span id="local-6989586621679140555"><span id="local-6989586621679140558"><span id="local-6989586621679140561"><span id="local-6989586621679140564"><span class="annot"><span class="annottext">Eq (GroupOp a)
 Eq (GroupOp a) =&gt;
 (GroupOp a -&gt; GroupOp a -&gt; Ordering)
 -&gt; (GroupOp a -&gt; GroupOp a -&gt; Bool)
@@ -103,11 +103,11 @@ min :: GroupOp a -&gt; GroupOp a -&gt; GroupOp a
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="hs-comment">----</span><span>
 </span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span class="hs-keyword">type</span><span> </span><span id="GroupSig"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-var">GroupSig</span></a></span></span><span> </span><span id="local-6989586621679140564"><span class="annot"><a href="#local-6989586621679140564"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-type">Sig</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupOp"><span class="hs-identifier hs-type">GroupOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140564"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679140564"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">type</span><span> </span><span id="GroupExpr"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-var">GroupExpr</span></a></span></span><span> </span><span id="local-6989586621679140565"><span class="annot"><a href="#local-6989586621679140565"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Expr.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140565"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679140565"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-40"></span><span class="hs-keyword">type</span><span> </span><span id="GroupProp"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-var">GroupProp</span></a></span></span><span> </span><span id="local-6989586621679140566"><span class="annot"><a href="#local-6989586621679140566"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Expr.html#Property"><span class="hs-identifier hs-type">Property</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140566"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span class="hs-keyword">type</span><span> </span><span id="GroupSig"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-var">GroupSig</span></a></span></span><span> </span><span id="local-6989586621679140568"><span class="annot"><a href="#local-6989586621679140568"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-type">Sig</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupOp"><span class="hs-identifier hs-type">GroupOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140568"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679140568"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">type</span><span> </span><span id="GroupExpr"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-var">GroupExpr</span></a></span></span><span> </span><span id="local-6989586621679140569"><span class="annot"><a href="#local-6989586621679140569"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Expr.html#Expr"><span class="hs-identifier hs-type">Expr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140569"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679140569"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">type</span><span> </span><span id="GroupProp"><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-var">GroupProp</span></a></span></span><span> </span><span id="local-6989586621679140570"><span class="annot"><a href="#local-6989586621679140570"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="ModelFinder.Expr.html#Property"><span class="hs-identifier hs-type">Property</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140570"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-41"></span><span>
-</span><span id="line-42"></span><span id="local-6989586621679140335"><span class="annot"><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-type">gIdent</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140335"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-42"></span><span id="local-6989586621679140339"><span class="annot"><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-type">gIdent</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140339"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-43"></span><span id="gIdent"><span class="annot"><span class="annottext">gIdent :: forall a. GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-var hs-var">gIdent</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GroupSig a a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) x. f x -&gt; Expr f x
@@ -117,7 +117,7 @@ forall args ret. args -&gt; Sig args ret ret
 forall a. GroupOp a
 </span><a href="ModelFinder.Examples.Group.html#Ident"><span class="hs-identifier hs-var">Ident</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span id="local-6989586621679140345"><span class="annot"><a href="ModelFinder.Examples.Group.html#gInv"><span class="hs-identifier hs-type">gInv</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140345"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140345"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-45"></span><span id="local-6989586621679140349"><span class="annot"><a href="ModelFinder.Examples.Group.html#gInv"><span class="hs-identifier hs-type">gInv</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140349"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140349"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-46"></span><span id="gInv"><span class="annot"><span class="annottext">gInv :: forall a. GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gInv"><span class="hs-identifier hs-var hs-var">gInv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; GroupSig a a) -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall x (f :: * -&gt; *) y. (x -&gt; f y) -&gt; Expr f x -&gt; Expr f y
@@ -130,7 +130,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. a -&gt; GroupOp a
 </span><a href="ModelFinder.Examples.Group.html#Inv"><span class="hs-identifier hs-var">Inv</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span id="local-6989586621679140353"><span class="annot"><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-type">(|*|)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140353"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140353"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140353"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-48"></span><span id="local-6989586621679140357"><span class="annot"><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-type">(|*|)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140357"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140357"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupExpr"><span class="hs-identifier hs-type">GroupExpr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140357"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-49"></span><span id="%7C%2A%7C"><span class="annot"><span class="annottext">|*| :: forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var hs-var">(|*|)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; GroupSig a a)
 -&gt; Expr (GroupSig a) a
@@ -138,77 +138,77 @@ forall a. a -&gt; GroupOp a
 -&gt; Expr (GroupSig a) a
 forall x1 x2 (f :: * -&gt; *) y.
 (x1 -&gt; x2 -&gt; f y) -&gt; Expr f x1 -&gt; Expr f x2 -&gt; Expr f y
-</span><a href="ModelFinder.Expr.html#lift2"><span class="hs-identifier hs-var">lift2</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679140575"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140575"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140576"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140576"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GroupOp a -&gt; GroupSig a a
+</span><a href="ModelFinder.Expr.html#lift2"><span class="hs-identifier hs-var">lift2</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679140579"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140579"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140580"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140580"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GroupOp a -&gt; GroupSig a a
 forall args ret. args -&gt; Sig args ret ret
 </span><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-var">Sig</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; a -&gt; GroupOp a
 forall a. a -&gt; a -&gt; GroupOp a
 </span><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-var">Mul</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140575"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140576"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679140579"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140580"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">7</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-type">|*|</span></a></span><span>
 </span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span id="local-6989586621679140359"><span class="annot"><a href="ModelFinder.Examples.Group.html#lawAssoc"><span class="hs-identifier hs-type">lawAssoc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679140359"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140359"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140359"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140359"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-type">GroupProp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140359"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679140363"><span class="annot"><a href="ModelFinder.Examples.Group.html#lawAssoc"><span class="hs-identifier hs-type">lawAssoc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679140363"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140363"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140363"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140363"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-type">GroupProp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140363"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-54"></span><span id="lawAssoc"><span class="annot"><span class="annottext">lawAssoc :: forall a. Eq a =&gt; a -&gt; a -&gt; a -&gt; GroupProp a
-</span><a href="ModelFinder.Examples.Group.html#lawAssoc"><span class="hs-identifier hs-var hs-var">lawAssoc</span></a></span></span><span> </span><span id="local-6989586621679140587"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140587"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140588"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140588"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679140589"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140589"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
+</span><a href="ModelFinder.Examples.Group.html#lawAssoc"><span class="hs-identifier hs-var hs-var">lawAssoc</span></a></span></span><span> </span><span id="local-6989586621679140591"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140591"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140592"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140592"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679140593"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140593"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140587"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140591"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140588"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140592"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140589"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Property (GroupSig a)
+</span><a href="#local-6989586621679140593"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Property (GroupSig a)
 forall x (f :: * -&gt; *). Eq x =&gt; Expr f x -&gt; Expr f x -&gt; Property f
 </span><a href="ModelFinder.Expr.html#%3D%3D%3D"><span class="hs-operator hs-var">===</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140587"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140591"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140588"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140592"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140589"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679140593"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span id="local-6989586621679140368"><span class="annot"><a href="ModelFinder.Examples.Group.html#lawUnit1"><span class="hs-identifier hs-type">lawUnit1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawUnit2"><span class="hs-identifier hs-type">lawUnit2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawInv1"><span class="hs-identifier hs-type">lawInv1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawInv2"><span class="hs-identifier hs-type">lawInv2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679140368"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140368"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-type">GroupProp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140368"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-56"></span><span id="local-6989586621679140372"><span class="annot"><a href="ModelFinder.Examples.Group.html#lawUnit1"><span class="hs-identifier hs-type">lawUnit1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawUnit2"><span class="hs-identifier hs-type">lawUnit2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawInv1"><span class="hs-identifier hs-type">lawInv1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#lawInv2"><span class="hs-identifier hs-type">lawInv2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679140372"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679140372"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupProp"><span class="hs-identifier hs-type">GroupProp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679140372"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-57"></span><span id="lawUnit1"><span class="annot"><span class="annottext">lawUnit1 :: forall a. Eq a =&gt; a -&gt; GroupProp a
-</span><a href="ModelFinder.Examples.Group.html#lawUnit1"><span class="hs-identifier hs-var hs-var">lawUnit1</span></a></span></span><span> </span><span id="local-6989586621679140598"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140598"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
+</span><a href="ModelFinder.Examples.Group.html#lawUnit1"><span class="hs-identifier hs-var hs-var">lawUnit1</span></a></span></span><span> </span><span id="local-6989586621679140602"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140602"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140598"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140602"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a
 forall a. GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-var">gIdent</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; a -&gt; Property (GroupSig a)
 forall x (f :: * -&gt; *). Eq x =&gt; Expr f x -&gt; x -&gt; Property f
 </span><a href="ModelFinder.Expr.html#evaluatesTo"><span class="hs-operator hs-var">`evaluatesTo`</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140598"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="#local-6989586621679140602"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-58"></span><span id="lawUnit2"><span class="annot"><span class="annottext">lawUnit2 :: forall a. Eq a =&gt; a -&gt; GroupProp a
-</span><a href="ModelFinder.Examples.Group.html#lawUnit2"><span class="hs-identifier hs-var hs-var">lawUnit2</span></a></span></span><span> </span><span id="local-6989586621679140603"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140603"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GroupExpr a
+</span><a href="ModelFinder.Examples.Group.html#lawUnit2"><span class="hs-identifier hs-var hs-var">lawUnit2</span></a></span></span><span> </span><span id="local-6989586621679140607"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140607"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GroupExpr a
 forall a. GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-var">gIdent</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
@@ -216,17 +216,17 @@ forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140603"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; a -&gt; Property (GroupSig a)
+</span><a href="#local-6989586621679140607"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; a -&gt; Property (GroupSig a)
 forall x (f :: * -&gt; *). Eq x =&gt; Expr f x -&gt; x -&gt; Property f
 </span><a href="ModelFinder.Expr.html#evaluatesTo"><span class="hs-operator hs-var">`evaluatesTo`</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140603"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="#local-6989586621679140607"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-59"></span><span id="lawInv1"><span class="annot"><span class="annottext">lawInv1 :: forall a. Eq a =&gt; a -&gt; GroupProp a
-</span><a href="ModelFinder.Examples.Group.html#lawInv1"><span class="hs-identifier hs-var hs-var">lawInv1</span></a></span></span><span> </span><span id="local-6989586621679140608"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140608"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
+</span><a href="ModelFinder.Examples.Group.html#lawInv1"><span class="hs-identifier hs-var hs-var">lawInv1</span></a></span></span><span> </span><span id="local-6989586621679140612"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140612"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Expr (GroupSig a) a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140608"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
+</span><a href="#local-6989586621679140612"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a
 forall a. GroupExpr a -&gt; GroupExpr a
@@ -234,26 +234,26 @@ forall a. GroupExpr a -&gt; GroupExpr a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140608"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Property (GroupSig a)
+</span><a href="#local-6989586621679140612"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a -&gt; Expr (GroupSig a) a -&gt; Property (GroupSig a)
 forall x (f :: * -&gt; *). Eq x =&gt; Expr f x -&gt; Expr f x -&gt; Property f
 </span><a href="ModelFinder.Expr.html#%3D%3D%3D"><span class="hs-operator hs-var">===</span></a></span><span> </span><span class="annot"><span class="annottext">Expr (GroupSig a) a
 forall a. GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gIdent"><span class="hs-identifier hs-var">gIdent</span></a></span><span> </span><span>
 </span><span id="line-60"></span><span id="lawInv2"><span class="annot"><span class="annottext">lawInv2 :: forall a. Eq a =&gt; a -&gt; GroupProp a
-</span><a href="ModelFinder.Examples.Group.html#lawInv2"><span class="hs-identifier hs-var hs-var">lawInv2</span></a></span></span><span> </span><span id="local-6989586621679140613"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140613"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a
+</span><a href="ModelFinder.Examples.Group.html#lawInv2"><span class="hs-identifier hs-var hs-var">lawInv2</span></a></span></span><span> </span><span id="local-6989586621679140617"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679140617"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a
 forall a. GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#gInv"><span class="hs-identifier hs-var">gInv</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; GroupExpr a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140613"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
+</span><a href="#local-6989586621679140617"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 forall a. GroupExpr a -&gt; GroupExpr a -&gt; GroupExpr a
 </span><a href="ModelFinder.Examples.Group.html#%7C%2A%7C"><span class="hs-operator hs-var">|*|</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; GroupExpr a
 forall a. a -&gt; Expr (GroupSig a) a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679140613"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a -&gt; Property (GroupSig a)
+</span><a href="#local-6989586621679140617"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a -&gt; GroupExpr a -&gt; Property (GroupSig a)
 forall x (f :: * -&gt; *). Eq x =&gt; Expr f x -&gt; Expr f x -&gt; Property f
 </span><a href="ModelFinder.Expr.html#%3D%3D%3D"><span class="hs-operator hs-var">===</span></a></span><span> </span><span class="annot"><span class="annottext">GroupExpr a
 forall a. GroupExpr a
@@ -267,8 +267,8 @@ forall a. GroupExpr a
 </span><span id="line-67"></span><span class="hs-comment">-- [Solution [Ident := 0,Inv 0 := 0,Inv 1 := 1,Mul 0 0 := 0,Mul 0 1 := 1,Mul 1 0 := 1,Mul 1 1 := 0]]</span><span>
 </span><span id="line-68"></span><span class="annot"><a href="ModelFinder.Examples.Group.html#searchGroupOfOrder"><span class="hs-identifier hs-type">searchGroupOfOrder</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="ModelFinder.Solver.html#Solution"><span class="hs-identifier hs-type">Solution</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-69"></span><span id="searchGroupOfOrder"><span class="annot"><span class="annottext">searchGroupOfOrder :: Int -&gt; [Solution (Sig (GroupOp Int) Int)]
-</span><a href="ModelFinder.Examples.Group.html#searchGroupOfOrder"><span class="hs-identifier hs-var hs-var">searchGroupOfOrder</span></a></span></span><span> </span><span id="local-6989586621679140614"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140614"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="ModelFinder.Examples.Group.html#searchGroupOfOrder"><span class="hs-identifier hs-var hs-var">searchGroupOfOrder</span></a></span></span><span> </span><span id="local-6989586621679140618"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140618"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
 -&gt; Model (Sig (GroupOp Int) Int)
 -&gt; Map Int (Property (Sig (GroupOp Int) Int))
 -&gt; [Model (Sig (GroupOp Int) Int)]
@@ -277,8 +277,8 @@ forall (f :: * -&gt; *) k.
 Int -&gt; Model f -&gt; Map k (Property f) -&gt; [Model f]
 </span><a href="ModelFinder.Solver.html#solve"><span class="hs-identifier hs-var">solve</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="annottext">Model (Sig (GroupOp Int) Int)
-</span><a href="#local-6989586621679140616"><span class="hs-identifier hs-var">initialModel</span></a></span><span> </span><span class="annot"><span class="annottext">Map Int (Property (Sig (GroupOp Int) Int))
-</span><a href="#local-6989586621679140617"><span class="hs-identifier hs-var">eqMap</span></a></span><span> </span><span class="annot"><span class="annottext">[Model (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140620"><span class="hs-identifier hs-var">initialModel</span></a></span><span> </span><span class="annot"><span class="annottext">Map Int (Property (Sig (GroupOp Int) Int))
+</span><a href="#local-6989586621679140621"><span class="hs-identifier hs-var">eqMap</span></a></span><span> </span><span class="annot"><span class="annottext">[Model (Sig (GroupOp Int) Int)]
 -&gt; (Model (Sig (GroupOp Int) Int)
     -&gt; [Solution (Sig (GroupOp Int) Int)])
 -&gt; [Solution (Sig (GroupOp Int) Int)]
@@ -288,20 +288,20 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 forall (f :: * -&gt; *). Model f -&gt; [Solution f]
 </span><a href="ModelFinder.Solver.html#constraintToSolution"><span class="hs-identifier hs-var">constraintToSolution</span></a></span><span>
 </span><span id="line-70"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-71"></span><span>    </span><span id="local-6989586621679140619"><span class="annot"><span class="annottext">as :: [Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span id="line-71"></span><span>    </span><span id="local-6989586621679140623"><span class="annot"><span class="annottext">as :: [Int]
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140614"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679140618"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
-</span><span id="line-72"></span><span>    </span><span id="local-6989586621679140620"><span class="annot"><span class="annottext">allValues :: Set Int
-</span><a href="#local-6989586621679140620"><span class="hs-identifier hs-var hs-var">allValues</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Set Int
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679140624"><span class="annot"><span class="annottext">allValues :: Set Int
+</span><a href="#local-6989586621679140624"><span class="hs-identifier hs-var hs-var">allValues</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Set Int
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><span class="hs-identifier hs-var">Set.fromList</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span>
-</span><span id="line-73"></span><span>    </span><span id="local-6989586621679140616"><span class="annot"><span class="annottext">initialModel :: Model (Sig (GroupOp Int) Int)
-</span><a href="#local-6989586621679140616"><span class="hs-identifier hs-var hs-var">initialModel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DMap (Sig (GroupOp Int) Int) Set -&gt; Model (Sig (GroupOp Int) Int)
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span>
+</span><span id="line-73"></span><span>    </span><span id="local-6989586621679140620"><span class="annot"><span class="annottext">initialModel :: Model (Sig (GroupOp Int) Int)
+</span><a href="#local-6989586621679140620"><span class="hs-identifier hs-var hs-var">initialModel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DMap (Sig (GroupOp Int) Int) Set -&gt; Model (Sig (GroupOp Int) Int)
 forall (f :: * -&gt; *). DMap f Set -&gt; Model f
 </span><a href="ModelFinder.Solver.html#Model"><span class="hs-identifier hs-var">Model</span></a></span><span> </span><span class="annot"><span class="annottext">(DMap (Sig (GroupOp Int) Int) Set -&gt; Model (Sig (GroupOp Int) Int))
 -&gt; DMap (Sig (GroupOp Int) Int) Set
@@ -337,18 +337,18 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span id="line-75"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">GroupOp Int -&gt; Sig (GroupOp Int) Int Int
 forall args ret. args -&gt; Sig args ret ret
 </span><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-var">Sig</span></a></span><span> </span><span class="annot"><span class="annottext">GroupOp Int
-</span><a href="#local-6989586621679140626"><span class="hs-identifier hs-var">sig</span></a></span><span> </span><span class="annot"><span class="annottext">Sig (GroupOp Int) Int Int
+</span><a href="#local-6989586621679140630"><span class="hs-identifier hs-var">sig</span></a></span><span> </span><span class="annot"><span class="annottext">Sig (GroupOp Int) Int Int
 -&gt; Set Int -&gt; DSum (Sig (GroupOp Int) Int) Set
 forall {k} (tag :: k -&gt; *) (f :: k -&gt; *) (a :: k).
 tag a -&gt; f a -&gt; DSum tag f
 </span><span class="hs-operator hs-var">:=&gt;</span></span><span> </span><span class="annot"><span class="annottext">Set Int
-</span><a href="#local-6989586621679140620"><span class="hs-identifier hs-var">allValues</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679140626"><span class="annot"><span class="annottext">GroupOp Int
-</span><a href="#local-6989586621679140626"><span class="hs-identifier hs-var">sig</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; GroupOp Int
+</span><a href="#local-6989586621679140624"><span class="hs-identifier hs-var">allValues</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679140630"><span class="annot"><span class="annottext">GroupOp Int
+</span><a href="#local-6989586621679140630"><span class="hs-identifier hs-var">sig</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; GroupOp Int
 forall a. a -&gt; GroupOp a
 </span><a href="ModelFinder.Examples.Group.html#Inv"><span class="hs-identifier hs-var">Inv</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; GroupOp Int) -&gt; [Int] -&gt; [GroupOp Int]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[DSum (Sig (GroupOp Int) Int) Set]
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[DSum (Sig (GroupOp Int) Int) Set]
 -&gt; [DSum (Sig (GroupOp Int) Int) Set]
 -&gt; [DSum (Sig (GroupOp Int) Int) Set]
 forall a. [a] -&gt; [a] -&gt; [a]
@@ -356,25 +356,25 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span id="line-76"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">GroupOp Int -&gt; Sig (GroupOp Int) Int Int
 forall args ret. args -&gt; Sig args ret ret
 </span><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-var">Sig</span></a></span><span> </span><span class="annot"><span class="annottext">GroupOp Int
-</span><a href="#local-6989586621679140628"><span class="hs-identifier hs-var">sig</span></a></span><span> </span><span class="annot"><span class="annottext">Sig (GroupOp Int) Int Int
+</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">sig</span></a></span><span> </span><span class="annot"><span class="annottext">Sig (GroupOp Int) Int Int
 -&gt; Set Int -&gt; DSum (Sig (GroupOp Int) Int) Set
 forall {k} (tag :: k -&gt; *) (f :: k -&gt; *) (a :: k).
 tag a -&gt; f a -&gt; DSum tag f
 </span><span class="hs-operator hs-var">:=&gt;</span></span><span> </span><span class="annot"><span class="annottext">Set Int
-</span><a href="#local-6989586621679140620"><span class="hs-identifier hs-var">allValues</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679140628"><span class="annot"><span class="annottext">GroupOp Int
-</span><a href="#local-6989586621679140628"><span class="hs-identifier hs-var">sig</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; GroupOp Int
+</span><a href="#local-6989586621679140624"><span class="hs-identifier hs-var">allValues</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679140632"><span class="annot"><span class="annottext">GroupOp Int
+</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">sig</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; GroupOp Int
 forall a. a -&gt; a -&gt; GroupOp a
 </span><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-var">Mul</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; GroupOp Int) -&gt; [Int] -&gt; [Int -&gt; GroupOp Int]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; GroupOp Int] -&gt; [Int] -&gt; [GroupOp Int]
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; GroupOp Int] -&gt; [Int] -&gt; [GroupOp Int]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span>    </span><span id="local-6989586621679140629"><span class="annot"><span class="annottext">equations :: [Property (Sig (GroupOp Int) Int)]
-</span><a href="#local-6989586621679140629"><span class="hs-identifier hs-var hs-var">equations</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Property (Sig (GroupOp Int) Int)]]
+</span><span id="line-78"></span><span>    </span><span id="local-6989586621679140633"><span class="annot"><span class="annottext">equations :: [Property (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140633"><span class="hs-identifier hs-var hs-var">equations</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Property (Sig (GroupOp Int) Int)]]
 -&gt; [Property (Sig (GroupOp Int) Int)]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="hs-special">[</span><span>
@@ -384,48 +384,48 @@ forall a. Eq a =&gt; a -&gt; GroupProp a
 -&gt; [Int] -&gt; [Property (Sig (GroupOp Int) Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-80"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Property (Sig (GroupOp Int) Int)
 forall a. Eq a =&gt; a -&gt; GroupProp a
 </span><a href="ModelFinder.Examples.Group.html#lawUnit2"><span class="hs-identifier hs-var">lawUnit2</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Property (Sig (GroupOp Int) Int))
 -&gt; [Int] -&gt; [Property (Sig (GroupOp Int) Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-81"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Property (Sig (GroupOp Int) Int)
 forall a. Eq a =&gt; a -&gt; GroupProp a
 </span><a href="ModelFinder.Examples.Group.html#lawInv1"><span class="hs-identifier hs-var">lawInv1</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Property (Sig (GroupOp Int) Int))
 -&gt; [Int] -&gt; [Property (Sig (GroupOp Int) Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-82"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Property (Sig (GroupOp Int) Int)
 forall a. Eq a =&gt; a -&gt; GroupProp a
 </span><a href="ModelFinder.Examples.Group.html#lawInv2"><span class="hs-identifier hs-var">lawInv2</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Property (Sig (GroupOp Int) Int))
 -&gt; [Int] -&gt; [Property (Sig (GroupOp Int) Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-83"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Property (Sig (GroupOp Int) Int)
 forall a. Eq a =&gt; a -&gt; a -&gt; a -&gt; GroupProp a
 </span><a href="ModelFinder.Examples.Group.html#lawAssoc"><span class="hs-identifier hs-var">lawAssoc</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int -&gt; Property (Sig (GroupOp Int) Int))
 -&gt; [Int] -&gt; [Int -&gt; Int -&gt; Property (Sig (GroupOp Int) Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; Int -&gt; Property (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; Int -&gt; Property (Sig (GroupOp Int) Int)]
 -&gt; [Int] -&gt; [Int -&gt; Property (Sig (GroupOp Int) Int)]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; Property (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[Int -&gt; Property (Sig (GroupOp Int) Int)]
 -&gt; [Int] -&gt; [Property (Sig (GroupOp Int) Int)]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int]
-</span><a href="#local-6989586621679140619"><span class="hs-keyword hs-var">as</span></a></span><span>
+</span><a href="#local-6989586621679140623"><span class="hs-keyword hs-var">as</span></a></span><span>
 </span><span id="line-84"></span><span>      </span><span class="hs-special">]</span><span>
-</span><span id="line-85"></span><span>    </span><span id="local-6989586621679140617"><span class="annot"><span class="annottext">eqMap :: Map Int (Property (Sig (GroupOp Int) Int))
-</span><a href="#local-6989586621679140617"><span class="hs-identifier hs-var hs-var">eqMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Int, Property (Sig (GroupOp Int) Int))]
+</span><span id="line-85"></span><span>    </span><span id="local-6989586621679140621"><span class="annot"><span class="annottext">eqMap :: Map Int (Property (Sig (GroupOp Int) Int))
+</span><a href="#local-6989586621679140621"><span class="hs-identifier hs-var hs-var">eqMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Int, Property (Sig (GroupOp Int) Int))]
 -&gt; Map Int (Property (Sig (GroupOp Int) Int))
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Int]
@@ -434,13 +434,13 @@ forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Property (Sig (GroupOp Int) Int)]
-</span><a href="#local-6989586621679140629"><span class="hs-identifier hs-var">equations</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679140633"><span class="hs-identifier hs-var">equations</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span><span>
 </span><span id="line-87"></span><span class="annot"><a href="ModelFinder.Examples.Group.html#prettyPrintSolution"><span class="hs-identifier hs-type">prettyPrintSolution</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="ModelFinder.Solver.html#Solution"><span class="hs-identifier hs-type">Solution</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#GroupSig"><span class="hs-identifier hs-type">GroupSig</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-88"></span><span id="prettyPrintSolution"><span class="annot"><span class="annottext">prettyPrintSolution :: Int -&gt; Solution (Sig (GroupOp Int) Int) -&gt; IO ()
-</span><a href="ModelFinder.Examples.Group.html#prettyPrintSolution"><span class="hs-identifier hs-var hs-var">prettyPrintSolution</span></a></span></span><span> </span><span id="local-6989586621679140632"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Solver.html#Solution"><span class="hs-identifier hs-type">Solution</span></a></span><span> </span><span id="local-6989586621679140634"><span class="annot"><span class="annottext">[Def (Sig (GroupOp Int) Int)]
-</span><a href="#local-6989586621679140634"><span class="hs-identifier hs-var">defs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="ModelFinder.Examples.Group.html#prettyPrintSolution"><span class="hs-identifier hs-var hs-var">prettyPrintSolution</span></a></span></span><span> </span><span id="local-6989586621679140636"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140636"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Solver.html#Solution"><span class="hs-identifier hs-type">Solution</span></a></span><span> </span><span id="local-6989586621679140638"><span class="annot"><span class="annottext">[Def (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140638"><span class="hs-identifier hs-var">defs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-89"></span><span>  </span><span class="annot"><span class="annottext">String -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -450,7 +450,7 @@ forall a. Int -&gt; a -&gt; [a]
 </span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679140636"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Char
@@ -461,28 +461,28 @@ forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 t a -&gt; (a -&gt; f b) -&gt; f ()
 </span><span class="hs-identifier hs-var">for_</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679140636"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; IO ()) -&gt; IO ()) -&gt; (Int -&gt; IO ()) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140639"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140639"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140643"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140643"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">[Int] -&gt; (Int -&gt; IO ()) -&gt; IO ()
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Foldable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f ()
 </span><span class="hs-identifier hs-var">for_</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679140636"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; IO ()) -&gt; IO ()) -&gt; (Int -&gt; IO ()) -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140640"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140640"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-92"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679140641"><span class="annot"><span class="annottext">cell :: String
-</span><a href="#local-6989586621679140641"><span class="hs-identifier hs-var hs-var">cell</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (Int -&gt; String) -&gt; Maybe Int -&gt; String
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140644"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140644"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-92"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679140645"><span class="annot"><span class="annottext">cell :: String
+</span><a href="#local-6989586621679140645"><span class="hs-identifier hs-var hs-var">cell</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; (Int -&gt; String) -&gt; Maybe Int -&gt; String
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;?&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
@@ -492,14 +492,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Map (Int, Int) Int -&gt; Maybe Int
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Map.lookup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140639"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140640"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map (Int, Int) Int
-</span><a href="#local-6989586621679140645"><span class="hs-identifier hs-var">multTable</span></a></span><span>
+</span><a href="#local-6989586621679140643"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140644"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map (Int, Int) Int
+</span><a href="#local-6989586621679140649"><span class="hs-identifier hs-var">multTable</span></a></span><span>
 </span><span id="line-93"></span><span>      </span><span class="annot"><span class="annottext">String -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStr</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO ()) -&gt; String -&gt; IO ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679140641"><span class="hs-identifier hs-var">cell</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679140645"><span class="hs-identifier hs-var">cell</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; &quot;</span></span><span>
@@ -515,15 +515,15 @@ forall a. Int -&gt; a -&gt; [a]
 </span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140632"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679140636"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'-'</span></span><span>
 </span><span id="line-96"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-97"></span><span>    </span><span class="annot"><a href="#local-6989586621679140645"><span class="hs-identifier hs-type">multTable</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map.Map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-98"></span><span>    </span><span id="local-6989586621679140645"><span class="annot"><span class="annottext">multTable :: Map (Int, Int) Int
-</span><a href="#local-6989586621679140645"><span class="hs-identifier hs-var hs-var">multTable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-97"></span><span>    </span><span class="annot"><a href="#local-6989586621679140649"><span class="hs-identifier hs-type">multTable</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map.Map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679140649"><span class="annot"><span class="annottext">multTable :: Map (Int, Int) Int
+</span><a href="#local-6989586621679140649"><span class="hs-identifier hs-var hs-var">multTable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-99"></span><span>      </span><span class="annot"><span class="annottext">[((Int, Int), Int)] -&gt; Map (Int, Int) Int
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromList</span></span><span> </span><span class="annot"><span class="annottext">([((Int, Int), Int)] -&gt; Map (Int, Int) Int)
@@ -531,23 +531,23 @@ forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
 </span><span id="line-100"></span><span>        </span><span class="annot"><span class="annottext">[Def (Sig (GroupOp Int) Int)]
-</span><a href="#local-6989586621679140634"><span class="hs-identifier hs-var">defs</span></a></span><span> </span><span class="annot"><span class="annottext">[Def (Sig (GroupOp Int) Int)]
+</span><a href="#local-6989586621679140638"><span class="hs-identifier hs-var">defs</span></a></span><span> </span><span class="annot"><span class="annottext">[Def (Sig (GroupOp Int) Int)]
 -&gt; (Def (Sig (GroupOp Int) Int) -&gt; [((Int, Int), Int)])
 -&gt; [((Int, Int), Int)]
 forall a b. [a] -&gt; (a -&gt; [b]) -&gt; [b]
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
-</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140647"><span class="annot"><span class="annottext">Def (Sig (GroupOp Int) Int)
-</span><a href="#local-6989586621679140647"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679140651"><span class="annot"><span class="annottext">Def (Sig (GroupOp Int) Int)
+</span><a href="#local-6989586621679140651"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-101"></span><span>          </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Def (Sig (GroupOp Int) Int)
-</span><a href="#local-6989586621679140647"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-102"></span><span>            </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-type">Sig</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-type">Mul</span></a></span><span> </span><span id="local-6989586621679140649"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140649"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140650"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140650"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="ModelFinder.Solver.html#%3A%3D"><span class="hs-operator hs-type">:=</span></a></span><span> </span><span id="local-6989586621679140652"><span class="annot"><span class="annottext">x
-</span><a href="#local-6989586621679140652"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140649"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679140650"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679140651"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-102"></span><span>            </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Sig.Mono.html#Sig"><span class="hs-identifier hs-type">Sig</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="ModelFinder.Examples.Group.html#Mul"><span class="hs-identifier hs-type">Mul</span></a></span><span> </span><span id="local-6989586621679140653"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140653"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679140654"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140654"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="ModelFinder.Solver.html#%3A%3D"><span class="hs-operator hs-type">:=</span></a></span><span> </span><span id="local-6989586621679140656"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679140656"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140653"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679140654"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
 Int
-</span><a href="#local-6989586621679140652"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679140656"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-103"></span><span>            </span><span class="annot"><span class="annottext">Def (Sig (GroupOp Int) Int)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-104"></span></pre></body></html>

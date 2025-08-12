@@ -21,38 +21,38 @@
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.NatMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NatMap</span></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.NatMap</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">NatMap</span></span><span>
 </span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">data</span><span> </span><span id="Iso"><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span></span><span> </span><span id="local-6989586621679177784"><span class="annot"><a href="#local-6989586621679177784"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Iso"><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">data</span><span> </span><span id="Iso"><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span></span><span> </span><span id="local-6989586621679177788"><span class="annot"><a href="#local-6989586621679177788"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Iso"><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span></span><span>
 </span><span id="line-25"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="iso1"><span class="annot"><span class="annottext">forall (f :: * -&gt; *). Iso f -&gt; forall a. f a -&gt; f a
-</span><a href="Isomorphism.html#iso1"><span class="hs-identifier hs-var hs-var">iso1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679177786"><span class="annot"><a href="#local-6989586621679177786"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679177784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177786"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177786"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span>
+</span><a href="Isomorphism.html#iso1"><span class="hs-identifier hs-var hs-var">iso1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679177790"><span class="annot"><a href="#local-6989586621679177790"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679177788"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177790"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177788"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177790"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-26"></span><span>    </span><span id="iso2"><span class="annot"><span class="annottext">forall (f :: * -&gt; *). Iso f -&gt; forall a. f a -&gt; f a
-</span><a href="Isomorphism.html#iso2"><span class="hs-identifier hs-var hs-var">iso2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679177791"><span class="annot"><a href="#local-6989586621679177791"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679177784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177791"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177784"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177791"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><a href="Isomorphism.html#iso2"><span class="hs-identifier hs-var hs-var">iso2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679177795"><span class="annot"><a href="#local-6989586621679177795"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679177788"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177795"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177788"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177795"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-27"></span><span>  </span><span class="hs-special">}</span><span>
 </span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679177796"><span id="local-6989586621679177936"><span id="local-6989586621679177940"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177796"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-30"></span><span>    </span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span id="local-6989586621679177945"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177945"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679177946"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177946"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679177947"><span class="annot"><span class="annottext">&lt;&gt; :: Iso f -&gt; Iso f -&gt; Iso f
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span id="local-6989586621679177948"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177948"><span class="hs-identifier hs-var">f'</span></a></span></span><span> </span><span id="local-6989586621679177949"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177949"><span class="hs-identifier hs-var">g'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679177800"><span id="local-6989586621679177940"><span id="local-6989586621679177944"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177800"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>    </span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span id="local-6989586621679177949"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
+</span><a href="#local-6989586621679177949"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679177950"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
+</span><a href="#local-6989586621679177950"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679177951"><span class="annot"><span class="annottext">&lt;&gt; :: Iso f -&gt; Iso f -&gt; Iso f
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span id="local-6989586621679177952"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
+</span><a href="#local-6989586621679177952"><span class="hs-identifier hs-var">f'</span></a></span></span><span> </span><span id="local-6989586621679177953"><span class="annot"><span class="annottext">forall a. f a -&gt; f a
+</span><a href="#local-6989586621679177953"><span class="hs-identifier hs-var">g'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 forall (f :: * -&gt; *).
 (forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 </span><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177945"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; (f a -&gt; f a) -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679177949"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; (f a -&gt; f a) -&gt; f a -&gt; f a
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177948"><span class="hs-identifier hs-var">f'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a
+</span><a href="#local-6989586621679177952"><span class="hs-identifier hs-var">f'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177949"><span class="hs-identifier hs-var">g'</span></a></span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; (f a -&gt; f a) -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679177953"><span class="hs-identifier hs-var">g'</span></a></span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; (f a -&gt; f a) -&gt; f a -&gt; f a
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679177946"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679177950"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-31"></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679177804"><span id="local-6989586621679177955"><span id="local-6989586621679177959"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177804"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-33"></span><span>    </span><span id="local-6989586621679177962"><span class="annot"><span class="annottext">mempty :: Iso f
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679177808"><span id="local-6989586621679177959"><span id="local-6989586621679177963"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177808"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>    </span><span id="local-6989586621679177966"><span class="annot"><span class="annottext">mempty :: Iso f
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 forall (f :: * -&gt; *).
 (forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
@@ -64,25 +64,25 @@ forall a. a -&gt; a
 forall a. f a -&gt; f a
 </span><span class="hs-identifier hs-var">id</span></span><span>
 </span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span id="local-6989586621679177808"><span id="local-6989586621679177809"><span class="annot"><a href="Isomorphism.html#nonTrivial"><span class="hs-identifier hs-type">nonTrivial</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177808"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177808"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177809"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span></span><span>
+</span><span id="line-35"></span><span id="local-6989586621679177812"><span id="local-6989586621679177813"><span class="annot"><a href="Isomorphism.html#nonTrivial"><span class="hs-identifier hs-type">nonTrivial</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177812"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177812"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177813"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span></span><span>
 </span><span id="line-36"></span><span id="nonTrivial"><span class="annot"><span class="annottext">nonTrivial :: forall (f :: * -&gt; *) a. Foldable f =&gt; f a -&gt; Bool
-</span><a href="Isomorphism.html#nonTrivial"><span class="hs-identifier hs-var hs-var">nonTrivial</span></a></span></span><span> </span><span id="local-6989586621679177970"><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679177970"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a -&gt; Int
+</span><a href="Isomorphism.html#nonTrivial"><span class="hs-identifier hs-var hs-var">nonTrivial</span></a></span></span><span> </span><span id="local-6989586621679177974"><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679177974"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a -&gt; Int
 forall a. f a -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679177970"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679177974"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span id="local-6989586621679177815"><span class="annot"><a href="Isomorphism.html#makePositionIso"><span class="hs-identifier hs-type">makePositionIso</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177815"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177815"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
+</span><span id="line-38"></span><span id="local-6989586621679177819"><span class="annot"><a href="Isomorphism.html#makePositionIso"><span class="hs-identifier hs-type">makePositionIso</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177819"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177819"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
 </span><span id="line-39"></span><span id="makePositionIso"><span class="annot"><span class="annottext">makePositionIso :: forall (f :: * -&gt; *). PTraversable f =&gt; [[Iso f]]
 </span><a href="Isomorphism.html#makePositionIso"><span class="hs-identifier hs-var hs-var">makePositionIso</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Iso f]]
-</span><a href="#local-6989586621679177988"><span class="hs-identifier hs-var">result</span></a></span><span>
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var">result</span></a></span><span>
 </span><span id="line-40"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-41"></span><span>    </span><span id="local-6989586621679177988"><span class="annot"><span class="annottext">result :: [[Iso f]]
-</span><a href="#local-6989586621679177988"><span class="hs-identifier hs-var hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Iso f] -&gt; Bool) -&gt; [[Iso f]] -&gt; [[Iso f]]
+</span><span id="line-41"></span><span>    </span><span id="local-6989586621679177992"><span class="annot"><span class="annottext">result :: [[Iso f]]
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Iso f] -&gt; Bool) -&gt; [[Iso f]] -&gt; [[Iso f]]
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="annot"><span class="annottext">[Iso f] -&gt; Bool
 forall (f :: * -&gt; *) a. Foldable f =&gt; f a -&gt; Bool
@@ -96,61 +96,61 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *). PTraversable f =&gt; [f ()]
 </span><a href="Data.PTraversable.Extra.html#shapes"><span class="hs-identifier hs-var">shapes</span></a></span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span id="local-6989586621679177831"><span class="annot"><a href="Isomorphism.html#positionShufflesOf"><span class="hs-identifier hs-type">positionShufflesOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177831"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177831"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177831"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-43"></span><span id="local-6989586621679177835"><span class="annot"><a href="Isomorphism.html#positionShufflesOf"><span class="hs-identifier hs-type">positionShufflesOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177835"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177835"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177835"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-44"></span><span id="positionShufflesOf"><span class="annot"><span class="annottext">positionShufflesOf :: forall (f :: * -&gt; *). PTraversable f =&gt; f () -&gt; [Iso f]
-</span><a href="Isomorphism.html#positionShufflesOf"><span class="hs-identifier hs-var hs-var">positionShufflesOf</span></a></span></span><span> </span><span id="local-6989586621679178019"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">f_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-45"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178021"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679178021"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; Int
+</span><a href="Isomorphism.html#positionShufflesOf"><span class="hs-identifier hs-var hs-var">positionShufflesOf</span></a></span></span><span> </span><span id="local-6989586621679178023"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178023"><span class="hs-identifier hs-var">f_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178025"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; Int
 forall a. f a -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">f_</span></a></span><span>
-</span><span id="line-46"></span><span>        </span><span id="local-6989586621679178025"><span class="annot"><span class="annottext">fk :: f Int
-</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var hs-var">fk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f Int
+</span><a href="#local-6989586621679178023"><span class="hs-identifier hs-var">f_</span></a></span><span>
+</span><span id="line-46"></span><span>        </span><span id="local-6989586621679178029"><span class="annot"><span class="annottext">fk :: f Int
+</span><a href="#local-6989586621679178029"><span class="hs-identifier hs-var hs-var">fk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f Int
 forall (t :: * -&gt; *) a. Traversable t =&gt; t a -&gt; t Int
 </span><a href="Data.PTraversable.Extra.html#_indices"><span class="hs-identifier hs-var">_indices</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">f_</span></a></span><span>
-</span><span id="line-47"></span><span>    </span><span id="local-6989586621679178027"><span class="annot"><span class="annottext">Vector Int
-</span><a href="#local-6989586621679178027"><span class="hs-identifier hs-var">perm</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; Vector Int
+</span><a href="#local-6989586621679178023"><span class="hs-identifier hs-var">f_</span></a></span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679178031"><span class="annot"><span class="annottext">Vector Int
+</span><a href="#local-6989586621679178031"><span class="hs-identifier hs-var">perm</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; Vector Int
 forall a. Int -&gt; [a] -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.fromListN</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178021"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Vector Int) -&gt; [[Int]] -&gt; [Vector Int]
+</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Vector Int) -&gt; [[Int]] -&gt; [Vector Int]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [[Int]]
 forall a. [a] -&gt; [[a]]
 </span><span class="hs-identifier hs-var">permutations</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178021"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">]</span><span>
-</span><span id="line-48"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178029"><span class="annot"><span class="annottext">perm' :: Vector Int
-</span><a href="#local-6989586621679178029"><span class="hs-identifier hs-var hs-var">perm'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Vector Int -&gt; Vector Int
+</span><span id="line-48"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178033"><span class="annot"><span class="annottext">perm' :: Vector Int
+</span><a href="#local-6989586621679178033"><span class="hs-identifier hs-var hs-var">perm'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Vector Int -&gt; Vector Int
 forall a. Vector a -&gt; Vector Int -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.backpermute</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; (Int -&gt; Int) -&gt; Vector Int
 forall a. Int -&gt; (Int -&gt; a) -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.generate</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178021"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int
+</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Vector Int
-</span><a href="#local-6989586621679178027"><span class="hs-identifier hs-var">perm</span></a></span><span>
-</span><span id="line-49"></span><span>        </span><span id="local-6989586621679178033"><span class="annot"><span class="annottext">fs :: f Int
-</span><a href="#local-6989586621679178033"><span class="hs-identifier hs-var hs-var">fs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector Int
-</span><a href="#local-6989586621679178027"><span class="hs-identifier hs-var">perm</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178031"><span class="hs-identifier hs-var">perm</span></a></span><span>
+</span><span id="line-49"></span><span>        </span><span id="local-6989586621679178037"><span class="annot"><span class="annottext">fs :: f Int
+</span><a href="#local-6989586621679178037"><span class="hs-identifier hs-var hs-var">fs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector Int
+</span><a href="#local-6989586621679178031"><span class="hs-identifier hs-var">perm</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Int -&gt; Int
 forall a. Vector a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">V.!</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; f Int -&gt; f Int
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var">fk</span></a></span><span>
-</span><span id="line-50"></span><span>        </span><span id="local-6989586621679178036"><span class="annot"><span class="annottext">fs' :: f Int
-</span><a href="#local-6989586621679178036"><span class="hs-identifier hs-var hs-var">fs'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector Int
-</span><a href="#local-6989586621679178029"><span class="hs-identifier hs-var">perm'</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178029"><span class="hs-identifier hs-var">fk</span></a></span><span>
+</span><span id="line-50"></span><span>        </span><span id="local-6989586621679178040"><span class="annot"><span class="annottext">fs' :: f Int
+</span><a href="#local-6989586621679178040"><span class="hs-identifier hs-var hs-var">fs'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector Int
+</span><a href="#local-6989586621679178033"><span class="hs-identifier hs-var">perm'</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Int -&gt; Int
 forall a. Vector a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">V.!</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; f Int -&gt; f Int
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178025"><span class="hs-identifier hs-var">fk</span></a></span><span>
+</span><a href="#local-6989586621679178029"><span class="hs-identifier hs-var">fk</span></a></span><span>
 </span><span id="line-51"></span><span>    </span><span class="annot"><span class="annottext">Iso f -&gt; [Iso f]
 forall a. a -&gt; [a]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -162,12 +162,12 @@ forall (f :: * -&gt; *).
 </span><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f Int -&gt; f a -&gt; f a
 forall (f :: * -&gt; *) a. PTraversable f =&gt; f Int -&gt; f a -&gt; f a
 </span><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-var">shuffleNatAt</span></a></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178033"><span class="hs-identifier hs-var">fs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f Int -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679178037"><span class="hs-identifier hs-var">fs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f Int -&gt; f a -&gt; f a
 forall (f :: * -&gt; *) a. PTraversable f =&gt; f Int -&gt; f a -&gt; f a
 </span><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-var">shuffleNatAt</span></a></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178036"><span class="hs-identifier hs-var">fs'</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679178040"><span class="hs-identifier hs-var">fs'</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span id="local-6989586621679178040"><span class="annot"><a href="Isomorphism.html#makePositionIsoFactors"><span class="hs-identifier hs-type">makePositionIsoFactors</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178040"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178040"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679178044"><span class="annot"><a href="Isomorphism.html#makePositionIsoFactors"><span class="hs-identifier hs-type">makePositionIsoFactors</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178044"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178044"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
 </span><span id="line-54"></span><span id="makePositionIsoFactors"><span class="annot"><span class="annottext">makePositionIsoFactors :: forall (f :: * -&gt; *). PTraversable f =&gt; [[Iso f]]
 </span><a href="Isomorphism.html#makePositionIsoFactors"><span class="hs-identifier hs-var hs-var">makePositionIsoFactors</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Iso f] -&gt; Bool) -&gt; [[Iso f]] -&gt; [[Iso f]]
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
@@ -187,41 +187,41 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *). PTraversable f =&gt; [f ()]
 </span><a href="Data.PTraversable.Extra.html#shapes"><span class="hs-identifier hs-var">shapes</span></a></span><span>
 </span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span id="local-6989586621679178049"><span class="annot"><a href="Isomorphism.html#positionTranspositionsOf"><span class="hs-identifier hs-type">positionTranspositionsOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178049"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178049"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178049"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-56"></span><span id="local-6989586621679178053"><span class="annot"><a href="Isomorphism.html#positionTranspositionsOf"><span class="hs-identifier hs-type">positionTranspositionsOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178053"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679178053"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178053"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-57"></span><span id="positionTranspositionsOf"><span class="annot"><span class="annottext">positionTranspositionsOf :: forall (f :: * -&gt; *). PTraversable f =&gt; f () -&gt; [Iso f]
-</span><a href="Isomorphism.html#positionTranspositionsOf"><span class="hs-identifier hs-var hs-var">positionTranspositionsOf</span></a></span></span><span> </span><span id="local-6989586621679178064"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178064"><span class="hs-identifier hs-var">f_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178066"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679178066"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; Int
+</span><a href="Isomorphism.html#positionTranspositionsOf"><span class="hs-identifier hs-var hs-var">positionTranspositionsOf</span></a></span></span><span> </span><span id="local-6989586621679178068"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178068"><span class="hs-identifier hs-var">f_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178070"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679178070"><span class="hs-identifier hs-var hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; Int
 forall a. f a -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178064"><span class="hs-identifier hs-var">f_</span></a></span><span>
-</span><span id="line-59"></span><span>        </span><span id="local-6989586621679178070"><span class="annot"><span class="annottext">fk :: f Int
-</span><a href="#local-6989586621679178070"><span class="hs-identifier hs-var hs-var">fk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f Int
+</span><a href="#local-6989586621679178068"><span class="hs-identifier hs-var">f_</span></a></span><span>
+</span><span id="line-59"></span><span>        </span><span id="local-6989586621679178074"><span class="annot"><span class="annottext">fk :: f Int
+</span><a href="#local-6989586621679178074"><span class="hs-identifier hs-var hs-var">fk</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f Int
 forall (t :: * -&gt; *) a. Traversable t =&gt; t a -&gt; t Int
 </span><a href="Data.PTraversable.Extra.html#_indices"><span class="hs-identifier hs-var">_indices</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178064"><span class="hs-identifier hs-var">f_</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span id="local-6989586621679178071"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178071"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679178068"><span class="hs-identifier hs-var">f_</span></a></span><span>
+</span><span id="line-60"></span><span>    </span><span id="local-6989586621679178075"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679178075"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178066"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178070"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">]</span><span>
-</span><span id="line-61"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178073"><span class="annot"><span class="annottext">fk' :: f Int
-</span><a href="#local-6989586621679178073"><span class="hs-identifier hs-var hs-var">fk'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; f Int -&gt; f Int
+</span><span id="line-61"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178077"><span class="annot"><span class="annottext">fk' :: f Int
+</span><a href="#local-6989586621679178077"><span class="hs-identifier hs-var hs-var">fk'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; f Int -&gt; f Int
 forall a b. (a -&gt; b) -&gt; f a -&gt; f b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 </span><a href="Isomorphism.html#tp"><span class="hs-identifier hs-var">tp</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178071"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178070"><span class="hs-identifier hs-var">fk</span></a></span><span>
-</span><span id="line-62"></span><span>        </span><span id="local-6989586621679178083"><span class="annot"><span class="annottext">iso :: f a -&gt; f a
-</span><a href="#local-6989586621679178083"><span class="hs-identifier hs-var hs-var">iso</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f Int -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679178075"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f Int
+</span><a href="#local-6989586621679178074"><span class="hs-identifier hs-var">fk</span></a></span><span>
+</span><span id="line-62"></span><span>        </span><span id="local-6989586621679178087"><span class="annot"><span class="annottext">iso :: f a -&gt; f a
+</span><a href="#local-6989586621679178087"><span class="hs-identifier hs-var hs-var">iso</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f Int -&gt; f a -&gt; f a
 forall (f :: * -&gt; *) a. PTraversable f =&gt; f Int -&gt; f a -&gt; f a
 </span><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-var">shuffleNatAt</span></a></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178073"><span class="hs-identifier hs-var">fk'</span></a></span><span>
+</span><a href="#local-6989586621679178077"><span class="hs-identifier hs-var">fk'</span></a></span><span>
 </span><span id="line-63"></span><span>    </span><span class="annot"><span class="annottext">Iso f -&gt; [Iso f]
 forall a. a -&gt; [a]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -232,146 +232,146 @@ forall (f :: * -&gt; *).
 (forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 </span><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679178083"><span class="hs-identifier hs-var">iso</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
+</span><a href="#local-6989586621679178087"><span class="hs-identifier hs-var">iso</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 forall a. f a -&gt; f a
-</span><a href="#local-6989586621679178083"><span class="hs-identifier hs-var">iso</span></a></span><span>
+</span><a href="#local-6989586621679178087"><span class="hs-identifier hs-var">iso</span></a></span><span>
 </span><span id="line-64"></span><span>
 </span><span id="line-65"></span><span class="annot"><a href="Isomorphism.html#tp"><span class="hs-identifier hs-type">tp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-66"></span><span id="tp"><span class="annot"><span class="annottext">tp :: Int -&gt; Int -&gt; Int
-</span><a href="Isomorphism.html#tp"><span class="hs-identifier hs-var hs-var">tp</span></a></span></span><span> </span><span id="local-6989586621679178084"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178084"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679178085"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178085"><span class="hs-identifier hs-var">x</span></a></span></span><span>
+</span><a href="Isomorphism.html#tp"><span class="hs-identifier hs-var hs-var">tp</span></a></span></span><span> </span><span id="local-6989586621679178088"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679178088"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679178089"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679178089"><span class="hs-identifier hs-var">x</span></a></span></span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178085"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679178089"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178084"><span class="hs-identifier hs-var">k</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178084"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178088"><span class="hs-identifier hs-var">k</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679178088"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-68"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178085"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679178089"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178084"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679178088"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178084"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621679178088"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-69"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679178085"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679178089"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-70"></span><span>
-</span><span id="line-71"></span><span id="local-6989586621679177849"><span id="local-6989586621679177850"><span class="annot"><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-type">shuffleNatAt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177849"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177849"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177849"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177850"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177849"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177850"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-71"></span><span id="local-6989586621679177853"><span id="local-6989586621679177854"><span class="annot"><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-type">shuffleNatAt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177853"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177853"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177853"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177854"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177853"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177854"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-72"></span><span id="shuffleNatAt"><span class="annot"><span class="annottext">shuffleNatAt :: forall (f :: * -&gt; *) a. PTraversable f =&gt; f Int -&gt; f a -&gt; f a
-</span><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-var hs-var">shuffleNatAt</span></a></span></span><span> </span><span id="local-6989586621679178100"><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178100"><span class="hs-identifier hs-var">fk</span></a></span></span><span> </span><span id="local-6989586621679178101"><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178101"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Isomorphism.html#shuffleNatAt"><span class="hs-identifier hs-var hs-var">shuffleNatAt</span></a></span></span><span> </span><span id="local-6989586621679178104"><span class="annot"><span class="annottext">f Int
+</span><a href="#local-6989586621679178104"><span class="hs-identifier hs-var">fk</span></a></span></span><span> </span><span id="local-6989586621679178105"><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679178105"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-73"></span><span>    </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">f Int -&gt; f ()
 forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
 </span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178100"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; Bool
+</span><a href="#local-6989586621679178104"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f ()
 forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
 </span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178101"><span class="hs-identifier hs-var">fa</span></a></span><span>
-</span><span id="line-74"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178103"><span class="annot"><span class="annottext">as :: Vector a
-</span><a href="#local-6989586621679178103"><span class="hs-keyword hs-var hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Vector a
+</span><a href="#local-6989586621679178105"><span class="hs-identifier hs-var">fa</span></a></span><span>
+</span><span id="line-74"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178107"><span class="annot"><span class="annottext">as :: Vector a
+</span><a href="#local-6989586621679178107"><span class="hs-keyword hs-var hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Vector a
 forall a. [a] -&gt; Vector a
 </span><span class="hs-identifier hs-var">V.fromList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; [a]
 forall a. f a -&gt; [a]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178101"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679178105"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-75"></span><span>             </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector a
-</span><a href="#local-6989586621679178103"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">Vector a -&gt; Int -&gt; a
+</span><a href="#local-6989586621679178107"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">Vector a -&gt; Int -&gt; a
 forall a. Vector a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">V.!</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; a) -&gt; f Int -&gt; f a
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">f Int
-</span><a href="#local-6989586621679178100"><span class="hs-identifier hs-var">fk</span></a></span><span>
+</span><a href="#local-6989586621679178104"><span class="hs-identifier hs-var">fk</span></a></span><span>
 </span><span id="line-76"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178101"><span class="hs-identifier hs-var">fa</span></a></span><span>
+</span><a href="#local-6989586621679178105"><span class="hs-identifier hs-var">fa</span></a></span><span>
 </span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span id="local-6989586621679178105"><span class="annot"><a href="Isomorphism.html#makeShapeIso"><span class="hs-identifier hs-type">makeShapeIso</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178105"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178105"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
+</span><span id="line-78"></span><span id="local-6989586621679178109"><span class="annot"><a href="Isomorphism.html#makeShapeIso"><span class="hs-identifier hs-type">makeShapeIso</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178109"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178109"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
 </span><span id="line-79"></span><span id="makeShapeIso"><span class="annot"><span class="annottext">makeShapeIso :: forall (f :: * -&gt; *). PTraversable f =&gt; [[Iso f]]
 </span><a href="Isomorphism.html#makeShapeIso"><span class="hs-identifier hs-var hs-var">makeShapeIso</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Iso f]]
-</span><a href="#local-6989586621679178114"><span class="hs-identifier hs-var">result</span></a></span><span>
+</span><a href="#local-6989586621679178118"><span class="hs-identifier hs-var">result</span></a></span><span>
 </span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-81"></span><span>    </span><span id="local-6989586621679178123"><span class="annot"><span class="annottext">idNat :: NatMap f f
-</span><a href="#local-6989586621679178123"><span class="hs-identifier hs-var hs-var">idNat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679178127"><span class="annot"><span class="annottext">idNat :: NatMap f f
+</span><a href="#local-6989586621679178127"><span class="hs-identifier hs-var hs-var">idNat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NatMap f f
 forall (f :: * -&gt; *). PTraversable f =&gt; NatMap f f
 </span><span class="hs-identifier hs-var">NatMap.identity</span></span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679178125"><span class="annot"><span class="annottext">permAssocs :: [b] -&gt; [[(b, b)]]
-</span><a href="#local-6989586621679178125"><span class="hs-identifier hs-var hs-var">permAssocs</span></a></span></span><span> </span><span id="local-6989586621679178126"><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178126"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [(b, b)]
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679178129"><span class="annot"><span class="annottext">permAssocs :: [b] -&gt; [[(b, b)]]
+</span><a href="#local-6989586621679178129"><span class="hs-identifier hs-var hs-var">permAssocs</span></a></span></span><span> </span><span id="local-6989586621679178130"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679178130"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [(b, b)]
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178126"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178127"><span class="hs-identifier hs-var">pas</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679178127"><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178127"><span class="hs-identifier hs-var">pas</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [[b]]
+</span><a href="#local-6989586621679178130"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679178131"><span class="hs-identifier hs-var">pas</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679178131"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679178131"><span class="hs-identifier hs-var">pas</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [[b]]
 forall a. [a] -&gt; [[a]]
 </span><span class="hs-identifier hs-var">permutations</span></span><span> </span><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178126"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="hs-special">]</span><span>
-</span><span id="line-83"></span><span>    </span><span id="local-6989586621679178145"><span class="annot"><span class="annottext">buildIso :: t (f (), f ()) -&gt; Maybe (Iso f)
-</span><a href="#local-6989586621679178145"><span class="hs-identifier hs-var hs-var">buildIso</span></a></span></span><span> </span><span id="local-6989586621679178146"><span class="annot"><span class="annottext">t (f (), f ())
-</span><a href="#local-6989586621679178146"><span class="hs-identifier hs-var">pAssocs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-84"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178156"><span class="annot"><span class="annottext">nt :: NatMap f f
-</span><a href="#local-6989586621679178156"><span class="hs-identifier hs-var hs-var">nt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; (f (), f ()) -&gt; NatMap f f)
+</span><a href="#local-6989586621679178130"><span class="hs-keyword hs-var">as</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679178149"><span class="annot"><span class="annottext">buildIso :: t (f (), f ()) -&gt; Maybe (Iso f)
+</span><a href="#local-6989586621679178149"><span class="hs-identifier hs-var hs-var">buildIso</span></a></span></span><span> </span><span id="local-6989586621679178150"><span class="annot"><span class="annottext">t (f (), f ())
+</span><a href="#local-6989586621679178150"><span class="hs-identifier hs-var">pAssocs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-84"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178160"><span class="annot"><span class="annottext">nt :: NatMap f f
+</span><a href="#local-6989586621679178160"><span class="hs-identifier hs-var hs-var">nt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; (f (), f ()) -&gt; NatMap f f)
 -&gt; NatMap f f -&gt; t (f (), f ()) -&gt; NatMap f f
 forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
-</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679178157"><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178157"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178158"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178158"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178159"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178159"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679178161"><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178161"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178162"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178162"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178163"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178163"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 forall (f :: * -&gt; *).
 PTraversable f =&gt;
 f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 </span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var">insertSym</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178158"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178159"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178157"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178123"><span class="hs-identifier hs-var">idNat</span></a></span><span> </span><span class="annot"><span class="annottext">t (f (), f ())
-</span><a href="#local-6989586621679178146"><span class="hs-identifier hs-var">pAssocs</span></a></span><span>
-</span><span id="line-85"></span><span>            </span><span id="local-6989586621679178170"><span class="annot"><span class="annottext">nt' :: NatMap f f
-</span><a href="#local-6989586621679178170"><span class="hs-identifier hs-var hs-var">nt'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; (f (), f ()) -&gt; NatMap f f)
+</span><a href="#local-6989586621679178162"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178163"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178161"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178127"><span class="hs-identifier hs-var">idNat</span></a></span><span> </span><span class="annot"><span class="annottext">t (f (), f ())
+</span><a href="#local-6989586621679178150"><span class="hs-identifier hs-var">pAssocs</span></a></span><span>
+</span><span id="line-85"></span><span>            </span><span id="local-6989586621679178174"><span class="annot"><span class="annottext">nt' :: NatMap f f
+</span><a href="#local-6989586621679178174"><span class="hs-identifier hs-var hs-var">nt'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; (f (), f ()) -&gt; NatMap f f)
 -&gt; NatMap f f -&gt; t (f (), f ()) -&gt; NatMap f f
 forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
-</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679178171"><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178171"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178172"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178172"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178173"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178173"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679178175"><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178175"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178176"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178176"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679178177"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178177"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 forall (f :: * -&gt; *).
 PTraversable f =&gt;
 f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 </span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var">insertSym</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178173"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178172"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178171"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178123"><span class="hs-identifier hs-var">idNat</span></a></span><span> </span><span class="annot"><span class="annottext">t (f (), f ())
-</span><a href="#local-6989586621679178146"><span class="hs-identifier hs-var">pAssocs</span></a></span><span>
-</span><span id="line-86"></span><span>        </span><span id="local-6989586621679178174"><span class="annot"><span class="annottext">f :~&gt; f
-</span><a href="#local-6989586621679178174"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; Maybe (f :~&gt; f)
+</span><a href="#local-6989586621679178177"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178176"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178175"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><a href="#local-6989586621679178127"><span class="hs-identifier hs-var">idNat</span></a></span><span> </span><span class="annot"><span class="annottext">t (f (), f ())
+</span><a href="#local-6989586621679178150"><span class="hs-identifier hs-var">pAssocs</span></a></span><span>
+</span><span id="line-86"></span><span>        </span><span id="local-6989586621679178178"><span class="annot"><span class="annottext">f :~&gt; f
+</span><a href="#local-6989586621679178178"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; Maybe (f :~&gt; f)
 forall (f :: * -&gt; *) (g :: * -&gt; *).
 (PTraversable f, Functor g) =&gt;
 NatMap f g -&gt; Maybe (f :~&gt; g)
 </span><span class="hs-identifier hs-var">NatMap.toTotal</span></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178156"><span class="hs-identifier hs-var">nt</span></a></span><span>
-</span><span id="line-87"></span><span>        </span><span id="local-6989586621679178176"><span class="annot"><span class="annottext">f :~&gt; f
-</span><a href="#local-6989586621679178176"><span class="hs-identifier hs-var">g'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; Maybe (f :~&gt; f)
+</span><a href="#local-6989586621679178160"><span class="hs-identifier hs-var">nt</span></a></span><span>
+</span><span id="line-87"></span><span>        </span><span id="local-6989586621679178180"><span class="annot"><span class="annottext">f :~&gt; f
+</span><a href="#local-6989586621679178180"><span class="hs-identifier hs-var">g'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; Maybe (f :~&gt; f)
 forall (f :: * -&gt; *) (g :: * -&gt; *).
 (PTraversable f, Functor g) =&gt;
 NatMap f g -&gt; Maybe (f :~&gt; g)
 </span><span class="hs-identifier hs-var">NatMap.toTotal</span></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178170"><span class="hs-identifier hs-var">nt'</span></a></span><span>
+</span><a href="#local-6989586621679178174"><span class="hs-identifier hs-var">nt'</span></a></span><span>
 </span><span id="line-88"></span><span>        </span><span class="annot"><span class="annottext">Iso f -&gt; Maybe (Iso f)
 forall a. a -&gt; Maybe a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -381,25 +381,25 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (f :: * -&gt; *).
 (forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 </span><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f :~&gt; f
-</span><a href="#local-6989586621679178174"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">(f :~&gt; f) -&gt; forall a. f a -&gt; f a
+</span><a href="#local-6989586621679178178"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">(f :~&gt; f) -&gt; forall a. f a -&gt; f a
 forall {k} (f :: k -&gt; *) (g :: k -&gt; *). (f :~&gt; g) -&gt; f ~&gt; g
 </span><span class="hs-operator hs-var">NatMap.$$</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f :~&gt; f
-</span><a href="#local-6989586621679178176"><span class="hs-identifier hs-var">g'</span></a></span><span> </span><span class="annot"><span class="annottext">(f :~&gt; f) -&gt; forall a. f a -&gt; f a
+</span><a href="#local-6989586621679178180"><span class="hs-identifier hs-var">g'</span></a></span><span> </span><span class="annot"><span class="annottext">(f :~&gt; f) -&gt; forall a. f a -&gt; f a
 forall {k} (f :: k -&gt; *) (g :: k -&gt; *). (f :~&gt; g) -&gt; f ~&gt; g
 </span><span class="hs-operator hs-var">NatMap.$$</span></span><span class="hs-special">)</span><span>
-</span><span id="line-89"></span><span>    </span><span id="local-6989586621679178114"><span class="annot"><span class="annottext">result :: [[Iso f]]
-</span><a href="#local-6989586621679178114"><span class="hs-identifier hs-var hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([f ()] -&gt; [Iso f]) -&gt; [[f ()]] -&gt; [[Iso f]]
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679178118"><span class="annot"><span class="annottext">result :: [[Iso f]]
+</span><a href="#local-6989586621679178118"><span class="hs-identifier hs-var hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([f ()] -&gt; [Iso f]) -&gt; [[f ()]] -&gt; [[Iso f]]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([(f (), f ())] -&gt; Maybe (Iso f)) -&gt; [[(f (), f ())]] -&gt; [Iso f]
 forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="annot"><span class="annottext">[(f (), f ())] -&gt; Maybe (Iso f)
 forall {t :: * -&gt; *}. Foldable t =&gt; t (f (), f ()) -&gt; Maybe (Iso f)
-</span><a href="#local-6989586621679178145"><span class="hs-identifier hs-var">buildIso</span></a></span><span> </span><span class="annot"><span class="annottext">([[(f (), f ())]] -&gt; [Iso f])
+</span><a href="#local-6989586621679178149"><span class="hs-identifier hs-var">buildIso</span></a></span><span> </span><span class="annot"><span class="annottext">([[(f (), f ())]] -&gt; [Iso f])
 -&gt; ([f ()] -&gt; [[(f (), f ())]]) -&gt; [f ()] -&gt; [Iso f]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[f ()] -&gt; [[(f (), f ())]]
 forall {b}. [b] -&gt; [[(b, b)]]
-</span><a href="#local-6989586621679178125"><span class="hs-identifier hs-var">permAssocs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([[f ()]] -&gt; [[Iso f]]) -&gt; [[f ()]] -&gt; [[Iso f]]
+</span><a href="#local-6989586621679178129"><span class="hs-identifier hs-var">permAssocs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([[f ()]] -&gt; [[Iso f]]) -&gt; [[f ()]] -&gt; [[Iso f]]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">([f ()] -&gt; Bool) -&gt; [[f ()]] -&gt; [[f ()]]
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
@@ -413,14 +413,14 @@ forall (f :: * -&gt; *) a. Foldable f =&gt; [f a] -&gt; [[f a]]
 forall (f :: * -&gt; *). PTraversable f =&gt; [f ()]
 </span><a href="Data.PTraversable.Extra.html#shapes"><span class="hs-identifier hs-var">shapes</span></a></span><span>
 </span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span id="local-6989586621679178190"><span class="annot"><a href="Isomorphism.html#makeShapeIsoFactors"><span class="hs-identifier hs-type">makeShapeIsoFactors</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178190"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178190"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
+</span><span id="line-91"></span><span id="local-6989586621679178194"><span class="annot"><a href="Isomorphism.html#makeShapeIsoFactors"><span class="hs-identifier hs-type">makeShapeIsoFactors</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679178194"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-type">Iso</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679178194"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span><span>
 </span><span id="line-92"></span><span id="makeShapeIsoFactors"><span class="annot"><span class="annottext">makeShapeIsoFactors :: forall (f :: * -&gt; *). PTraversable f =&gt; [[Iso f]]
 </span><a href="Isomorphism.html#makeShapeIsoFactors"><span class="hs-identifier hs-var hs-var">makeShapeIsoFactors</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([f ()] -&gt; [Iso f]) -&gt; [[f ()]] -&gt; [[Iso f]]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((f (), f ()) -&gt; Maybe (Iso f)) -&gt; [(f (), f ())] -&gt; [Iso f]
 forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="annot"><span class="annottext">(f (), f ()) -&gt; Maybe (Iso f)
-</span><a href="#local-6989586621679178201"><span class="hs-identifier hs-var">buildIso</span></a></span><span> </span><span class="annot"><span class="annottext">([(f (), f ())] -&gt; [Iso f])
+</span><a href="#local-6989586621679178205"><span class="hs-identifier hs-var">buildIso</span></a></span><span> </span><span class="annot"><span class="annottext">([(f (), f ())] -&gt; [Iso f])
 -&gt; ([f ()] -&gt; [(f (), f ())]) -&gt; [f ()] -&gt; [Iso f]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[f ()] -&gt; [(f (), f ())]
@@ -433,22 +433,22 @@ forall (f :: * -&gt; *) a. Foldable f =&gt; [f a] -&gt; [[f a]]
 forall (f :: * -&gt; *). PTraversable f =&gt; [f ()]
 </span><a href="Data.PTraversable.Extra.html#shapes"><span class="hs-identifier hs-var">shapes</span></a></span><span>
 </span><span id="line-93"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-94"></span><span>        </span><span id="local-6989586621679178211"><span class="annot"><span class="annottext">idNat :: NatMap f f
-</span><a href="#local-6989586621679178211"><span class="hs-identifier hs-var hs-var">idNat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NatMap f f
+</span><span id="line-94"></span><span>        </span><span id="local-6989586621679178215"><span class="annot"><span class="annottext">idNat :: NatMap f f
+</span><a href="#local-6989586621679178215"><span class="hs-identifier hs-var hs-var">idNat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NatMap f f
 forall (f :: * -&gt; *). PTraversable f =&gt; NatMap f f
 </span><span class="hs-identifier hs-var">NatMap.identity</span></span><span>
-</span><span id="line-95"></span><span>        </span><span id="local-6989586621679178201"><span class="annot"><span class="annottext">buildIso :: (f (), f ()) -&gt; Maybe (Iso f)
-</span><a href="#local-6989586621679178201"><span class="hs-identifier hs-var hs-var">buildIso</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178223"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178223"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679178224"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178224"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-96"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178234"><span class="annot"><span class="annottext">nt :: NatMap f f
-</span><a href="#local-6989586621679178234"><span class="hs-identifier hs-var hs-var">nt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
+</span><span id="line-95"></span><span>        </span><span id="local-6989586621679178205"><span class="annot"><span class="annottext">buildIso :: (f (), f ()) -&gt; Maybe (Iso f)
+</span><a href="#local-6989586621679178205"><span class="hs-identifier hs-var hs-var">buildIso</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679178227"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178227"><span class="hs-identifier hs-var">fj</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679178228"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178228"><span class="hs-identifier hs-var">fk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-96"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679178238"><span class="annot"><span class="annottext">nt :: NatMap f f
+</span><a href="#local-6989586621679178238"><span class="hs-identifier hs-var hs-var">nt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 forall (f :: * -&gt; *).
 PTraversable f =&gt;
 f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 </span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var">insertSym</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178223"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178224"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; NatMap f f)
+</span><a href="#local-6989586621679178227"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178228"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; NatMap f f)
 -&gt; (NatMap f f -&gt; NatMap f f) -&gt; NatMap f f -&gt; NatMap f f
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
@@ -456,38 +456,38 @@ forall (f :: * -&gt; *).
 PTraversable f =&gt;
 f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
 </span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var">insertSym</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178224"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178223"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; NatMap f f) -&gt; NatMap f f -&gt; NatMap f f
+</span><a href="#local-6989586621679178228"><span class="hs-identifier hs-var">fk</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178227"><span class="hs-identifier hs-var">fj</span></a></span><span> </span><span class="annot"><span class="annottext">(NatMap f f -&gt; NatMap f f) -&gt; NatMap f f -&gt; NatMap f f
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178211"><span class="hs-identifier hs-var">idNat</span></a></span><span>
-</span><span id="line-97"></span><span>            </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NatMap.NT</span></span><span> </span><span id="local-6989586621679178236"><span class="annot"><span class="annottext">f ~&gt; f
-</span><a href="#local-6989586621679178236"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(f ~&gt; f) -&gt; (f ~&gt; f) -&gt; Iso f
+</span><a href="#local-6989586621679178215"><span class="hs-identifier hs-var">idNat</span></a></span><span>
+</span><span id="line-97"></span><span>            </span><span class="hs-keyword">in</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NatMap.NT</span></span><span> </span><span id="local-6989586621679178240"><span class="annot"><span class="annottext">f ~&gt; f
+</span><a href="#local-6989586621679178240"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(f ~&gt; f) -&gt; (f ~&gt; f) -&gt; Iso f
 forall (f :: * -&gt; *).
 (forall a. f a -&gt; f a) -&gt; (forall a. f a -&gt; f a) -&gt; Iso f
 </span><a href="Isomorphism.html#Iso"><span class="hs-identifier hs-var">Iso</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 f ~&gt; f
-</span><a href="#local-6989586621679178236"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
+</span><a href="#local-6989586621679178240"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
 f ~&gt; f
-</span><a href="#local-6989586621679178236"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((f :~&gt; f) -&gt; Iso f) -&gt; Maybe (f :~&gt; f) -&gt; Maybe (Iso f)
+</span><a href="#local-6989586621679178240"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((f :~&gt; f) -&gt; Iso f) -&gt; Maybe (f :~&gt; f) -&gt; Maybe (Iso f)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; Maybe (f :~&gt; f)
 forall (f :: * -&gt; *) (g :: * -&gt; *).
 (PTraversable f, Functor g) =&gt;
 NatMap f g -&gt; Maybe (f :~&gt; g)
 </span><span class="hs-identifier hs-var">NatMap.toTotal</span></span><span> </span><span class="annot"><span class="annottext">NatMap f f
-</span><a href="#local-6989586621679178234"><span class="hs-identifier hs-var">nt</span></a></span><span>
+</span><a href="#local-6989586621679178238"><span class="hs-identifier hs-var">nt</span></a></span><span>
 </span><span id="line-98"></span><span>
-</span><span id="line-99"></span><span id="local-6989586621679177889"><span id="local-6989586621679177890"><span class="annot"><a href="Isomorphism.html#groupByLength"><span class="hs-identifier hs-type">groupByLength</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177889"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177889"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177890"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177889"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177890"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span></span><span>
+</span><span id="line-99"></span><span id="local-6989586621679177893"><span id="local-6989586621679177894"><span class="annot"><a href="Isomorphism.html#groupByLength"><span class="hs-identifier hs-type">groupByLength</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177893"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177893"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177894"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177893"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177894"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span></span></span><span>
 </span><span id="line-100"></span><span id="groupByLength"><span class="annot"><span class="annottext">groupByLength :: forall (f :: * -&gt; *) a. Foldable f =&gt; [f a] -&gt; [[f a]]
-</span><a href="Isomorphism.html#groupByLength"><span class="hs-identifier hs-var hs-var">groupByLength</span></a></span></span><span> </span><span id="local-6989586621679178238"><span class="annot"><span class="annottext">[f a]
-</span><a href="#local-6989586621679178238"><span class="hs-identifier hs-var">fs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map Int [f a] -&gt; [[f a]]
+</span><a href="Isomorphism.html#groupByLength"><span class="hs-identifier hs-var hs-var">groupByLength</span></a></span></span><span> </span><span id="local-6989586621679178242"><span class="annot"><span class="annottext">[f a]
+</span><a href="#local-6989586621679178242"><span class="hs-identifier hs-var">fs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map Int [f a] -&gt; [[f a]]
 forall k a. Map k a -&gt; [a]
 </span><span class="hs-identifier hs-var">Map.elems</span></span><span> </span><span class="annot"><span class="annottext">Map Int [f a]
-</span><a href="#local-6989586621679178240"><span class="hs-identifier hs-var">groupsMap</span></a></span><span>
+</span><a href="#local-6989586621679178244"><span class="hs-identifier hs-var">groupsMap</span></a></span><span>
 </span><span id="line-101"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-102"></span><span>    </span><span id="local-6989586621679178240"><span class="annot"><span class="annottext">groupsMap :: Map Int [f a]
-</span><a href="#local-6989586621679178240"><span class="hs-identifier hs-var hs-var">groupsMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([f a] -&gt; [f a] -&gt; [f a]) -&gt; [(Int, [f a])] -&gt; Map Int [f a]
+</span><span id="line-102"></span><span>    </span><span id="local-6989586621679178244"><span class="annot"><span class="annottext">groupsMap :: Map Int [f a]
+</span><a href="#local-6989586621679178244"><span class="hs-identifier hs-var hs-var">groupsMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([f a] -&gt; [f a] -&gt; [f a]) -&gt; [(Int, [f a])] -&gt; Map Int [f a]
 forall k a. Ord k =&gt; (a -&gt; a -&gt; a) -&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromListWith</span></span><span> </span><span class="annot"><span class="annottext">[f a] -&gt; [f a] -&gt; [f a]
 forall a. [a] -&gt; [a] -&gt; [a]
@@ -495,49 +495,49 @@ forall a. [a] -&gt; [a] -&gt; [a]
 forall a. f a -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178244"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178244"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679178244"><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679178244"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[f a]
-</span><a href="#local-6989586621679178238"><span class="hs-identifier hs-var">fs</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679178248"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679178248"><span class="hs-identifier hs-var">fa</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679178248"><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679178248"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[f a]
+</span><a href="#local-6989586621679178242"><span class="hs-identifier hs-var">fs</span></a></span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-103"></span><span>
-</span><span id="line-104"></span><span id="local-6989586621679177892"><span class="annot"><a href="Isomorphism.html#adjacents"><span class="hs-identifier hs-type">adjacents</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177892"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679177892"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679177892"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
+</span><span id="line-104"></span><span id="local-6989586621679177896"><span class="annot"><a href="Isomorphism.html#adjacents"><span class="hs-identifier hs-type">adjacents</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679177896"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679177896"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679177896"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
 </span><span id="line-105"></span><span id="adjacents"><span class="annot"><span class="annottext">adjacents :: forall b. [b] -&gt; [(b, b)]
-</span><a href="Isomorphism.html#adjacents"><span class="hs-identifier hs-var hs-var">adjacents</span></a></span></span><span> </span><span id="local-6989586621679178245"><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178245"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [(b, b)]
+</span><a href="Isomorphism.html#adjacents"><span class="hs-identifier hs-var hs-var">adjacents</span></a></span></span><span> </span><span id="local-6989586621679178249"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679178249"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; [b] -&gt; [(b, b)]
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178245"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [b] -&gt; [b]
+</span><a href="#local-6989586621679178249"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [b] -&gt; [b]
 forall a. Int -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">[b]
-</span><a href="#local-6989586621679178245"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679178249"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-106"></span><span>
-</span><span id="line-107"></span><span id="local-6989586621679177877"><span class="annot"><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-type">insertSym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NatMap</span></span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NatMap</span></span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177877"><span class="hs-identifier hs-type">f</span></a></span></span><span>
+</span><span id="line-107"></span><span id="local-6989586621679177881"><span class="annot"><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-type">insertSym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PTraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NatMap</span></span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NatMap</span></span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679177881"><span class="hs-identifier hs-type">f</span></a></span></span><span>
 </span><span id="line-108"></span><span id="insertSym"><span class="annot"><span class="annottext">insertSym :: forall (f :: * -&gt; *).
 PTraversable f =&gt;
 f () -&gt; f () -&gt; NatMap f f -&gt; NatMap f f
-</span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var hs-var">insertSym</span></a></span></span><span> </span><span id="local-6989586621679178259"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178259"><span class="hs-identifier hs-var">fKey</span></a></span></span><span> </span><span id="local-6989586621679178260"><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178260"><span class="hs-identifier hs-var">fVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">f Int -&gt; f Int -&gt; Maybe (Entry f f)
+</span><a href="Isomorphism.html#insertSym"><span class="hs-identifier hs-var hs-var">insertSym</span></a></span></span><span> </span><span id="local-6989586621679178263"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178263"><span class="hs-identifier hs-var">fKey</span></a></span></span><span> </span><span id="local-6989586621679178264"><span class="annot"><span class="annottext">f ()
+</span><a href="#local-6989586621679178264"><span class="hs-identifier hs-var">fVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">f Int -&gt; f Int -&gt; Maybe (Entry f f)
 forall (f :: * -&gt; *) (g :: * -&gt; *) k.
 (Traversable f, Traversable g, Ord k) =&gt;
 f k -&gt; g k -&gt; Maybe (Entry f g)
 </span><span class="hs-identifier hs-var">NatMap.makeEntry</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f () -&gt; f Int
 forall (t :: * -&gt; *) a. Traversable t =&gt; t a -&gt; t Int
 </span><a href="Data.PTraversable.Extra.html#_indices"><span class="hs-identifier hs-var">_indices</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178259"><span class="hs-identifier hs-var">fKey</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f () -&gt; f Int
+</span><a href="#local-6989586621679178263"><span class="hs-identifier hs-var">fKey</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f () -&gt; f Int
 forall (t :: * -&gt; *) a. Traversable t =&gt; t a -&gt; t Int
 </span><a href="Data.PTraversable.Extra.html#_indices"><span class="hs-identifier hs-var">_indices</span></a></span><span> </span><span class="annot"><span class="annottext">f ()
-</span><a href="#local-6989586621679178260"><span class="hs-identifier hs-var">fVal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679178264"><span class="hs-identifier hs-var">fVal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-109"></span><span>    </span><span class="annot"><span class="annottext">Maybe (Entry f f)
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NatMap f f -&gt; NatMap f f
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span>
-</span><span id="line-110"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178262"><span class="annot"><span class="annottext">Entry f f
-</span><a href="#local-6989586621679178262"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Entry f f -&gt; NatMap f f -&gt; NatMap f f
+</span><span id="line-110"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679178266"><span class="annot"><span class="annottext">Entry f f
+</span><a href="#local-6989586621679178266"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Entry f f -&gt; NatMap f f -&gt; NatMap f f
 forall (f :: * -&gt; *) (g :: * -&gt; *).
 WeakOrd f =&gt;
 Entry f g -&gt; NatMap f g -&gt; NatMap f g
 </span><span class="hs-identifier hs-var">NatMap.insert</span></span><span> </span><span class="annot"><span class="annottext">Entry f f
-</span><a href="#local-6989586621679178262"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679178266"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-111"></span></pre></body></html>
