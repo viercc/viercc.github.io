@@ -40,7 +40,7 @@
                 <li>Posted on 2025-02-22</li>
             
             
-                <li>Last modified on 2025-03-08</li>
+                <li>Last modified on 2025-08-01</li>
             
             
             
@@ -169,8 +169,8 @@ Haskellには<em>型変数に対するパターンマッチが存在しない</e
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">STrue</span> <span class="ot">-&gt;</span> <span class="dt">FooTrue</span></span></code></pre></div>
 <p>同じように、集合の依存和<span class="math inline">\setsum (i \in I). P(i)</span>に相当する型は<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">SumP</span> <span class="ot">=</span> <span class="dt">Sigma'</span> <span class="dt">I</span> <span class="dt">P</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Sigma'</span> k t <span class="kw">where</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (:&amp;:) ::</span> <span class="dt">Sing</span> k <span class="ot">-&gt;</span> t k <span class="ot">-&gt;</span> <span class="dt">Sigma'</span> k t</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Sigma'</span> k (<span class="ot">t ::</span> k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="kw">where</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (:&amp;:) ::</span> <span class="dt">Sing</span> (<span class="ot">a ::</span> k) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> <span class="dt">Sigma'</span> k t</span></code></pre></div>
 <p>として書くことができます。</p>
 <h2 id="flow-categoryから作るmonad"><code>Flow</code>: <code>Category</code>から作る<code>Monad</code></h2>
 <p><code>Comonad</code>から<code>Monad</code>を作ることができる<a href="https://hackage.haskell.org/package/kan-extensions-5.2.5/docs/Control-Monad-Co.html">Co</a>という型を以前紹介しました。</p>

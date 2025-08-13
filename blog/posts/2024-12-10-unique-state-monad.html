@@ -35,7 +35,7 @@
                 <li>Posted on 2024-12-10</li>
             
             
-                <li>Last modified on 2025-03-08</li>
+                <li>Last modified on 2025-08-13</li>
             
             
             
@@ -358,7 +358,7 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> s1</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    g s0 s1 <span class="ot">=</span></span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> (_,ma) <span class="ot">=</span> runState mma s0</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>          (s2,_) <span class="ot">=</span> runState mma s1</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>          (s2,_) <span class="ot">=</span> runState ma s1</span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> s2</span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    h s0 s1 <span class="ot">=</span></span>
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> (_,ma) <span class="ot">=</span> runState mma s0</span>
@@ -529,7 +529,14 @@ Haskellにおいて、<code>instance Monad (State s) where ...</code>と書け�
 “普通の”Stateモナドしか存在しません。この記事ではその証明の大まかな方針を説明しました。</p>
 <h2 id="修正履歴">修正履歴</h2>
 <ul>
-<li><strong>2024-12-10</strong>: タグ<code>advent-calendar</code>を<code>calenar</code>と誤記していた。ほか細かな表現の修正</li>
+<li><p><strong>2024-12-10</strong>: タグ<code>advent-calendar</code>を<code>calenar</code>と誤記していた。ほか細かな表現の修正</p></li>
+<li><p><strong>2025-08-13</strong>: <code>encodeJoin</code>に誤り</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>   g s0 s1 =</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>     let (_,ma) = runState mma s0</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="st">-        (s2,_) = runState mma s1</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="va">+        (s2,_) = runState ma s1</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>     in s2</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>   h s0 s1 =</span></code></pre></div></li>
 </ul>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
