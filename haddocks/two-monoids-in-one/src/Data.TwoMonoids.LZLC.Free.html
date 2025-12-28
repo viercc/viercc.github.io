@@ -1,0 +1,1016 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.TwoMonoids.LZLC.Free</span><span>
+</span><span id="line-4"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier">SummandF</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier">injectSummand</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier">FactorF</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier">injectFactor</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#interpret"><span class="hs-identifier">interpret</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier">viewSum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier">viewProd</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.LZ.Class.html#mprodZ"><span class="hs-identifier">mprodZ</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span>    </span><span class="annot"><span class="hs-comment">-- * reexport</span></span><span>
+</span><span id="line-15"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier">ZList</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>    </span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">where</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.List.ZList.html"><span class="hs-identifier">Data.List.ZList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier">ZList</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Data.List.ZList.html"><span class="hs-identifier">Data.List.ZList</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">ZL</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.List.ZList.Long.html"><span class="hs-identifier">Data.List.ZList.Long</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Data.List.ZList.Long.html"><span class="hs-identifier">Data.List.ZList.Long</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">ZL'</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Class.html"><span class="hs-identifier">Data.TwoMonoids.Class</span></a></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZ.Class.html"><span class="hs-identifier">Data.TwoMonoids.LZ.Class</span></a></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Class.html"><span class="hs-identifier">Data.TwoMonoids.LZLC.Class</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">{-
+
+Note: Category theory perspective
+
+Free can be thought of the pushout (amalgamated product) of
+two copies of ZList.
+
+\* Sum = ZList = the free (monoid + right zero) monad
+\* Prod = ZList
+
+from
+
+type Short a = Either Constant a
+data Constant = Zero | One
+
+p1 :: Short ~&gt; Sum
+p1 (Left Zero) = Nil
+p1 (Left One) = (Zee ())
+p1 (Right a) = pure a
+
+p2 :: Short ~&gt; Prod
+p2 (Left Zero) = (Zee ())
+p2 (Left One) = Nil
+p2 (Right a) = pure a
+
+           p1
+ Short ----------&gt; Sum
+   |                |
+   |                |
+   | p2             |
+   |            +-- |
+   v            |   v
+  Prod ----------&gt; Free
+
+-}</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | The free 'DMLZLC'.</span></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">data</span><span> </span><span id="Free"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span id="local-6989586621679077950"><span class="annot"><a href="#local-6989586621679077950"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Lit"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-var">Lit</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077950"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Zero"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span></span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="One"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span></span><span>
+</span><span id="line-72"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="SumOf"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier hs-type">SummandF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077950"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="ProdOf"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier hs-type">FactorF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077950"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679078058"><span id="local-6989586621679078071"><span id="local-6989586621679078075"><span class="annot"><span class="annottext">Int -&gt; Free a -&gt; ShowS
+[Free a] -&gt; ShowS
+Free a -&gt; String
+(Int -&gt; Free a -&gt; ShowS)
+-&gt; (Free a -&gt; String) -&gt; ([Free a] -&gt; ShowS) -&gt; Show (Free a)
+forall a. Show a =&gt; Int -&gt; Free a -&gt; ShowS
+forall a. Show a =&gt; [Free a] -&gt; ShowS
+forall a. Show a =&gt; Free a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Free a -&gt; ShowS
+showsPrec :: Int -&gt; Free a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; Free a -&gt; String
+show :: Free a -&gt; String
+$cshowList :: forall a. Show a =&gt; [Free a] -&gt; ShowS
+showList :: [Free a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078083"><span id="local-6989586621679078092"><span class="annot"><span class="annottext">Free a -&gt; Free a -&gt; Bool
+(Free a -&gt; Free a -&gt; Bool)
+-&gt; (Free a -&gt; Free a -&gt; Bool) -&gt; Eq (Free a)
+forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
+== :: Free a -&gt; Free a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
+/= :: Free a -&gt; Free a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078104"><span id="local-6989586621679078113"><span id="local-6989586621679078117"><span id="local-6989586621679078120"><span id="local-6989586621679078123"><span id="local-6989586621679078126"><span id="local-6989586621679078129"><span class="annot"><span class="annottext">Eq (Free a)
+Eq (Free a) =&gt;
+(Free a -&gt; Free a -&gt; Ordering)
+-&gt; (Free a -&gt; Free a -&gt; Bool)
+-&gt; (Free a -&gt; Free a -&gt; Bool)
+-&gt; (Free a -&gt; Free a -&gt; Bool)
+-&gt; (Free a -&gt; Free a -&gt; Bool)
+-&gt; (Free a -&gt; Free a -&gt; Free a)
+-&gt; (Free a -&gt; Free a -&gt; Free a)
+-&gt; Ord (Free a)
+Free a -&gt; Free a -&gt; Bool
+Free a -&gt; Free a -&gt; Ordering
+Free a -&gt; Free a -&gt; Free a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Free a)
+forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Bool
+forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Ordering
+forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Free a
+$ccompare :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Ordering
+compare :: Free a -&gt; Free a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Bool
+&lt; :: Free a -&gt; Free a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Bool
+&lt;= :: Free a -&gt; Free a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Bool
+&gt; :: Free a -&gt; Free a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Bool
+&gt;= :: Free a -&gt; Free a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Free a
+max :: Free a -&gt; Free a -&gt; Free a
+$cmin :: forall a. Ord a =&gt; Free a -&gt; Free a -&gt; Free a
+min :: Free a -&gt; Free a -&gt; Free a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078137"><span id="local-6989586621679078146"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b)
+-&gt; (forall a b. a -&gt; Free b -&gt; Free a) -&gt; Functor Free
+forall a b. a -&gt; Free b -&gt; Free a
+forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
+fmap :: forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
+$c&lt;$ :: forall a b. a -&gt; Free b -&gt; Free a
+&lt;$ :: forall a b. a -&gt; Free b -&gt; Free a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078154"><span id="local-6989586621679078160"><span id="local-6989586621679078176"><span id="local-6989586621679078181"><span id="local-6989586621679078187"><span id="local-6989586621679078190"><span id="local-6989586621679078193"><span id="local-6989586621679078196"><span id="local-6989586621679078199"><span id="local-6989586621679078202"><span id="local-6989586621679078205"><span id="local-6989586621679078211"><span id="local-6989586621679078214"><span id="local-6989586621679078219"><span id="local-6989586621679078224"><span id="local-6989586621679078229"><span id="local-6989586621679078234"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Free m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a)
+-&gt; (forall a. Free a -&gt; [a])
+-&gt; (forall a. Free a -&gt; Bool)
+-&gt; (forall a. Free a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Free a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Free a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Free a -&gt; a)
+-&gt; (forall a. Num a =&gt; Free a -&gt; a)
+-&gt; (forall a. Num a =&gt; Free a -&gt; a)
+-&gt; Foldable Free
+forall a. Eq a =&gt; a -&gt; Free a -&gt; Bool
+forall a. Num a =&gt; Free a -&gt; a
+forall a. Ord a =&gt; Free a -&gt; a
+forall m. Monoid m =&gt; Free m -&gt; m
+forall a. Free a -&gt; Bool
+forall a. Free a -&gt; Int
+forall a. Free a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; Free m -&gt; m
+fold :: forall m. Monoid m =&gt; Free m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Free a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Free a -&gt; a
+$ctoList :: forall a. Free a -&gt; [a]
+toList :: forall a. Free a -&gt; [a]
+$cnull :: forall a. Free a -&gt; Bool
+null :: forall a. Free a -&gt; Bool
+$clength :: forall a. Free a -&gt; Int
+length :: forall a. Free a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; Free a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; Free a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; Free a -&gt; a
+maximum :: forall a. Ord a =&gt; Free a -&gt; a
+$cminimum :: forall a. Ord a =&gt; Free a -&gt; a
+minimum :: forall a. Ord a =&gt; Free a -&gt; a
+$csum :: forall a. Num a =&gt; Free a -&gt; a
+sum :: forall a. Num a =&gt; Free a -&gt; a
+$cproduct :: forall a. Num a =&gt; Free a -&gt; a
+product :: forall a. Num a =&gt; Free a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078244"><span id="local-6989586621679078264"><span id="local-6989586621679078270"><span id="local-6989586621679078275"><span class="annot"><span class="annottext">Functor Free
+Foldable Free
+(Functor Free, Foldable Free) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; Free a -&gt; f (Free b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    Free (f a) -&gt; f (Free a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; Free a -&gt; m (Free b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a))
+-&gt; Traversable Free
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; Free (f a) -&gt; f (Free a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Free a -&gt; m (Free b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Free a -&gt; f (Free b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Free a -&gt; f (Free b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Free a -&gt; f (Free b)
+$csequenceA :: forall (f :: * -&gt; *) a. Applicative f =&gt; Free (f a) -&gt; f (Free a)
+sequenceA :: forall (f :: * -&gt; *) a. Applicative f =&gt; Free (f a) -&gt; f (Free a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Free a -&gt; m (Free b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Free a -&gt; m (Free b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-keyword">data</span><span> </span><span id="SummandF"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier hs-var">SummandF</span></a></span></span><span> </span><span id="local-6989586621679077973"><span class="annot"><a href="#local-6989586621679077973"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-77"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="SummandLit"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandLit"><span class="hs-identifier hs-var">SummandLit</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077973"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="SummandProd"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandProd"><span class="hs-identifier hs-var">SummandProd</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier hs-type">FactorF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077973"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679078285"><span id="local-6989586621679078293"><span id="local-6989586621679078296"><span class="annot"><span class="annottext">Int -&gt; SummandF a -&gt; ShowS
+[SummandF a] -&gt; ShowS
+SummandF a -&gt; String
+(Int -&gt; SummandF a -&gt; ShowS)
+-&gt; (SummandF a -&gt; String)
+-&gt; ([SummandF a] -&gt; ShowS)
+-&gt; Show (SummandF a)
+forall a. Show a =&gt; Int -&gt; SummandF a -&gt; ShowS
+forall a. Show a =&gt; [SummandF a] -&gt; ShowS
+forall a. Show a =&gt; SummandF a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; SummandF a -&gt; ShowS
+showsPrec :: Int -&gt; SummandF a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; SummandF a -&gt; String
+show :: SummandF a -&gt; String
+$cshowList :: forall a. Show a =&gt; [SummandF a] -&gt; ShowS
+showList :: [SummandF a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078300"><span id="local-6989586621679078306"><span class="annot"><span class="annottext">SummandF a -&gt; SummandF a -&gt; Bool
+(SummandF a -&gt; SummandF a -&gt; Bool)
+-&gt; (SummandF a -&gt; SummandF a -&gt; Bool) -&gt; Eq (SummandF a)
+forall a. Eq a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+== :: SummandF a -&gt; SummandF a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+/= :: SummandF a -&gt; SummandF a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078313"><span id="local-6989586621679078319"><span id="local-6989586621679078325"><span id="local-6989586621679078328"><span id="local-6989586621679078331"><span id="local-6989586621679078334"><span id="local-6989586621679078337"><span class="annot"><span class="annottext">Eq (SummandF a)
+Eq (SummandF a) =&gt;
+(SummandF a -&gt; SummandF a -&gt; Ordering)
+-&gt; (SummandF a -&gt; SummandF a -&gt; Bool)
+-&gt; (SummandF a -&gt; SummandF a -&gt; Bool)
+-&gt; (SummandF a -&gt; SummandF a -&gt; Bool)
+-&gt; (SummandF a -&gt; SummandF a -&gt; Bool)
+-&gt; (SummandF a -&gt; SummandF a -&gt; SummandF a)
+-&gt; (SummandF a -&gt; SummandF a -&gt; SummandF a)
+-&gt; Ord (SummandF a)
+SummandF a -&gt; SummandF a -&gt; Bool
+SummandF a -&gt; SummandF a -&gt; Ordering
+SummandF a -&gt; SummandF a -&gt; SummandF a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (SummandF a)
+forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Ordering
+forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; SummandF a
+$ccompare :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Ordering
+compare :: SummandF a -&gt; SummandF a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+&lt; :: SummandF a -&gt; SummandF a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+&lt;= :: SummandF a -&gt; SummandF a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+&gt; :: SummandF a -&gt; SummandF a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; Bool
+&gt;= :: SummandF a -&gt; SummandF a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; SummandF a
+max :: SummandF a -&gt; SummandF a -&gt; SummandF a
+$cmin :: forall a. Ord a =&gt; SummandF a -&gt; SummandF a -&gt; SummandF a
+min :: SummandF a -&gt; SummandF a -&gt; SummandF a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078340"><span id="local-6989586621679078344"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; SummandF a -&gt; SummandF b)
+-&gt; (forall a b. a -&gt; SummandF b -&gt; SummandF a) -&gt; Functor SummandF
+forall a b. a -&gt; SummandF b -&gt; SummandF a
+forall a b. (a -&gt; b) -&gt; SummandF a -&gt; SummandF b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; SummandF a -&gt; SummandF b
+fmap :: forall a b. (a -&gt; b) -&gt; SummandF a -&gt; SummandF b
+$c&lt;$ :: forall a b. a -&gt; SummandF b -&gt; SummandF a
+&lt;$ :: forall a b. a -&gt; SummandF b -&gt; SummandF a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078348"><span id="local-6989586621679078353"><span id="local-6989586621679078360"><span id="local-6989586621679078365"><span id="local-6989586621679078369"><span id="local-6989586621679078372"><span id="local-6989586621679078375"><span id="local-6989586621679078378"><span id="local-6989586621679078381"><span id="local-6989586621679078384"><span id="local-6989586621679078387"><span id="local-6989586621679078391"><span id="local-6989586621679078394"><span id="local-6989586621679078399"><span id="local-6989586621679078404"><span id="local-6989586621679078409"><span id="local-6989586621679078414"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; SummandF m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a)
+-&gt; (forall a. SummandF a -&gt; [a])
+-&gt; (forall a. SummandF a -&gt; Bool)
+-&gt; (forall a. SummandF a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; SummandF a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; SummandF a -&gt; a)
+-&gt; (forall a. Ord a =&gt; SummandF a -&gt; a)
+-&gt; (forall a. Num a =&gt; SummandF a -&gt; a)
+-&gt; (forall a. Num a =&gt; SummandF a -&gt; a)
+-&gt; Foldable SummandF
+forall a. Eq a =&gt; a -&gt; SummandF a -&gt; Bool
+forall a. Num a =&gt; SummandF a -&gt; a
+forall a. Ord a =&gt; SummandF a -&gt; a
+forall m. Monoid m =&gt; SummandF m -&gt; m
+forall a. SummandF a -&gt; Bool
+forall a. SummandF a -&gt; Int
+forall a. SummandF a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; SummandF m -&gt; m
+fold :: forall m. Monoid m =&gt; SummandF m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SummandF a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SummandF a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; SummandF a -&gt; a
+$ctoList :: forall a. SummandF a -&gt; [a]
+toList :: forall a. SummandF a -&gt; [a]
+$cnull :: forall a. SummandF a -&gt; Bool
+null :: forall a. SummandF a -&gt; Bool
+$clength :: forall a. SummandF a -&gt; Int
+length :: forall a. SummandF a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; SummandF a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; SummandF a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; SummandF a -&gt; a
+maximum :: forall a. Ord a =&gt; SummandF a -&gt; a
+$cminimum :: forall a. Ord a =&gt; SummandF a -&gt; a
+minimum :: forall a. Ord a =&gt; SummandF a -&gt; a
+$csum :: forall a. Num a =&gt; SummandF a -&gt; a
+sum :: forall a. Num a =&gt; SummandF a -&gt; a
+$cproduct :: forall a. Num a =&gt; SummandF a -&gt; a
+product :: forall a. Num a =&gt; SummandF a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078423"><span id="local-6989586621679078433"><span id="local-6989586621679078438"><span id="local-6989586621679078443"><span class="annot"><span class="annottext">Functor SummandF
+Foldable SummandF
+(Functor SummandF, Foldable SummandF) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; SummandF a -&gt; f (SummandF b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    SummandF (f a) -&gt; f (SummandF a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; SummandF a -&gt; m (SummandF b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    SummandF (m a) -&gt; m (SummandF a))
+-&gt; Traversable SummandF
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; SummandF (m a) -&gt; m (SummandF a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+SummandF (f a) -&gt; f (SummandF a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SummandF a -&gt; m (SummandF b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SummandF a -&gt; f (SummandF b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SummandF a -&gt; f (SummandF b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SummandF a -&gt; f (SummandF b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+SummandF (f a) -&gt; f (SummandF a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+SummandF (f a) -&gt; f (SummandF a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SummandF a -&gt; m (SummandF b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SummandF a -&gt; m (SummandF b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; SummandF (m a) -&gt; m (SummandF a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; SummandF (m a) -&gt; m (SummandF a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span id="local-6989586621679077948"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier hs-type">injectSummand</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier hs-type">SummandF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077948"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077948"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-82"></span><span id="injectSummand"><span class="annot"><span class="annottext">injectSummand :: forall a. SummandF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier hs-var hs-var">injectSummand</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandLit"><span class="hs-identifier hs-type">SummandLit</span></a></span><span> </span><span id="local-6989586621679078447"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078447"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Free a
+forall a. a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-var">Lit</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078447"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-83"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier hs-var">injectSummand</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandProd"><span class="hs-identifier hs-type">SummandProd</span></a></span><span> </span><span id="local-6989586621679078448"><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078448"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a) -&gt; Free a
+forall a. ZList' () (FactorF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078448"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="hs-keyword">data</span><span> </span><span id="FactorF"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier hs-var">FactorF</span></a></span></span><span> </span><span id="local-6989586621679077980"><span class="annot"><a href="#local-6989586621679077980"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="FactorLit"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorLit"><span class="hs-identifier hs-var">FactorLit</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077980"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="FactorSum"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorSum"><span class="hs-identifier hs-var">FactorSum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.Long.html#ZList%27"><span class="hs-identifier hs-type">ZList'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier hs-type">SummandF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077980"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679078453"><span id="local-6989586621679078461"><span id="local-6989586621679078464"><span class="annot"><span class="annottext">Int -&gt; FactorF a -&gt; ShowS
+[FactorF a] -&gt; ShowS
+FactorF a -&gt; String
+(Int -&gt; FactorF a -&gt; ShowS)
+-&gt; (FactorF a -&gt; String)
+-&gt; ([FactorF a] -&gt; ShowS)
+-&gt; Show (FactorF a)
+forall a. Show a =&gt; Int -&gt; FactorF a -&gt; ShowS
+forall a. Show a =&gt; [FactorF a] -&gt; ShowS
+forall a. Show a =&gt; FactorF a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; FactorF a -&gt; ShowS
+showsPrec :: Int -&gt; FactorF a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; FactorF a -&gt; String
+show :: FactorF a -&gt; String
+$cshowList :: forall a. Show a =&gt; [FactorF a] -&gt; ShowS
+showList :: [FactorF a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078468"><span id="local-6989586621679078474"><span class="annot"><span class="annottext">FactorF a -&gt; FactorF a -&gt; Bool
+(FactorF a -&gt; FactorF a -&gt; Bool)
+-&gt; (FactorF a -&gt; FactorF a -&gt; Bool) -&gt; Eq (FactorF a)
+forall a. Eq a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+== :: FactorF a -&gt; FactorF a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+/= :: FactorF a -&gt; FactorF a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078481"><span id="local-6989586621679078487"><span id="local-6989586621679078493"><span id="local-6989586621679078496"><span id="local-6989586621679078499"><span id="local-6989586621679078502"><span id="local-6989586621679078505"><span class="annot"><span class="annottext">Eq (FactorF a)
+Eq (FactorF a) =&gt;
+(FactorF a -&gt; FactorF a -&gt; Ordering)
+-&gt; (FactorF a -&gt; FactorF a -&gt; Bool)
+-&gt; (FactorF a -&gt; FactorF a -&gt; Bool)
+-&gt; (FactorF a -&gt; FactorF a -&gt; Bool)
+-&gt; (FactorF a -&gt; FactorF a -&gt; Bool)
+-&gt; (FactorF a -&gt; FactorF a -&gt; FactorF a)
+-&gt; (FactorF a -&gt; FactorF a -&gt; FactorF a)
+-&gt; Ord (FactorF a)
+FactorF a -&gt; FactorF a -&gt; Bool
+FactorF a -&gt; FactorF a -&gt; Ordering
+FactorF a -&gt; FactorF a -&gt; FactorF a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (FactorF a)
+forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Ordering
+forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; FactorF a
+$ccompare :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Ordering
+compare :: FactorF a -&gt; FactorF a -&gt; Ordering
+$c&lt; :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+&lt; :: FactorF a -&gt; FactorF a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+&lt;= :: FactorF a -&gt; FactorF a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+&gt; :: FactorF a -&gt; FactorF a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; Bool
+&gt;= :: FactorF a -&gt; FactorF a -&gt; Bool
+$cmax :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; FactorF a
+max :: FactorF a -&gt; FactorF a -&gt; FactorF a
+$cmin :: forall a. Ord a =&gt; FactorF a -&gt; FactorF a -&gt; FactorF a
+min :: FactorF a -&gt; FactorF a -&gt; FactorF a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078508"><span id="local-6989586621679078512"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; FactorF a -&gt; FactorF b)
+-&gt; (forall a b. a -&gt; FactorF b -&gt; FactorF a) -&gt; Functor FactorF
+forall a b. a -&gt; FactorF b -&gt; FactorF a
+forall a b. (a -&gt; b) -&gt; FactorF a -&gt; FactorF b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; FactorF a -&gt; FactorF b
+fmap :: forall a b. (a -&gt; b) -&gt; FactorF a -&gt; FactorF b
+$c&lt;$ :: forall a b. a -&gt; FactorF b -&gt; FactorF a
+&lt;$ :: forall a b. a -&gt; FactorF b -&gt; FactorF a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078516"><span id="local-6989586621679078521"><span id="local-6989586621679078528"><span id="local-6989586621679078533"><span id="local-6989586621679078537"><span id="local-6989586621679078540"><span id="local-6989586621679078543"><span id="local-6989586621679078546"><span id="local-6989586621679078549"><span id="local-6989586621679078552"><span id="local-6989586621679078555"><span id="local-6989586621679078559"><span id="local-6989586621679078562"><span id="local-6989586621679078567"><span id="local-6989586621679078572"><span id="local-6989586621679078577"><span id="local-6989586621679078582"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; FactorF m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a)
+-&gt; (forall a. FactorF a -&gt; [a])
+-&gt; (forall a. FactorF a -&gt; Bool)
+-&gt; (forall a. FactorF a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; FactorF a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; FactorF a -&gt; a)
+-&gt; (forall a. Ord a =&gt; FactorF a -&gt; a)
+-&gt; (forall a. Num a =&gt; FactorF a -&gt; a)
+-&gt; (forall a. Num a =&gt; FactorF a -&gt; a)
+-&gt; Foldable FactorF
+forall a. Eq a =&gt; a -&gt; FactorF a -&gt; Bool
+forall a. Num a =&gt; FactorF a -&gt; a
+forall a. Ord a =&gt; FactorF a -&gt; a
+forall m. Monoid m =&gt; FactorF m -&gt; m
+forall a. FactorF a -&gt; Bool
+forall a. FactorF a -&gt; Int
+forall a. FactorF a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; FactorF m -&gt; m
+fold :: forall m. Monoid m =&gt; FactorF m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; FactorF a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; FactorF a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; FactorF a -&gt; a
+$ctoList :: forall a. FactorF a -&gt; [a]
+toList :: forall a. FactorF a -&gt; [a]
+$cnull :: forall a. FactorF a -&gt; Bool
+null :: forall a. FactorF a -&gt; Bool
+$clength :: forall a. FactorF a -&gt; Int
+length :: forall a. FactorF a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; FactorF a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; FactorF a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; FactorF a -&gt; a
+maximum :: forall a. Ord a =&gt; FactorF a -&gt; a
+$cminimum :: forall a. Ord a =&gt; FactorF a -&gt; a
+minimum :: forall a. Ord a =&gt; FactorF a -&gt; a
+$csum :: forall a. Num a =&gt; FactorF a -&gt; a
+sum :: forall a. Num a =&gt; FactorF a -&gt; a
+$cproduct :: forall a. Num a =&gt; FactorF a -&gt; a
+product :: forall a. Num a =&gt; FactorF a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679078591"><span id="local-6989586621679078601"><span id="local-6989586621679078606"><span id="local-6989586621679078611"><span class="annot"><span class="annottext">Functor FactorF
+Foldable FactorF
+(Functor FactorF, Foldable FactorF) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; FactorF a -&gt; f (FactorF b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    FactorF (f a) -&gt; f (FactorF a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; FactorF a -&gt; m (FactorF b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    FactorF (m a) -&gt; m (FactorF a))
+-&gt; Traversable FactorF
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; FactorF (m a) -&gt; m (FactorF a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+FactorF (f a) -&gt; f (FactorF a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; FactorF a -&gt; m (FactorF b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; FactorF a -&gt; f (FactorF b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; FactorF a -&gt; f (FactorF b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; FactorF a -&gt; f (FactorF b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+FactorF (f a) -&gt; f (FactorF a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+FactorF (f a) -&gt; f (FactorF a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; FactorF a -&gt; m (FactorF b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; FactorF a -&gt; m (FactorF b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; FactorF (m a) -&gt; m (FactorF a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; FactorF (m a) -&gt; m (FactorF a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span id="local-6989586621679077966"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier hs-type">injectFactor</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier hs-type">FactorF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077966"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077966"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-91"></span><span id="injectFactor"><span class="annot"><span class="annottext">injectFactor :: forall a. FactorF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier hs-var hs-var">injectFactor</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorLit"><span class="hs-identifier hs-type">FactorLit</span></a></span><span> </span><span id="local-6989586621679078615"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078615"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Free a
+forall a. a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-var">Lit</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078615"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-92"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier hs-var">injectFactor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorSum"><span class="hs-identifier hs-type">FactorSum</span></a></span><span> </span><span id="local-6989586621679078616"><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078616"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a) -&gt; Free a
+forall a. ZList' () (SummandF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078616"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span id="local-6989586621679077968"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-type">viewSum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077968"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier hs-type">ZList</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SummandF"><span class="hs-identifier hs-type">SummandF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077968"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-95"></span><span id="viewSum"><span class="annot"><span class="annottext">viewSum :: forall a. Free a -&gt; ZList () (SummandF a)
+</span><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var hs-var">viewSum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679078620"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078620"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SummandF a -&gt; ZList () (SummandF a)
+forall a. a -&gt; ZList () a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; SummandF a
+forall a. a -&gt; SummandF a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#SummandLit"><span class="hs-identifier hs-var">SummandLit</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078620"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () (SummandF a)
+forall e a. ZList e a
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-97"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ZList () (SummandF a)
+forall e a. e -&gt; ZList e a
+</span><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-98"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679078623"><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078623"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a) -&gt; ZList () (SummandF a)
+forall e a. ZList' e a -&gt; ZList e a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">ZL'.toZList</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078623"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-99"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-type">ProdOf</span></a></span><span> </span><span id="local-6989586621679078625"><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078625"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SummandF a -&gt; ZList () (SummandF a)
+forall a. a -&gt; ZList () a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ZList' () (FactorF a) -&gt; SummandF a
+forall a. ZList' () (FactorF a) -&gt; SummandF a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#SummandProd"><span class="hs-identifier hs-var">SummandProd</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078625"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span id="local-6989586621679077978"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-type">viewProd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077978"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.ZList.html#ZList"><span class="hs-identifier hs-type">ZList</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#FactorF"><span class="hs-identifier hs-type">FactorF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077978"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-102"></span><span id="viewProd"><span class="annot"><span class="annottext">viewProd :: forall a. Free a -&gt; ZList () (FactorF a)
+</span><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var hs-var">viewProd</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679078628"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078628"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FactorF a -&gt; ZList () (FactorF a)
+forall a. a -&gt; ZList () a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; FactorF a
+forall a. a -&gt; FactorF a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#FactorLit"><span class="hs-identifier hs-var">FactorLit</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078628"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-103"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; ZList () (FactorF a)
+forall e a. e -&gt; ZList e a
+</span><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () (FactorF a)
+forall e a. ZList e a
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-105"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679078629"><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078629"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FactorF a -&gt; ZList () (FactorF a)
+forall a. a -&gt; ZList () a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ZList' () (SummandF a) -&gt; FactorF a
+forall a. ZList' () (SummandF a) -&gt; FactorF a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#FactorSum"><span class="hs-identifier hs-var">FactorSum</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078629"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-type">ProdOf</span></a></span><span> </span><span id="local-6989586621679078630"><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078630"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a) -&gt; ZList () (FactorF a)
+forall e a. ZList' e a -&gt; ZList e a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">ZL'.toZList</span></a></span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078630"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077985"><span id="local-6989586621679078632"><span id="local-6989586621679078637"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077985"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-109"></span><span>  </span><span id="local-6989586621679078646"><span class="annot"><span class="annottext">sconcat :: NonEmpty (Free a) -&gt; Free a
+</span><a href="#local-6989586621679078646"><span class="hs-identifier hs-var hs-var hs-var hs-var">sconcat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () (Free a) -&gt; Free a
+forall a. DMLZ a =&gt; ZList () a -&gt; a
+</span><a href="Data.TwoMonoids.LZ.Class.html#mprodZ"><span class="hs-identifier hs-var">mprodZ</span></a></span><span> </span><span class="annot"><span class="annottext">(ZList () (Free a) -&gt; Free a)
+-&gt; (NonEmpty (Free a) -&gt; ZList () (Free a))
+-&gt; NonEmpty (Free a)
+-&gt; Free a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; ZList () (Free a)
+forall a e. [a] -&gt; ZList e a
+</span><a href="Data.List.ZList.html#fromList"><span class="hs-identifier hs-var">ZL.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">([Free a] -&gt; ZList () (Free a))
+-&gt; (NonEmpty (Free a) -&gt; [Free a])
+-&gt; NonEmpty (Free a)
+-&gt; ZList () (Free a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty (Free a) -&gt; [Free a]
+forall a. NonEmpty a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077996"><span id="local-6989586621679078654"><span id="local-6989586621679078658"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077996"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-112"></span><span>  </span><span id="local-6989586621679078661"><span class="annot"><span class="annottext">mempty :: Free a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free a
+forall a. Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679078000"><span id="local-6989586621679078665"><span id="local-6989586621679078669"><span id="local-6989586621679078673"><span class="annot"><a href="Data.TwoMonoids.Class.html#TwoMonoids"><span class="hs-identifier hs-type">TwoMonoids</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679078000"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-115"></span><span>  </span><span id="local-6989586621679078678"><span class="annot"><span class="annottext">msum :: [Free a] -&gt; Free a
+</span><a href="#local-6989586621679078678"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () (Free a) -&gt; Free a
+forall a. DMLZLC a =&gt; ZList () a -&gt; a
+</span><a href="Data.TwoMonoids.LZLC.Class.html#msumZ"><span class="hs-identifier hs-var">msumZ</span></a></span><span> </span><span class="annot"><span class="annottext">(ZList () (Free a) -&gt; Free a)
+-&gt; ([Free a] -&gt; ZList () (Free a)) -&gt; [Free a] -&gt; Free a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; ZList () (Free a)
+forall a e. [a] -&gt; ZList e a
+</span><a href="Data.List.ZList.html#fromList"><span class="hs-identifier hs-var">ZL.fromList</span></a></span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077987"><span class="annot"><a href="Data.TwoMonoids.LZ.Class.html#DMLZ"><span class="hs-identifier hs-type">DMLZ</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077987"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-118"></span><span>  </span><span id="local-6989586621679078687"><span class="annot"><span class="annottext">mprodZ :: ZList () (Free a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZ.Class.html#mprodZ"><span class="hs-identifier hs-var hs-var hs-var hs-var">mprodZ</span></a></span></span><span> </span><span id="local-6989586621679078688"><span class="annot"><span class="annottext">ZList () (Free a)
+</span><a href="#local-6989586621679078688"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ZList () (Free a)
+</span><a href="#local-6989586621679078688"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">ZList () (Free a)
+-&gt; (Free a -&gt; ZList () (FactorF a)) -&gt; ZList () (FactorF a)
+forall a b. ZList () a -&gt; (a -&gt; ZList () b) -&gt; ZList () b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; ZList () (FactorF a)
+forall a. Free a -&gt; ZList () (FactorF a)
+</span><a href="Data.TwoMonoids.LZLC.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-119"></span><span>    </span><span class="annot"><span class="annottext">ZList () (FactorF a)
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+forall a. Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span>
+</span><span id="line-120"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+forall a. Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-121"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078690"><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078690"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="annottext">ZList () (FactorF a)
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FactorF a -&gt; Free a
+forall a. FactorF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier hs-var">injectFactor</span></a></span><span> </span><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078690"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-122"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078691"><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078691"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a) -&gt; Free a
+forall a. ZList' () (FactorF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FactorF a -&gt; () -&gt; ZList' () (FactorF a)
+forall e a. a -&gt; e -&gt; ZList' e a
+</span><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-var">Zxz</span></a></span><span> </span><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078691"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078693"><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078693"><span class="hs-identifier hs-var">y0</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078694"><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078694"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679078695"><span class="annot"><span class="annottext">ZList () (FactorF a)
+</span><a href="#local-6989586621679078695"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a) -&gt; Free a
+forall a. ZList' () (FactorF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FactorF a
+-&gt; FactorF a -&gt; ZList () (FactorF a) -&gt; ZList' () (FactorF a)
+forall e a. a -&gt; a -&gt; ZList e a -&gt; ZList' e a
+</span><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-var">ZLong</span></a></span><span> </span><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078693"><span class="hs-identifier hs-var">y0</span></a></span><span> </span><span class="annot"><span class="annottext">FactorF a
+</span><a href="#local-6989586621679078694"><span class="hs-identifier hs-var">y1</span></a></span><span> </span><span class="annot"><span class="annottext">ZList () (FactorF a)
+</span><a href="#local-6989586621679078695"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679078002"><span class="annot"><a href="Data.TwoMonoids.LZLC.Class.html#DMLZLC"><span class="hs-identifier hs-type">DMLZLC</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679078002"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-126"></span><span>  </span><span id="local-6989586621679078702"><span class="annot"><span class="annottext">msumZ :: ZList () (Free a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Class.html#msumZ"><span class="hs-identifier hs-var hs-var hs-var hs-var">msumZ</span></a></span></span><span> </span><span id="local-6989586621679078703"><span class="annot"><span class="annottext">ZList () (Free a)
+</span><a href="#local-6989586621679078703"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ZList () (Free a)
+</span><a href="#local-6989586621679078703"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">ZList () (Free a)
+-&gt; (Free a -&gt; ZList () (SummandF a)) -&gt; ZList () (SummandF a)
+forall a b. ZList () a -&gt; (a -&gt; ZList () b) -&gt; ZList () b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; ZList () (SummandF a)
+forall a. Free a -&gt; ZList () (SummandF a)
+</span><a href="Data.TwoMonoids.LZLC.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-127"></span><span>    </span><span class="annot"><span class="annottext">ZList () (SummandF a)
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+forall a. Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span>
+</span><span id="line-128"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+forall a. Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span>
+</span><span id="line-129"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078704"><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078704"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="annottext">ZList () (SummandF a)
+</span><a href="Data.List.ZList.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SummandF a -&gt; Free a
+forall a. SummandF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier hs-var">injectSummand</span></a></span><span> </span><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078704"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078705"><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078705"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a) -&gt; Free a
+forall a. ZList' () (SummandF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SummandF a -&gt; () -&gt; ZList' () (SummandF a)
+forall e a. a -&gt; e -&gt; ZList' e a
+</span><a href="Data.List.ZList.Long.html#Zxz"><span class="hs-identifier hs-var">Zxz</span></a></span><span> </span><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078705"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-131"></span><span>    </span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078706"><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078706"><span class="hs-identifier hs-var">y0</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.ZList.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078707"><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078707"><span class="hs-identifier hs-var">y1</span></a></span></span><span> </span><span id="local-6989586621679078708"><span class="annot"><span class="annottext">ZList () (SummandF a)
+</span><a href="#local-6989586621679078708"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a) -&gt; Free a
+forall a. ZList' () (SummandF a) -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SummandF a
+-&gt; SummandF a -&gt; ZList () (SummandF a) -&gt; ZList' () (SummandF a)
+forall e a. a -&gt; a -&gt; ZList e a -&gt; ZList' e a
+</span><a href="Data.List.ZList.Long.html#ZLong"><span class="hs-identifier hs-var">ZLong</span></a></span><span> </span><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078706"><span class="hs-identifier hs-var">y0</span></a></span><span> </span><span class="annot"><span class="annottext">SummandF a
+</span><a href="#local-6989586621679078707"><span class="hs-identifier hs-var">y1</span></a></span><span> </span><span class="annot"><span class="annottext">ZList () (SummandF a)
+</span><a href="#local-6989586621679078708"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679078714"><span id="local-6989586621679078718"><span id="local-6989586621679078721"><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-134"></span><span>  </span><span id="local-6989586621679078724"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Free a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Free a
+forall a. a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-var">Lit</span></a></span><span>
+</span><span id="line-135"></span><span>  </span><span id="local-6989586621679078727"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Free (a -&gt; b) -&gt; Free a -&gt; Free b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free (a -&gt; b) -&gt; Free a -&gt; Free b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679078732"><span id="local-6989586621679078735"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-138"></span><span>  </span><span id="local-6989586621679078739"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679078739"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679078740"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Free a -&gt; (a -&gt; Free b) -&gt; Free b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;=</span></span></span><span> </span><span id="local-6989586621679078741"><span class="annot"><span class="annottext">a -&gt; Free b
+</span><a href="#local-6989586621679078741"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Free b) -&gt; Free a -&gt; Free b
+forall b a. DMLZLC b =&gt; (a -&gt; b) -&gt; Free a -&gt; b
+</span><a href="Data.TwoMonoids.LZLC.Free.html#interpret"><span class="hs-identifier hs-var">interpret</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Free b
+</span><a href="#local-6989586621679078741"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679078739"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span id="local-6989586621679078032"><span id="local-6989586621679078033"><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#interpret"><span class="hs-identifier hs-type">interpret</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Class.html#DMLZLC"><span class="hs-identifier hs-type">DMLZLC</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679078032"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679078033"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679078032"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679078033"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679078032"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-141"></span><span id="interpret"><span class="annot"><span class="annottext">interpret :: forall b a. DMLZLC b =&gt; (a -&gt; b) -&gt; Free a -&gt; b
+</span><a href="Data.TwoMonoids.LZLC.Free.html#interpret"><span class="hs-identifier hs-var hs-var">interpret</span></a></span></span><span> </span><span id="local-6989586621679078751"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679078751"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free a -&gt; b
+</span><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-143"></span><span>    </span><span id="local-6989586621679078752"><span class="annot"><span class="annottext">go :: Free a -&gt; b
+</span><a href="#local-6989586621679078752"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679078768"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078768"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679078751"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078768"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#Zero"><span class="hs-identifier hs-var">Zero</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
+forall a. TwoMonoids a =&gt; a
+</span><a href="Data.TwoMonoids.Class.html#zero"><span class="hs-identifier hs-var">zero</span></a></span><span>
+</span><span id="line-145"></span><span>    </span><span class="annot"><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
+forall a. TwoMonoids a =&gt; a
+</span><a href="Data.TwoMonoids.Class.html#one"><span class="hs-identifier hs-var">one</span></a></span><span>
+</span><span id="line-146"></span><span>    </span><span class="annot"><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span> </span><span id="local-6989586621679078771"><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078771"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () b -&gt; b
+forall a. DMLZLC a =&gt; ZList () a -&gt; a
+</span><a href="Data.TwoMonoids.LZLC.Class.html#msumZ"><span class="hs-identifier hs-var">msumZ</span></a></span><span> </span><span class="annot"><span class="annottext">(ZList () b -&gt; b) -&gt; ZList () b -&gt; b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZList' () b -&gt; ZList () b
+forall e a. ZList' e a -&gt; ZList e a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">ZL'.toZList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; b
+</span><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; (SummandF a -&gt; Free a) -&gt; SummandF a -&gt; b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">SummandF a -&gt; Free a
+forall a. SummandF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectSummand"><span class="hs-identifier hs-var">injectSummand</span></a></span><span> </span><span class="annot"><span class="annottext">(SummandF a -&gt; b) -&gt; ZList' () (SummandF a) -&gt; ZList' () b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ZList' () (SummandF a)
+</span><a href="#local-6989586621679078771"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.LZLC.Free.html#ProdOf"><span class="hs-identifier hs-type">ProdOf</span></a></span><span> </span><span id="local-6989586621679078773"><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078773"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ZList () b -&gt; b
+forall a. DMLZ a =&gt; ZList () a -&gt; a
+</span><a href="Data.TwoMonoids.LZ.Class.html#mprodZ"><span class="hs-identifier hs-var">mprodZ</span></a></span><span> </span><span class="annot"><span class="annottext">(ZList () b -&gt; b) -&gt; ZList () b -&gt; b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ZList' () b -&gt; ZList () b
+forall e a. ZList' e a -&gt; ZList e a
+</span><a href="Data.List.ZList.Long.html#toZList"><span class="hs-identifier hs-var">ZL'.toZList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; b
+</span><a href="#local-6989586621679078752"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; (FactorF a -&gt; Free a) -&gt; FactorF a -&gt; b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">FactorF a -&gt; Free a
+forall a. FactorF a -&gt; Free a
+</span><a href="Data.TwoMonoids.LZLC.Free.html#injectFactor"><span class="hs-identifier hs-var">injectFactor</span></a></span><span> </span><span class="annot"><span class="annottext">(FactorF a -&gt; b) -&gt; ZList' () (FactorF a) -&gt; ZList' () b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ZList' () (FactorF a)
+</span><a href="#local-6989586621679078773"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span></pre></body></html>
