@@ -38,6 +38,20 @@ jobs:
           ref: main
           path: projects/polynomial-functor
         
+      - name: "Fetch free-alternative-other"
+        uses: actions/checkout@v4
+        with:
+          repository: viercc/free-alternative-other
+          ref: main
+          path: projects/free-alternative-other
+        
+      - name: "Fetch two-monoids-in-one"
+        uses: actions/checkout@v4
+        with:
+          repository: viercc/two-monoids-in-one
+          ref: main
+          path: projects/two-monoids-in-one
+      
       - name: "Fetch monad-gen"
         uses: actions/checkout@v4
         with:
@@ -69,6 +83,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           (cd projects/functor-monad && cabal build all --only-dependencies)
+          (cd projects/free-alternative-other && cabal build all --only-dependencies)
+          (cd projects/two-monoids-in-one && cabal build all --only-dependencies)
           (cd projects/monad-gen && cabal build all --only-dependencies)
           (cd projects/polynomial-functor && cabal build all --only-dependencies)
 
@@ -93,6 +109,8 @@ jobs:
           (cd projects/functor-monad && cabal haddock all ${{ env.cabal-opts }})
           (cd projects/monad-gen && cabal haddock all ${{ env.cabal-opts }})
           (cd projects/polynomial-functor && cabal haddock all ${{ env.cabal-opts }})
+          (cd projects/free-alternative-other && cabal haddock all ${{ env.cabal-opts }})
+          (cd projects/two-monoids-in-one && cabal haddock all ${{ env.cabal-opts }})
       
       - name: Checkout publish root
         uses: actions/checkout@v4
@@ -106,6 +124,8 @@ jobs:
           cp -a projects/functor-monad/doc-output/* site-root/haddocks
           cp -a projects/polynomial-functor/doc-output/* site-root/haddocks
           cp -a projects/monad-gen/doc-output/* site-root/haddocks
+          cp -a projects/free-alternative-other/doc-output/* site-root/haddocks
+          cp -a projects/two-monoids-in-one/doc-output/* site-root/haddocks
       
       - name: Commit Changes
         id: commit_changes
