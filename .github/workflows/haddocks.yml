@@ -114,8 +114,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add haddocks
-          git commit -m "haddock generated"
-          git push
+          git commit -m "haddock generated" && git push || echo "Nothing to commit"
 
   publish-by-git:
     name: "Publish the generated haddock"
@@ -131,6 +130,4 @@ jobs:
       - name: Merge master to publish
         id: merge_master
         run: |
-          git fetch origin master:master
-          git merge --ff-only master
-          git push
+          git fetch origin master:master && git merge --ff-only master && git push || echo Nothing to push
