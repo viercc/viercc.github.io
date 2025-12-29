@@ -1,0 +1,839 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveTraversable #-}</span><span>
+</span><span id="line-3"></span><span class="annot"><span class="hs-comment">-- | List with right zero elements (\&quot;Zee\&quot;) adjoined.</span></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.List.Zero</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">AutoLift</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">data</span><span> </span><span id="ListZ"><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-var">ListZ</span></a></span></span><span> </span><span id="local-6989586621679077475"><span class="annot"><a href="#local-6989586621679077475"><span class="hs-identifier hs-type">e</span></a></span></span><span> </span><span id="local-6989586621679077476"><span class="annot"><a href="#local-6989586621679077476"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Nil"><span class="annot"><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Zee"><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077475"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Cons"><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679077476"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077475"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077476"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077543"><span id="local-6989586621679077552"><span id="local-6989586621679077555"><span class="annot"><span class="annottext">Int -&gt; ListZ e a -&gt; ShowS
+[ListZ e a] -&gt; ShowS
+ListZ e a -&gt; String
+(Int -&gt; ListZ e a -&gt; ShowS)
+-&gt; (ListZ e a -&gt; String)
+-&gt; ([ListZ e a] -&gt; ShowS)
+-&gt; Show (ListZ e a)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall e a. (Show e, Show a) =&gt; Int -&gt; ListZ e a -&gt; ShowS
+forall e a. (Show e, Show a) =&gt; [ListZ e a] -&gt; ShowS
+forall e a. (Show e, Show a) =&gt; ListZ e a -&gt; String
+$cshowsPrec :: forall e a. (Show e, Show a) =&gt; Int -&gt; ListZ e a -&gt; ShowS
+showsPrec :: Int -&gt; ListZ e a -&gt; ShowS
+$cshow :: forall e a. (Show e, Show a) =&gt; ListZ e a -&gt; String
+show :: ListZ e a -&gt; String
+$cshowList :: forall e a. (Show e, Show a) =&gt; [ListZ e a] -&gt; ShowS
+showList :: [ListZ e a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077561"><span id="local-6989586621679077565"><span id="local-6989586621679077568"><span id="local-6989586621679077583"><span class="annot"><span class="annottext">ReadPrec [ListZ e a]
+ReadPrec (ListZ e a)
+Int -&gt; ReadS (ListZ e a)
+ReadS [ListZ e a]
+(Int -&gt; ReadS (ListZ e a))
+-&gt; ReadS [ListZ e a]
+-&gt; ReadPrec (ListZ e a)
+-&gt; ReadPrec [ListZ e a]
+-&gt; Read (ListZ e a)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall e a. (Read e, Read a) =&gt; ReadPrec [ListZ e a]
+forall e a. (Read e, Read a) =&gt; ReadPrec (ListZ e a)
+forall e a. (Read e, Read a) =&gt; Int -&gt; ReadS (ListZ e a)
+forall e a. (Read e, Read a) =&gt; ReadS [ListZ e a]
+$creadsPrec :: forall e a. (Read e, Read a) =&gt; Int -&gt; ReadS (ListZ e a)
+readsPrec :: Int -&gt; ReadS (ListZ e a)
+$creadList :: forall e a. (Read e, Read a) =&gt; ReadS [ListZ e a]
+readList :: ReadS [ListZ e a]
+$creadPrec :: forall e a. (Read e, Read a) =&gt; ReadPrec (ListZ e a)
+readPrec :: ReadPrec (ListZ e a)
+$creadListPrec :: forall e a. (Read e, Read a) =&gt; ReadPrec [ListZ e a]
+readListPrec :: ReadPrec [ListZ e a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077589"><span id="local-6989586621679077595"><span class="annot"><span class="annottext">ListZ e a -&gt; ListZ e a -&gt; Bool
+(ListZ e a -&gt; ListZ e a -&gt; Bool)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; Bool) -&gt; Eq (ListZ e a)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall e a. (Eq e, Eq a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+$c== :: forall e a. (Eq e, Eq a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+== :: ListZ e a -&gt; ListZ e a -&gt; Bool
+$c/= :: forall e a. (Eq e, Eq a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+/= :: ListZ e a -&gt; ListZ e a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077605"><span id="local-6989586621679077611"><span id="local-6989586621679077616"><span id="local-6989586621679077619"><span id="local-6989586621679077622"><span id="local-6989586621679077625"><span id="local-6989586621679077628"><span class="annot"><span class="annottext">Eq (ListZ e a)
+Eq (ListZ e a) =&gt;
+(ListZ e a -&gt; ListZ e a -&gt; Ordering)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; Bool)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; Bool)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; Bool)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; Bool)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; ListZ e a)
+-&gt; (ListZ e a -&gt; ListZ e a -&gt; ListZ e a)
+-&gt; Ord (ListZ e a)
+ListZ e a -&gt; ListZ e a -&gt; Bool
+ListZ e a -&gt; ListZ e a -&gt; Ordering
+ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall e a. (Ord e, Ord a) =&gt; Eq (ListZ e a)
+forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Ordering
+forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+$ccompare :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Ordering
+compare :: ListZ e a -&gt; ListZ e a -&gt; Ordering
+$c&lt; :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+&lt; :: ListZ e a -&gt; ListZ e a -&gt; Bool
+$c&lt;= :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+&lt;= :: ListZ e a -&gt; ListZ e a -&gt; Bool
+$c&gt; :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+&gt; :: ListZ e a -&gt; ListZ e a -&gt; Bool
+$c&gt;= :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; Bool
+&gt;= :: ListZ e a -&gt; ListZ e a -&gt; Bool
+$cmax :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+max :: ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+$cmin :: forall e a. (Ord e, Ord a) =&gt; ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+min :: ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077633"><span id="local-6989586621679077637"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b)
+-&gt; (forall a b. a -&gt; ListZ e b -&gt; ListZ e a) -&gt; Functor (ListZ e)
+forall a b. a -&gt; ListZ e b -&gt; ListZ e a
+forall a b. (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+forall e a b. a -&gt; ListZ e b -&gt; ListZ e a
+forall e a b. (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall e a b. (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+fmap :: forall a b. (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+$c&lt;$ :: forall e a b. a -&gt; ListZ e b -&gt; ListZ e a
+&lt;$ :: forall a b. a -&gt; ListZ e b -&gt; ListZ e a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077641"><span id="local-6989586621679077647"><span id="local-6989586621679077655"><span id="local-6989586621679077660"><span id="local-6989586621679077663"><span id="local-6989586621679077666"><span id="local-6989586621679077669"><span id="local-6989586621679077672"><span id="local-6989586621679077675"><span id="local-6989586621679077678"><span id="local-6989586621679077681"><span id="local-6989586621679077683"><span id="local-6989586621679077686"><span id="local-6989586621679077691"><span id="local-6989586621679077696"><span id="local-6989586621679077701"><span id="local-6989586621679077706"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; ListZ e m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a)
+-&gt; (forall a. ListZ e a -&gt; [a])
+-&gt; (forall a. ListZ e a -&gt; Bool)
+-&gt; (forall a. ListZ e a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; ListZ e a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; ListZ e a -&gt; a)
+-&gt; (forall a. Ord a =&gt; ListZ e a -&gt; a)
+-&gt; (forall a. Num a =&gt; ListZ e a -&gt; a)
+-&gt; (forall a. Num a =&gt; ListZ e a -&gt; a)
+-&gt; Foldable (ListZ e)
+forall a. Eq a =&gt; a -&gt; ListZ e a -&gt; Bool
+forall a. Num a =&gt; ListZ e a -&gt; a
+forall a. Ord a =&gt; ListZ e a -&gt; a
+forall m. Monoid m =&gt; ListZ e m -&gt; m
+forall a. ListZ e a -&gt; Bool
+forall a. ListZ e a -&gt; Int
+forall a. ListZ e a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+forall e a. Eq a =&gt; a -&gt; ListZ e a -&gt; Bool
+forall e a. Num a =&gt; ListZ e a -&gt; a
+forall e a. Ord a =&gt; ListZ e a -&gt; a
+forall e m. Monoid m =&gt; ListZ e m -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+forall e a. ListZ e a -&gt; Bool
+forall e a. ListZ e a -&gt; Int
+forall e a. ListZ e a -&gt; [a]
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+forall e a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+forall e m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+forall e b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+forall e a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall e m. Monoid m =&gt; ListZ e m -&gt; m
+fold :: forall m. Monoid m =&gt; ListZ e m -&gt; m
+$cfoldMap :: forall e m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+$cfoldMap' :: forall e m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ListZ e a -&gt; m
+$cfoldr :: forall e a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+$cfoldr' :: forall e a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+$cfoldl :: forall e b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+$cfoldl' :: forall e b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ListZ e a -&gt; b
+$cfoldr1 :: forall e a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+$cfoldl1 :: forall e a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; ListZ e a -&gt; a
+$ctoList :: forall e a. ListZ e a -&gt; [a]
+toList :: forall a. ListZ e a -&gt; [a]
+$cnull :: forall e a. ListZ e a -&gt; Bool
+null :: forall a. ListZ e a -&gt; Bool
+$clength :: forall e a. ListZ e a -&gt; Int
+length :: forall a. ListZ e a -&gt; Int
+$celem :: forall e a. Eq a =&gt; a -&gt; ListZ e a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; ListZ e a -&gt; Bool
+$cmaximum :: forall e a. Ord a =&gt; ListZ e a -&gt; a
+maximum :: forall a. Ord a =&gt; ListZ e a -&gt; a
+$cminimum :: forall e a. Ord a =&gt; ListZ e a -&gt; a
+minimum :: forall a. Ord a =&gt; ListZ e a -&gt; a
+$csum :: forall e a. Num a =&gt; ListZ e a -&gt; a
+sum :: forall a. Num a =&gt; ListZ e a -&gt; a
+$cproduct :: forall e a. Num a =&gt; ListZ e a -&gt; a
+product :: forall a. Num a =&gt; ListZ e a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077716"><span id="local-6989586621679077725"><span id="local-6989586621679077730"><span id="local-6989586621679077735"><span class="annot"><span class="annottext">Functor (ListZ e)
+Foldable (ListZ e)
+(Functor (ListZ e), Foldable (ListZ e)) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; ListZ e a -&gt; f (ListZ e b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    ListZ e (f a) -&gt; f (ListZ e a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; ListZ e a -&gt; m (ListZ e b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    ListZ e (m a) -&gt; m (ListZ e a))
+-&gt; Traversable (ListZ e)
+forall e. Functor (ListZ e)
+forall e. Foldable (ListZ e)
+forall e (m :: * -&gt; *) a. Monad m =&gt; ListZ e (m a) -&gt; m (ListZ e a)
+forall e (f :: * -&gt; *) a.
+Applicative f =&gt;
+ListZ e (f a) -&gt; f (ListZ e a)
+forall e (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ListZ e a -&gt; m (ListZ e b)
+forall e (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ListZ e a -&gt; f (ListZ e b)
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; ListZ e (m a) -&gt; m (ListZ e a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ListZ e (f a) -&gt; f (ListZ e a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ListZ e a -&gt; m (ListZ e b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ListZ e a -&gt; f (ListZ e b)
+$ctraverse :: forall e (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ListZ e a -&gt; f (ListZ e b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ListZ e a -&gt; f (ListZ e b)
+$csequenceA :: forall e (f :: * -&gt; *) a.
+Applicative f =&gt;
+ListZ e (f a) -&gt; f (ListZ e a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ListZ e (f a) -&gt; f (ListZ e a)
+$cmapM :: forall e (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ListZ e a -&gt; m (ListZ e b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ListZ e a -&gt; m (ListZ e b)
+$csequence :: forall e (m :: * -&gt; *) a. Monad m =&gt; ListZ e (m a) -&gt; m (ListZ e a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; ListZ e (m a) -&gt; m (ListZ e a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077744"><span id="local-6989586621679077751"><span class="annot"><span class="annottext">(forall a. Show a =&gt; Show (ListZ e a)) =&gt;
+(forall a.
+ (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; ListZ e a -&gt; ShowS)
+-&gt; (forall a.
+    (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [ListZ e a] -&gt; ShowS)
+-&gt; Show1 (ListZ e)
+forall a. Show a =&gt; Show (ListZ e a)
+forall e a. (Show e, Show a) =&gt; Show (ListZ e a)
+forall e a.
+Show e =&gt;
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; ListZ e a -&gt; ShowS
+forall e a.
+Show e =&gt;
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [ListZ e a] -&gt; ShowS
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; ListZ e a -&gt; ShowS
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [ListZ e a] -&gt; ShowS
+forall (f :: * -&gt; *).
+(forall a. Show a =&gt; Show (f a)) =&gt;
+(forall a.
+ (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; f a -&gt; ShowS)
+-&gt; (forall a.
+    (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [f a] -&gt; ShowS)
+-&gt; Show1 f
+$cliftShowsPrec :: forall e a.
+Show e =&gt;
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; ListZ e a -&gt; ShowS
+liftShowsPrec :: forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; ListZ e a -&gt; ShowS
+$cliftShowList :: forall e a.
+Show e =&gt;
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [ListZ e a] -&gt; ShowS
+liftShowList :: forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [ListZ e a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show1</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077762"><span id="local-6989586621679077769"><span id="local-6989586621679077775"><span id="local-6989586621679077781"><span class="annot"><span class="annottext">(forall a. Read a =&gt; Read (ListZ e a)) =&gt;
+(forall a.
+ (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (ListZ e a))
+-&gt; (forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [ListZ e a])
+-&gt; (forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (ListZ e a))
+-&gt; (forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [ListZ e a])
+-&gt; Read1 (ListZ e)
+forall a. Read a =&gt; Read (ListZ e a)
+forall e a. (Read e, Read a) =&gt; Read (ListZ e a)
+forall e a.
+Read e =&gt;
+ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [ListZ e a]
+forall e a.
+Read e =&gt;
+ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (ListZ e a)
+forall e a.
+Read e =&gt;
+(Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (ListZ e a)
+forall e a.
+Read e =&gt;
+(Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [ListZ e a]
+forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [ListZ e a]
+forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (ListZ e a)
+forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (ListZ e a)
+forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [ListZ e a]
+forall (f :: * -&gt; *).
+(forall a. Read a =&gt; Read (f a)) =&gt;
+(forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (f a))
+-&gt; (forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [f a])
+-&gt; (forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (f a))
+-&gt; (forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [f a])
+-&gt; Read1 f
+$cliftReadsPrec :: forall e a.
+Read e =&gt;
+(Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (ListZ e a)
+liftReadsPrec :: forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (ListZ e a)
+$cliftReadList :: forall e a.
+Read e =&gt;
+(Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [ListZ e a]
+liftReadList :: forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [ListZ e a]
+$cliftReadPrec :: forall e a.
+Read e =&gt;
+ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (ListZ e a)
+liftReadPrec :: forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (ListZ e a)
+$cliftReadListPrec :: forall e a.
+Read e =&gt;
+ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [ListZ e a]
+liftReadListPrec :: forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [ListZ e a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read1</span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Reflected1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077475"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679077791"><span id="local-6989586621679077798"><span class="annot"><span class="annottext">(forall e. Show e =&gt; Show1 (ListZ e)) =&gt;
+(forall a b.
+ (Int -&gt; a -&gt; ShowS)
+ -&gt; ([a] -&gt; ShowS)
+ -&gt; (Int -&gt; b -&gt; ShowS)
+ -&gt; ([b] -&gt; ShowS)
+ -&gt; Int
+ -&gt; ListZ a b
+ -&gt; ShowS)
+-&gt; (forall a b.
+    (Int -&gt; a -&gt; ShowS)
+    -&gt; ([a] -&gt; ShowS)
+    -&gt; (Int -&gt; b -&gt; ShowS)
+    -&gt; ([b] -&gt; ShowS)
+    -&gt; [ListZ a b]
+    -&gt; ShowS)
+-&gt; Show2 ListZ
+forall e. Show e =&gt; Show1 (ListZ e)
+forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; Int
+-&gt; ListZ a b
+-&gt; ShowS
+forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; [ListZ a b]
+-&gt; ShowS
+forall (f :: * -&gt; * -&gt; *).
+(forall a. Show a =&gt; Show1 (f a)) =&gt;
+(forall a b.
+ (Int -&gt; a -&gt; ShowS)
+ -&gt; ([a] -&gt; ShowS)
+ -&gt; (Int -&gt; b -&gt; ShowS)
+ -&gt; ([b] -&gt; ShowS)
+ -&gt; Int
+ -&gt; f a b
+ -&gt; ShowS)
+-&gt; (forall a b.
+    (Int -&gt; a -&gt; ShowS)
+    -&gt; ([a] -&gt; ShowS)
+    -&gt; (Int -&gt; b -&gt; ShowS)
+    -&gt; ([b] -&gt; ShowS)
+    -&gt; [f a b]
+    -&gt; ShowS)
+-&gt; Show2 f
+$cliftShowsPrec2 :: forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; Int
+-&gt; ListZ a b
+-&gt; ShowS
+liftShowsPrec2 :: forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; Int
+-&gt; ListZ a b
+-&gt; ShowS
+$cliftShowList2 :: forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; [ListZ a b]
+-&gt; ShowS
+liftShowList2 :: forall a b.
+(Int -&gt; a -&gt; ShowS)
+-&gt; ([a] -&gt; ShowS)
+-&gt; (Int -&gt; b -&gt; ShowS)
+-&gt; ([b] -&gt; ShowS)
+-&gt; [ListZ a b]
+-&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show2</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679077808"><span id="local-6989586621679077815"><span id="local-6989586621679077821"><span id="local-6989586621679077827"><span class="annot"><span class="annottext">(forall e. Read e =&gt; Read1 (ListZ e)) =&gt;
+(forall a b.
+ (Int -&gt; ReadS a)
+ -&gt; ReadS [a]
+ -&gt; (Int -&gt; ReadS b)
+ -&gt; ReadS [b]
+ -&gt; Int
+ -&gt; ReadS (ListZ a b))
+-&gt; (forall a b.
+    (Int -&gt; ReadS a)
+    -&gt; ReadS [a] -&gt; (Int -&gt; ReadS b) -&gt; ReadS [b] -&gt; ReadS [ListZ a b])
+-&gt; (forall a b.
+    ReadPrec a
+    -&gt; ReadPrec [a]
+    -&gt; ReadPrec b
+    -&gt; ReadPrec [b]
+    -&gt; ReadPrec (ListZ a b))
+-&gt; (forall a b.
+    ReadPrec a
+    -&gt; ReadPrec [a]
+    -&gt; ReadPrec b
+    -&gt; ReadPrec [b]
+    -&gt; ReadPrec [ListZ a b])
+-&gt; Read2 ListZ
+forall e. Read e =&gt; Read1 (ListZ e)
+forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec [ListZ a b]
+forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec (ListZ a b)
+forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a]
+-&gt; (Int -&gt; ReadS b)
+-&gt; ReadS [b]
+-&gt; Int
+-&gt; ReadS (ListZ a b)
+forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; (Int -&gt; ReadS b) -&gt; ReadS [b] -&gt; ReadS [ListZ a b]
+forall (f :: * -&gt; * -&gt; *).
+(forall a. Read a =&gt; Read1 (f a)) =&gt;
+(forall a b.
+ (Int -&gt; ReadS a)
+ -&gt; ReadS [a]
+ -&gt; (Int -&gt; ReadS b)
+ -&gt; ReadS [b]
+ -&gt; Int
+ -&gt; ReadS (f a b))
+-&gt; (forall a b.
+    (Int -&gt; ReadS a)
+    -&gt; ReadS [a] -&gt; (Int -&gt; ReadS b) -&gt; ReadS [b] -&gt; ReadS [f a b])
+-&gt; (forall a b.
+    ReadPrec a
+    -&gt; ReadPrec [a] -&gt; ReadPrec b -&gt; ReadPrec [b] -&gt; ReadPrec (f a b))
+-&gt; (forall a b.
+    ReadPrec a
+    -&gt; ReadPrec [a] -&gt; ReadPrec b -&gt; ReadPrec [b] -&gt; ReadPrec [f a b])
+-&gt; Read2 f
+$cliftReadsPrec2 :: forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a]
+-&gt; (Int -&gt; ReadS b)
+-&gt; ReadS [b]
+-&gt; Int
+-&gt; ReadS (ListZ a b)
+liftReadsPrec2 :: forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a]
+-&gt; (Int -&gt; ReadS b)
+-&gt; ReadS [b]
+-&gt; Int
+-&gt; ReadS (ListZ a b)
+$cliftReadList2 :: forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; (Int -&gt; ReadS b) -&gt; ReadS [b] -&gt; ReadS [ListZ a b]
+liftReadList2 :: forall a b.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; (Int -&gt; ReadS b) -&gt; ReadS [b] -&gt; ReadS [ListZ a b]
+$cliftReadPrec2 :: forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec (ListZ a b)
+liftReadPrec2 :: forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec (ListZ a b)
+$cliftReadListPrec2 :: forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec [ListZ a b]
+liftReadListPrec2 :: forall a b.
+ReadPrec a
+-&gt; ReadPrec [a]
+-&gt; ReadPrec b
+-&gt; ReadPrec [b]
+-&gt; ReadPrec [ListZ a b]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read2</span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Reflected2</span></span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077428"><span id="local-6989586621679077838"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679077428"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077428"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077436"><span id="local-6989586621679077853"><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679077436"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077436"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq2</span></span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>  </span><span id="local-6989586621679077865"><span class="annot"><span class="annottext">liftEq2 :: forall a b c d.
+(a -&gt; b -&gt; Bool)
+-&gt; (c -&gt; d -&gt; Bool) -&gt; ListZ a c -&gt; ListZ b d -&gt; Bool
+</span><a href="#local-6989586621679077865"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftEq2</span></a></span></span><span> </span><span id="local-6989586621679077867"><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679077867"><span class="hs-identifier hs-var">eqE</span></a></span></span><span> </span><span id="local-6989586621679077868"><span class="annot"><span class="annottext">c -&gt; d -&gt; Bool
+</span><a href="#local-6989586621679077868"><span class="hs-identifier hs-var">eqA</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d -&gt; Bool
+</span><a href="#local-6989586621679077869"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>      </span><span id="local-6989586621679077869"><span class="annot"><span class="annottext">loop :: ListZ a c -&gt; ListZ b d -&gt; Bool
+</span><a href="#local-6989586621679077869"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-24"></span><span>      </span><span class="annot"><a href="#local-6989586621679077869"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077870"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077870"><span class="hs-identifier hs-var">e1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077871"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679077871"><span class="hs-identifier hs-var">e2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679077867"><span class="hs-identifier hs-var">eqE</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077870"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679077871"><span class="hs-identifier hs-var">e2</span></a></span><span>
+</span><span id="line-25"></span><span>      </span><span class="annot"><a href="#local-6989586621679077869"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077872"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077872"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679077873"><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077873"><span class="hs-identifier hs-var">r1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077874"><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679077874"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679077875"><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077875"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">c -&gt; d -&gt; Bool
+</span><a href="#local-6989586621679077868"><span class="hs-identifier hs-var">eqA</span></a></span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077872"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679077874"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d -&gt; Bool
+</span><a href="#local-6989586621679077869"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077873"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077875"><span class="hs-identifier hs-var">r2</span></a></span><span>
+</span><span id="line-26"></span><span>      </span><span class="annot"><a href="#local-6989586621679077869"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord2</span></span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-29"></span><span>  </span><span id="local-6989586621679077883"><span class="annot"><span class="annottext">liftCompare2 :: forall a b c d.
+(a -&gt; b -&gt; Ordering)
+-&gt; (c -&gt; d -&gt; Ordering) -&gt; ListZ a c -&gt; ListZ b d -&gt; Ordering
+</span><a href="#local-6989586621679077883"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftCompare2</span></a></span></span><span> </span><span id="local-6989586621679077885"><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679077885"><span class="hs-identifier hs-var">cmpE</span></a></span></span><span> </span><span id="local-6989586621679077886"><span class="annot"><span class="annottext">c -&gt; d -&gt; Ordering
+</span><a href="#local-6989586621679077886"><span class="hs-identifier hs-var">cmpA</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d -&gt; Ordering
+</span><a href="#local-6989586621679077887"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679077887"><span class="annot"><span class="annottext">loop :: ListZ a c -&gt; ListZ b d -&gt; Ordering
+</span><a href="#local-6989586621679077887"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span id="local-6989586621679077890"><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077890"><span class="hs-identifier hs-var">as1</span></a></span></span><span> </span><span id="local-6989586621679077891"><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077891"><span class="hs-identifier hs-var">as2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077890"><span class="hs-identifier hs-var">as1</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-32"></span><span>        </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077891"><span class="hs-identifier hs-var">as2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-33"></span><span>          </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">EQ</span></span><span>
+</span><span id="line-34"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span>
+</span><span id="line-35"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">d
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span>
+</span><span id="line-36"></span><span>        </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077892"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077892"><span class="hs-identifier hs-var">e1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077891"><span class="hs-identifier hs-var">as2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-37"></span><span>          </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span>
+</span><span id="line-38"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077893"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679077893"><span class="hs-identifier hs-var">e2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679077885"><span class="hs-identifier hs-var">cmpE</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077892"><span class="hs-identifier hs-var">e1</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679077893"><span class="hs-identifier hs-var">e2</span></a></span><span>
+</span><span id="line-39"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">d
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span>
+</span><span id="line-40"></span><span>        </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077894"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077894"><span class="hs-identifier hs-var">a1</span></a></span></span><span> </span><span id="local-6989586621679077895"><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077895"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077891"><span class="hs-identifier hs-var">as2</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-41"></span><span>          </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span>
+</span><span id="line-42"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span>
+</span><span id="line-43"></span><span>          </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077896"><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679077896"><span class="hs-identifier hs-var">a2</span></a></span></span><span> </span><span id="local-6989586621679077897"><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077897"><span class="hs-identifier hs-var">r2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">c -&gt; d -&gt; Ordering
+</span><a href="#local-6989586621679077886"><span class="hs-identifier hs-var">cmpA</span></a></span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077894"><span class="hs-identifier hs-var">a1</span></a></span><span> </span><span class="annot"><span class="annottext">d
+</span><a href="#local-6989586621679077896"><span class="hs-identifier hs-var">a2</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d -&gt; Ordering
+</span><a href="#local-6989586621679077887"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077895"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ b d
+</span><a href="#local-6989586621679077897"><span class="hs-identifier hs-var">r2</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679077905"><span class="annot"><span class="annottext">bimap :: forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; ListZ a c -&gt; ListZ b d
+</span><a href="#local-6989586621679077905"><span class="hs-identifier hs-var hs-var hs-var hs-var">bimap</span></a></span></span><span> </span><span id="local-6989586621679077907"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077907"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679077908"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679077908"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d
+</span><a href="#local-6989586621679077909"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>      </span><span id="local-6989586621679077909"><span class="annot"><span class="annottext">loop :: ListZ a c -&gt; ListZ b d
+</span><a href="#local-6989586621679077909"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ b d
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-49"></span><span>      </span><span class="annot"><a href="#local-6989586621679077909"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077910"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077910"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ListZ b d
+forall e a. e -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077907"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077910"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>      </span><span class="annot"><a href="#local-6989586621679077909"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077911"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077911"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679077912"><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077912"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">d -&gt; ListZ b d -&gt; ListZ b d
+forall e a. a -&gt; ListZ e a -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679077908"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679077911"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b d
+</span><a href="#local-6989586621679077909"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ a c
+</span><a href="#local-6989586621679077912"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>  </span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679077913"><span class="annot"><span class="annottext">first :: forall a b c. (a -&gt; b) -&gt; ListZ a c -&gt; ListZ b c
+</span><a href="#local-6989586621679077913"><span class="hs-identifier hs-var hs-var hs-var hs-var">first</span></a></span></span><span> </span><span id="local-6989586621679077915"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077915"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ a c -&gt; ListZ b c
+forall {a}. ListZ a a -&gt; ListZ b a
+</span><a href="#local-6989586621679077916"><span class="hs-identifier hs-var">loop</span></a></span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>      </span><span id="local-6989586621679077916"><span class="annot"><span class="annottext">loop :: ListZ a a -&gt; ListZ b a
+</span><a href="#local-6989586621679077916"><span class="hs-identifier hs-var hs-var">loop</span></a></span></span><span> </span><span class="annot"><span class="annottext">ListZ a a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ b a
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-55"></span><span>      </span><span class="annot"><a href="#local-6989586621679077916"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077917"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077917"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ListZ b a
+forall e a. e -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679077915"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077917"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><a href="#local-6989586621679077916"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077918"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077918"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679077919"><span class="annot"><span class="annottext">ListZ a a
+</span><a href="#local-6989586621679077919"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ b a -&gt; ListZ b a
+forall e a. a -&gt; ListZ e a -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077918"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ a a -&gt; ListZ b a
+</span><a href="#local-6989586621679077916"><span class="hs-identifier hs-var">loop</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ a a
+</span><a href="#local-6989586621679077919"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>  </span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679077921"><span class="annot"><span class="annottext">second :: forall b c a. (b -&gt; c) -&gt; ListZ a b -&gt; ListZ a c
+</span><a href="#local-6989586621679077921"><span class="hs-identifier hs-var hs-var hs-var hs-var">second</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; c) -&gt; ListZ a b -&gt; ListZ a c
+forall a b. (a -&gt; b) -&gt; ListZ a a -&gt; ListZ a b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077488"><span id="local-6989586621679077489"><span id="local-6989586621679077925"><span id="local-6989586621679077929"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077488"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077489"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>  </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span id="local-6989586621679077935"><span class="annot"><span class="annottext">&lt;&gt; :: ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679077936"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077936"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077936"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-62"></span><span>  </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077937"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077937"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">e -&gt; ListZ e a
+forall e a. e -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077937"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-63"></span><span>  </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077938"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077938"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679077939"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077939"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span id="local-6989586621679077940"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077940"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e a -&gt; ListZ e a
+forall e a. a -&gt; ListZ e a -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077938"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077939"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e a -&gt; ListZ e a -&gt; ListZ e a
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077940"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077493"><span id="local-6989586621679077494"><span id="local-6989586621679077945"><span id="local-6989586621679077949"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077493"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077494"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679077952"><span class="annot"><span class="annottext">mempty :: ListZ e a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ e a
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077507"><span id="local-6989586621679077958"><span id="local-6989586621679077962"><span id="local-6989586621679077965"><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077507"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>  </span><span id="local-6989586621679077968"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; ListZ e a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pure</span></span></span><span> </span><span id="local-6989586621679077969"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077969"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e a -&gt; ListZ e a
+forall e a. a -&gt; ListZ e a -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077969"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621679077972"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. ListZ e (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ e (a -&gt; b) -&gt; ListZ e a -&gt; ListZ e b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679077509"><span id="local-6989586621679077977"><span id="local-6989586621679077980"><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077509"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>  </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span id="local-6989586621679077985"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. ListZ e a -&gt; (a -&gt; ListZ e b) -&gt; ListZ e b
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&gt;&gt;=</span></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e b
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ e b
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077986"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077986"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e b
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">e -&gt; ListZ e b
+forall e a. e -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-var">Zee</span></a></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077986"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-75"></span><span>  </span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077987"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077987"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679077988"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077988"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span id="local-6989586621679077989"><span class="annot"><span class="annottext">a -&gt; ListZ e b
+</span><a href="#local-6989586621679077989"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e b
+</span><a href="#local-6989586621679077989"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077987"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e b -&gt; ListZ e b -&gt; ListZ e b
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077988"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e a -&gt; (a -&gt; ListZ e b) -&gt; ListZ e b
+forall a b. ListZ e a -&gt; (a -&gt; ListZ e b) -&gt; ListZ e b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e b
+</span><a href="#local-6989586621679077989"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span id="local-6989586621679077524"><span id="local-6989586621679077525"><span id="local-6989586621679077526"><span class="annot"><a href="Data.List.Zero.html#foldrZ"><span class="hs-identifier hs-type">foldrZ</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679077524"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679077525"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077524"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679077526"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077524"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077524"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077525"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077526"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679077524"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-78"></span><span id="foldrZ"><span class="annot"><span class="annottext">foldrZ :: forall r e a. r -&gt; (e -&gt; r) -&gt; (a -&gt; r -&gt; r) -&gt; ListZ e a -&gt; r
+</span><a href="Data.List.Zero.html#foldrZ"><span class="hs-identifier hs-var hs-var">foldrZ</span></a></span></span><span> </span><span id="local-6989586621679077991"><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679077991"><span class="hs-identifier hs-var">r0</span></a></span></span><span> </span><span id="local-6989586621679077992"><span class="annot"><span class="annottext">e -&gt; r
+</span><a href="#local-6989586621679077992"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span id="local-6989586621679077993"><span class="annot"><span class="annottext">a -&gt; r -&gt; r
+</span><a href="#local-6989586621679077993"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679077994"><span class="annot"><span class="annottext">go :: ListZ e a -&gt; r
+</span><a href="#local-6989586621679077994"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">r
+</span><a href="#local-6989586621679077991"><span class="hs-identifier hs-var">r0</span></a></span><span>
+</span><span id="line-80"></span><span>      </span><span class="annot"><a href="#local-6989586621679077994"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077995"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077995"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">e -&gt; r
+</span><a href="#local-6989586621679077992"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077995"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-81"></span><span>      </span><span class="annot"><a href="#local-6989586621679077994"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679077996"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077996"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span id="local-6989586621679077997"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077997"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; r -&gt; r
+</span><a href="#local-6989586621679077993"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679077996"><span class="hs-identifier hs-var">fa</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ e a -&gt; r
+</span><a href="#local-6989586621679077994"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679077997"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">ListZ e a -&gt; r
+</span><a href="#local-6989586621679077994"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span id="local-6989586621679077530"><span id="local-6989586621679077531"><span id="local-6989586621679077532"><span class="annot"><a href="Data.List.Zero.html#trap"><span class="hs-identifier hs-type">trap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077530"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077531"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679077530"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077532"><span class="hs-identifier hs-type">e'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077531"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.Zero.html#ListZ"><span class="hs-identifier hs-type">ListZ</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077532"><span class="hs-identifier hs-type">e'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679077531"><span class="hs-identifier hs-type">a</span></a></span></span></span></span><span>
+</span><span id="line-85"></span><span id="trap"><span class="annot"><span class="annottext">trap :: forall e a e'. ListZ e a -&gt; (e -&gt; ListZ e' a) -&gt; ListZ e' a
+</span><a href="Data.List.Zero.html#trap"><span class="hs-identifier hs-var hs-var">trap</span></a></span></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span> </span><span class="annot"><span class="annottext">e -&gt; ListZ e' a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ListZ e' a
+forall e a. ListZ e a
+</span><a href="Data.List.Zero.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
+</span><span id="line-86"></span><span class="annot"><a href="Data.List.Zero.html#trap"><span class="hs-identifier hs-var">trap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Zee"><span class="hs-identifier hs-type">Zee</span></a></span><span> </span><span id="local-6989586621679077999"><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077999"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679078000"><span class="annot"><span class="annottext">e -&gt; ListZ e' a
+</span><a href="#local-6989586621679078000"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">e -&gt; ListZ e' a
+</span><a href="#local-6989586621679078000"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">e
+</span><a href="#local-6989586621679077999"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-87"></span><span class="annot"><a href="Data.List.Zero.html#trap"><span class="hs-identifier hs-var">trap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679078001"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078001"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679078002"><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679078002"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679078003"><span class="annot"><span class="annottext">e -&gt; ListZ e' a
+</span><a href="#local-6989586621679078003"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; ListZ e' a -&gt; ListZ e' a
+forall e a. a -&gt; ListZ e a -&gt; ListZ e a
+</span><a href="Data.List.Zero.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679078001"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ListZ e a -&gt; (e -&gt; ListZ e' a) -&gt; ListZ e' a
+forall e a e'. ListZ e a -&gt; (e -&gt; ListZ e' a) -&gt; ListZ e' a
+</span><a href="Data.List.Zero.html#trap"><span class="hs-identifier hs-var">trap</span></a></span><span> </span><span class="annot"><span class="annottext">ListZ e a
+</span><a href="#local-6989586621679078002"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">e -&gt; ListZ e' a
+</span><a href="#local-6989586621679078003"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span></pre></body></html>
