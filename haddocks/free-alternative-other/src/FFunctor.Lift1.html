@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FFunctor.Lift1</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">FFunctor</span></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">newtype</span><span> </span><span id="Lift1"><span class="annot"><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-var">Lift1</span></a></span></span><span> </span><span id="local-6989586621679079292"><span class="annot"><a href="#local-6989586621679079292"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679079293"><span class="annot"><a href="#local-6989586621679079293"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679079294"><span class="annot"><a href="#local-6989586621679079294"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Lift1"><span class="annot"><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-var">Lift1</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runLift1"><span class="annot"><span class="annottext">forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) x.
+Lift1 ff g x -&gt; Either (g x) (ff g x)
+</span><a href="FFunctor.Lift1.html#runLift1"><span class="hs-identifier hs-var hs-var">runLift1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079293"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079294"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079292"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079293"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079294"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079306"><span id="local-6989586621679079307"><span id="local-6989586621679079338"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079306"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679079307"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079306"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-type">Lift1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079307"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079306"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-10"></span><span>  </span><span id="local-6989586621679079346"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Lift1 ff g a -&gt; Lift1 ff g b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679079347"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079347"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either (g b) (ff g b) -&gt; Lift1 ff g b
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) x.
+Either (g x) (ff g x) -&gt; Lift1 ff g x
+</span><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-var">Lift1</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (g b) (ff g b) -&gt; Lift1 ff g b)
+-&gt; (Lift1 ff g a -&gt; Either (g b) (ff g b))
+-&gt; Lift1 ff g a
+-&gt; Lift1 ff g b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(g a -&gt; g b)
+-&gt; (ff g a -&gt; ff g b)
+-&gt; Either (g a) (ff g a)
+-&gt; Either (g b) (ff g b)
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; Either a c -&gt; Either b d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; g a -&gt; g b
+forall a b. (a -&gt; b) -&gt; g a -&gt; g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079347"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; ff g a -&gt; ff g b
+forall a b. (a -&gt; b) -&gt; ff g a -&gt; ff g b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679079347"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either (g a) (ff g a) -&gt; Either (g b) (ff g b))
+-&gt; (Lift1 ff g a -&gt; Either (g a) (ff g a))
+-&gt; Lift1 ff g a
+-&gt; Either (g b) (ff g b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Lift1 ff g a -&gt; Either (g a) (ff g a)
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) x.
+Lift1 ff g x -&gt; Either (g x) (ff g x)
+</span><a href="FFunctor.Lift1.html#runLift1"><span class="hs-identifier hs-var">runLift1</span></a></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679079327"><span class="annot"><span class="hs-identifier hs-type">FFunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679079327"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FFunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-type">Lift1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679079327"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>  </span><span id="local-6989586621679079364"><span class="annot"><span class="annottext">ffmap :: forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Lift1 ff g x -&gt; Lift1 ff h x
+</span><a href="#local-6989586621679079364"><span class="hs-identifier hs-var hs-var hs-var hs-var">ffmap</span></a></span></span><span> </span><span id="local-6989586621679079366"><span class="annot"><span class="annottext">g ~&gt; h
+</span><a href="#local-6989586621679079366"><span class="hs-identifier hs-var">gh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either (h x) (ff h x) -&gt; Lift1 ff h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) x.
+Either (g x) (ff g x) -&gt; Lift1 ff g x
+</span><a href="FFunctor.Lift1.html#Lift1"><span class="hs-identifier hs-var">Lift1</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (h x) (ff h x) -&gt; Lift1 ff h x)
+-&gt; (Lift1 ff g x -&gt; Either (h x) (ff h x))
+-&gt; Lift1 ff g x
+-&gt; Lift1 ff h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(g x -&gt; h x)
+-&gt; (ff g x -&gt; ff h x)
+-&gt; Either (g x) (ff g x)
+-&gt; Either (h x) (ff h x)
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; Either a c -&gt; Either b d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; h x
+g ~&gt; h
+</span><a href="#local-6989586621679079366"><span class="hs-identifier hs-var">gh</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (g :: * -&gt; *) (h :: * -&gt; *) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) (h :: * -&gt; *) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><span class="hs-identifier hs-var">ffmap</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; h x
+g ~&gt; h
+</span><a href="#local-6989586621679079366"><span class="hs-identifier hs-var">gh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Either (g x) (ff g x) -&gt; Either (h x) (ff h x))
+-&gt; (Lift1 ff g x -&gt; Either (g x) (ff g x))
+-&gt; Lift1 ff g x
+-&gt; Either (h x) (ff h x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Lift1 ff g x -&gt; Either (g x) (ff g x)
+forall (ff :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) x.
+Lift1 ff g x -&gt; Either (g x) (ff g x)
+</span><a href="FFunctor.Lift1.html#runLift1"><span class="hs-identifier hs-var">runLift1</span></a></span></pre></body></html>

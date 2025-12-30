@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE StandaloneKindSignatures #-}</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">FFunctor.Tannen</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">FFunctor</span></span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- | Wraps a @FFunctor ff@ inside a @Functor h@.</span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- This can be thought of as a functor composition below.</span><span>
+</span><span id="line-9"></span><span class="hs-comment">--</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- &gt; (Functor &#215; Type) -[ff]-&gt; Type -[h]-&gt; Type</span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- The name @Tannen@ is an homage to @Data.Bifunctor.Tannen@</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- in @bifunctors@ package, which works in a similar way: taking @Bifunctor p@ and</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--  @Functor h@, makes @Bifunctor@ by the composition below.</span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-16"></span><span class="hs-comment">-- &gt; (Type &#215; Type) -[p]-&gt; Type -[f]-&gt; Type</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="FFunctor.Tannen.html#Tannen"><span class="hs-identifier hs-type">Tannen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FUNCTOR</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FF</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FF</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">newtype</span><span> </span><span id="Tannen"><span class="annot"><a href="FFunctor.Tannen.html#Tannen"><span class="hs-identifier hs-var">Tannen</span></a></span></span><span> </span><span id="local-6989586621679080091"><span class="annot"><a href="#local-6989586621679080091"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span id="local-6989586621679080092"><span class="annot"><a href="#local-6989586621679080092"><span class="hs-identifier hs-type">ff</span></a></span></span><span> </span><span id="local-6989586621679080093"><span class="annot"><a href="#local-6989586621679080093"><span class="hs-identifier hs-type">g</span></a></span></span><span> </span><span id="local-6989586621679080094"><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Tannen"><span class="annot"><a href="FFunctor.Tannen.html#Tannen"><span class="hs-identifier hs-var">Tannen</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runTannen"><span class="annot"><span class="annottext">forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) x.
+Tannen h ff g x -&gt; h (ff g x)
+</span><a href="FFunctor.Tannen.html#runTannen"><span class="hs-identifier hs-var hs-var">runTannen</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679080091"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679080092"><span class="hs-identifier hs-type">ff</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080093"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080094"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679080134"><span id="local-6989586621679080138"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Tannen h ff g a -&gt; Tannen h ff g b)
+-&gt; (forall a b. a -&gt; Tannen h ff g b -&gt; Tannen h ff g a)
+-&gt; Functor (Tannen h ff g)
+forall a b. a -&gt; Tannen h ff g b -&gt; Tannen h ff g a
+forall a b. (a -&gt; b) -&gt; Tannen h ff g a -&gt; Tannen h ff g b
+forall (f :: FUNCTOR).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) a b.
+(Functor h, Functor (ff g)) =&gt;
+a -&gt; Tannen h ff g b -&gt; Tannen h ff g a
+forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) a b.
+(Functor h, Functor (ff g)) =&gt;
+(a -&gt; b) -&gt; Tannen h ff g a -&gt; Tannen h ff g b
+$cfmap :: forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) a b.
+(Functor h, Functor (ff g)) =&gt;
+(a -&gt; b) -&gt; Tannen h ff g a -&gt; Tannen h ff g b
+fmap :: forall a b. (a -&gt; b) -&gt; Tannen h ff g a -&gt; Tannen h ff g b
+$c&lt;$ :: forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) a b.
+(Functor h, Functor (ff g)) =&gt;
+a -&gt; Tannen h ff g b -&gt; Tannen h ff g a
+&lt;$ :: forall a b. a -&gt; Tannen h ff g b -&gt; Tannen h ff g a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679080120"><span id="local-6989586621679080121"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679080120"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FFunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679080121"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FFunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="FFunctor.Tannen.html#Tannen"><span class="hs-identifier hs-type">Tannen</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080120"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679080121"><span class="hs-identifier hs-type">ff</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>  </span><span id="local-6989586621679080158"><span class="annot"><span class="annottext">ffmap :: forall (g :: FUNCTOR) (h :: FUNCTOR) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; Tannen h ff g x -&gt; Tannen h ff h x
+</span><a href="#local-6989586621679080158"><span class="hs-identifier hs-var hs-var hs-var hs-var">ffmap</span></a></span></span><span> </span><span id="local-6989586621679080160"><span class="annot"><span class="annottext">g ~&gt; h
+</span><a href="#local-6989586621679080160"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">h (ff h x) -&gt; Tannen h ff h x
+forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) x.
+h (ff g x) -&gt; Tannen h ff g x
+</span><a href="FFunctor.Tannen.html#Tannen"><span class="hs-identifier hs-var">Tannen</span></a></span><span> </span><span class="annot"><span class="annottext">(h (ff h x) -&gt; Tannen h ff h x)
+-&gt; (Tannen h ff g x -&gt; h (ff h x))
+-&gt; Tannen h ff g x
+-&gt; Tannen h ff h x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(ff g x -&gt; ff h x) -&gt; h (ff g x) -&gt; h (ff h x)
+forall a b. (a -&gt; b) -&gt; h a -&gt; h b
+forall (f :: FUNCTOR) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (g :: FUNCTOR) (h :: FUNCTOR) x.
+(Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+forall (ff :: FF) (g :: FUNCTOR) (h :: FUNCTOR) x.
+(FFunctor ff, Functor g, Functor h) =&gt;
+(g ~&gt; h) -&gt; ff g x -&gt; ff h x
+</span><span class="hs-identifier hs-var">ffmap</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; h x
+g ~&gt; h
+</span><a href="#local-6989586621679080160"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(h (ff g x) -&gt; h (ff h x))
+-&gt; (Tannen h ff g x -&gt; h (ff g x)) -&gt; Tannen h ff g x -&gt; h (ff h x)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Tannen h ff g x -&gt; h (ff g x)
+forall (h :: FUNCTOR) (ff :: FF) (g :: FUNCTOR) x.
+Tannen h ff g x -&gt; h (ff g x)
+</span><a href="FFunctor.Tannen.html#runTannen"><span class="hs-identifier hs-var">runTannen</span></a></span></pre></body></html>

@@ -13,36 +13,31 @@
 </span><span id="line-13"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier">Free</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-14"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier">runFree</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-15"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier">Lit</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-16"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Zero"><span class="hs-identifier">Zero</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-17"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#One"><span class="hs-identifier">One</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-18"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2B%2F"><span class="hs-operator">(:/+/)</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-19"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2A%2F"><span class="hs-operator">(:/*/)</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-20"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier">Sum</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-21"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier">Prod</span></a></span><span>
-</span><span id="line-22"></span><span>      </span><span class="hs-special">)</span><span class="hs-special">,</span><span>
-</span><span id="line-23"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#lit"><span class="hs-identifier">lit</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-24"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier">sum</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-25"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier">viewSum</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-26"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier">prod</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-27"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier">viewProd</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-28"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier">interpret</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-29"></span><span>  </span><span class="hs-special">)</span><span>
-</span><span id="line-30"></span><span class="hs-keyword">where</span><span>
-</span><span id="line-31"></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">join</span></span><span class="hs-special">)</span><span>
-</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Coproduct</span></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Isolated</span></span><span>
-</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Show1</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">showsPrec1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">showsUnaryWith</span></span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NotOne</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NotOne</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">notOne</span></span><span class="hs-special">)</span><span>
-</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NotOne</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">NotOne</span></span><span>
-</span><span id="line-40"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Class.html"><span class="hs-identifier">Data.TwoMonoids.Class</span></a></span><span>
-</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">showListWith</span></span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">sum</span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span class="hs-comment">{-
+</span><span id="line-16"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier">Sum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>        </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier">Prod</span></a></span><span>
+</span><span id="line-18"></span><span>      </span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#lit"><span class="hs-identifier">lit</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier">sum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier">viewSum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier">prod</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier">viewProd</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier">interpret</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">where</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">sum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Coproduct</span></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Isolated</span></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Show1</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">showsPrec1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">showsUnaryWith</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NotOne</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NotOne</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">notOne</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Class.html"><span class="hs-identifier">Data.TwoMonoids.Class</span></a></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">showListWith</span></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">{-
 
 Note: Category theory perspective
 
@@ -59,12 +54,12 @@ two copies of List = [], the free monoid monad.
   List ----------&gt; Free
 
 -}</span><span>
-</span><span id="line-62"></span><span>
-</span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- | The free 'DobuleMonoid'.</span></span><span>
-</span><span id="line-64"></span><span class="hs-keyword">newtype</span><span> </span><span id="Free"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span id="local-6989586621679076173"><span class="annot"><a href="#local-6989586621679076173"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Free"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span>
-</span><span id="line-65"></span><span>  </span><span class="hs-special">{</span><span id="runFree"><span class="annot"><span class="annottext">forall a. Free a -&gt; Unite (NotOne :+ NotOne) a
-</span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var hs-var">runFree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NotOne</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">NotOne</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679076173"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-66"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076433"><span id="local-6989586621679076438"><span class="annot"><span class="annottext">Free a -&gt; Free a -&gt; Bool
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="annot"><span class="hs-comment">-- | The free 'TwoMonoids'.</span></span><span>
+</span><span id="line-59"></span><span class="hs-keyword">newtype</span><span> </span><span id="Free"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span id="local-6989586621679086993"><span class="annot"><a href="#local-6989586621679086993"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Free"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">{</span><span id="runFree"><span class="annot"><span class="annottext">forall a. Free a -&gt; Unite (ProdOf :+ SumOf) a
+</span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var hs-var">runFree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#ProdOf"><span class="hs-identifier hs-type">ProdOf</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#SumOf"><span class="hs-identifier hs-type">SumOf</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679086993"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087262"><span id="local-6989586621679087267"><span class="annot"><span class="annottext">Free a -&gt; Free a -&gt; Bool
 (Free a -&gt; Free a -&gt; Bool)
 -&gt; (Free a -&gt; Free a -&gt; Bool) -&gt; Eq (Free a)
 forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
@@ -73,7 +68,7 @@ $c== :: forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
 == :: Free a -&gt; Free a -&gt; Bool
 $c/= :: forall a. Eq a =&gt; Free a -&gt; Free a -&gt; Bool
 /= :: Free a -&gt; Free a -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076451"><span id="local-6989586621679076456"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087284"><span id="local-6989586621679087289"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b)
 -&gt; (forall a b. a -&gt; Free b -&gt; Free a) -&gt; Functor Free
 forall a b. a -&gt; Free b -&gt; Free a
 forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
@@ -84,7 +79,7 @@ $cfmap :: forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
 fmap :: forall a b. (a -&gt; b) -&gt; Free a -&gt; Free b
 $c&lt;$ :: forall a b. a -&gt; Free b -&gt; Free a
 &lt;$ :: forall a b. a -&gt; Free b -&gt; Free a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076468"><span id="local-6989586621679076474"><span id="local-6989586621679076481"><span id="local-6989586621679076486"><span id="local-6989586621679076490"><span id="local-6989586621679076493"><span id="local-6989586621679076496"><span id="local-6989586621679076499"><span id="local-6989586621679076502"><span id="local-6989586621679076505"><span id="local-6989586621679076508"><span id="local-6989586621679076512"><span id="local-6989586621679076515"><span id="local-6989586621679076520"><span id="local-6989586621679076525"><span id="local-6989586621679076530"><span id="local-6989586621679076535"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Free m -&gt; m)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087302"><span id="local-6989586621679087308"><span id="local-6989586621679087315"><span id="local-6989586621679087320"><span id="local-6989586621679087324"><span id="local-6989586621679087327"><span id="local-6989586621679087330"><span id="local-6989586621679087333"><span id="local-6989586621679087336"><span id="local-6989586621679087339"><span id="local-6989586621679087342"><span id="local-6989586621679087346"><span id="local-6989586621679087349"><span id="local-6989586621679087354"><span id="local-6989586621679087359"><span id="local-6989586621679087364"><span id="local-6989586621679087369"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Free m -&gt; m)
 -&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m)
 -&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Free a -&gt; m)
 -&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Free a -&gt; b)
@@ -166,7 +161,7 @@ $csum :: forall a. Num a =&gt; Free a -&gt; a
 sum :: forall a. Num a =&gt; Free a -&gt; a
 $cproduct :: forall a. Num a =&gt; Free a -&gt; a
 product :: forall a. Num a =&gt; Free a -&gt; a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076553"><span id="local-6989586621679076562"><span id="local-6989586621679076568"><span id="local-6989586621679076573"><span class="annot"><span class="annottext">Functor Free
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087388"><span id="local-6989586621679087397"><span id="local-6989586621679087403"><span id="local-6989586621679087408"><span class="annot"><span class="annottext">Functor Free
 Foldable Free
 (Functor Free, Foldable Free) =&gt;
 (forall (f :: * -&gt; *) a b.
@@ -216,7 +211,7 @@ Monad m =&gt;
 $csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a)
 sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Free (m a) -&gt; m (Free a)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-67"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076586"><span id="local-6989586621679076592"><span id="local-6989586621679076597"><span id="local-6989586621679076602"><span id="local-6989586621679076607"><span class="annot"><span class="annottext">Functor Free
+</span><span id="line-62"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087422"><span id="local-6989586621679087428"><span id="local-6989586621679087433"><span id="local-6989586621679087438"><span id="local-6989586621679087443"><span class="annot"><span class="annottext">Functor Free
 Functor Free =&gt;
 (forall a. a -&gt; Free a)
 -&gt; (forall a b. Free (a -&gt; b) -&gt; Free a -&gt; Free b)
@@ -247,7 +242,7 @@ $c*&gt; :: forall a b. Free a -&gt; Free b -&gt; Free b
 *&gt; :: forall a b. Free a -&gt; Free b -&gt; Free b
 $c&lt;* :: forall a b. Free a -&gt; Free b -&gt; Free a
 &lt;* :: forall a b. Free a -&gt; Free b -&gt; Free a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076628"><span id="local-6989586621679076634"><span id="local-6989586621679076639"><span class="annot"><span class="annottext">Applicative Free
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087465"><span id="local-6989586621679087471"><span id="local-6989586621679087476"><span class="annot"><span class="annottext">Applicative Free
 Applicative Free =&gt;
 (forall a b. Free a -&gt; (a -&gt; Free b) -&gt; Free b)
 -&gt; (forall a b. Free a -&gt; Free b -&gt; Free b)
@@ -269,9 +264,349 @@ $c&gt;&gt; :: forall a b. Free a -&gt; Free b -&gt; Free b
 $creturn :: forall a. a -&gt; Free a
 return :: forall a. a -&gt; Free a
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span id="local-6989586621679076287"><span id="local-6989586621679076288"><span id="local-6989586621679076289"><span class="annot"><a href="Data.TwoMonoids.Free.html#unwrapMutual1"><span class="hs-identifier hs-type">unwrapMutual1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679076287"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679076287"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076288"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076289"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679076287"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><a href="#local-6989586621679076288"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679076289"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span><span>
-</span><span id="line-70"></span><span id="unwrapMutual1"><span class="annot"><span class="annottext">unwrapMutual1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">newtype</span><span> </span><span id="ProdOf"><span class="annot"><a href="Data.TwoMonoids.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span></span><span> </span><span id="local-6989586621679087213"><span class="annot"><a href="#local-6989586621679087213"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ProdOf"><span class="annot"><a href="Data.TwoMonoids.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NotOne</span></span><span> </span><span class="annot"><a href="#local-6989586621679087213"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087491"><span id="local-6989586621679087495"><span class="annot"><span class="annottext">ProdOf a -&gt; ProdOf a -&gt; Bool
+(ProdOf a -&gt; ProdOf a -&gt; Bool)
+-&gt; (ProdOf a -&gt; ProdOf a -&gt; Bool) -&gt; Eq (ProdOf a)
+forall a. Eq a =&gt; ProdOf a -&gt; ProdOf a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; ProdOf a -&gt; ProdOf a -&gt; Bool
+== :: ProdOf a -&gt; ProdOf a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; ProdOf a -&gt; ProdOf a -&gt; Bool
+/= :: ProdOf a -&gt; ProdOf a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087498"><span id="local-6989586621679087502"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; ProdOf a -&gt; ProdOf b)
+-&gt; (forall a b. a -&gt; ProdOf b -&gt; ProdOf a) -&gt; Functor ProdOf
+forall a b. a -&gt; ProdOf b -&gt; ProdOf a
+forall a b. (a -&gt; b) -&gt; ProdOf a -&gt; ProdOf b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; ProdOf a -&gt; ProdOf b
+fmap :: forall a b. (a -&gt; b) -&gt; ProdOf a -&gt; ProdOf b
+$c&lt;$ :: forall a b. a -&gt; ProdOf b -&gt; ProdOf a
+&lt;$ :: forall a b. a -&gt; ProdOf b -&gt; ProdOf a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087505"><span id="local-6989586621679087510"><span id="local-6989586621679087516"><span id="local-6989586621679087521"><span id="local-6989586621679087524"><span id="local-6989586621679087527"><span id="local-6989586621679087530"><span id="local-6989586621679087533"><span id="local-6989586621679087536"><span id="local-6989586621679087539"><span id="local-6989586621679087542"><span id="local-6989586621679087545"><span id="local-6989586621679087548"><span id="local-6989586621679087553"><span id="local-6989586621679087558"><span id="local-6989586621679087563"><span id="local-6989586621679087568"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; ProdOf m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a)
+-&gt; (forall a. ProdOf a -&gt; [a])
+-&gt; (forall a. ProdOf a -&gt; Bool)
+-&gt; (forall a. ProdOf a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; ProdOf a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; ProdOf a -&gt; a)
+-&gt; (forall a. Ord a =&gt; ProdOf a -&gt; a)
+-&gt; (forall a. Num a =&gt; ProdOf a -&gt; a)
+-&gt; (forall a. Num a =&gt; ProdOf a -&gt; a)
+-&gt; Foldable ProdOf
+forall a. Eq a =&gt; a -&gt; ProdOf a -&gt; Bool
+forall a. Num a =&gt; ProdOf a -&gt; a
+forall a. Ord a =&gt; ProdOf a -&gt; a
+forall m. Monoid m =&gt; ProdOf m -&gt; m
+forall a. ProdOf a -&gt; Bool
+forall a. ProdOf a -&gt; Int
+forall a. ProdOf a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; ProdOf m -&gt; m
+fold :: forall m. Monoid m =&gt; ProdOf m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; ProdOf a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; ProdOf a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; ProdOf a -&gt; a
+$ctoList :: forall a. ProdOf a -&gt; [a]
+toList :: forall a. ProdOf a -&gt; [a]
+$cnull :: forall a. ProdOf a -&gt; Bool
+null :: forall a. ProdOf a -&gt; Bool
+$clength :: forall a. ProdOf a -&gt; Int
+length :: forall a. ProdOf a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; ProdOf a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; ProdOf a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; ProdOf a -&gt; a
+maximum :: forall a. Ord a =&gt; ProdOf a -&gt; a
+$cminimum :: forall a. Ord a =&gt; ProdOf a -&gt; a
+minimum :: forall a. Ord a =&gt; ProdOf a -&gt; a
+$csum :: forall a. Num a =&gt; ProdOf a -&gt; a
+sum :: forall a. Num a =&gt; ProdOf a -&gt; a
+$cproduct :: forall a. Num a =&gt; ProdOf a -&gt; a
+product :: forall a. Num a =&gt; ProdOf a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087577"><span id="local-6989586621679087585"><span id="local-6989586621679087590"><span id="local-6989586621679087595"><span class="annot"><span class="annottext">Functor ProdOf
+Foldable ProdOf
+(Functor ProdOf, Foldable ProdOf) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; ProdOf a -&gt; f (ProdOf b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    ProdOf (f a) -&gt; f (ProdOf a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; ProdOf a -&gt; m (ProdOf b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    ProdOf (m a) -&gt; m (ProdOf a))
+-&gt; Traversable ProdOf
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; ProdOf (m a) -&gt; m (ProdOf a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ProdOf (f a) -&gt; f (ProdOf a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ProdOf a -&gt; m (ProdOf b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ProdOf a -&gt; f (ProdOf b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ProdOf a -&gt; f (ProdOf b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; ProdOf a -&gt; f (ProdOf b)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ProdOf (f a) -&gt; f (ProdOf a)
+sequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+ProdOf (f a) -&gt; f (ProdOf a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ProdOf a -&gt; m (ProdOf b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; ProdOf a -&gt; m (ProdOf b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; ProdOf (m a) -&gt; m (ProdOf a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; ProdOf (m a) -&gt; m (ProdOf a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087602"><span class="annot"><span class="annottext">Functor ProdOf
+Functor ProdOf =&gt;
+(forall a b. ProdOf a -&gt; (a -&gt; Unite ProdOf b) -&gt; Unite ProdOf b)
+-&gt; Isolated ProdOf
+forall a b. ProdOf a -&gt; (a -&gt; Unite ProdOf b) -&gt; Unite ProdOf b
+forall (m0 :: * -&gt; *).
+Functor m0 =&gt;
+(forall a b. m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b)
+-&gt; Isolated m0
+$cimpureBind :: forall a b. ProdOf a -&gt; (a -&gt; Unite ProdOf b) -&gt; Unite ProdOf b
+impureBind :: forall a b. ProdOf a -&gt; (a -&gt; Unite ProdOf b) -&gt; Unite ProdOf b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">Isolated</span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">newtype</span><span> </span><span id="SumOf"><span class="annot"><a href="Data.TwoMonoids.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span></span><span> </span><span id="local-6989586621679087218"><span class="annot"><a href="#local-6989586621679087218"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SumOf"><span class="annot"><a href="Data.TwoMonoids.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NotOne</span></span><span> </span><span class="annot"><a href="#local-6989586621679087218"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087610"><span id="local-6989586621679087613"><span class="annot"><span class="annottext">SumOf a -&gt; SumOf a -&gt; Bool
+(SumOf a -&gt; SumOf a -&gt; Bool)
+-&gt; (SumOf a -&gt; SumOf a -&gt; Bool) -&gt; Eq (SumOf a)
+forall a. Eq a =&gt; SumOf a -&gt; SumOf a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall a. Eq a =&gt; SumOf a -&gt; SumOf a -&gt; Bool
+== :: SumOf a -&gt; SumOf a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; SumOf a -&gt; SumOf a -&gt; Bool
+/= :: SumOf a -&gt; SumOf a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087616"><span id="local-6989586621679087619"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; SumOf a -&gt; SumOf b)
+-&gt; (forall a b. a -&gt; SumOf b -&gt; SumOf a) -&gt; Functor SumOf
+forall a b. a -&gt; SumOf b -&gt; SumOf a
+forall a b. (a -&gt; b) -&gt; SumOf a -&gt; SumOf b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall a b. (a -&gt; b) -&gt; SumOf a -&gt; SumOf b
+fmap :: forall a b. (a -&gt; b) -&gt; SumOf a -&gt; SumOf b
+$c&lt;$ :: forall a b. a -&gt; SumOf b -&gt; SumOf a
+&lt;$ :: forall a b. a -&gt; SumOf b -&gt; SumOf a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087622"><span id="local-6989586621679087627"><span id="local-6989586621679087632"><span id="local-6989586621679087637"><span id="local-6989586621679087640"><span id="local-6989586621679087643"><span id="local-6989586621679087646"><span id="local-6989586621679087649"><span id="local-6989586621679087652"><span id="local-6989586621679087655"><span id="local-6989586621679087658"><span id="local-6989586621679087661"><span id="local-6989586621679087664"><span id="local-6989586621679087669"><span id="local-6989586621679087674"><span id="local-6989586621679087679"><span id="local-6989586621679087684"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; SumOf m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a)
+-&gt; (forall a. SumOf a -&gt; [a])
+-&gt; (forall a. SumOf a -&gt; Bool)
+-&gt; (forall a. SumOf a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; SumOf a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; SumOf a -&gt; a)
+-&gt; (forall a. Ord a =&gt; SumOf a -&gt; a)
+-&gt; (forall a. Num a =&gt; SumOf a -&gt; a)
+-&gt; (forall a. Num a =&gt; SumOf a -&gt; a)
+-&gt; Foldable SumOf
+forall a. Eq a =&gt; a -&gt; SumOf a -&gt; Bool
+forall a. Num a =&gt; SumOf a -&gt; a
+forall a. Ord a =&gt; SumOf a -&gt; a
+forall m. Monoid m =&gt; SumOf m -&gt; m
+forall a. SumOf a -&gt; Bool
+forall a. SumOf a -&gt; Int
+forall a. SumOf a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+$cfold :: forall m. Monoid m =&gt; SumOf m -&gt; m
+fold :: forall m. Monoid m =&gt; SumOf m -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; SumOf a -&gt; m
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; SumOf a -&gt; b
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; SumOf a -&gt; a
+$ctoList :: forall a. SumOf a -&gt; [a]
+toList :: forall a. SumOf a -&gt; [a]
+$cnull :: forall a. SumOf a -&gt; Bool
+null :: forall a. SumOf a -&gt; Bool
+$clength :: forall a. SumOf a -&gt; Int
+length :: forall a. SumOf a -&gt; Int
+$celem :: forall a. Eq a =&gt; a -&gt; SumOf a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; SumOf a -&gt; Bool
+$cmaximum :: forall a. Ord a =&gt; SumOf a -&gt; a
+maximum :: forall a. Ord a =&gt; SumOf a -&gt; a
+$cminimum :: forall a. Ord a =&gt; SumOf a -&gt; a
+minimum :: forall a. Ord a =&gt; SumOf a -&gt; a
+$csum :: forall a. Num a =&gt; SumOf a -&gt; a
+sum :: forall a. Num a =&gt; SumOf a -&gt; a
+$cproduct :: forall a. Num a =&gt; SumOf a -&gt; a
+product :: forall a. Num a =&gt; SumOf a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087693"><span id="local-6989586621679087700"><span id="local-6989586621679087705"><span id="local-6989586621679087710"><span class="annot"><span class="annottext">Functor SumOf
+Foldable SumOf
+(Functor SumOf, Foldable SumOf) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; SumOf a -&gt; f (SumOf b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    SumOf (f a) -&gt; f (SumOf a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; SumOf a -&gt; m (SumOf b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; SumOf (m a) -&gt; m (SumOf a))
+-&gt; Traversable SumOf
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; SumOf (m a) -&gt; m (SumOf a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; SumOf (f a) -&gt; f (SumOf a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SumOf a -&gt; m (SumOf b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SumOf a -&gt; f (SumOf b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SumOf a -&gt; f (SumOf b)
+traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; SumOf a -&gt; f (SumOf b)
+$csequenceA :: forall (f :: * -&gt; *) a. Applicative f =&gt; SumOf (f a) -&gt; f (SumOf a)
+sequenceA :: forall (f :: * -&gt; *) a. Applicative f =&gt; SumOf (f a) -&gt; f (SumOf a)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SumOf a -&gt; m (SumOf b)
+mapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; SumOf a -&gt; m (SumOf b)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; SumOf (m a) -&gt; m (SumOf a)
+sequence :: forall (m :: * -&gt; *) a. Monad m =&gt; SumOf (m a) -&gt; m (SumOf a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087717"><span class="annot"><span class="annottext">Functor SumOf
+Functor SumOf =&gt;
+(forall a b. SumOf a -&gt; (a -&gt; Unite SumOf b) -&gt; Unite SumOf b)
+-&gt; Isolated SumOf
+forall a b. SumOf a -&gt; (a -&gt; Unite SumOf b) -&gt; Unite SumOf b
+forall (m0 :: * -&gt; *).
+Functor m0 =&gt;
+(forall a b. m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b)
+-&gt; Isolated m0
+$cimpureBind :: forall a b. SumOf a -&gt; (a -&gt; Unite SumOf b) -&gt; Unite SumOf b
+impureBind :: forall a b. SumOf a -&gt; (a -&gt; Unite SumOf b) -&gt; Unite SumOf b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">Isolated</span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span id="local-6989586621679087144"><span id="local-6989586621679087145"><span id="local-6989586621679087146"><span class="annot"><a href="Data.TwoMonoids.Free.html#unwrapMutual1"><span class="hs-identifier hs-type">unwrapMutual1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679087144"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679087144"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087145"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087146"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087144"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><a href="#local-6989586621679087145"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679087146"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span><span>
+</span><span id="line-73"></span><span id="unwrapMutual1"><span class="annot"><span class="annottext">unwrapMutual1 :: forall (f :: * -&gt; *) (g :: * -&gt; *) a.
 Foldable f =&gt;
 Mutual Either f g a -&gt; [Unite (f :+ g) a]
 </span><a href="Data.TwoMonoids.Free.html#unwrapMutual1"><span class="hs-identifier hs-var hs-var">unwrapMutual1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either a (Mutual Either g f a) -&gt; Unite (f :+ g) a)
@@ -322,9 +657,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
 Mutual p m n a -&gt; m (p a (Mutual p n m a))
 </span><span class="hs-identifier hs-var">runMutual</span></span><span>
-</span><span id="line-71"></span><span>
-</span><span id="line-72"></span><span id="local-6989586621679076314"><span id="local-6989586621679076315"><span id="local-6989586621679076316"><span class="annot"><a href="Data.TwoMonoids.Free.html#unwrapMutual2"><span class="hs-identifier hs-type">unwrapMutual2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679076314"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679076314"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076315"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076316"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679076315"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><a href="#local-6989586621679076314"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679076316"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span><span>
-</span><span id="line-73"></span><span id="unwrapMutual2"><span class="annot"><span class="annottext">unwrapMutual2 :: forall (g :: * -&gt; *) (f :: * -&gt; *) a.
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span id="local-6989586621679087171"><span id="local-6989586621679087172"><span id="local-6989586621679087173"><span class="annot"><a href="Data.TwoMonoids.Free.html#unwrapMutual2"><span class="hs-identifier hs-type">unwrapMutual2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679087171"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679087171"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087172"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087173"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087172"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+</span></span><span> </span><span class="annot"><a href="#local-6989586621679087171"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679087173"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span></span></span><span>
+</span><span id="line-76"></span><span id="unwrapMutual2"><span class="annot"><span class="annottext">unwrapMutual2 :: forall (g :: * -&gt; *) (f :: * -&gt; *) a.
 Foldable g =&gt;
 Mutual Either g f a -&gt; [Unite (f :+ g) a]
 </span><a href="Data.TwoMonoids.Free.html#unwrapMutual2"><span class="hs-identifier hs-var hs-var">unwrapMutual2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either a (Mutual Either f g a) -&gt; Unite (f :+ g) a)
@@ -375,356 +710,247 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall (p :: * -&gt; * -&gt; *) (m :: * -&gt; *) (n :: * -&gt; *) a.
 Mutual p m n a -&gt; m (p a (Mutual p n m a))
 </span><span class="hs-identifier hs-var">runMutual</span></span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076323"><span id="local-6989586621679076668"><span id="local-6989586621679076672"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679076323"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076323"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-76"></span><span>  </span><span id="local-6989586621679076678"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; Free a -&gt; ShowS
-</span><a href="#local-6989586621679076678"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Free a -&gt; ShowS
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087180"><span id="local-6989586621679087737"><span id="local-6989586621679087741"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679087180"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087180"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>  </span><span id="local-6989586621679087747"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; Free a -&gt; ShowS
+</span><a href="#local-6989586621679087747"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Free a -&gt; ShowS
 forall (f :: * -&gt; *) a. (Show1 f, Show a) =&gt; Int -&gt; f a -&gt; ShowS
 </span><span class="hs-identifier hs-var">showsPrec1</span></span><span>
-</span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076684"><span class="annot"><span class="hs-identifier hs-type">Show1</span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-79"></span><span>  </span><span id="local-6989586621679076687"><span class="annot"><span class="annottext">liftShowsPrec :: forall a.
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087753"><span class="annot"><span class="hs-identifier hs-type">Show1</span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>  </span><span id="local-6989586621679087756"><span class="annot"><span class="annottext">liftShowsPrec :: forall a.
 (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Free a -&gt; ShowS
-</span><a href="#local-6989586621679076687"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShowsPrec</span></a></span></span><span> </span><span id="local-6989586621679076689"><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
-</span><a href="#local-6989586621679076689"><span class="hs-identifier hs-var">showsA</span></a></span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ShowS
+</span><a href="#local-6989586621679087756"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShowsPrec</span></a></span></span><span> </span><span id="local-6989586621679087758"><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
+</span><a href="#local-6989586621679087758"><span class="hs-identifier hs-var">showsA</span></a></span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ShowS
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Free a -&gt; ShowS
-</span><a href="#local-6989586621679076690"><span class="hs-identifier hs-var">go</span></a></span><span>
-</span><span id="line-80"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-81"></span><span>      </span><span id="local-6989586621679076690"><span class="annot"><span class="annottext">go :: Int -&gt; Free a -&gt; ShowS
-</span><a href="#local-6989586621679076690"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679076691"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679076691"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679076692"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076692"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; a -&gt; ShowS) -&gt; String -&gt; Int -&gt; a -&gt; ShowS
+</span><a href="#local-6989586621679087759"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-83"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>      </span><span id="local-6989586621679087759"><span class="annot"><span class="annottext">go :: Int -&gt; Free a -&gt; ShowS
+</span><a href="#local-6989586621679087759"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679087760"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679087760"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679087761"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087761"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; a -&gt; ShowS) -&gt; String -&gt; Int -&gt; a -&gt; ShowS
 forall a. (Int -&gt; a -&gt; ShowS) -&gt; String -&gt; Int -&gt; a -&gt; ShowS
 </span><span class="hs-identifier hs-var">showsUnaryWith</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
-</span><a href="#local-6989586621679076689"><span class="hs-identifier hs-var">showsA</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679087758"><span class="hs-identifier hs-var">showsA</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Lit&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679076691"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076692"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-82"></span><span>      </span><span class="annot"><a href="#local-6989586621679076690"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679076693"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679076693"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span id="local-6989586621679076694"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076694"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076694"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-83"></span><span>        </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
-</span><span class="hs-string">&quot;Zero&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
-forall a. [a] -&gt; [a] -&gt; [a]
-</span><span class="hs-operator hs-var">++</span></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span>        </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span id="local-6989586621679076695"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076695"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076695"><span class="hs-identifier hs-var">xs'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-85"></span><span>          </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
-</span><span class="hs-string">&quot;One&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
-forall a. [a] -&gt; [a] -&gt; [a]
-</span><span class="hs-operator hs-var">++</span></span><span class="hs-special">)</span><span>
-</span><span id="line-86"></span><span>          </span><span class="annot"><span class="annottext">[Free a]
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; [Free a] -&gt; ShowS) -&gt; String -&gt; Int -&gt; [Free a] -&gt; ShowS
+</span><a href="#local-6989586621679087760"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087761"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-85"></span><span>      </span><span class="annot"><a href="#local-6989586621679087759"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679087762"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679087762"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span id="local-6989586621679087763"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087763"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087763"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-86"></span><span>        </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span id="local-6989586621679087764"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087764"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; [Free a] -&gt; ShowS) -&gt; String -&gt; Int -&gt; [Free a] -&gt; ShowS
 forall a. (Int -&gt; a -&gt; ShowS) -&gt; String -&gt; Int -&gt; a -&gt; ShowS
 </span><span class="hs-identifier hs-var">showsUnaryWith</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Free a] -&gt; ShowS
-</span><a href="#local-6989586621679076696"><span class="hs-identifier hs-var">goList</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679087765"><span class="hs-identifier hs-var">goList</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Prod&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679076693"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076695"><span class="hs-identifier hs-var">xs'</span></a></span><span>
+</span><a href="#local-6989586621679087762"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087764"><span class="hs-identifier hs-var">xs'</span></a></span><span>
 </span><span id="line-87"></span><span>        </span><span class="annot"><span class="annottext">[Free a]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; [Free a] -&gt; ShowS) -&gt; String -&gt; Int -&gt; [Free a] -&gt; ShowS
 forall a. (Int -&gt; a -&gt; ShowS) -&gt; String -&gt; Int -&gt; a -&gt; ShowS
 </span><span class="hs-identifier hs-var">showsUnaryWith</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Free a] -&gt; ShowS
-</span><a href="#local-6989586621679076696"><span class="hs-identifier hs-var">goList</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679087765"><span class="hs-identifier hs-var">goList</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Sum&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679076693"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076694"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679087762"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087763"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-88"></span><span>
-</span><span id="line-89"></span><span>      </span><span id="local-6989586621679076696"><span class="annot"><span class="annottext">goList :: Int -&gt; [Free a] -&gt; ShowS
-</span><a href="#local-6989586621679076696"><span class="hs-identifier hs-var hs-var">goList</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span id="line-89"></span><span>      </span><span id="local-6989586621679087765"><span class="annot"><span class="annottext">goList :: Int -&gt; [Free a] -&gt; ShowS
+</span><a href="#local-6989586621679087765"><span class="hs-identifier hs-var hs-var">goList</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; ShowS) -&gt; [Free a] -&gt; ShowS
 forall a. (a -&gt; ShowS) -&gt; [a] -&gt; ShowS
 </span><span class="hs-identifier hs-var">showListWith</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Free a -&gt; ShowS
-</span><a href="#local-6989586621679076690"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679087759"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
 </span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076336"><span class="annot"><a href="#local-6989586621679076336"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076336"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-91"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679087192"><span class="annot"><a href="#local-6989586621679087192"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087192"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-92"></span><span class="hs-keyword">pattern</span><span> </span><span id="Lit"><span id="%24mLit"><span id="%24bLit"><span class="annot"><span class="annottext">$mLit :: forall {r} {a}. Free a -&gt; (a -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
 $bLit :: forall a. a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-var hs-var hs-var">Lit</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679076699"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076699"><span class="annot"><a href="#local-6989586621679076699"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-var hs-var hs-var">Lit</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679087768"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087768"><span class="annot"><a href="#local-6989586621679087768"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-93"></span><span>
-</span><span id="line-94"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Zero"><span class="hs-identifier hs-type">Zero</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076340"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076340"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-95"></span><span class="hs-keyword">pattern</span><span> </span><span id="Zero"><span id="%24mZero"><span id="%24bZero"><span class="annot"><span class="annottext">$mZero :: forall {r} {a}. Free a -&gt; ((# #) -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
-$bZero :: forall a. Free a
-</span><a href="Data.TwoMonoids.Free.html#Zero"><span class="hs-identifier hs-var hs-var hs-var">Zero</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">NotOne.Zero</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-96"></span><span>
-</span><span id="line-97"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#One"><span class="hs-identifier hs-type">One</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076349"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076349"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-98"></span><span class="hs-keyword">pattern</span><span> </span><span id="One"><span id="%24mOne"><span id="%24bOne"><span class="annot"><span class="annottext">$mOne :: forall {r} {a}. Free a -&gt; ((# #) -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
-$bOne :: forall a. Free a
-</span><a href="Data.TwoMonoids.Free.html#One"><span class="hs-identifier hs-var hs-var hs-var">One</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Unite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Mutual</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">NotOne.Zero</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-99"></span><span>
-</span><span id="line-100"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2B%2F"><span class="hs-operator hs-type">(:/+/)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076352"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076352"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076352"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076352"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-101"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="#local-6989586621679076706"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span id="%3A%2F%2B%2F"><span id="%24m%3A%2F%2B%2F"><span id="%24b%3A%2F%2B%2F"><span class="annot"><span class="annottext">$m:/+/ :: forall {r} {a}.
-Free a -&gt; (Free a -&gt; Free a -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
-$b:/+/ :: forall a. Free a -&gt; Free a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#%3A%2F%2B%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">:/+/</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679076709"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum2"><span class="hs-identifier hs-type">viewSum2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076706"><span class="annot"><a href="#local-6989586621679076706"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076709"><span class="annot"><a href="#local-6989586621679076709"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-102"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-103"></span><span>    </span><span id="local-6989586621679076711"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076711"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2B%2F"><span class="hs-operator hs-var">:/+/</span></a></span><span> </span><span id="local-6989586621679076712"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076712"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
-forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-var">sum</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076711"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076712"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-104"></span><span>
-</span><span id="line-105"></span><span id="local-6989586621679076354"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum2"><span class="hs-identifier hs-type">viewSum2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076354"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076354"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076354"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-106"></span><span id="viewSum2"><span class="annot"><span class="annottext">viewSum2 :: forall a. Free a -&gt; Maybe (Free a, Free a)
-</span><a href="Data.TwoMonoids.Free.html#viewSum2"><span class="hs-identifier hs-var hs-var">viewSum2</span></a></span></span><span> </span><span id="local-6989586621679076713"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076713"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Free a -&gt; [Free a]
-forall a. Free a -&gt; [Free a]
-</span><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-var">viewSum</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076713"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-107"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679076714"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076714"><span class="hs-identifier hs-var">x0</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679076715"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076715"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679076716"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076716"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Free a, Free a) -&gt; Maybe (Free a, Free a)
-forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076714"><span class="hs-identifier hs-var">x0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
-forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-var">sum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076715"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; [Free a] -&gt; [Free a]
-forall a. a -&gt; [a] -&gt; [a]
-</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076716"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-108"></span><span>  </span><span class="annot"><span class="annottext">[Free a]
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Free a, Free a)
-forall a. Maybe a
-</span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-109"></span><span>
-</span><span id="line-110"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076360"><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076360"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076360"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-111"></span><span class="hs-keyword">pattern</span><span> </span><span id="Prod"><span id="%24mProd"><span id="%24bProd"><span class="annot"><span class="annottext">$mProd :: forall {r} {a}. Free a -&gt; ([Free a] -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+</span><span id="line-94"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679087196"><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087196"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087196"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">pattern</span><span> </span><span id="Prod"><span id="%24mProd"><span id="%24bProd"><span class="annot"><span class="annottext">$mProd :: forall {r} {a}. Free a -&gt; ([Free a] -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
 $bProd :: forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-var hs-var hs-var hs-var">Prod</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679076719"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-type">viewProd</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679076719"><span class="annot"><a href="#local-6989586621679076719"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-112"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-113"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-var">Prod</span></a></span><span> </span><span id="local-6989586621679076720"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076720"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-var hs-var hs-var hs-var">Prod</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679087771"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-type">viewProd</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679087771"><span class="annot"><a href="#local-6989586621679087771"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-var">Prod</span></a></span><span> </span><span id="local-6989586621679087772"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087772"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
 forall a. [Free a] -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076720"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-114"></span><span>
-</span><span id="line-115"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-type">(:/*/)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076364"><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076364"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076364"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076364"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-116"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="#local-6989586621679076721"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span id="%3A%2F%2A%2F"><span id="%24m%3A%2F%2A%2F"><span id="%24b%3A%2F%2A%2F"><span class="annot"><span class="annottext">$m:/*/ :: forall {r} {a}.
-Free a -&gt; (Free a -&gt; Free a -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
-$b:/*/ :: forall a. Free a -&gt; Free a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-var hs-var hs-var hs-var">:/*/</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679076724"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd2"><span class="hs-identifier hs-type">viewProd2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679076721"><span class="annot"><a href="#local-6989586621679076721"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679076724"><span class="annot"><a href="#local-6989586621679076724"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-117"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-118"></span><span>    </span><span id="local-6989586621679076726"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076726"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#%3A%2F%2A%2F"><span class="hs-operator hs-var">:/*/</span></a></span><span> </span><span id="local-6989586621679076727"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076727"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
-forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076726"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076727"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-119"></span><span>
-</span><span id="line-120"></span><span id="local-6989586621679076728"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd2"><span class="hs-identifier hs-type">viewProd2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076728"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076728"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076728"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-121"></span><span id="viewProd2"><span class="annot"><span class="annottext">viewProd2 :: forall a. Free a -&gt; Maybe (Free a, Free a)
-</span><a href="Data.TwoMonoids.Free.html#viewProd2"><span class="hs-identifier hs-var hs-var">viewProd2</span></a></span></span><span> </span><span id="local-6989586621679076729"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076729"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Free a -&gt; [Free a]
-forall a. Free a -&gt; [Free a]
-</span><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-var">viewProd</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076729"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-122"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679076730"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076730"><span class="hs-identifier hs-var">x0</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679076731"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076731"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679076732"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076732"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Free a, Free a) -&gt; Maybe (Free a, Free a)
-forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076730"><span class="hs-identifier hs-var">x0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
-forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076731"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; [Free a] -&gt; [Free a]
-forall a. a -&gt; [a] -&gt; [a]
-</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076732"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-123"></span><span>  </span><span class="annot"><span class="annottext">[Free a]
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Free a, Free a)
-forall a. Maybe a
-</span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-124"></span><span>
-</span><span id="line-125"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679076368"><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076368"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076368"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-126"></span><span class="hs-keyword">pattern</span><span> </span><span id="Sum"><span id="%24mSum"><span id="%24bSum"><span class="annot"><span class="annottext">$mSum :: forall {r} {a}. Free a -&gt; ([Free a] -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+</span><a href="#local-6989586621679087772"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679087201"><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087201"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087201"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">pattern</span><span> </span><span id="Sum"><span id="%24mSum"><span id="%24bSum"><span class="annot"><span class="annottext">$mSum :: forall {r} {a}. Free a -&gt; ([Free a] -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
 $bSum :: forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-var hs-var hs-var hs-var">Sum</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679076735"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-type">viewSum</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679076735"><span class="annot"><a href="#local-6989586621679076735"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-127"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-128"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-var">Sum</span></a></span><span> </span><span id="local-6989586621679076736"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076736"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-var hs-var hs-var hs-var">Sum</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679087775"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-type">viewSum</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679087775"><span class="annot"><a href="#local-6989586621679087775"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-102"></span><span>    </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-var">Sum</span></a></span><span> </span><span id="local-6989586621679087776"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087776"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
 forall a. [Free a] -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-var">sum</span></a></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076736"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-129"></span><span>
-</span><span id="line-130"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-pragma hs-type">Prod</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-pragma hs-type">Sum</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-133"></span><span>
-</span><span id="line-134"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-pragma hs-type">Lit</span></a></span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Zero"><span class="hs-pragma hs-type">Zero</span></a></span><span class="hs-pragma">,</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#One"><span class="hs-pragma hs-type">One</span></a></span><span class="hs-pragma">,</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">:/+/</span><span class="hs-pragma">)</span><span class="hs-pragma">,</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">:/*/</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-135"></span><span>
-</span><span id="line-136"></span><span class="annot"><span class="hs-comment">-- | Literal</span></span><span>
-</span><span id="line-137"></span><span id="local-6989586621679076737"><span class="annot"><a href="Data.TwoMonoids.Free.html#lit"><span class="hs-identifier hs-type">lit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679076737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076737"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-138"></span><span id="lit"><span class="annot"><span class="annottext">lit :: forall a. a -&gt; Free a
+</span><a href="#local-6989586621679087776"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-pragma hs-type">Prod</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-105"></span><span>
+</span><span id="line-106"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-pragma hs-type">Sum</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | Literal</span></span><span>
+</span><span id="line-109"></span><span id="local-6989586621679087777"><span class="annot"><a href="Data.TwoMonoids.Free.html#lit"><span class="hs-identifier hs-type">lit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679087777"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087777"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-110"></span><span id="lit"><span class="annot"><span class="annottext">lit :: forall a. a -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#lit"><span class="hs-identifier hs-var hs-var">lit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Free a
 forall a. a -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-var">Lit</span></a></span><span>
-</span><span id="line-139"></span><span>
-</span><span id="line-140"></span><span class="annot"><span class="hs-comment">-- | Product operation on free double monoid</span></span><span>
-</span><span id="line-141"></span><span id="local-6989586621679076738"><span class="annot"><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-type">prod</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076738"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076738"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-142"></span><span id="prod"><span class="annot"><span class="annottext">prod :: forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var hs-var">prod</span></a></span></span><span> </span><span id="local-6989586621679076741"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076741"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Either (Free a) (NotOne (Free a))
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span class="annot"><span class="hs-comment">-- | Product operation</span></span><span>
+</span><span id="line-113"></span><span id="local-6989586621679087778"><span class="annot"><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-type">prod</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087778"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087778"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-114"></span><span id="prod"><span class="annot"><span class="annottext">prod :: forall a. [Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var hs-var">prod</span></a></span></span><span> </span><span id="local-6989586621679087783"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087783"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Either (Free a) (NotOne (Free a))
 forall a. [a] -&gt; Either a (NotOne a)
 </span><span class="hs-identifier hs-var">notOne</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076741"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-143"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076742"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076742"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076742"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-144"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679076743"><span class="annot"><span class="annottext">NotOne (Free a)
-</span><a href="#local-6989586621679076743"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free (Free a) -&gt; Free a
-forall (m :: * -&gt; *) a. Monad m =&gt; m (m a) -&gt; m a
-</span><span class="hs-identifier hs-var">join</span></span><span> </span><span class="annot"><span class="annottext">(Free (Free a) -&gt; Free a) -&gt; Free (Free a) -&gt; Free a
+</span><a href="#local-6989586621679087783"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-115"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087784"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087784"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087784"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-116"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679087785"><span class="annot"><span class="annottext">NotOne (Free a)
+</span><a href="#local-6989586621679087785"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Free a
+forall a. Unite (ProdOf :+ SumOf) a -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (ProdOf :+ SumOf) a -&gt; Free a)
+-&gt; Unite (ProdOf :+ SumOf) a -&gt; Free a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) (Free a) -&gt; Free (Free a)
-forall a. Unite (NotOne :+ NotOne) a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either (Free a) ((:+) NotOne NotOne (Free a))
--&gt; Unite (NotOne :+ NotOne) (Free a)
-forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
-</span><span class="hs-identifier hs-var">Unite</span></span><span> </span><span class="annot"><span class="annottext">(Either (Free a) ((:+) NotOne NotOne (Free a))
- -&gt; Unite (NotOne :+ NotOne) (Free a))
--&gt; ((:+) NotOne NotOne (Free a)
-    -&gt; Either (Free a) ((:+) NotOne NotOne (Free a)))
--&gt; (:+) NotOne NotOne (Free a)
--&gt; Unite (NotOne :+ NotOne) (Free a)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(:+) NotOne NotOne (Free a)
--&gt; Either (Free a) ((:+) NotOne NotOne (Free a))
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">((:+) NotOne NotOne (Free a) -&gt; Unite (NotOne :+ NotOne) (Free a))
--&gt; (:+) NotOne NotOne (Free a) -&gt; Unite (NotOne :+ NotOne) (Free a)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a) -&gt; (:+) NotOne NotOne (Free a)
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ProdOf (Free a) -&gt; (:+) ProdOf SumOf (Free a)
 forall (m0 :: * -&gt; *) a (n0 :: * -&gt; *).
 Functor m0 =&gt;
 m0 a -&gt; (:+) m0 n0 a
-</span><span class="hs-identifier hs-var">inject1</span></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a)
-</span><a href="#local-6989586621679076743"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-145"></span><span>
-</span><span id="line-146"></span><span class="annot"><span class="hs-comment">-- | Sum operation on free double monoid</span></span><span>
-</span><span id="line-147"></span><span id="local-6989586621679076356"><span class="annot"><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-type">sum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076356"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076356"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-148"></span><span id="sum"><span class="annot"><span class="annottext">sum :: forall a. [Free a] -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-var hs-var">sum</span></a></span></span><span> </span><span id="local-6989586621679076747"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076747"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Either (Free a) (NotOne (Free a))
+</span><span class="hs-identifier hs-var">inject1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NotOne (Free a) -&gt; ProdOf (Free a)
+forall a. NotOne a -&gt; ProdOf a
+</span><a href="Data.TwoMonoids.Free.html#ProdOf"><span class="hs-identifier hs-var">ProdOf</span></a></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a)
+</span><a href="#local-6989586621679087785"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(:+) ProdOf SumOf (Free a)
+-&gt; (Free a -&gt; Unite (ProdOf :+ SumOf) a)
+-&gt; Unite (ProdOf :+ SumOf) a
+forall a b.
+(:+) ProdOf SumOf a
+-&gt; (a -&gt; Unite (ProdOf :+ SumOf) b) -&gt; Unite (ProdOf :+ SumOf) b
+forall (m0 :: * -&gt; *) a b.
+Isolated m0 =&gt;
+m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+</span><span class="hs-operator hs-var">`impureBind`</span></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; Unite (ProdOf :+ SumOf) a
+forall a. Free a -&gt; Unite (ProdOf :+ SumOf) a
+</span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var">runFree</span></a></span><span>
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span class="annot"><span class="hs-comment">-- | Sum operation</span></span><span>
+</span><span id="line-119"></span><span id="local-6989586621679087788"><span class="annot"><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-type">sum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087788"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087788"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-120"></span><span id="sum"><span class="annot"><span class="annottext">sum :: forall a. [Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#sum"><span class="hs-identifier hs-var hs-var">sum</span></a></span></span><span> </span><span id="local-6989586621679087793"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087793"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Either (Free a) (NotOne (Free a))
 forall a. [a] -&gt; Either a (NotOne a)
 </span><span class="hs-identifier hs-var">notOne</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076747"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-149"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076748"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076748"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076748"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-150"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679076749"><span class="annot"><span class="annottext">NotOne (Free a)
-</span><a href="#local-6989586621679076749"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free (Free a) -&gt; Free a
-forall (m :: * -&gt; *) a. Monad m =&gt; m (m a) -&gt; m a
-</span><span class="hs-identifier hs-var">join</span></span><span> </span><span class="annot"><span class="annottext">(Free (Free a) -&gt; Free a) -&gt; Free (Free a) -&gt; Free a
+</span><a href="#local-6989586621679087793"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-121"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087794"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087794"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087794"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-122"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679087795"><span class="annot"><span class="annottext">NotOne (Free a)
+</span><a href="#local-6989586621679087795"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Free a
+forall a. Unite (ProdOf :+ SumOf) a -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (ProdOf :+ SumOf) a -&gt; Free a)
+-&gt; Unite (ProdOf :+ SumOf) a -&gt; Free a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) (Free a) -&gt; Free (Free a)
-forall a. Unite (NotOne :+ NotOne) a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either (Free a) ((:+) NotOne NotOne (Free a))
--&gt; Unite (NotOne :+ NotOne) (Free a)
-forall (f :: * -&gt; *) a. Either a (f a) -&gt; Unite f a
-</span><span class="hs-identifier hs-var">Unite</span></span><span> </span><span class="annot"><span class="annottext">(Either (Free a) ((:+) NotOne NotOne (Free a))
- -&gt; Unite (NotOne :+ NotOne) (Free a))
--&gt; ((:+) NotOne NotOne (Free a)
-    -&gt; Either (Free a) ((:+) NotOne NotOne (Free a)))
--&gt; (:+) NotOne NotOne (Free a)
--&gt; Unite (NotOne :+ NotOne) (Free a)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(:+) NotOne NotOne (Free a)
--&gt; Either (Free a) ((:+) NotOne NotOne (Free a))
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">((:+) NotOne NotOne (Free a) -&gt; Unite (NotOne :+ NotOne) (Free a))
--&gt; (:+) NotOne NotOne (Free a) -&gt; Unite (NotOne :+ NotOne) (Free a)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a) -&gt; (:+) NotOne NotOne (Free a)
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">SumOf (Free a) -&gt; (:+) ProdOf SumOf (Free a)
 forall (n0 :: * -&gt; *) a (m0 :: * -&gt; *).
 Functor n0 =&gt;
 n0 a -&gt; (:+) m0 n0 a
-</span><span class="hs-identifier hs-var">inject2</span></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a)
-</span><a href="#local-6989586621679076749"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-151"></span><span>
-</span><span id="line-152"></span><span class="annot"><span class="hs-comment">-- | Decompose @x@ to products.</span></span><span>
-</span><span id="line-153"></span><span id="local-6989586621679076751"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-type">viewProd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076751"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076751"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
-</span><span id="line-154"></span><span id="viewProd"><span class="annot"><span class="annottext">viewProd :: forall a. Free a -&gt; [Free a]
-</span><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-var hs-var">viewProd</span></a></span></span><span> </span><span id="local-6989586621679076756"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076756"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) a -&gt; Either a ((:+) NotOne NotOne a)
+</span><span class="hs-identifier hs-var">inject2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NotOne (Free a) -&gt; SumOf (Free a)
+forall a. NotOne a -&gt; SumOf a
+</span><a href="Data.TwoMonoids.Free.html#SumOf"><span class="hs-identifier hs-var">SumOf</span></a></span><span> </span><span class="annot"><span class="annottext">NotOne (Free a)
+</span><a href="#local-6989586621679087795"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(:+) ProdOf SumOf (Free a)
+-&gt; (Free a -&gt; Unite (ProdOf :+ SumOf) a)
+-&gt; Unite (ProdOf :+ SumOf) a
+forall a b.
+(:+) ProdOf SumOf a
+-&gt; (a -&gt; Unite (ProdOf :+ SumOf) b) -&gt; Unite (ProdOf :+ SumOf) b
+forall (m0 :: * -&gt; *) a b.
+Isolated m0 =&gt;
+m0 a -&gt; (a -&gt; Unite m0 b) -&gt; Unite m0 b
+</span><span class="hs-operator hs-var">`impureBind`</span></span><span> </span><span class="annot"><span class="annottext">Free a -&gt; Unite (ProdOf :+ SumOf) a
+forall a. Free a -&gt; Unite (ProdOf :+ SumOf) a
+</span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var">runFree</span></a></span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="annot"><span class="hs-comment">-- | Decompose @x@ to products.</span></span><span>
+</span><span id="line-125"></span><span id="local-6989586621679087198"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-type">viewProd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087198"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087198"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-126"></span><span id="viewProd"><span class="annot"><span class="annottext">viewProd :: forall a. Free a -&gt; [Free a]
+</span><a href="Data.TwoMonoids.Free.html#viewProd"><span class="hs-identifier hs-var hs-var">viewProd</span></a></span></span><span> </span><span id="local-6989586621679087801"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087801"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Either a ((:+) ProdOf SumOf a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
-</span><span class="hs-identifier hs-var">runUnite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; Unite (NotOne :+ NotOne) a
-forall a. Free a -&gt; Unite (NotOne :+ NotOne) a
+</span><span class="hs-identifier hs-var">runUnite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; Unite (ProdOf :+ SumOf) a
+forall a. Free a -&gt; Unite (ProdOf :+ SumOf) a
 </span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var">runFree</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076756"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-155"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076758"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076758"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a -&gt; Free a
+</span><a href="#local-6989586621679087801"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-127"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087803"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087803"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a -&gt; Free a
 forall a. a -&gt; Free a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076758"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-156"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076759"><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
-</span><a href="#local-6989586621679076759"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) a -&gt; Free a
-forall a. Unite (NotOne :+ NotOne) a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (NotOne :+ NotOne) a -&gt; Free a)
--&gt; [Unite (NotOne :+ NotOne) a] -&gt; [Free a]
+</span><a href="#local-6989586621679087803"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-128"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087804"><span class="annot"><span class="annottext">Mutual Either ProdOf SumOf a
+</span><a href="#local-6989586621679087804"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Free a
+forall a. Unite (ProdOf :+ SumOf) a -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (ProdOf :+ SumOf) a -&gt; Free a)
+-&gt; [Unite (ProdOf :+ SumOf) a] -&gt; [Free a]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a -&gt; [Unite (NotOne :+ NotOne) a]
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either ProdOf SumOf a -&gt; [Unite (ProdOf :+ SumOf) a]
 forall (f :: * -&gt; *) (g :: * -&gt; *) a.
 Foldable f =&gt;
 Mutual Either f g a -&gt; [Unite (f :+ g) a]
-</span><a href="Data.TwoMonoids.Free.html#unwrapMutual1"><span class="hs-identifier hs-var">unwrapMutual1</span></a></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
-</span><a href="#local-6989586621679076759"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-157"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
+</span><a href="Data.TwoMonoids.Free.html#unwrapMutual1"><span class="hs-identifier hs-var">unwrapMutual1</span></a></span><span> </span><span class="annot"><span class="annottext">Mutual Either ProdOf SumOf a
+</span><a href="#local-6989586621679087804"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-129"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either SumOf ProdOf a
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076756"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-158"></span><span>
-</span><span id="line-159"></span><span class="annot"><span class="hs-comment">-- | Decompose @x@ to sums.</span></span><span>
-</span><span id="line-160"></span><span id="local-6989586621679076358"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-type">viewSum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076358"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076358"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
-</span><span id="line-161"></span><span id="viewSum"><span class="annot"><span class="annottext">viewSum :: forall a. Free a -&gt; [Free a]
-</span><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-var hs-var">viewSum</span></a></span></span><span> </span><span id="local-6989586621679076764"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076764"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) a -&gt; Either a ((:+) NotOne NotOne a)
+</span><a href="#local-6989586621679087801"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="annot"><span class="hs-comment">-- | Decompose @x@ to sums.</span></span><span>
+</span><span id="line-132"></span><span id="local-6989586621679087806"><span class="annot"><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-type">viewSum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087806"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087806"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-133"></span><span id="viewSum"><span class="annot"><span class="annottext">viewSum :: forall a. Free a -&gt; [Free a]
+</span><a href="Data.TwoMonoids.Free.html#viewSum"><span class="hs-identifier hs-var hs-var">viewSum</span></a></span></span><span> </span><span id="local-6989586621679087810"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087810"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Either a ((:+) ProdOf SumOf a)
 forall (f :: * -&gt; *) a. Unite f a -&gt; Either a (f a)
-</span><span class="hs-identifier hs-var">runUnite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; Unite (NotOne :+ NotOne) a
-forall a. Free a -&gt; Unite (NotOne :+ NotOne) a
+</span><span class="hs-identifier hs-var">runUnite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; Unite (ProdOf :+ SumOf) a
+forall a. Free a -&gt; Unite (ProdOf :+ SumOf) a
 </span><a href="Data.TwoMonoids.Free.html#runFree"><span class="hs-identifier hs-var">runFree</span></a></span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076764"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-162"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679076765"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076765"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a -&gt; Free a
+</span><a href="#local-6989586621679087810"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-134"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679087811"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087811"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a -&gt; Free a
 forall a. a -&gt; Free a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076765"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-163"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
+</span><a href="#local-6989586621679087811"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-135"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either ProdOf SumOf a
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076764"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-164"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679076766"><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
-</span><a href="#local-6989586621679076766"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (NotOne :+ NotOne) a -&gt; Free a
-forall a. Unite (NotOne :+ NotOne) a -&gt; Free a
-</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (NotOne :+ NotOne) a -&gt; Free a)
--&gt; [Unite (NotOne :+ NotOne) a] -&gt; [Free a]
+</span><a href="#local-6989586621679087810"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-136"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Coproduct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679087812"><span class="annot"><span class="annottext">Mutual Either SumOf ProdOf a
+</span><a href="#local-6989586621679087812"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Unite (ProdOf :+ SumOf) a -&gt; Free a
+forall a. Unite (ProdOf :+ SumOf) a -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="annot"><span class="annottext">(Unite (ProdOf :+ SumOf) a -&gt; Free a)
+-&gt; [Unite (ProdOf :+ SumOf) a] -&gt; [Free a]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a -&gt; [Unite (NotOne :+ NotOne) a]
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Mutual Either SumOf ProdOf a -&gt; [Unite (ProdOf :+ SumOf) a]
 forall (g :: * -&gt; *) (f :: * -&gt; *) a.
 Foldable g =&gt;
 Mutual Either g f a -&gt; [Unite (f :+ g) a]
-</span><a href="Data.TwoMonoids.Free.html#unwrapMutual2"><span class="hs-identifier hs-var">unwrapMutual2</span></a></span><span> </span><span class="annot"><span class="annottext">Mutual Either NotOne NotOne a
-</span><a href="#local-6989586621679076766"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-165"></span><span>
-</span><span id="line-166"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076397"><span id="local-6989586621679076770"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076397"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-167"></span><span>  </span><span id="local-6989586621679076776"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076776"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679076777"><span class="annot"><span class="annottext">&lt;&gt; :: Free a -&gt; Free a -&gt; Free a
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679076778"><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076778"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#unwrapMutual2"><span class="hs-identifier hs-var">unwrapMutual2</span></a></span><span> </span><span class="annot"><span class="annottext">Mutual Either SumOf ProdOf a
+</span><a href="#local-6989586621679087812"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087230"><span id="local-6989586621679087816"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087230"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-139"></span><span>  </span><span id="local-6989586621679087822"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087822"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679087823"><span class="annot"><span class="annottext">&lt;&gt; :: Free a -&gt; Free a -&gt; Free a
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span id="local-6989586621679087824"><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087824"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
 forall a. [Free a] -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076776"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Free a
-</span><a href="#local-6989586621679076778"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-168"></span><span>  </span><span id="local-6989586621679076781"><span class="annot"><span class="annottext">sconcat :: NonEmpty (Free a) -&gt; Free a
-</span><a href="#local-6989586621679076781"><span class="hs-identifier hs-var hs-var hs-var hs-var">sconcat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+</span><a href="#local-6989586621679087822"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Free a
+</span><a href="#local-6989586621679087824"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-140"></span><span>  </span><span id="local-6989586621679087827"><span class="annot"><span class="annottext">sconcat :: NonEmpty (Free a) -&gt; Free a
+</span><a href="#local-6989586621679087827"><span class="hs-identifier hs-var hs-var hs-var hs-var">sconcat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
 forall a. [Free a] -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#prod"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">([Free a] -&gt; Free a)
 -&gt; (NonEmpty (Free a) -&gt; [Free a]) -&gt; NonEmpty (Free a) -&gt; Free a
@@ -733,52 +959,52 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. NonEmpty a -&gt; [a]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span>
-</span><span id="line-169"></span><span>
-</span><span id="line-170"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076400"><span id="local-6989586621679076787"><span id="local-6989586621679076791"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076400"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-171"></span><span>  </span><span id="local-6989586621679076794"><span class="annot"><span class="annottext">mempty :: Free a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free a
-forall a. Free a
-</span><a href="Data.TwoMonoids.Free.html#One"><span class="hs-identifier hs-var">One</span></a></span><span>
-</span><span id="line-172"></span><span>
-</span><span id="line-173"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679076404"><span id="local-6989586621679076798"><span id="local-6989586621679076802"><span id="local-6989586621679076806"><span class="annot"><a href="Data.TwoMonoids.Class.html#TwoMonoids"><span class="hs-identifier hs-type">TwoMonoids</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076404"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-174"></span><span>  </span><span id="local-6989586621679076809"><span class="annot"><span class="annottext">msum :: [Free a] -&gt; Free a
-</span><a href="#local-6989586621679076809"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087233"><span id="local-6989586621679087833"><span id="local-6989586621679087837"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087233"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-143"></span><span>  </span><span id="local-6989586621679087840"><span class="annot"><span class="annottext">mempty :: Free a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
+forall a. [Free a] -&gt; Free a
+</span><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-var">Prod</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087237"><span id="local-6989586621679087844"><span id="local-6989586621679087848"><span id="local-6989586621679087852"><span class="annot"><a href="Data.TwoMonoids.Class.html#TwoMonoids"><span class="hs-identifier hs-type">TwoMonoids</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087237"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-146"></span><span>  </span><span id="local-6989586621679087855"><span class="annot"><span class="annottext">msum :: [Free a] -&gt; Free a
+</span><a href="#local-6989586621679087855"><span class="hs-identifier hs-var hs-var hs-var hs-var">msum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Free a] -&gt; Free a
 forall a. [Free a] -&gt; Free a
 </span><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-var">Sum</span></a></span><span>
-</span><span id="line-175"></span><span>
-</span><span id="line-176"></span><span class="hs-comment">-- | Every 'TwoMonoids a' is an algebra of 'Free'</span><span>
-</span><span id="line-177"></span><span class="hs-comment">--</span><span>
-</span><span id="line-178"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-179"></span><span class="hs-comment">-- interpret f . join === interpret (interpret f)</span><span>
-</span><span id="line-180"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-181"></span><span id="local-6989586621679076405"><span id="local-6989586621679076406"><span class="annot"><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier hs-type">interpret</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Class.html#TwoMonoids"><span class="hs-identifier hs-type">TwoMonoids</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076405"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679076406"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679076405"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679076406"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679076405"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
-</span><span id="line-182"></span><span id="interpret"><span class="annot"><span class="annottext">interpret :: forall b a. TwoMonoids b =&gt; (a -&gt; b) -&gt; Free a -&gt; b
-</span><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier hs-var hs-var">interpret</span></a></span></span><span> </span><span id="local-6989586621679076816"><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679076816"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free a -&gt; b
-</span><a href="#local-6989586621679076817"><span class="hs-identifier hs-var">go</span></a></span><span>
-</span><span id="line-183"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-184"></span><span>    </span><span id="local-6989586621679076817"><span class="annot"><span class="annottext">go :: Free a -&gt; b
-</span><a href="#local-6989586621679076817"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679076824"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076824"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679076816"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679076824"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-185"></span><span>    </span><span class="annot"><a href="#local-6989586621679076817"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span id="local-6989586621679076825"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076825"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076825"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-186"></span><span>      </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span id="local-6989586621679076826"><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076826"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span class="hs-comment">-- | Every 'TwoMonoids a' is an algebra of 'Free'.</span><span>
+</span><span id="line-149"></span><span class="hs-comment">--</span><span>
+</span><span id="line-150"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-151"></span><span class="hs-comment">-- interpret f . join === interpret (interpret f)</span><span>
+</span><span id="line-152"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-153"></span><span id="local-6989586621679087238"><span id="local-6989586621679087239"><span class="annot"><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier hs-type">interpret</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Class.html#TwoMonoids"><span class="hs-identifier hs-type">TwoMonoids</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087238"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087239"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087238"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.TwoMonoids.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087239"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087238"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-154"></span><span id="interpret"><span class="annot"><span class="annottext">interpret :: forall b a. TwoMonoids b =&gt; (a -&gt; b) -&gt; Free a -&gt; b
+</span><a href="Data.TwoMonoids.Free.html#interpret"><span class="hs-identifier hs-var hs-var">interpret</span></a></span></span><span> </span><span id="local-6989586621679087862"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679087862"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free a -&gt; b
+</span><a href="#local-6989586621679087863"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><span id="line-155"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-156"></span><span>    </span><span id="local-6989586621679087863"><span class="annot"><span class="annottext">go :: Free a -&gt; b
+</span><a href="#local-6989586621679087863"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Lit"><span class="hs-identifier hs-type">Lit</span></a></span><span> </span><span id="local-6989586621679087870"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087870"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679087862"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679087870"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-157"></span><span>    </span><span class="annot"><a href="#local-6989586621679087863"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span id="local-6989586621679087871"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087871"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087871"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-158"></span><span>      </span><span class="hs-special">[</span><span class="annot"><a href="Data.TwoMonoids.Free.html#Prod"><span class="hs-identifier hs-type">Prod</span></a></span><span> </span><span id="local-6989586621679087872"><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087872"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
 forall a. TwoMonoids a =&gt; [a] -&gt; a
 </span><a href="Data.TwoMonoids.Class.html#mprod"><span class="hs-identifier hs-var">mprod</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; b
-</span><a href="#local-6989586621679076817"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; [Free a] -&gt; [b]
+</span><a href="#local-6989586621679087863"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; [Free a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076826"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-187"></span><span>      </span><span class="annot"><span class="annottext">[Free a]
+</span><a href="#local-6989586621679087872"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-159"></span><span>      </span><span class="annot"><span class="annottext">[Free a]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; b
 forall a. TwoMonoids a =&gt; [a] -&gt; a
 </span><a href="Data.TwoMonoids.Class.html#msum"><span class="hs-identifier hs-var">msum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Free a -&gt; b
-</span><a href="#local-6989586621679076817"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; [Free a] -&gt; [b]
+</span><a href="#local-6989586621679087863"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free a -&gt; b) -&gt; [Free a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Free a]
-</span><a href="#local-6989586621679076825"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-188"></span></pre></body></html>
+</span><a href="#local-6989586621679087871"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-160"></span></pre></body></html>
