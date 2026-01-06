@@ -4,7 +4,7 @@
  When it is desirable to disable <code>Cartesian</code> instance of <code>FreeCocartesian p</code>,
  use <code><a href="Data-Profunctor-Cartesian-Free.html#v:ForgetCartesian" title="Data.Profunctor.Cartesian.Free">ForgetCartesian</a></code> to ignore <code>Cartesian</code> instance of <code>p</code>.</p><p>Because there are some profunctors which are both <code>Cartesian</code> and <code>Cocartesian</code>
  but do not satisfy distributive laws,
- using <code><a href="Data-Profunctor-Cocartesian-Free.html#t:FreeCocartesian" title="Data.Profunctor.Cocartesian.Free">FreeCocartesian</a></code> with such profunctors might cause a surprising behavior.</p><p>For example, <code><code><a href="http://hackage.haskell.org/packages/archive/bifunctors/5.6.2/doc/html/Data-Bifunctor-Joker.html#v:Joker" title="Data.Bifunctor.Joker">Joker</a></code> []</code> is not distributive,
+ using <code><a href="Data-Profunctor-Cocartesian-Free.html#t:FreeCocartesian" title="Data.Profunctor.Cocartesian.Free">FreeCocartesian</a></code> with such profunctors might cause a surprising behavior.</p><p>For example, <code><code><a href="http://hackage.haskell.org/packages/archive/bifunctors/5.6.3/doc/html/Data-Bifunctor-Joker.html#v:Joker" title="Data.Bifunctor.Joker">Joker</a></code> []</code> is not distributive,
  as <code>Alternative []</code> is not distributive as shown below.</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>import Control.Applicative
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>let x = [id, id]
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>let y = [1]; z = [2]
