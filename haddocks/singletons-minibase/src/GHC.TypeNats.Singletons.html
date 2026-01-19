@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
 </span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
-</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">GHC.TypeNats.Singletons</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="GHC.TypeNats.Singletons.html"><span class="hs-identifier">GHC.TypeNats.Singletons</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
 </span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span>
 </span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons</span></span><span>
 </span><span id="line-7"></span><span>
 </span><span id="line-8"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Sing"><span class="annot"><span class="hs-identifier hs-var">Sing</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span>
 </span><span id="line-9"></span><span>
-</span><span id="line-10"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086990"><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679086990"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679086990"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679087011"><span class="annot"><span class="annottext">sing :: Sing n
-</span><a href="#local-6989586621679087011"><span class="hs-identifier hs-var hs-var hs-var hs-var">sing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat n
+</span><span id="line-10"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679089083"><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679089083"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679089083"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679089104"><span class="annot"><span class="annottext">sing :: Sing n
+</span><a href="#local-6989586621679089104"><span class="hs-identifier hs-var hs-var hs-var">sing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat n
 Sing n
 forall (n :: Nat). KnownNat n =&gt; SNat n
 </span><span class="hs-identifier hs-var">SNat</span></span><span>
@@ -16,19 +16,19 @@ forall (n :: Nat). KnownNat n =&gt; SNat n
 </span><span id="line-12"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingKind</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-13"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Demote"><span class="annot"><span class="hs-identifier hs-var">Demote</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Natural</span></span><span>
 </span><span id="line-14"></span><span>
-</span><span id="line-15"></span><span>  </span><span id="local-6989586621679087018"><span class="annot"><span class="annottext">toSing :: Demote Nat -&gt; SomeSing Nat
-</span><a href="#local-6989586621679087018"><span class="hs-identifier hs-var hs-var hs-var hs-var">toSing</span></a></span></span><span> </span><span id="local-6989586621679087020"><span class="annot"><span class="annottext">Demote Nat
-</span><a href="#local-6989586621679087020"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Nat -&gt; (forall (n :: Nat). SNat n -&gt; SomeSing Nat) -&gt; SomeSing Nat
+</span><span id="line-15"></span><span>  </span><span id="local-6989586621679089111"><span class="annot"><span class="annottext">toSing :: Demote Nat -&gt; SomeSing Nat
+</span><a href="#local-6989586621679089111"><span class="hs-identifier hs-var hs-var hs-var">toSing</span></a></span></span><span> </span><span id="local-6989586621679089113"><span class="annot"><span class="annottext">Demote Nat
+</span><a href="#local-6989586621679089113"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Nat -&gt; (forall (n :: Nat). SNat n -&gt; SomeSing Nat) -&gt; SomeSing Nat
 forall r. Nat -&gt; (forall (n :: Nat). SNat n -&gt; r) -&gt; r
 </span><span class="hs-identifier hs-var">withSomeSNat</span></span><span> </span><span class="annot"><span class="annottext">Nat
 Demote Nat
-</span><a href="#local-6989586621679087020"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">SNat n -&gt; SomeSing Nat
+</span><a href="#local-6989586621679089113"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">SNat n -&gt; SomeSing Nat
 Sing n -&gt; SomeSing Nat
 forall (n :: Nat). SNat n -&gt; SomeSing Nat
 forall k (a :: k). Sing a -&gt; SomeSing k
 </span><span class="hs-identifier hs-var">SomeSing</span></span><span>
-</span><span id="line-16"></span><span>  </span><span id="local-6989586621679087023"><span class="annot"><span class="annottext">fromSing :: forall (a :: Nat). Sing a -&gt; Demote Nat
-</span><a href="#local-6989586621679087023"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromSing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat a -&gt; Nat
+</span><span id="line-16"></span><span>  </span><span id="local-6989586621679089116"><span class="annot"><span class="annottext">fromSing :: forall (a :: Nat). Sing a -&gt; Demote Nat
+</span><a href="#local-6989586621679089116"><span class="hs-identifier hs-var hs-var hs-var">fromSing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SNat a -&gt; Nat
 Sing a -&gt; Demote Nat
 forall (n :: Nat). SNat n -&gt; Nat
 </span><span class="hs-identifier hs-var">fromSNat</span></span></pre></body></html>
