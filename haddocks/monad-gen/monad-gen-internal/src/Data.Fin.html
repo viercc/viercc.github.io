@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GeneralisedNewtypeDeriving #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ImportQualifiedPost #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE TypeApplications #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE KindSignatures #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Fin.html"><span class="hs-identifier">Data.Fin</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Read</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readPrec</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">pfail</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Finitary.Enum</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Fin</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Nat</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">KnownNat</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">natVal</span></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">Proxy</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">newtype</span><span> </span><span id="Fin"><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-var">Fin</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679191798"><span class="annot"><a href="#local-6989586621679191798"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Fin"><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-var">Fin</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679191798"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679191839"><span id="local-6989586621679191844"><span class="annot"><span class="annottext">Fin n -&gt; Fin n -&gt; Bool
+(Fin n -&gt; Fin n -&gt; Bool) -&gt; (Fin n -&gt; Fin n -&gt; Bool) -&gt; Eq (Fin n)
+forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+== :: Fin n -&gt; Fin n -&gt; Bool
+$c/= :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+/= :: Fin n -&gt; Fin n -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679191852"><span id="local-6989586621679191857"><span id="local-6989586621679191861"><span id="local-6989586621679191865"><span id="local-6989586621679191868"><span id="local-6989586621679191871"><span id="local-6989586621679191874"><span class="annot"><span class="annottext">Eq (Fin n)
+Eq (Fin n) =&gt;
+(Fin n -&gt; Fin n -&gt; Ordering)
+-&gt; (Fin n -&gt; Fin n -&gt; Bool)
+-&gt; (Fin n -&gt; Fin n -&gt; Bool)
+-&gt; (Fin n -&gt; Fin n -&gt; Bool)
+-&gt; (Fin n -&gt; Fin n -&gt; Bool)
+-&gt; (Fin n -&gt; Fin n -&gt; Fin n)
+-&gt; (Fin n -&gt; Fin n -&gt; Fin n)
+-&gt; Ord (Fin n)
+Fin n -&gt; Fin n -&gt; Bool
+Fin n -&gt; Fin n -&gt; Ordering
+Fin n -&gt; Fin n -&gt; Fin n
+forall (n :: Nat). Eq (Fin n)
+forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+forall (n :: Nat). Fin n -&gt; Fin n -&gt; Ordering
+forall (n :: Nat). Fin n -&gt; Fin n -&gt; Fin n
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Ordering
+compare :: Fin n -&gt; Fin n -&gt; Ordering
+$c&lt; :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+&lt; :: Fin n -&gt; Fin n -&gt; Bool
+$c&lt;= :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+&lt;= :: Fin n -&gt; Fin n -&gt; Bool
+$c&gt; :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+&gt; :: Fin n -&gt; Fin n -&gt; Bool
+$c&gt;= :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Bool
+&gt;= :: Fin n -&gt; Fin n -&gt; Bool
+$cmax :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Fin n
+max :: Fin n -&gt; Fin n -&gt; Fin n
+$cmin :: forall (n :: Nat). Fin n -&gt; Fin n -&gt; Fin n
+min :: Fin n -&gt; Fin n -&gt; Fin n
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679191886"><span id="local-6989586621679191891"><span class="annot"><span class="annottext">Ord (Fin n)
+FinFn (Fin n) (Fin n)
+Ord (Fin n) =&gt;
+FinFn (Fin n) (Fin n)
+-&gt; (forall r.
+    (forall (n :: Nat).
+     KnownNat n =&gt;
+     (Fin n -&gt; Finite n) -&gt; (Finite n -&gt; Fin n) -&gt; r)
+    -&gt; r)
+-&gt; Enum (Fin n)
+forall (n :: Nat). KnownNat n =&gt; Ord (Fin n)
+forall (n :: Nat). KnownNat n =&gt; FinFn (Fin n) (Fin n)
+forall (n :: Nat) r.
+KnownNat n =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Fin n -&gt; Finite n) -&gt; (Finite n -&gt; Fin n) -&gt; r)
+-&gt; r
+forall x.
+Ord x =&gt;
+FinFn x x
+-&gt; (forall r.
+    (forall (n :: Nat).
+     KnownNat n =&gt;
+     (x -&gt; Finite n) -&gt; (Finite n -&gt; x) -&gt; r)
+    -&gt; r)
+-&gt; Enum x
+forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Fin n -&gt; Finite n) -&gt; (Finite n -&gt; Fin n) -&gt; r)
+-&gt; r
+$cenumeration :: forall (n :: Nat). KnownNat n =&gt; FinFn (Fin n) (Fin n)
+enumeration :: FinFn (Fin n) (Fin n)
+$cwithEnum :: forall (n :: Nat) r.
+KnownNat n =&gt;
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Fin n -&gt; Finite n) -&gt; (Finite n -&gt; Fin n) -&gt; r)
+-&gt; r
+withEnum :: forall r.
+(forall (n :: Nat).
+ KnownNat n =&gt;
+ (Fin n -&gt; Finite n) -&gt; (Finite n -&gt; Fin n) -&gt; r)
+-&gt; r
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Fin.Enum</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679191788"><span id="local-6989586621679191903"><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679191788"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-type">Fin</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679191788"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>  </span><span id="local-6989586621679191919"><span class="annot"><span class="annottext">fromInteger :: Integer -&gt; Fin n
+</span><span class="hs-identifier hs-var hs-var hs-var">fromInteger</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Fin n
+forall (n :: Nat). Finite n -&gt; Fin n
+</span><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-var">Fin</span></a></span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; Fin n) -&gt; (Integer -&gt; Finite n) -&gt; Integer -&gt; Fin n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Finite n
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span>
+</span><span id="line-23"></span><span>  </span><span id="local-6989586621679191923"><span class="annot"><span class="annottext">+ :: Fin n -&gt; Fin n -&gt; Fin n
+</span><a href="#local-6989586621679191923"><span class="hs-operator hs-var hs-var hs-var">(+)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Fin n -&gt; Fin n -&gt; Fin n
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;I need only the literals&quot;</span></span><span>
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621679191928"><span class="annot"><span class="annottext">* :: Fin n -&gt; Fin n -&gt; Fin n
+</span><a href="#local-6989586621679191928"><span class="hs-operator hs-var hs-var hs-var">(*)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Fin n -&gt; Fin n -&gt; Fin n
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;I need only the literals&quot;</span></span><span>
+</span><span id="line-25"></span><span>  </span><span id="local-6989586621679191932"><span class="annot"><span class="annottext">abs :: Fin n -&gt; Fin n
+</span><a href="#local-6989586621679191932"><span class="hs-identifier hs-var hs-var hs-var">abs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Fin n -&gt; Fin n
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;I need only the literals&quot;</span></span><span>
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621679191936"><span class="annot"><span class="annottext">signum :: Fin n -&gt; Fin n
+</span><a href="#local-6989586621679191936"><span class="hs-identifier hs-var hs-var hs-var">signum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Fin n -&gt; Fin n
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;I need only the literals&quot;</span></span><span>
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679191940"><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Fin n -&gt; Fin n -&gt; Fin n
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;I need only the literals&quot;</span></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679191808"><span id="local-6989586621679191943"><span id="local-6989586621679191948"><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679191808"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-type">Fin</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679191808"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679191959"><span class="annot"><span class="annottext">show :: Fin n -&gt; [Char]
+</span><a href="#local-6989586621679191959"><span class="hs-identifier hs-var hs-var hs-var">show</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-type">Fin</span></a></span><span> </span><span id="local-6989586621679191961"><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679191961"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Char]
+forall a. Show a =&gt; a -&gt; [Char]
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n -&gt; Integer
+forall a. Integral a =&gt; a -&gt; Integer
+</span><span class="hs-identifier hs-var">toInteger</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679191961"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679191816"><span id="local-6989586621679191964"><span id="local-6989586621679191968"><span id="local-6989586621679191972"><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679191816"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Read</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Fin.html#Fin"><span class="hs-identifier hs-type">Fin</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679191816"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679191989"><span class="annot"><span class="annottext">readPrec :: ReadPrec (Fin n)
+</span><span class="hs-identifier hs-var hs-var hs-var">readPrec</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ReadPrec Nat
+forall a. Read a =&gt; ReadPrec a
+</span><span class="hs-identifier hs-var">readPrec</span></span><span> </span><span class="annot"><span class="annottext">ReadPrec Nat -&gt; (Nat -&gt; ReadPrec (Fin n)) -&gt; ReadPrec (Fin n)
+forall a b. ReadPrec a -&gt; (a -&gt; ReadPrec b) -&gt; ReadPrec b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679191990"><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679191990"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Nat
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Nat -&gt; Nat -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679191990"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679191990"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Nat -&gt; Nat -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679191992"><span class="hs-identifier hs-var">nVal</span></a></span><span>
+</span><span id="line-35"></span><span>      </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Fin n -&gt; ReadPrec (Fin n)
+forall a. a -&gt; ReadPrec a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Nat -&gt; Fin n
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Nat
+</span><a href="#local-6989586621679191990"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>      </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ReadPrec (Fin n)
+forall a. ReadPrec a
+</span><span class="hs-identifier hs-var">pfail</span></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-38"></span><span>      </span><span id="local-6989586621679191992"><span class="annot"><span class="annottext">nVal :: Nat
+</span><a href="#local-6989586621679191992"><span class="hs-identifier hs-var hs-var">nVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Proxy n -&gt; Nat
+forall (n :: Nat) (proxy :: Nat -&gt; *). KnownNat n =&gt; proxy n -&gt; Nat
+</span><span class="hs-identifier hs-var">natVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Proxy n
+forall {k} (t :: k). Proxy t
+</span><span class="hs-identifier hs-var">Proxy</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="annot"><a href="#local-6989586621679191816"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span></pre></body></html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html"><span class="hs-identifier">Data.Traversable.Extra</span></a></span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Data.Traversable.Extra.html#Fresh"><span class="hs-identifier">Fresh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#fresh"><span class="hs-identifier">fresh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#runFresh"><span class="hs-identifier">runFresh</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Data.Traversable.Extra.html#indices"><span class="hs-identifier">indices</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#imap"><span class="hs-identifier">imap</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#zipMatch"><span class="hs-identifier">zipMatch</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#zipMatchWith"><span class="hs-identifier">zipMatchWith</span></a></span><span>
+</span><span id="line-5"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mapAccumM</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Foldable</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.FunctorShape</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.State.Strict</span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="annot"><span class="hs-comment">-- * Fresh</span></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">type</span><span> </span><span id="Fresh"><span class="annot"><a href="Data.Traversable.Extra.html#Fresh"><span class="hs-identifier hs-var">Fresh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">State</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="annot"><a href="Data.Traversable.Extra.html#fresh"><span class="hs-identifier hs-type">fresh</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#Fresh"><span class="hs-identifier hs-type">Fresh</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-17"></span><span id="fresh"><span class="annot"><span class="annottext">fresh :: Fresh Int
+</span><a href="Data.Traversable.Extra.html#fresh"><span class="hs-identifier hs-var hs-var">fresh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; (Int, Int)) -&gt; Fresh Int
+forall a. (Int -&gt; (a, Int)) -&gt; StateT Int Identity a
+forall s (m :: * -&gt; *) a. MonadState s m =&gt; (s -&gt; (a, s)) -&gt; m a
+</span><span class="hs-identifier hs-var">state</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679192116"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679192116"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679192116"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679192116"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span id="local-6989586621679192033"><span class="annot"><a href="Data.Traversable.Extra.html#runFresh"><span class="hs-identifier hs-type">runFresh</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Traversable.Extra.html#Fresh"><span class="hs-identifier hs-type">Fresh</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192033"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192033"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-20"></span><span id="runFresh"><span class="annot"><span class="annottext">runFresh :: forall a. Fresh a -&gt; a
+</span><a href="Data.Traversable.Extra.html#runFresh"><span class="hs-identifier hs-var hs-var">runFresh</span></a></span></span><span> </span><span id="local-6989586621679192119"><span class="annot"><span class="annottext">Fresh a
+</span><a href="#local-6989586621679192119"><span class="hs-identifier hs-var">fa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fresh a -&gt; Int -&gt; a
+forall s a. State s a -&gt; s -&gt; a
+</span><span class="hs-identifier hs-var">evalState</span></span><span> </span><span class="annot"><span class="annottext">Fresh a
+</span><a href="#local-6989586621679192119"><span class="hs-identifier hs-var">fa</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- Custom traversals</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span id="local-6989586621679192038"><span id="local-6989586621679192039"><span class="annot"><a href="Data.Traversable.Extra.html#indices"><span class="hs-identifier hs-type">indices</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679192038"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192038"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192039"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192038"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span></span><span>
+</span><span id="line-25"></span><span id="indices"><span class="annot"><span class="annottext">indices :: forall (t :: * -&gt; *) a. Traversable t =&gt; t a -&gt; t Int
+</span><a href="Data.Traversable.Extra.html#indices"><span class="hs-identifier hs-var hs-var">indices</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fresh (t Int) -&gt; t Int
+forall a. Fresh a -&gt; a
+</span><a href="Data.Traversable.Extra.html#runFresh"><span class="hs-identifier hs-var">runFresh</span></a></span><span> </span><span class="annot"><span class="annottext">(Fresh (t Int) -&gt; t Int) -&gt; (t a -&gt; Fresh (t Int)) -&gt; t a -&gt; t Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Fresh Int) -&gt; t a -&gt; Fresh (t Int)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Fresh Int -&gt; a -&gt; Fresh Int
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Fresh Int
+</span><a href="Data.Traversable.Extra.html#fresh"><span class="hs-identifier hs-var">fresh</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span id="local-6989586621679192053"><span id="local-6989586621679192054"><span id="local-6989586621679192055"><span class="annot"><a href="Data.Traversable.Extra.html#imap"><span class="hs-identifier hs-type">imap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679192053"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192054"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192055"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192053"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192054"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192053"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192055"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
+</span><span id="line-28"></span><span id="imap"><span class="annot"><span class="annottext">imap :: forall (t :: * -&gt; *) a b.
+Traversable t =&gt;
+(Int -&gt; a -&gt; b) -&gt; t a -&gt; t b
+</span><a href="Data.Traversable.Extra.html#imap"><span class="hs-identifier hs-var hs-var">imap</span></a></span></span><span> </span><span id="local-6989586621679192136"><span class="annot"><span class="annottext">Int -&gt; a -&gt; b
+</span><a href="#local-6989586621679192136"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fresh (t b) -&gt; t b
+forall a. Fresh a -&gt; a
+</span><a href="Data.Traversable.Extra.html#runFresh"><span class="hs-identifier hs-var">runFresh</span></a></span><span> </span><span class="annot"><span class="annottext">(Fresh (t b) -&gt; t b) -&gt; (t a -&gt; Fresh (t b)) -&gt; t a -&gt; t b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; StateT Int Identity b) -&gt; t a -&gt; Fresh (t b)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679192137"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192137"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679192138"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679192138"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; a -&gt; b
+</span><a href="#local-6989586621679192136"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679192138"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192137"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; b) -&gt; Fresh Int -&gt; StateT Int Identity b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Fresh Int
+</span><a href="Data.Traversable.Extra.html#fresh"><span class="hs-identifier hs-var">fresh</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- &gt;&gt;&gt; zipMatch [1,2,3] &quot;abc&quot;</span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- Just [(1,'a'),(2,'b'),(3,'c')]</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- &gt;&gt;&gt; zipMatch [1,2] &quot;abc&quot;</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- Nothing</span><span>
+</span><span id="line-34"></span><span id="local-6989586621679192064"><span id="local-6989586621679192066"><span id="local-6989586621679192067"><span class="annot"><a href="Data.Traversable.Extra.html#zipMatch"><span class="hs-identifier hs-type">zipMatch</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192064"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ignored</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679192064"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192064"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192066"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192064"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192067"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192064"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192066"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679192067"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-35"></span><span id="zipMatch"><span class="annot"><span class="annottext">zipMatch :: forall (t :: * -&gt; *) a b.
+(Eq (t Ignored), Traversable t) =&gt;
+t a -&gt; t b -&gt; Maybe (t (a, b))
+</span><a href="Data.Traversable.Extra.html#zipMatch"><span class="hs-identifier hs-var hs-var">zipMatch</span></a></span></span><span> </span><span id="local-6989586621679192152"><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192152"><span class="hs-identifier hs-var">ta</span></a></span></span><span> </span><span id="local-6989586621679192153"><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192153"><span class="hs-identifier hs-var">tb</span></a></span></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">t a -&gt; Shape t
+forall (f :: * -&gt; *) a. f a -&gt; Shape f
+</span><span class="hs-identifier hs-var">Shape</span></span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192152"><span class="hs-identifier hs-var">ta</span></a></span><span> </span><span class="annot"><span class="annottext">Shape t -&gt; Shape t -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">t b -&gt; Shape t
+forall (f :: * -&gt; *) a. f a -&gt; Shape f
+</span><span class="hs-identifier hs-var">Shape</span></span><span> </span><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192153"><span class="hs-identifier hs-var">tb</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([b], t (a, b)) -&gt; t (a, b)
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(([b], t (a, b)) -&gt; t (a, b))
+-&gt; Maybe ([b], t (a, b)) -&gt; Maybe (t (a, b))
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; a -&gt; Maybe ([b], (a, b)))
+-&gt; [b] -&gt; t a -&gt; Maybe ([b], t (a, b))
+forall (m :: * -&gt; *) (t :: * -&gt; *) s a b.
+(Monad m, Traversable t) =&gt;
+(s -&gt; a -&gt; m (s, b)) -&gt; s -&gt; t a -&gt; m (s, t b)
+</span><span class="hs-identifier hs-var">mapAccumM</span></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; a -&gt; Maybe ([b], (a, b))
+forall {b} {a}. [b] -&gt; a -&gt; Maybe ([b], (a, b))
+</span><a href="#local-6989586621679192156"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t b -&gt; [b]
+forall a. t a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192153"><span class="hs-identifier hs-var">tb</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192152"><span class="hs-identifier hs-var">ta</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (t (a, b))
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679192156"><span class="annot"><span class="annottext">step :: [b] -&gt; a -&gt; Maybe ([b], (a, b))
+</span><a href="#local-6989586621679192156"><span class="hs-identifier hs-var hs-var">step</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ([b], (a, b))
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><a href="#local-6989586621679192156"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679192157"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679192157"><span class="hs-identifier hs-var">b</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679192158"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679192158"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679192159"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192159"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([b], (a, b)) -&gt; Maybe ([b], (a, b))
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679192158"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192159"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679192157"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span id="local-6989586621679192089"><span id="local-6989586621679192090"><span id="local-6989586621679192091"><span id="local-6989586621679192092"><span class="annot"><a href="Data.Traversable.Extra.html#zipMatchWith"><span class="hs-identifier hs-type">zipMatchWith</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192089"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ignored</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679192089"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192090"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192091"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679192092"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192089"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192090"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679192089"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192091"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679192089"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679192092"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-43"></span><span id="zipMatchWith"><span class="annot"><span class="annottext">zipMatchWith :: forall (t :: * -&gt; *) a b c.
+(Eq (t Ignored), Traversable t) =&gt;
+(a -&gt; b -&gt; Maybe c) -&gt; t a -&gt; t b -&gt; Maybe (t c)
+</span><a href="Data.Traversable.Extra.html#zipMatchWith"><span class="hs-identifier hs-var hs-var">zipMatchWith</span></a></span></span><span> </span><span id="local-6989586621679192168"><span class="annot"><span class="annottext">a -&gt; b -&gt; Maybe c
+</span><a href="#local-6989586621679192168"><span class="hs-identifier hs-var">op</span></a></span></span><span> </span><span id="local-6989586621679192169"><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192169"><span class="hs-identifier hs-var">ta</span></a></span></span><span> </span><span id="local-6989586621679192170"><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192170"><span class="hs-identifier hs-var">tb</span></a></span></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">t a -&gt; Shape t
+forall (f :: * -&gt; *) a. f a -&gt; Shape f
+</span><span class="hs-identifier hs-var">Shape</span></span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192169"><span class="hs-identifier hs-var">ta</span></a></span><span> </span><span class="annot"><span class="annottext">Shape t -&gt; Shape t -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">t b -&gt; Shape t
+forall (f :: * -&gt; *) a. f a -&gt; Shape f
+</span><span class="hs-identifier hs-var">Shape</span></span><span> </span><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192170"><span class="hs-identifier hs-var">tb</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([b], t c) -&gt; t c
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(([b], t c) -&gt; t c) -&gt; Maybe ([b], t c) -&gt; Maybe (t c)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">([b] -&gt; a -&gt; Maybe ([b], c)) -&gt; [b] -&gt; t a -&gt; Maybe ([b], t c)
+forall (m :: * -&gt; *) (t :: * -&gt; *) s a b.
+(Monad m, Traversable t) =&gt;
+(s -&gt; a -&gt; m (s, b)) -&gt; s -&gt; t a -&gt; m (s, t b)
+</span><span class="hs-identifier hs-var">mapAccumM</span></span><span> </span><span class="annot"><span class="annottext">[b] -&gt; a -&gt; Maybe ([b], c)
+</span><a href="#local-6989586621679192171"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t b -&gt; [b]
+forall a. t a -&gt; [a]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
+</span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">t b
+</span><a href="#local-6989586621679192170"><span class="hs-identifier hs-var">tb</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t a
+</span><a href="#local-6989586621679192169"><span class="hs-identifier hs-var">ta</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (t c)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679192171"><span class="annot"><span class="annottext">step :: [b] -&gt; a -&gt; Maybe ([b], c)
+</span><a href="#local-6989586621679192171"><span class="hs-identifier hs-var hs-var">step</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ([b], c)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-48"></span><span>    </span><span class="annot"><a href="#local-6989586621679192171"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679192173"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679192173"><span class="hs-identifier hs-var">b</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679192174"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679192174"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679192175"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192175"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Maybe c
+</span><a href="#local-6989586621679192168"><span class="hs-identifier hs-var">op</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679192175"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679192173"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe c -&gt; (c -&gt; Maybe ([b], c)) -&gt; Maybe ([b], c)
+forall a b. Maybe a -&gt; (a -&gt; Maybe b) -&gt; Maybe b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679192176"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679192176"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">([b], c) -&gt; Maybe ([b], c)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679192174"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679192176"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span></pre></body></html>
