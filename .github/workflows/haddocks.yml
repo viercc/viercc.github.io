@@ -2,7 +2,8 @@ name: Build Haddocks
 on:
   # Trigger the workflow on every 1 week
   schedule:
-    - cron: '16 8 * * 2'
+    # Scheduled 30 min after build
+    - cron: '46 8 * * 2'
   # Or trigger manually
   workflow_dispatch:
 
@@ -14,118 +15,25 @@ jobs:
     name: "Build docs"
     runs-on: ubuntu-latest
     steps:
-      - name: Set up GHC ${{ env.ghc-version }}
-        uses: haskell-actions/setup@v2
-        id: setup
-        with:
-          ghc-version: ${{ env.ghc-version }}
-          # Defaults, added for clarity:
-          cabal-version: 'latest'
-          cabal-update: true
-      
-      # Fetch all targets
-      - name: "Fetch functor-monad"
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/functor-monad
-          ref: main
-          path: projects/functor-monad
-        
-      - name: "Fetch polynomial-functor"
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/polynomial-functor
-          ref: main
-          path: projects/polynomial-functor
-        
-      - name: "Fetch free-alternative-other"
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/free-alternative-other
-          ref: main
-          path: projects/free-alternative-other
-        
-      - name: "Fetch two-monoids-in-one"
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/two-monoids-in-one
-          ref: main
-          path: projects/two-monoids-in-one
-      
-      - name: "Fetch monad-gen"
-        uses: actions/checkout@v4
-        with:
-          repository: viercc/monad-gen
-          ref: master
-          path: projects/monad-gen
-      
-      - name: Get Date
-        id: get-date
-        run: |
-          /bin/date -u "+date=%Y%m%d" >> $GITHUB_OUTPUT
-          /bin/date -u "+hour=%H" >> $GITHUB_OUTPUT
-        shell: bash
-      
-      - name: Restore cached dependencies
-        uses: actions/cache/restore@v4
-        id: cache
-        env:
-          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
-        with:
-          path: ${{ steps.setup.outputs.cabal-store }}
-          key: ${{ env.key }}-${{ steps.get-date.outputs.date }}-${{ steps.get-date.outputs.hour }}
-          restore-keys: |
-            ${{ env.key }}-${{ steps.get-date.outputs.date }}-
-            ${{ env.key }}-
-
-      - name: Install dependencies
-        # If we had an exact cache hit, the dependencies will be up to date.
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          (cd projects/functor-monad && cabal build all --only-dependencies)
-          (cd projects/free-alternative-other && cabal build all --only-dependencies)
-          (cd projects/two-monoids-in-one && cabal build all --only-dependencies)
-          (cd projects/monad-gen && cabal build all --only-dependencies)
-          (cd projects/polynomial-functor && cabal build all --only-dependencies)
-
-      # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
-      - name: Save cached dependencies
-        uses: actions/cache/save@v4
-        # If we had an exact cache hit, trying to save the cache would error because of key clash.
-        if: steps.cache.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.setup.outputs.cabal-store }}
-          key: ${{ steps.cache.outputs.cache-primary-key }}
-      
-      - name: Build
-        shell: bash
-        env:
-          cabal-opts: >
-            --haddock-output-dir='./doc-output'
-            --haddock-hyperlink-source
-            --haddock-html-location='http://hackage.haskell.org/packages/archive/$pkg/$version/doc/html'
-        run: |
-          set -e
-          (cd projects/functor-monad && cabal haddock all ${{ env.cabal-opts }})
-          (cd projects/monad-gen && cabal haddock all ${{ env.cabal-opts }})
-          (cd projects/polynomial-functor && cabal haddock all ${{ env.cabal-opts }})
-          (cd projects/free-alternative-other && cabal haddock all ${{ env.cabal-opts }})
-          (cd projects/two-monoids-in-one && cabal haddock all ${{ env.cabal-opts }})
-      
       - name: Checkout publish root
         uses: actions/checkout@v4
         with:
           ref:  master
           path: site-root
       
-      - name: Copy
-        shell: bash
+      - name: Retrieve build artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: haddock-all
+          path: $GITHUB_WORKSPACE
+          github-token: ${{ secrets.PAT_READ_PRIVATE }}
+          repository: viercc/Build-haddock
+      
+      - name: Unpack and place artifact
         run: |
-          cp -a projects/functor-monad/doc-output/* site-root/haddocks
-          cp -a projects/polynomial-functor/doc-output/* site-root/haddocks
-          cp -a projects/monad-gen/doc-output/* site-root/haddocks
-          cp -a projects/free-alternative-other/doc-output/* site-root/haddocks
-          cp -a projects/two-monoids-in-one/doc-output/* site-root/haddocks
+          mkdir -p "${RUNNER_TEMP}/haddocks"
+          tar --directory "${RUNNER_TEMP}/haddocks" -xvf "${GITHUB_WORKSPACE}/haddock-all.tar"
+          cp -a "${RUNNER_TEMP}/haddocks/*" site-root/haddocks
       
       - name: Commit Changes
         id: commit_changes
