@@ -24,7 +24,7 @@ jobs:
       - name: Get latest workflow run
         id: get_run
         run: |
-          RUN_ID=$(gh api repos/viercc/Build-haddock/actions/workflows/build.yml/runs \
+          RUN_ID=$(gh api repos/viercc/Build-haddock/actions/workflows/haddock.yaml/runs \
             --jq '.workflow_runs[0].id')
           echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
         env:
