@@ -15,9 +15,9 @@
 </span><span id="line-15"></span><span>
 </span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span>
 </span><span id="line-17"></span><span>
-</span><span id="line-18"></span><span class="hs-keyword">newtype</span><span> </span><span id="Counting"><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span></span><span> </span><span id="local-6989586621679166794"><span class="annot"><a href="#local-6989586621679166794"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679166795"><span class="annot"><a href="#local-6989586621679166795"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Counting"><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getCounting"><span class="annot"><span class="annottext">forall a b. Counting a b -&gt; Int
+</span><span id="line-18"></span><span class="hs-keyword">newtype</span><span> </span><span id="Counting"><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span></span><span> </span><span id="local-6989586621679165882"><span class="annot"><a href="#local-6989586621679165882"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679165883"><span class="annot"><a href="#local-6989586621679165883"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Counting"><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getCounting"><span class="annot"><span class="annottext">forall a b. Counting a b -&gt; Int
 </span><a href="Data.Profunctor.Counting.html#getCounting"><span class="hs-identifier hs-var hs-var">getCounting</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679167096"><span id="local-6989586621679167102"><span id="local-6989586621679167106"><span class="annot"><span class="annottext">Int -&gt; Counting a b -&gt; ShowS
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166184"><span id="local-6989586621679166190"><span id="local-6989586621679166194"><span class="annot"><span class="annottext">Int -&gt; Counting a b -&gt; ShowS
 [Counting a b] -&gt; ShowS
 Counting a b -&gt; String
 (Int -&gt; Counting a b -&gt; ShowS)
@@ -35,7 +35,7 @@ $cshow :: forall a b. Counting a b -&gt; String
 show :: Counting a b -&gt; String
 $cshowList :: forall a b. [Counting a b] -&gt; ShowS
 showList :: [Counting a b] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167111"><span id="local-6989586621679167115"><span id="local-6989586621679167118"><span id="local-6989586621679167128"><span class="annot"><span class="annottext">ReadPrec [Counting a b]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166199"><span id="local-6989586621679166203"><span id="local-6989586621679166206"><span id="local-6989586621679166216"><span class="annot"><span class="annottext">ReadPrec [Counting a b]
 ReadPrec (Counting a b)
 Int -&gt; ReadS (Counting a b)
 ReadS [Counting a b]
@@ -59,7 +59,7 @@ $creadPrec :: forall a b. ReadPrec (Counting a b)
 readPrec :: ReadPrec (Counting a b)
 $creadListPrec :: forall a b. ReadPrec [Counting a b]
 readListPrec :: ReadPrec [Counting a b]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167135"><span id="local-6989586621679167139"><span class="annot"><span class="annottext">Counting a b -&gt; Counting a b -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166223"><span id="local-6989586621679166227"><span class="annot"><span class="annottext">Counting a b -&gt; Counting a b -&gt; Bool
 (Counting a b -&gt; Counting a b -&gt; Bool)
 -&gt; (Counting a b -&gt; Counting a b -&gt; Bool) -&gt; Eq (Counting a b)
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -68,7 +68,7 @@ $c== :: forall a b. Counting a b -&gt; Counting a b -&gt; Bool
 == :: Counting a b -&gt; Counting a b -&gt; Bool
 $c/= :: forall a b. Counting a b -&gt; Counting a b -&gt; Bool
 /= :: Counting a b -&gt; Counting a b -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167146"><span id="local-6989586621679167149"><span id="local-6989586621679167152"><span id="local-6989586621679167156"><span id="local-6989586621679167159"><span id="local-6989586621679167162"><span id="local-6989586621679167165"><span class="annot"><span class="annottext">Eq (Counting a b)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166234"><span id="local-6989586621679166237"><span id="local-6989586621679166240"><span id="local-6989586621679166244"><span id="local-6989586621679166247"><span id="local-6989586621679166250"><span id="local-6989586621679166253"><span class="annot"><span class="annottext">Eq (Counting a b)
 Eq (Counting a b) =&gt;
 (Counting a b -&gt; Counting a b -&gt; Ordering)
 -&gt; (Counting a b -&gt; Counting a b -&gt; Bool)
@@ -109,7 +109,7 @@ $cmax :: forall a b. Counting a b -&gt; Counting a b -&gt; Counting a b
 max :: Counting a b -&gt; Counting a b -&gt; Counting a b
 $cmin :: forall a b. Counting a b -&gt; Counting a b -&gt; Counting a b
 min :: Counting a b -&gt; Counting a b -&gt; Counting a b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167173"><span id="local-6989586621679167176"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Counting a a -&gt; Counting a b)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166261"><span id="local-6989586621679166264"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Counting a a -&gt; Counting a b)
 -&gt; (forall a b. a -&gt; Counting a b -&gt; Counting a a)
 -&gt; Functor (Counting a)
 forall a b. a -&gt; Counting a b -&gt; Counting a a
@@ -123,7 +123,7 @@ $cfmap :: forall a a b. (a -&gt; b) -&gt; Counting a a -&gt; Counting a b
 fmap :: forall a b. (a -&gt; b) -&gt; Counting a a -&gt; Counting a b
 $c&lt;$ :: forall a a b. a -&gt; Counting a b -&gt; Counting a a
 &lt;$ :: forall a b. a -&gt; Counting a b -&gt; Counting a a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167181"><span id="local-6989586621679167187"><span id="local-6989586621679167191"><span id="local-6989586621679167196"><span id="local-6989586621679167199"><span id="local-6989586621679167202"><span id="local-6989586621679167205"><span id="local-6989586621679167208"><span id="local-6989586621679167211"><span id="local-6989586621679167214"><span id="local-6989586621679167217"><span id="local-6989586621679167220"><span id="local-6989586621679167223"><span id="local-6989586621679167228"><span id="local-6989586621679167233"><span id="local-6989586621679167238"><span id="local-6989586621679167243"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Counting a m -&gt; m)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166269"><span id="local-6989586621679166275"><span id="local-6989586621679166279"><span id="local-6989586621679166284"><span id="local-6989586621679166287"><span id="local-6989586621679166290"><span id="local-6989586621679166293"><span id="local-6989586621679166296"><span id="local-6989586621679166299"><span id="local-6989586621679166302"><span id="local-6989586621679166305"><span id="local-6989586621679166308"><span id="local-6989586621679166311"><span id="local-6989586621679166316"><span id="local-6989586621679166321"><span id="local-6989586621679166326"><span id="local-6989586621679166331"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; Counting a m -&gt; m)
 -&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Counting a a -&gt; m)
 -&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Counting a a -&gt; m)
 -&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Counting a a -&gt; b)
@@ -216,7 +216,7 @@ $csum :: forall a a. Num a =&gt; Counting a a -&gt; a
 sum :: forall a. Num a =&gt; Counting a a -&gt; a
 $cproduct :: forall a a. Num a =&gt; Counting a a -&gt; a
 product :: forall a. Num a =&gt; Counting a a -&gt; a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167254"><span id="local-6989586621679167259"><span id="local-6989586621679167265"><span id="local-6989586621679167270"><span class="annot"><span class="annottext">Functor (Counting a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166342"><span id="local-6989586621679166347"><span id="local-6989586621679166353"><span id="local-6989586621679166358"><span class="annot"><span class="annottext">Functor (Counting a)
 Foldable (Counting a)
 (Functor (Counting a), Foldable (Counting a)) =&gt;
 (forall (f :: * -&gt; *) a b.
@@ -294,7 +294,7 @@ sequence :: forall (m :: * -&gt; *) a.
 Monad m =&gt;
 Counting a (m a) -&gt; m (Counting a a)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679167279"><span class="annot"><span class="annottext">(forall a. Eq a =&gt; Eq (Counting a a)) =&gt;
+</span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679166367"><span class="annot"><span class="annottext">(forall a. Eq a =&gt; Eq (Counting a a)) =&gt;
 (forall a b.
  (a -&gt; b -&gt; Bool) -&gt; Counting a a -&gt; Counting a b -&gt; Bool)
 -&gt; Eq1 (Counting a)
@@ -311,7 +311,7 @@ $cliftEq :: forall a a b.
 (a -&gt; b -&gt; Bool) -&gt; Counting a a -&gt; Counting a b -&gt; Bool
 liftEq :: forall a b.
 (a -&gt; b -&gt; Bool) -&gt; Counting a a -&gt; Counting a b -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">Eq1</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167292"><span class="annot"><span class="annottext">Eq1 (Counting a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var">Eq1</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166380"><span class="annot"><span class="annottext">Eq1 (Counting a)
 (Eq1 (Counting a), forall a. Ord a =&gt; Ord (Counting a a)) =&gt;
 (forall a b.
  (a -&gt; b -&gt; Ordering) -&gt; Counting a a -&gt; Counting a b -&gt; Ordering)
@@ -331,7 +331,7 @@ $cliftCompare :: forall a a b.
 (a -&gt; b -&gt; Ordering) -&gt; Counting a a -&gt; Counting a b -&gt; Ordering
 liftCompare :: forall a b.
 (a -&gt; b -&gt; Ordering) -&gt; Counting a a -&gt; Counting a b -&gt; Ordering
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Ord1</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679167301"><span id="local-6989586621679167306"><span class="annot"><span class="annottext">(forall a' a. (a' -&gt; a) -&gt; Counting a a -&gt; Counting a a')
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Ord1</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679166389"><span id="local-6989586621679166394"><span class="annot"><span class="annottext">(forall a' a. (a' -&gt; a) -&gt; Counting a a -&gt; Counting a a')
 -&gt; (forall b a. b -&gt; Counting a b -&gt; Counting a a)
 -&gt; Contravariant (Counting a)
 forall b a. b -&gt; Counting a b -&gt; Counting a a
@@ -349,10 +349,10 @@ $c&gt;$ :: forall a b a. b -&gt; Counting a b -&gt; Counting a a
 </span><span id="line-21"></span><span>           </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Const</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span>
 </span><span id="line-23"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq2</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-24"></span><span>  </span><span id="local-6989586621679167320"><span class="annot"><span class="annottext">liftEq2 :: forall a b c d.
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621679166408"><span class="annot"><span class="annottext">liftEq2 :: forall a b c d.
 (a -&gt; b -&gt; Bool)
 -&gt; (c -&gt; d -&gt; Bool) -&gt; Counting a c -&gt; Counting b d -&gt; Bool
-</span><a href="#local-6989586621679167320"><span class="hs-identifier hs-var hs-var hs-var">liftEq2</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679166408"><span class="hs-identifier hs-var hs-var hs-var">liftEq2</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d -&gt; Bool
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool) -&gt; Counting a c -&gt; Counting b d -&gt; Bool
 forall a b. Coercible a b =&gt; a -&gt; b
@@ -361,10 +361,10 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">(==)</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>
 </span><span id="line-26"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord2</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-27"></span><span>  </span><span id="local-6989586621679167331"><span class="annot"><span class="annottext">liftCompare2 :: forall a b c d.
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679166419"><span class="annot"><span class="annottext">liftCompare2 :: forall a b c d.
 (a -&gt; b -&gt; Ordering)
 -&gt; (c -&gt; d -&gt; Ordering) -&gt; Counting a c -&gt; Counting b d -&gt; Ordering
-</span><a href="#local-6989586621679167331"><span class="hs-identifier hs-var hs-var hs-var">liftCompare2</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
+</span><a href="#local-6989586621679166419"><span class="hs-identifier hs-var hs-var hs-var">liftCompare2</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Ordering
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d -&gt; Ordering
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Ordering)
 -&gt; Counting a c -&gt; Counting b d -&gt; Ordering
@@ -373,152 +373,152 @@ forall a b. Coercible a b =&gt; a -&gt; b
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ordering</span></span><span class="hs-special">)</span><span>
 </span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167337"><span id="local-6989586621679167344"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-30"></span><span>  </span><span id="local-6989586621679167351"><span class="annot"><span class="annottext">dimap :: forall a b c d.
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166425"><span id="local-6989586621679166432"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679166439"><span class="annot"><span class="annottext">dimap :: forall a b c d.
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; Counting b c -&gt; Counting a d
-</span><a href="#local-6989586621679167351"><span class="hs-identifier hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679166439"><span class="hs-identifier hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting b c -&gt; Counting a d
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
-</span><span id="line-31"></span><span>  </span><span id="local-6989586621679167354"><span class="annot"><span class="annottext">lmap :: forall a b c. (a -&gt; b) -&gt; Counting b c -&gt; Counting a c
-</span><a href="#local-6989586621679167354"><span class="hs-identifier hs-var hs-var hs-var">lmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><span id="line-31"></span><span>  </span><span id="local-6989586621679166442"><span class="annot"><span class="annottext">lmap :: forall a b c. (a -&gt; b) -&gt; Counting b c -&gt; Counting a c
+</span><a href="#local-6989586621679166442"><span class="hs-identifier hs-var hs-var hs-var">lmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting b c -&gt; Counting a c
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
-</span><span id="line-32"></span><span>  </span><span id="local-6989586621679167357"><span class="annot"><span class="annottext">rmap :: forall b c a. (b -&gt; c) -&gt; Counting a b -&gt; Counting a c
-</span><a href="#local-6989586621679167357"><span class="hs-identifier hs-var hs-var hs-var">rmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
+</span><span id="line-32"></span><span>  </span><span id="local-6989586621679166445"><span class="annot"><span class="annottext">rmap :: forall b c a. (b -&gt; c) -&gt; Counting a b -&gt; Counting a c
+</span><a href="#local-6989586621679166445"><span class="hs-identifier hs-var hs-var hs-var">rmap</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting a b -&gt; Counting a c
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
 </span><span id="line-33"></span><span>
 </span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-35"></span><span>  </span><span id="local-6989586621679167367"><span class="annot"><span class="annottext">bimap :: forall a b c d.
+</span><span id="line-35"></span><span>  </span><span id="local-6989586621679166455"><span class="annot"><span class="annottext">bimap :: forall a b c d.
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; Counting a c -&gt; Counting b d
-</span><a href="#local-6989586621679167367"><span class="hs-identifier hs-var hs-var hs-var">bimap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679166455"><span class="hs-identifier hs-var hs-var hs-var">bimap</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting a c -&gt; Counting b d
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
-</span><span id="line-36"></span><span>  </span><span id="local-6989586621679167370"><span class="annot"><span class="annottext">first :: forall a b c. (a -&gt; b) -&gt; Counting a c -&gt; Counting b c
-</span><a href="#local-6989586621679167370"><span class="hs-identifier hs-var hs-var hs-var">first</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><span id="line-36"></span><span>  </span><span id="local-6989586621679166458"><span class="annot"><span class="annottext">first :: forall a b c. (a -&gt; b) -&gt; Counting a c -&gt; Counting b c
+</span><a href="#local-6989586621679166458"><span class="hs-identifier hs-var hs-var hs-var">first</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting a c -&gt; Counting b c
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
-</span><span id="line-37"></span><span>  </span><span id="local-6989586621679167373"><span class="annot"><span class="annottext">second :: forall b c a. (b -&gt; c) -&gt; Counting a b -&gt; Counting a c
-</span><a href="#local-6989586621679167373"><span class="hs-identifier hs-var hs-var hs-var">second</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679166461"><span class="annot"><span class="annottext">second :: forall b c a. (b -&gt; c) -&gt; Counting a b -&gt; Counting a c
+</span><a href="#local-6989586621679166461"><span class="hs-identifier hs-var hs-var hs-var">second</span></a></span></span><span> </span><span class="annot"><span class="annottext">b -&gt; c
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Counting a b -&gt; Counting a c
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">coerce</span></span><span>
 </span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167379"><span id="local-6989586621679167384"><span id="local-6989586621679167387"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-40"></span><span>  </span><span id="local-6989586621679167392"><span class="annot"><span class="annottext">proUnit :: forall a. Counting a ()
-</span><a href="#local-6989586621679167392"><span class="hs-identifier hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting a ()
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166467"><span id="local-6989586621679166472"><span id="local-6989586621679166475"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679166480"><span class="annot"><span class="annottext">proUnit :: forall a. Counting a ()
+</span><a href="#local-6989586621679166480"><span class="hs-identifier hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting a ()
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
-</span><span id="line-41"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167396"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167396"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679167397"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
+</span><span id="line-41"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166484"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166484"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679166485"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
 Counting a b -&gt; Counting a' b' -&gt; Counting (a, a') (b, b')
-</span><a href="#local-6989586621679167397"><span class="hs-operator hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167399"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167399"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting (a, a') (b, b')
+</span><a href="#local-6989586621679166485"><span class="hs-operator hs-var hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166487"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166487"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting (a, a') (b, b')
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167396"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166484"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167399"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166487"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167405"><span id="local-6989586621679167410"><span id="local-6989586621679167413"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-44"></span><span>  </span><span id="local-6989586621679167418"><span class="annot"><span class="annottext">proEmpty :: forall b. Counting Void b
-</span><a href="#local-6989586621679167418"><span class="hs-identifier hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting Void b
+</span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166493"><span id="local-6989586621679166498"><span id="local-6989586621679166501"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679166506"><span class="annot"><span class="annottext">proEmpty :: forall b. Counting Void b
+</span><a href="#local-6989586621679166506"><span class="hs-identifier hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting Void b
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span>
-</span><span id="line-45"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167421"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167421"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679167422"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
+</span><span id="line-45"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166509"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166509"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679166510"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
 Counting a b
 -&gt; Counting a' b' -&gt; Counting (Either a a') (Either b b')
-</span><a href="#local-6989586621679167422"><span class="hs-operator hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167424"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167424"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting (Either a a') (Either b b')
+</span><a href="#local-6989586621679166510"><span class="hs-operator hs-var hs-var hs-var">+++</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166512"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166512"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting (Either a a') (Either b b')
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167421"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166509"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167424"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166512"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>
-</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167056"><span id="local-6989586621679167431"><span id="local-6989586621679167435"><span id="local-6989586621679167438"><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679167056"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-48"></span><span>  </span><span id="local-6989586621679167441"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Counting x a
+</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166144"><span id="local-6989586621679166519"><span id="local-6989586621679166523"><span id="local-6989586621679166526"><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166144"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679166529"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Counting x a
 </span><span class="hs-identifier hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
-</span><span id="line-49"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167443"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167443"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679167444"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Counting x (a -&gt; b) -&gt; Counting x a -&gt; Counting x b
-</span><span class="hs-operator hs-var hs-var hs-var">&lt;*&gt;</span></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167445"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167445"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x b
+</span><span id="line-49"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166531"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166531"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679166532"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Counting x (a -&gt; b) -&gt; Counting x a -&gt; Counting x b
+</span><span class="hs-operator hs-var hs-var hs-var">&lt;*&gt;</span></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166533"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166533"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x b
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167443"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166531"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167445"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166533"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167066"><span id="local-6989586621679167451"><span id="local-6989586621679167455"><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679167066"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-52"></span><span>  </span><span id="local-6989586621679167458"><span class="annot"><span class="annottext">empty :: forall a. Counting x a
-</span><a href="#local-6989586621679167458"><span class="hs-identifier hs-var hs-var hs-var">empty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166154"><span id="local-6989586621679166539"><span id="local-6989586621679166543"><span class="annot"><span class="hs-identifier hs-type">Alternative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166154"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679166546"><span class="annot"><span class="annottext">empty :: forall a. Counting x a
+</span><a href="#local-6989586621679166546"><span class="hs-identifier hs-var hs-var hs-var">empty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span>
-</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167461"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167461"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679167462"><span class="annot"><span class="annottext">&lt;|&gt; :: forall a. Counting x a -&gt; Counting x a -&gt; Counting x a
-</span><a href="#local-6989586621679167462"><span class="hs-operator hs-var hs-var hs-var">&lt;|&gt;</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167464"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167464"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
+</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166549"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166549"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679166550"><span class="annot"><span class="annottext">&lt;|&gt; :: forall a. Counting x a -&gt; Counting x a -&gt; Counting x a
+</span><a href="#local-6989586621679166550"><span class="hs-operator hs-var hs-var hs-var">&lt;|&gt;</span></a></span></span><span> </span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166552"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166552"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167461"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166549"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167464"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166552"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167076"><span class="annot"><span class="hs-identifier hs-type">Divisible</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679167076"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>  </span><span id="local-6989586621679167471"><span class="annot"><span class="annottext">conquer :: forall a. Counting x a
-</span><a href="#local-6989586621679167471"><span class="hs-identifier hs-var hs-var hs-var">conquer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166164"><span class="annot"><span class="hs-identifier hs-type">Divisible</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166164"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679166559"><span class="annot"><span class="annottext">conquer :: forall a. Counting x a
+</span><a href="#local-6989586621679166559"><span class="hs-identifier hs-var hs-var hs-var">conquer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621679167474"><span class="annot"><span class="annottext">divide :: forall a b c.
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621679166562"><span class="annot"><span class="annottext">divide :: forall a b c.
 (a -&gt; (b, c)) -&gt; Counting x b -&gt; Counting x c -&gt; Counting x a
-</span><a href="#local-6989586621679167474"><span class="hs-identifier hs-var hs-var hs-var">divide</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; (b, c)
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167476"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167476"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167477"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167477"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
+</span><a href="#local-6989586621679166562"><span class="hs-identifier hs-var hs-var hs-var">divide</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; (b, c)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166564"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166564"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166565"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166565"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167476"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166564"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167477"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166565"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-58"></span><span>
-</span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679167088"><span class="annot"><span class="hs-identifier hs-type">Decidable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679167088"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-60"></span><span>  </span><span id="local-6989586621679167484"><span class="annot"><span class="annottext">lose :: forall a. (a -&gt; Void) -&gt; Counting x a
-</span><a href="#local-6989586621679167484"><span class="hs-identifier hs-var hs-var hs-var">lose</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
+</span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679166176"><span class="annot"><span class="hs-identifier hs-type">Decidable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679166176"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679166572"><span class="annot"><span class="annottext">lose :: forall a. (a -&gt; Void) -&gt; Counting x a
+</span><a href="#local-6989586621679166572"><span class="hs-identifier hs-var hs-var hs-var">lose</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span>
-</span><span id="line-61"></span><span>  </span><span id="local-6989586621679167487"><span class="annot"><span class="annottext">choose :: forall a b c.
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679166575"><span class="annot"><span class="annottext">choose :: forall a b c.
 (a -&gt; Either b c) -&gt; Counting x b -&gt; Counting x c -&gt; Counting x a
-</span><a href="#local-6989586621679167487"><span class="hs-identifier hs-var hs-var hs-var">choose</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either b c
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167489"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167489"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679167490"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167490"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
+</span><a href="#local-6989586621679166575"><span class="hs-identifier hs-var hs-var hs-var">choose</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either b c
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166577"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166577"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-type">Counting</span></a></span><span> </span><span id="local-6989586621679166578"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679166578"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Counting x a
 forall a b. Int -&gt; Counting a b
 </span><a href="Data.Profunctor.Counting.html#Counting"><span class="hs-identifier hs-var">Counting</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167489"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679166577"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679167490"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679166578"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-62"></span></pre></body></html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE MultiParamTypeClasses #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-8"></span><span class="annot"><span class="hs-comment">-- | 'Control.Monad.Free' but taking a secondary covariant parameter.</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Bifunctor.Free.html"><span class="hs-identifier">Data.Bifunctor.Free</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Free</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MonadFree</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Free</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Original</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor.Functor</span></span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">newtype</span><span> </span><span id="Free"><span class="annot"><a href="Data.Bifunctor.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span id="local-6989586621679086223"><span class="annot"><a href="#local-6989586621679086223"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679086224"><span class="annot"><a href="#local-6989586621679086224"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679086225"><span class="annot"><a href="#local-6989586621679086225"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="WrapFree"><span class="annot"><a href="Data.Bifunctor.Free.html#WrapFree"><span class="hs-identifier hs-var">WrapFree</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="unwrapFree"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) a b. Free p a b -&gt; Free (p a) b
+</span><a href="Data.Bifunctor.Free.html#unwrapFree"><span class="hs-identifier hs-var hs-var">unwrapFree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Original.Free</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086223"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086224"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679086225"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-17"></span><span>   </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679086347"><span id="local-6989586621679086352"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Free p a a -&gt; Free p a b)
+-&gt; (forall a b. a -&gt; Free p a b -&gt; Free p a a)
+-&gt; Functor (Free p a)
+forall a b. a -&gt; Free p a b -&gt; Free p a a
+forall a b. (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; Free p a b -&gt; Free p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+$cfmap :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+fmap :: forall a b. (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+$c&lt;$ :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; Free p a b -&gt; Free p a a
+&lt;$ :: forall a b. a -&gt; Free p a b -&gt; Free p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679086362"><span id="local-6989586621679086367"><span id="local-6989586621679086371"><span id="local-6989586621679086375"><span id="local-6989586621679086379"><span class="annot"><span class="annottext">Functor (Free p a)
+Functor (Free p a) =&gt;
+(forall a. a -&gt; Free p a a)
+-&gt; (forall a b. Free p a (a -&gt; b) -&gt; Free p a a -&gt; Free p a b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c) -&gt; Free p a a -&gt; Free p a b -&gt; Free p a c)
+-&gt; (forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b)
+-&gt; (forall a b. Free p a a -&gt; Free p a b -&gt; Free p a a)
+-&gt; Applicative (Free p a)
+forall a. a -&gt; Free p a a
+forall a b. Free p a a -&gt; Free p a b -&gt; Free p a a
+forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b
+forall a b. Free p a (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+forall a b c.
+(a -&gt; b -&gt; c) -&gt; Free p a a -&gt; Free p a b -&gt; Free p a c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+forall (p :: * -&gt; * -&gt; *) a. Functor (p a) =&gt; Functor (Free p a)
+forall (p :: * -&gt; * -&gt; *) a a. Functor (p a) =&gt; a -&gt; Free p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+forall (p :: * -&gt; * -&gt; *) a a b c.
+Functor (p a) =&gt;
+(a -&gt; b -&gt; c) -&gt; Free p a a -&gt; Free p a b -&gt; Free p a c
+$cpure :: forall (p :: * -&gt; * -&gt; *) a a. Functor (p a) =&gt; a -&gt; Free p a a
+pure :: forall a. a -&gt; Free p a a
+$c&lt;*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+&lt;*&gt; :: forall a b. Free p a (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+$cliftA2 :: forall (p :: * -&gt; * -&gt; *) a a b c.
+Functor (p a) =&gt;
+(a -&gt; b -&gt; c) -&gt; Free p a a -&gt; Free p a b -&gt; Free p a c
+liftA2 :: forall a b c.
+(a -&gt; b -&gt; c) -&gt; Free p a a -&gt; Free p a b -&gt; Free p a c
+$c*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a b
+*&gt; :: forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b
+$c&lt;* :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a a
+&lt;* :: forall a b. Free p a a -&gt; Free p a b -&gt; Free p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679086390"><span id="local-6989586621679086395"><span id="local-6989586621679086399"><span class="annot"><span class="annottext">Applicative (Free p a)
+Applicative (Free p a) =&gt;
+(forall a b. Free p a a -&gt; (a -&gt; Free p a b) -&gt; Free p a b)
+-&gt; (forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b)
+-&gt; (forall a. a -&gt; Free p a a)
+-&gt; Monad (Free p a)
+forall a. a -&gt; Free p a a
+forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b
+forall a b. Free p a a -&gt; (a -&gt; Free p a b) -&gt; Free p a b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+forall (p :: * -&gt; * -&gt; *) a.
+Functor (p a) =&gt;
+Applicative (Free p a)
+forall (p :: * -&gt; * -&gt; *) a a. Functor (p a) =&gt; a -&gt; Free p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; (a -&gt; Free p a b) -&gt; Free p a b
+$c&gt;&gt;= :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; (a -&gt; Free p a b) -&gt; Free p a b
+&gt;&gt;= :: forall a b. Free p a a -&gt; (a -&gt; Free p a b) -&gt; Free p a b
+$c&gt;&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+Free p a a -&gt; Free p a b -&gt; Free p a b
+&gt;&gt; :: forall a b. Free p a a -&gt; Free p a b -&gt; Free p a b
+$creturn :: forall (p :: * -&gt; * -&gt; *) a a. Functor (p a) =&gt; a -&gt; Free p a a
+return :: forall a. a -&gt; Free p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086296"><span id="local-6989586621679086297"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086296"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086297"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadFree</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086296"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086297"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086296"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086297"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span>  </span><span id="local-6989586621679086411"><span class="annot"><span class="annottext">wrap :: forall a. p a (Free p a a) -&gt; Free p a a
+</span><a href="#local-6989586621679086411"><span class="hs-identifier hs-var hs-var hs-var">wrap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free (p a) a -&gt; Free p a a
+forall (p :: * -&gt; * -&gt; *) a b. Free (p a) b -&gt; Free p a b
+</span><a href="Data.Bifunctor.Free.html#WrapFree"><span class="hs-identifier hs-var">WrapFree</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (p a) a -&gt; Free p a a)
+-&gt; (p a (Free p a a) -&gt; Free (p a) a)
+-&gt; p a (Free p a a)
+-&gt; Free p a a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">p a (Free (p a) a) -&gt; Free (p a) a
+forall (f :: * -&gt; *) a. f (Free f a) -&gt; Free f a
+</span><span class="hs-identifier hs-var">Original.Free</span></span><span> </span><span class="annot"><span class="annottext">(p a (Free (p a) a) -&gt; Free (p a) a)
+-&gt; (p a (Free p a a) -&gt; p a (Free (p a) a))
+-&gt; p a (Free p a a)
+-&gt; Free (p a) a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Free p a a -&gt; Free (p a) a)
+-&gt; p a (Free p a a) -&gt; p a (Free (p a) a)
+forall a b. (a -&gt; b) -&gt; p a a -&gt; p a b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Free p a a -&gt; Free (p a) a
+forall (p :: * -&gt; * -&gt; *) a b. Free p a b -&gt; Free (p a) b
+</span><a href="Data.Bifunctor.Free.html#unwrapFree"><span class="hs-identifier hs-var">unwrapFree</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086318"><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679086318"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086318"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>    </span><span id="local-6989586621679086426"><span class="annot"><span class="annottext">bimap :: forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; Free p a c -&gt; Free p b d
+</span><a href="#local-6989586621679086426"><span class="hs-identifier hs-var hs-var hs-var">bimap</span></a></span></span><span> </span><span id="local-6989586621679086428"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086428"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679086429"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679086429"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free (p b) d -&gt; Free p b d
+forall (p :: * -&gt; * -&gt; *) a b. Free (p a) b -&gt; Free p a b
+</span><a href="Data.Bifunctor.Free.html#WrapFree"><span class="hs-identifier hs-var">WrapFree</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (p b) d -&gt; Free p b d)
+-&gt; (Free p a c -&gt; Free (p b) d) -&gt; Free p a c -&gt; Free p b d
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Free (p a) c -&gt; Free (p b) d
+forall {p :: * -&gt; * -&gt; *}.
+Bifunctor p =&gt;
+Free (p a) c -&gt; Free (p b) d
+</span><a href="#local-6989586621679086430"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (p a) c -&gt; Free (p b) d)
+-&gt; (Free p a c -&gt; Free (p a) c) -&gt; Free p a c -&gt; Free (p b) d
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Free p a c -&gt; Free (p a) c
+forall (p :: * -&gt; * -&gt; *) a b. Free p a b -&gt; Free (p a) b
+</span><a href="Data.Bifunctor.Free.html#unwrapFree"><span class="hs-identifier hs-var">unwrapFree</span></a></span><span>
+</span><span id="line-24"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>        </span><span id="local-6989586621679086430"><span class="annot"><span class="annottext">go :: Free (p a) c -&gt; Free (p b) d
+</span><a href="#local-6989586621679086430"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Original.Pure</span></span><span> </span><span id="local-6989586621679086436"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679086436"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">d -&gt; Free (p b) d
+forall (f :: * -&gt; *) a. a -&gt; Free f a
+</span><span class="hs-identifier hs-var">Original.Pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679086429"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679086436"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>        </span><span class="annot"><a href="#local-6989586621679086430"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Original.Free</span></span><span> </span><span id="local-6989586621679086437"><span class="annot"><span class="annottext">p a (Free (p a) c)
+</span><a href="#local-6989586621679086437"><span class="hs-identifier hs-var">pam</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p b (Free (p b) d) -&gt; Free (p b) d
+forall (f :: * -&gt; *) a. f (Free f a) -&gt; Free f a
+</span><span class="hs-identifier hs-var">Original.Free</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b)
+-&gt; (Free (p a) c -&gt; Free (p b) d)
+-&gt; p a (Free (p a) c)
+-&gt; p b (Free (p b) d)
+forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
+</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086428"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Free (p a) c -&gt; Free (p b) d
+</span><a href="#local-6989586621679086430"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">p a (Free (p a) c)
+</span><a href="#local-6989586621679086437"><span class="hs-identifier hs-var">pam</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>    </span><span>
+</span><span id="line-28"></span><span>    </span><span id="local-6989586621679086439"><span class="annot"><span class="annottext">first :: forall a b c. (a -&gt; b) -&gt; Free p a c -&gt; Free p b c
+</span><a href="#local-6989586621679086439"><span class="hs-identifier hs-var hs-var hs-var">first</span></a></span></span><span> </span><span id="local-6989586621679086441"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086441"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free (p b) c -&gt; Free p b c
+forall (p :: * -&gt; * -&gt; *) a b. Free (p a) b -&gt; Free p a b
+</span><a href="Data.Bifunctor.Free.html#WrapFree"><span class="hs-identifier hs-var">WrapFree</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (p b) c -&gt; Free p b c)
+-&gt; (Free p a c -&gt; Free (p b) c) -&gt; Free p a c -&gt; Free p b c
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(forall a. p a a -&gt; p b a) -&gt; Free (p a) c -&gt; Free (p b) c
+forall (g :: * -&gt; *) (f :: * -&gt; *) b.
+Functor g =&gt;
+(forall a. f a -&gt; g a) -&gt; Free f b -&gt; Free g b
+</span><span class="hs-identifier hs-var">Original.hoistFree</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; p a a -&gt; p b a
+forall a b c. (a -&gt; b) -&gt; p a c -&gt; p b c
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086441"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Free (p a) c -&gt; Free (p b) c)
+-&gt; (Free p a c -&gt; Free (p a) c) -&gt; Free p a c -&gt; Free (p b) c
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Free p a c -&gt; Free (p a) c
+forall (p :: * -&gt; * -&gt; *) a b. Free p a b -&gt; Free (p a) b
+</span><a href="Data.Bifunctor.Free.html#unwrapFree"><span class="hs-identifier hs-var">unwrapFree</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span id="local-6989586621679086446"><span class="annot"><span class="annottext">second :: forall b c a. (b -&gt; c) -&gt; Free p a b -&gt; Free p a c
+</span><a href="#local-6989586621679086446"><span class="hs-identifier hs-var hs-var hs-var">second</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; c) -&gt; Free p a b -&gt; Free p a c
+forall a b. (a -&gt; b) -&gt; Free p a a -&gt; Free p a b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span id="local-6989586621679086335"><span id="local-6989586621679086336"><span class="annot"><a href="Data.Bifunctor.Free.html#hoistFree"><span class="hs-identifier hs-type">hoistFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679086335"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086336"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="#local-6989586621679086335"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086336"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="Data.Bifunctor.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086335"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-32"></span><span id="hoistFree"><span class="annot"><span class="annottext">hoistFree :: forall (q :: * -&gt; * -&gt; *) (p :: * -&gt; * -&gt; *).
+Bifunctor q =&gt;
+(p :-&gt; q) -&gt; Free p :-&gt; Free q
+</span><a href="Data.Bifunctor.Free.html#hoistFree"><span class="hs-identifier hs-var hs-var">hoistFree</span></a></span></span><span> </span><span id="local-6989586621679086452"><span class="annot"><span class="annottext">p :-&gt; q
+</span><a href="#local-6989586621679086452"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free (q a) b -&gt; Free q a b
+forall (p :: * -&gt; * -&gt; *) a b. Free (p a) b -&gt; Free p a b
+</span><a href="Data.Bifunctor.Free.html#WrapFree"><span class="hs-identifier hs-var">WrapFree</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (q a) b -&gt; Free q a b)
+-&gt; (Free p a b -&gt; Free (q a) b) -&gt; Free p a b -&gt; Free q a b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(forall a. p a a -&gt; q a a) -&gt; Free (p a) b -&gt; Free (q a) b
+forall (g :: * -&gt; *) (f :: * -&gt; *) b.
+Functor g =&gt;
+(forall a. f a -&gt; g a) -&gt; Free f b -&gt; Free g b
+</span><span class="hs-identifier hs-var">Original.hoistFree</span></span><span> </span><span class="annot"><span class="annottext">p a a -&gt; q a a
+forall a. p a a -&gt; q a a
+p :-&gt; q
+</span><a href="#local-6989586621679086452"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">(Free (p a) b -&gt; Free (q a) b)
+-&gt; (Free p a b -&gt; Free (p a) b) -&gt; Free p a b -&gt; Free (q a) b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Free p a b -&gt; Free (p a) b
+forall (p :: * -&gt; * -&gt; *) a b. Free p a b -&gt; Free (p a) b
+</span><a href="Data.Bifunctor.Free.html#unwrapFree"><span class="hs-identifier hs-var">unwrapFree</span></a></span></pre></body></html>

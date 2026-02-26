@@ -1,0 +1,1376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FunctionalDependencies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html"><span class="hs-identifier">Data.Bifunctor.Monad.Module</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifoldable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifoldable</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bitraversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bitraversable</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Identity</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Proxy</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">class</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="annot"><a href="#local-6989586621679086763"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679086766"><span class="annot"><a href="#local-6989586621679086766"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086766"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="HalfModule"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#HalfModule"><span class="hs-identifier hs-var">HalfModule</span></a></span></span><span> </span><span id="local-6989586621679086763"><span class="annot"><a href="#local-6989586621679086763"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679086764"><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086763"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-comment">-- |</span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-comment">--</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-comment">-- * 'firstAction' is an action of monad @m@</span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-comment">--</span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-comment">--   @</span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-comment">--   firstAction pure = id</span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-comment">--   firstAction f . firstAction g = firstAction (f &lt;=&lt; g)</span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-comment">--   @</span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-comment">--</span><span>
+</span><span id="line-25"></span><span>    </span><span class="hs-comment">-- * 'firstAction f' is a monad homomorphism</span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-comment">--</span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-comment">--   @</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-comment">--   firstAction f (pure b) = pure b</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-comment">--   firstAction f (pab &gt;&gt;= k) = firstAction f pab &gt;&gt;= (firstAction f . k)</span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-comment">--   @</span><span>
+</span><span id="line-31"></span><span>    </span><span id="firstAction"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#firstAction"><span class="hs-identifier hs-type">firstAction</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679086992"><span id="local-6989586621679086993"><span id="local-6989586621679086994"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086992"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086763"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086993"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086992"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086994"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086764"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086993"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086994"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="NoAction"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-var">NoAction</span></a></span></span><span> </span><span id="local-6989586621679086768"><span class="annot"><a href="#local-6989586621679086768"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679086769"><span class="annot"><a href="#local-6989586621679086769"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679086770"><span class="annot"><a href="#local-6989586621679086770"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="NoAction"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-var">NoAction</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runNoAction"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) a b. NoAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runNoAction"><span class="hs-identifier hs-var hs-var">runNoAction</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679086768"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086769"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086770"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087206"><span id="local-6989586621679087209"><span class="annot"><span class="annottext">NoAction p a b -&gt; NoAction p a b -&gt; Bool
+(NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; Eq (NoAction p a b)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$c== :: forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+== :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$c/= :: forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+/= :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087218"><span id="local-6989586621679087221"><span id="local-6989586621679087224"><span id="local-6989586621679087228"><span id="local-6989586621679087231"><span id="local-6989586621679087234"><span id="local-6989586621679087237"><span class="annot"><span class="annottext">Eq (NoAction p a b)
+Eq (NoAction p a b) =&gt;
+(NoAction p a b -&gt; NoAction p a b -&gt; Ordering)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; Bool)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b)
+-&gt; (NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b)
+-&gt; Ord (NoAction p a b)
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+NoAction p a b -&gt; NoAction p a b -&gt; Ordering
+NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall (p :: * -&gt; * -&gt; *) a b. Ord (p a b) =&gt; Eq (NoAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Ordering
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+$ccompare :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Ordering
+compare :: NoAction p a b -&gt; NoAction p a b -&gt; Ordering
+$c&lt; :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+&lt; :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$c&lt;= :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+&lt;= :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$c&gt; :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+&gt; :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$c&gt;= :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; Bool
+&gt;= :: NoAction p a b -&gt; NoAction p a b -&gt; Bool
+$cmax :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+max :: NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+$cmin :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+min :: NoAction p a b -&gt; NoAction p a b -&gt; NoAction p a b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087247"><span id="local-6989586621679087252"><span id="local-6989586621679087256"><span class="annot"><span class="annottext">Int -&gt; NoAction p a b -&gt; ShowS
+[NoAction p a b] -&gt; ShowS
+NoAction p a b -&gt; String
+(Int -&gt; NoAction p a b -&gt; ShowS)
+-&gt; (NoAction p a b -&gt; String)
+-&gt; ([NoAction p a b] -&gt; ShowS)
+-&gt; Show (NoAction p a b)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+Int -&gt; NoAction p a b -&gt; ShowS
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+[NoAction p a b] -&gt; ShowS
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+NoAction p a b -&gt; String
+$cshowsPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+Int -&gt; NoAction p a b -&gt; ShowS
+showsPrec :: Int -&gt; NoAction p a b -&gt; ShowS
+$cshow :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+NoAction p a b -&gt; String
+show :: NoAction p a b -&gt; String
+$cshowList :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+[NoAction p a b] -&gt; ShowS
+showList :: [NoAction p a b] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087262"><span id="local-6989586621679087266"><span id="local-6989586621679087269"><span id="local-6989586621679087278"><span class="annot"><span class="annottext">ReadPrec [NoAction p a b]
+ReadPrec (NoAction p a b)
+Int -&gt; ReadS (NoAction p a b)
+ReadS [NoAction p a b]
+(Int -&gt; ReadS (NoAction p a b))
+-&gt; ReadS [NoAction p a b]
+-&gt; ReadPrec (NoAction p a b)
+-&gt; ReadPrec [NoAction p a b]
+-&gt; Read (NoAction p a b)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec [NoAction p a b]
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec (NoAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+Int -&gt; ReadS (NoAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadS [NoAction p a b]
+$creadsPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+Int -&gt; ReadS (NoAction p a b)
+readsPrec :: Int -&gt; ReadS (NoAction p a b)
+$creadList :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadS [NoAction p a b]
+readList :: ReadS [NoAction p a b]
+$creadPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec (NoAction p a b)
+readPrec :: ReadPrec (NoAction p a b)
+$creadListPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec [NoAction p a b]
+readListPrec :: ReadPrec [NoAction p a b]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span>
+</span><span id="line-36"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679087286"><span id="local-6989586621679087290"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b)
+-&gt; (forall a b. a -&gt; NoAction p a b -&gt; NoAction p a a)
+-&gt; Functor (NoAction p a)
+forall a b. a -&gt; NoAction p a b -&gt; NoAction p a a
+forall a b. (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; NoAction p a b -&gt; NoAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+$cfmap :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+fmap :: forall a b. (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+$c&lt;$ :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; NoAction p a b -&gt; NoAction p a a
+&lt;$ :: forall a b. a -&gt; NoAction p a b -&gt; NoAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087298"><span id="local-6989586621679087304"><span id="local-6989586621679087310"><span id="local-6989586621679087316"><span id="local-6989586621679087320"><span id="local-6989586621679087324"><span id="local-6989586621679087328"><span id="local-6989586621679087332"><span id="local-6989586621679087336"><span id="local-6989586621679087340"><span id="local-6989586621679087344"><span id="local-6989586621679087348"><span id="local-6989586621679087352"><span id="local-6989586621679087358"><span id="local-6989586621679087364"><span id="local-6989586621679087370"><span id="local-6989586621679087376"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; NoAction p a m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NoAction p a a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NoAction p a a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a)
+-&gt; (forall a. NoAction p a a -&gt; [a])
+-&gt; (forall a. NoAction p a a -&gt; Bool)
+-&gt; (forall a. NoAction p a a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; NoAction p a a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; NoAction p a a -&gt; a)
+-&gt; (forall a. Ord a =&gt; NoAction p a a -&gt; a)
+-&gt; (forall a. Num a =&gt; NoAction p a a -&gt; a)
+-&gt; (forall a. Num a =&gt; NoAction p a a -&gt; a)
+-&gt; Foldable (NoAction p a)
+forall a. Eq a =&gt; a -&gt; NoAction p a a -&gt; Bool
+forall a. Num a =&gt; NoAction p a a -&gt; a
+forall a. Ord a =&gt; NoAction p a a -&gt; a
+forall m. Monoid m =&gt; NoAction p a m -&gt; m
+forall a. NoAction p a a -&gt; Bool
+forall a. NoAction p a a -&gt; Int
+forall a. NoAction p a a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NoAction p a a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Eq a) =&gt;
+a -&gt; NoAction p a a -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+NoAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+NoAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a m.
+(Foldable (p a), Monoid m) =&gt;
+NoAction p a m -&gt; m
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; Int
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; [a]
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; NoAction p a a -&gt; m
+forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+$cfold :: forall (p :: * -&gt; * -&gt; *) a m.
+(Foldable (p a), Monoid m) =&gt;
+NoAction p a m -&gt; m
+fold :: forall m. Monoid m =&gt; NoAction p a m -&gt; m
+$cfoldMap :: forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; NoAction p a a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NoAction p a a -&gt; m
+$cfoldMap' :: forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; NoAction p a a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; NoAction p a a -&gt; m
+$cfoldr :: forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+$cfoldr' :: forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+$cfoldl :: forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+$cfoldl' :: forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; NoAction p a a -&gt; b
+$cfoldr1 :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+$cfoldl1 :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; NoAction p a a -&gt; a
+$ctoList :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; [a]
+toList :: forall a. NoAction p a a -&gt; [a]
+$cnull :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; Bool
+null :: forall a. NoAction p a a -&gt; Bool
+$clength :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+NoAction p a a -&gt; Int
+length :: forall a. NoAction p a a -&gt; Int
+$celem :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Eq a) =&gt;
+a -&gt; NoAction p a a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; NoAction p a a -&gt; Bool
+$cmaximum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+NoAction p a a -&gt; a
+maximum :: forall a. Ord a =&gt; NoAction p a a -&gt; a
+$cminimum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+NoAction p a a -&gt; a
+minimum :: forall a. Ord a =&gt; NoAction p a a -&gt; a
+$csum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+NoAction p a a -&gt; a
+sum :: forall a. Num a =&gt; NoAction p a a -&gt; a
+$cproduct :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+NoAction p a a -&gt; a
+product :: forall a. Num a =&gt; NoAction p a a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087405"><span id="local-6989586621679087409"><span id="local-6989586621679087413"><span id="local-6989586621679087417"><span id="local-6989586621679087421"><span class="annot"><span class="annottext">Functor (NoAction p a)
+Functor (NoAction p a) =&gt;
+(forall a. a -&gt; NoAction p a a)
+-&gt; (forall a b.
+    NoAction p a (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c)
+    -&gt; NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a c)
+-&gt; (forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b)
+-&gt; (forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a a)
+-&gt; Applicative (NoAction p a)
+forall a. a -&gt; NoAction p a a
+forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a a
+forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+forall a b.
+NoAction p a (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+forall a b c.
+(a -&gt; b -&gt; c) -&gt; NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+forall (p :: * -&gt; * -&gt; *) a.
+Applicative (p a) =&gt;
+Functor (NoAction p a)
+forall (p :: * -&gt; * -&gt; *) a a.
+Applicative (p a) =&gt;
+a -&gt; NoAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b c.
+Applicative (p a) =&gt;
+(a -&gt; b -&gt; c) -&gt; NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a c
+$cpure :: forall (p :: * -&gt; * -&gt; *) a a.
+Applicative (p a) =&gt;
+a -&gt; NoAction p a a
+pure :: forall a. a -&gt; NoAction p a a
+$c&lt;*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+&lt;*&gt; :: forall a b.
+NoAction p a (a -&gt; b) -&gt; NoAction p a a -&gt; NoAction p a b
+$cliftA2 :: forall (p :: * -&gt; * -&gt; *) a a b c.
+Applicative (p a) =&gt;
+(a -&gt; b -&gt; c) -&gt; NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a c
+liftA2 :: forall a b c.
+(a -&gt; b -&gt; c) -&gt; NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a c
+$c*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+*&gt; :: forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+$c&lt;* :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a a
+&lt;* :: forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087434"><span id="local-6989586621679087438"><span id="local-6989586621679087442"><span class="annot"><span class="annottext">Applicative (NoAction p a)
+Applicative (NoAction p a) =&gt;
+(forall a b.
+ NoAction p a a -&gt; (a -&gt; NoAction p a b) -&gt; NoAction p a b)
+-&gt; (forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b)
+-&gt; (forall a. a -&gt; NoAction p a a)
+-&gt; Monad (NoAction p a)
+forall a. a -&gt; NoAction p a a
+forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+forall a b.
+NoAction p a a -&gt; (a -&gt; NoAction p a b) -&gt; NoAction p a b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+forall (p :: * -&gt; * -&gt; *) a.
+Monad (p a) =&gt;
+Applicative (NoAction p a)
+forall (p :: * -&gt; * -&gt; *) a a. Monad (p a) =&gt; a -&gt; NoAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+NoAction p a a -&gt; (a -&gt; NoAction p a b) -&gt; NoAction p a b
+$c&gt;&gt;= :: forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+NoAction p a a -&gt; (a -&gt; NoAction p a b) -&gt; NoAction p a b
+&gt;&gt;= :: forall a b.
+NoAction p a a -&gt; (a -&gt; NoAction p a b) -&gt; NoAction p a b
+$c&gt;&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+&gt;&gt; :: forall a b. NoAction p a a -&gt; NoAction p a b -&gt; NoAction p a b
+$creturn :: forall (p :: * -&gt; * -&gt; *) a a. Monad (p a) =&gt; a -&gt; NoAction p a a
+return :: forall a. a -&gt; NoAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-37"></span><span>       </span><span id="local-6989586621679087452"><span id="local-6989586621679087456"><span id="local-6989586621679087460"><span class="annot"><span class="annottext">(forall a. Functor (NoAction p a)) =&gt;
+(forall a b c d.
+ (a -&gt; b) -&gt; (c -&gt; d) -&gt; NoAction p a c -&gt; NoAction p b d)
+-&gt; (forall a b c. (a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c)
+-&gt; (forall b c a. (b -&gt; c) -&gt; NoAction p a b -&gt; NoAction p a c)
+-&gt; Bifunctor (NoAction p)
+forall a. Functor (NoAction p a)
+forall a b c. (a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c
+forall b c a. (b -&gt; c) -&gt; NoAction p a b -&gt; NoAction p a c
+forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; NoAction p a c -&gt; NoAction p b d
+forall (p :: * -&gt; * -&gt; *) a. Bifunctor p =&gt; Functor (NoAction p a)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c
+forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; NoAction p a b -&gt; NoAction p a c
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; NoAction p a c -&gt; NoAction p b d
+forall (p :: * -&gt; * -&gt; *).
+(forall a. Functor (p a)) =&gt;
+(forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d)
+-&gt; (forall a b c. (a -&gt; b) -&gt; p a c -&gt; p b c)
+-&gt; (forall b c a. (b -&gt; c) -&gt; p a b -&gt; p a c)
+-&gt; Bifunctor p
+$cbimap :: forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; NoAction p a c -&gt; NoAction p b d
+bimap :: forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; NoAction p a c -&gt; NoAction p b d
+$cfirst :: forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c
+first :: forall a b c. (a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c
+$csecond :: forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; NoAction p a b -&gt; NoAction p a c
+second :: forall b c a. (b -&gt; c) -&gt; NoAction p a b -&gt; NoAction p a c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Bifunctor</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087472"><span id="local-6989586621679087478"><span id="local-6989586621679087484"><span id="local-6989586621679087488"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; NoAction p m m -&gt; m)
+-&gt; (forall m a b.
+    Monoid m =&gt;
+    (a -&gt; m) -&gt; (b -&gt; m) -&gt; NoAction p a b -&gt; m)
+-&gt; (forall a c b.
+    (a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c)
+-&gt; (forall c a b.
+    (c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c)
+-&gt; Bifoldable (NoAction p)
+forall m. Monoid m =&gt; NoAction p m m -&gt; m
+forall m a b.
+Monoid m =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; NoAction p a b -&gt; m
+forall c a b.
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+forall a c b.
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *) m.
+(Bifoldable p, Monoid m) =&gt;
+NoAction p m m -&gt; m
+forall (p :: * -&gt; * -&gt; *) m a b.
+(Bifoldable p, Monoid m) =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; NoAction p a b -&gt; m
+forall (p :: * -&gt; * -&gt; *) c a b.
+Bifoldable p =&gt;
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *) a c b.
+Bifoldable p =&gt;
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *).
+(forall m. Monoid m =&gt; p m m -&gt; m)
+-&gt; (forall m a b. Monoid m =&gt; (a -&gt; m) -&gt; (b -&gt; m) -&gt; p a b -&gt; m)
+-&gt; (forall a c b.
+    (a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; p a b -&gt; c)
+-&gt; (forall c a b.
+    (c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; p a b -&gt; c)
+-&gt; Bifoldable p
+$cbifold :: forall (p :: * -&gt; * -&gt; *) m.
+(Bifoldable p, Monoid m) =&gt;
+NoAction p m m -&gt; m
+bifold :: forall m. Monoid m =&gt; NoAction p m m -&gt; m
+$cbifoldMap :: forall (p :: * -&gt; * -&gt; *) m a b.
+(Bifoldable p, Monoid m) =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; NoAction p a b -&gt; m
+bifoldMap :: forall m a b.
+Monoid m =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; NoAction p a b -&gt; m
+$cbifoldr :: forall (p :: * -&gt; * -&gt; *) a c b.
+Bifoldable p =&gt;
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+bifoldr :: forall a c b.
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+$cbifoldl :: forall (p :: * -&gt; * -&gt; *) c a b.
+Bifoldable p =&gt;
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+bifoldl :: forall c a b.
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; NoAction p a b -&gt; c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Bifoldable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086968"><span id="local-6989586621679086969"><span id="local-6989586621679087506"><span id="local-6989586621679087512"><span id="local-6989586621679087517"><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086968"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086969"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-type">NoAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086968"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086969"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621679087529"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; NoAction p a a -&gt; f (NoAction p a b)
+</span><a href="#local-6989586621679087529"><span class="hs-identifier hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679087531"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679087531"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(p a b -&gt; NoAction p a b) -&gt; f (p a b) -&gt; f (NoAction p a b)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">p a b -&gt; NoAction p a b
+forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; NoAction p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-var">NoAction</span></a></span><span> </span><span class="annot"><span class="annottext">(f (p a b) -&gt; f (NoAction p a b))
+-&gt; (NoAction p a a -&gt; f (p a b))
+-&gt; NoAction p a a
+-&gt; f (NoAction p a b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; p a a -&gt; f (p a b)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; p a a -&gt; f (p a b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679087531"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(p a a -&gt; f (p a b))
+-&gt; (NoAction p a a -&gt; p a a) -&gt; NoAction p a a -&gt; f (p a b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">NoAction p a a -&gt; p a a
+forall (p :: * -&gt; * -&gt; *) a b. NoAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runNoAction"><span class="hs-identifier hs-var">runNoAction</span></a></span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086984"><span class="annot"><span class="hs-identifier hs-type">Bitraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679086984"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bitraversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-type">NoAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086984"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>    </span><span id="local-6989586621679087550"><span class="annot"><span class="annottext">bitraverse :: forall (f :: * -&gt; *) a c b d.
+Applicative f =&gt;
+(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; NoAction p a b -&gt; f (NoAction p c d)
+</span><a href="#local-6989586621679087550"><span class="hs-identifier hs-var hs-var hs-var">bitraverse</span></a></span></span><span> </span><span id="local-6989586621679087552"><span class="annot"><span class="annottext">a -&gt; f c
+</span><a href="#local-6989586621679087552"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679087553"><span class="annot"><span class="annottext">b -&gt; f d
+</span><a href="#local-6989586621679087553"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(p c d -&gt; NoAction p c d) -&gt; f (p c d) -&gt; f (NoAction p c d)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">p c d -&gt; NoAction p c d
+forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; NoAction p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-var">NoAction</span></a></span><span> </span><span class="annot"><span class="annottext">(f (p c d) -&gt; f (NoAction p c d))
+-&gt; (NoAction p a b -&gt; f (p c d))
+-&gt; NoAction p a b
+-&gt; f (NoAction p c d)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; p a b -&gt; f (p c d)
+forall (f :: * -&gt; *) a c b d.
+Applicative f =&gt;
+(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; p a b -&gt; f (p c d)
+forall (t :: * -&gt; * -&gt; *) (f :: * -&gt; *) a c b d.
+(Bitraversable t, Applicative f) =&gt;
+(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; t a b -&gt; f (t c d)
+</span><span class="hs-identifier hs-var">bitraverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f c
+</span><a href="#local-6989586621679087552"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; f d
+</span><a href="#local-6989586621679087553"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">(p a b -&gt; f (p c d))
+-&gt; (NoAction p a b -&gt; p a b) -&gt; NoAction p a b -&gt; f (p c d)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">NoAction p a b -&gt; p a b
+forall (p :: * -&gt; * -&gt; *) a b. NoAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runNoAction"><span class="hs-identifier hs-var">runNoAction</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086996"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679086996"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679086995"><span class="annot"><a href="#local-6989586621679086995"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086996"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086995"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#HalfModule"><span class="hs-identifier hs-type">HalfModule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#NoAction"><span class="hs-identifier hs-type">NoAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086996"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679087567"><span class="annot"><span class="annottext">firstAction :: forall a a' b.
+(a -&gt; Identity a') -&gt; NoAction p a b -&gt; NoAction p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#firstAction"><span class="hs-identifier hs-var hs-var hs-var">firstAction</span></a></span></span><span> </span><span id="local-6989586621679087568"><span class="annot"><span class="annottext">a -&gt; Identity a'
+</span><a href="#local-6989586621679087568"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a') -&gt; NoAction p a b -&gt; NoAction p a' b
+forall a b c. (a -&gt; b) -&gt; NoAction p a c -&gt; NoAction p b c
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Identity a' -&gt; a'
+forall a. Identity a -&gt; a
+</span><span class="hs-identifier hs-var">runIdentity</span></span><span> </span><span class="annot"><span class="annottext">(Identity a' -&gt; a') -&gt; (a -&gt; Identity a') -&gt; a -&gt; a'
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Identity a'
+</span><a href="#local-6989586621679087568"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">newtype</span><span> </span><span id="IgnoreAction"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-var">IgnoreAction</span></a></span></span><span> </span><span id="local-6989586621679087001"><span class="annot"><a href="#local-6989586621679087001"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679087002"><span class="annot"><a href="#local-6989586621679087002"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679087003"><span class="annot"><a href="#local-6989586621679087003"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="IgnoreAction"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-var">IgnoreAction</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runIgnoreAction"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) a b. IgnoreAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runIgnoreAction"><span class="hs-identifier hs-var hs-var">runIgnoreAction</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679087001"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087002"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087003"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679087574"><span id="local-6989586621679087577"><span class="annot"><span class="annottext">IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+(IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; Eq (IgnoreAction p a b)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$c== :: forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+== :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$c/= :: forall (p :: * -&gt; * -&gt; *) a b.
+Eq (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+/= :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087585"><span id="local-6989586621679087588"><span id="local-6989586621679087591"><span id="local-6989586621679087595"><span id="local-6989586621679087598"><span id="local-6989586621679087601"><span id="local-6989586621679087604"><span class="annot"><span class="annottext">Eq (IgnoreAction p a b)
+Eq (IgnoreAction p a b) =&gt;
+(IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Ordering)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b)
+-&gt; (IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b)
+-&gt; Ord (IgnoreAction p a b)
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Ordering
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+Eq (IgnoreAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Ordering
+forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+$ccompare :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Ordering
+compare :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Ordering
+$c&lt; :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+&lt; :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$c&lt;= :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+&lt;= :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$c&gt; :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+&gt; :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$c&gt;= :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+&gt;= :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; Bool
+$cmax :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+max :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+$cmin :: forall (p :: * -&gt; * -&gt; *) a b.
+Ord (p a b) =&gt;
+IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+min :: IgnoreAction p a b -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087608"><span id="local-6989586621679087612"><span id="local-6989586621679087616"><span class="annot"><span class="annottext">Int -&gt; IgnoreAction p a b -&gt; ShowS
+[IgnoreAction p a b] -&gt; ShowS
+IgnoreAction p a b -&gt; String
+(Int -&gt; IgnoreAction p a b -&gt; ShowS)
+-&gt; (IgnoreAction p a b -&gt; String)
+-&gt; ([IgnoreAction p a b] -&gt; ShowS)
+-&gt; Show (IgnoreAction p a b)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+Int -&gt; IgnoreAction p a b -&gt; ShowS
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+[IgnoreAction p a b] -&gt; ShowS
+forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+IgnoreAction p a b -&gt; String
+$cshowsPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+Int -&gt; IgnoreAction p a b -&gt; ShowS
+showsPrec :: Int -&gt; IgnoreAction p a b -&gt; ShowS
+$cshow :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+IgnoreAction p a b -&gt; String
+show :: IgnoreAction p a b -&gt; String
+$cshowList :: forall (p :: * -&gt; * -&gt; *) a b.
+Show (p a b) =&gt;
+[IgnoreAction p a b] -&gt; ShowS
+showList :: [IgnoreAction p a b] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087620"><span id="local-6989586621679087624"><span id="local-6989586621679087627"><span id="local-6989586621679087635"><span class="annot"><span class="annottext">ReadPrec [IgnoreAction p a b]
+ReadPrec (IgnoreAction p a b)
+Int -&gt; ReadS (IgnoreAction p a b)
+ReadS [IgnoreAction p a b]
+(Int -&gt; ReadS (IgnoreAction p a b))
+-&gt; ReadS [IgnoreAction p a b]
+-&gt; ReadPrec (IgnoreAction p a b)
+-&gt; ReadPrec [IgnoreAction p a b]
+-&gt; Read (IgnoreAction p a b)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec [IgnoreAction p a b]
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec (IgnoreAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+Int -&gt; ReadS (IgnoreAction p a b)
+forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadS [IgnoreAction p a b]
+$creadsPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+Int -&gt; ReadS (IgnoreAction p a b)
+readsPrec :: Int -&gt; ReadS (IgnoreAction p a b)
+$creadList :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadS [IgnoreAction p a b]
+readList :: ReadS [IgnoreAction p a b]
+$creadPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec (IgnoreAction p a b)
+readPrec :: ReadPrec (IgnoreAction p a b)
+$creadListPrec :: forall (p :: * -&gt; * -&gt; *) a b.
+Read (p a b) =&gt;
+ReadPrec [IgnoreAction p a b]
+readListPrec :: ReadPrec [IgnoreAction p a b]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span>
+</span><span id="line-51"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679087639"><span id="local-6989586621679087643"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b)
+-&gt; (forall a b. a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a)
+-&gt; Functor (IgnoreAction p a)
+forall a b. a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+forall a b. (a -&gt; b) -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+$cfmap :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+(a -&gt; b) -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+fmap :: forall a b. (a -&gt; b) -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+$c&lt;$ :: forall (p :: * -&gt; * -&gt; *) a a b.
+Functor (p a) =&gt;
+a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+&lt;$ :: forall a b. a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087649"><span id="local-6989586621679087655"><span id="local-6989586621679087661"><span id="local-6989586621679087667"><span id="local-6989586621679087671"><span id="local-6989586621679087675"><span id="local-6989586621679087679"><span id="local-6989586621679087683"><span id="local-6989586621679087687"><span id="local-6989586621679087691"><span id="local-6989586621679087695"><span id="local-6989586621679087699"><span id="local-6989586621679087703"><span id="local-6989586621679087709"><span id="local-6989586621679087715"><span id="local-6989586621679087721"><span id="local-6989586621679087727"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; IgnoreAction p a m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; IgnoreAction p a a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; IgnoreAction p a a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a)
+-&gt; (forall a. IgnoreAction p a a -&gt; [a])
+-&gt; (forall a. IgnoreAction p a a -&gt; Bool)
+-&gt; (forall a. IgnoreAction p a a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; IgnoreAction p a a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; IgnoreAction p a a -&gt; a)
+-&gt; (forall a. Ord a =&gt; IgnoreAction p a a -&gt; a)
+-&gt; (forall a. Num a =&gt; IgnoreAction p a a -&gt; a)
+-&gt; (forall a. Num a =&gt; IgnoreAction p a a -&gt; a)
+-&gt; Foldable (IgnoreAction p a)
+forall a. Eq a =&gt; a -&gt; IgnoreAction p a a -&gt; Bool
+forall a. Num a =&gt; IgnoreAction p a a -&gt; a
+forall a. Ord a =&gt; IgnoreAction p a a -&gt; a
+forall m. Monoid m =&gt; IgnoreAction p a m -&gt; m
+forall a. IgnoreAction p a a -&gt; Bool
+forall a. IgnoreAction p a a -&gt; Int
+forall a. IgnoreAction p a a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Eq a) =&gt;
+a -&gt; IgnoreAction p a a -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+IgnoreAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+IgnoreAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a m.
+(Foldable (p a), Monoid m) =&gt;
+IgnoreAction p a m -&gt; m
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; Bool
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; Int
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; [a]
+forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+$cfold :: forall (p :: * -&gt; * -&gt; *) a m.
+(Foldable (p a), Monoid m) =&gt;
+IgnoreAction p a m -&gt; m
+fold :: forall m. Monoid m =&gt; IgnoreAction p a m -&gt; m
+$cfoldMap :: forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+$cfoldMap' :: forall (p :: * -&gt; * -&gt; *) a m a.
+(Foldable (p a), Monoid m) =&gt;
+(a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+foldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; IgnoreAction p a a -&gt; m
+$cfoldr :: forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+$cfoldr' :: forall (p :: * -&gt; * -&gt; *) a a b.
+Foldable (p a) =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+$cfoldl :: forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+$cfoldl' :: forall (p :: * -&gt; * -&gt; *) a b a.
+Foldable (p a) =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; IgnoreAction p a a -&gt; b
+$cfoldr1 :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+foldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+$cfoldl1 :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+(a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+foldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; IgnoreAction p a a -&gt; a
+$ctoList :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; [a]
+toList :: forall a. IgnoreAction p a a -&gt; [a]
+$cnull :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; Bool
+null :: forall a. IgnoreAction p a a -&gt; Bool
+$clength :: forall (p :: * -&gt; * -&gt; *) a a.
+Foldable (p a) =&gt;
+IgnoreAction p a a -&gt; Int
+length :: forall a. IgnoreAction p a a -&gt; Int
+$celem :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Eq a) =&gt;
+a -&gt; IgnoreAction p a a -&gt; Bool
+elem :: forall a. Eq a =&gt; a -&gt; IgnoreAction p a a -&gt; Bool
+$cmaximum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+IgnoreAction p a a -&gt; a
+maximum :: forall a. Ord a =&gt; IgnoreAction p a a -&gt; a
+$cminimum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Ord a) =&gt;
+IgnoreAction p a a -&gt; a
+minimum :: forall a. Ord a =&gt; IgnoreAction p a a -&gt; a
+$csum :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+IgnoreAction p a a -&gt; a
+sum :: forall a. Num a =&gt; IgnoreAction p a a -&gt; a
+$cproduct :: forall (p :: * -&gt; * -&gt; *) a a.
+(Foldable (p a), Num a) =&gt;
+IgnoreAction p a a -&gt; a
+product :: forall a. Num a =&gt; IgnoreAction p a a -&gt; a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087738"><span id="local-6989586621679087742"><span id="local-6989586621679087746"><span id="local-6989586621679087750"><span id="local-6989586621679087754"><span class="annot"><span class="annottext">Functor (IgnoreAction p a)
+Functor (IgnoreAction p a) =&gt;
+(forall a. a -&gt; IgnoreAction p a a)
+-&gt; (forall a b.
+    IgnoreAction p a (a -&gt; b)
+    -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b)
+-&gt; (forall a b c.
+    (a -&gt; b -&gt; c)
+    -&gt; IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c)
+-&gt; (forall a b.
+    IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b)
+-&gt; (forall a b.
+    IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a)
+-&gt; Applicative (IgnoreAction p a)
+forall a. a -&gt; IgnoreAction p a a
+forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+forall a b.
+IgnoreAction p a (a -&gt; b)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+forall a b c.
+(a -&gt; b -&gt; c)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall (f :: * -&gt; *).
+Functor f =&gt;
+(forall a. a -&gt; f a)
+-&gt; (forall a b. f (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c)
+-&gt; (forall a b. f a -&gt; f b -&gt; f b)
+-&gt; (forall a b. f a -&gt; f b -&gt; f a)
+-&gt; Applicative f
+forall (p :: * -&gt; * -&gt; *) a.
+Applicative (p a) =&gt;
+Functor (IgnoreAction p a)
+forall (p :: * -&gt; * -&gt; *) a a.
+Applicative (p a) =&gt;
+a -&gt; IgnoreAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a (a -&gt; b)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b c.
+Applicative (p a) =&gt;
+(a -&gt; b -&gt; c)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+$cpure :: forall (p :: * -&gt; * -&gt; *) a a.
+Applicative (p a) =&gt;
+a -&gt; IgnoreAction p a a
+pure :: forall a. a -&gt; IgnoreAction p a a
+$c&lt;*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a (a -&gt; b)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+&lt;*&gt; :: forall a b.
+IgnoreAction p a (a -&gt; b)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b
+$cliftA2 :: forall (p :: * -&gt; * -&gt; *) a a b c.
+Applicative (p a) =&gt;
+(a -&gt; b -&gt; c)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+liftA2 :: forall a b c.
+(a -&gt; b -&gt; c)
+-&gt; IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+$c*&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+*&gt; :: forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+$c&lt;* :: forall (p :: * -&gt; * -&gt; *) a a b.
+Applicative (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+&lt;* :: forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Applicative</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087763"><span id="local-6989586621679087767"><span id="local-6989586621679087771"><span class="annot"><span class="annottext">Applicative (IgnoreAction p a)
+Applicative (IgnoreAction p a) =&gt;
+(forall a b.
+ IgnoreAction p a a
+ -&gt; (a -&gt; IgnoreAction p a b) -&gt; IgnoreAction p a b)
+-&gt; (forall a b.
+    IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b)
+-&gt; (forall a. a -&gt; IgnoreAction p a a)
+-&gt; Monad (IgnoreAction p a)
+forall a. a -&gt; IgnoreAction p a a
+forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+forall a b.
+IgnoreAction p a a
+-&gt; (a -&gt; IgnoreAction p a b) -&gt; IgnoreAction p a b
+forall (m :: * -&gt; *).
+Applicative m =&gt;
+(forall a b. m a -&gt; (a -&gt; m b) -&gt; m b)
+-&gt; (forall a b. m a -&gt; m b -&gt; m b)
+-&gt; (forall a. a -&gt; m a)
+-&gt; Monad m
+forall (p :: * -&gt; * -&gt; *) a.
+Monad (p a) =&gt;
+Applicative (IgnoreAction p a)
+forall (p :: * -&gt; * -&gt; *) a a.
+Monad (p a) =&gt;
+a -&gt; IgnoreAction p a a
+forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+IgnoreAction p a a
+-&gt; (a -&gt; IgnoreAction p a b) -&gt; IgnoreAction p a b
+$c&gt;&gt;= :: forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+IgnoreAction p a a
+-&gt; (a -&gt; IgnoreAction p a b) -&gt; IgnoreAction p a b
+&gt;&gt;= :: forall a b.
+IgnoreAction p a a
+-&gt; (a -&gt; IgnoreAction p a b) -&gt; IgnoreAction p a b
+$c&gt;&gt; :: forall (p :: * -&gt; * -&gt; *) a a b.
+Monad (p a) =&gt;
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+&gt;&gt; :: forall a b.
+IgnoreAction p a a -&gt; IgnoreAction p a b -&gt; IgnoreAction p a b
+$creturn :: forall (p :: * -&gt; * -&gt; *) a a.
+Monad (p a) =&gt;
+a -&gt; IgnoreAction p a a
+return :: forall a. a -&gt; IgnoreAction p a a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monad</span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-52"></span><span>       </span><span id="local-6989586621679087779"><span id="local-6989586621679087783"><span id="local-6989586621679087787"><span class="annot"><span class="annottext">(forall a. Functor (IgnoreAction p a)) =&gt;
+(forall a b c d.
+ (a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b d)
+-&gt; (forall a b c.
+    (a -&gt; b) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b c)
+-&gt; (forall b c a.
+    (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c)
+-&gt; Bifunctor (IgnoreAction p)
+forall a. Functor (IgnoreAction p a)
+forall a b c. (a -&gt; b) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b c
+forall b c a. (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b d
+forall (p :: * -&gt; * -&gt; *) a.
+Bifunctor p =&gt;
+Functor (IgnoreAction p a)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b c
+forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b d
+forall (p :: * -&gt; * -&gt; *).
+(forall a. Functor (p a)) =&gt;
+(forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d)
+-&gt; (forall a b c. (a -&gt; b) -&gt; p a c -&gt; p b c)
+-&gt; (forall b c a. (b -&gt; c) -&gt; p a b -&gt; p a c)
+-&gt; Bifunctor p
+$cbimap :: forall (p :: * -&gt; * -&gt; *) a b c d.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b d
+bimap :: forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b d
+$cfirst :: forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b c
+first :: forall a b c. (a -&gt; b) -&gt; IgnoreAction p a c -&gt; IgnoreAction p b c
+$csecond :: forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+second :: forall b c a. (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Bifunctor</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679087794"><span id="local-6989586621679087800"><span id="local-6989586621679087806"><span id="local-6989586621679087810"><span class="annot"><span class="annottext">(forall m. Monoid m =&gt; IgnoreAction p m m -&gt; m)
+-&gt; (forall m a b.
+    Monoid m =&gt;
+    (a -&gt; m) -&gt; (b -&gt; m) -&gt; IgnoreAction p a b -&gt; m)
+-&gt; (forall a c b.
+    (a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c)
+-&gt; (forall c a b.
+    (c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c)
+-&gt; Bifoldable (IgnoreAction p)
+forall m. Monoid m =&gt; IgnoreAction p m m -&gt; m
+forall m a b.
+Monoid m =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; IgnoreAction p a b -&gt; m
+forall c a b.
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+forall a c b.
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *) m.
+(Bifoldable p, Monoid m) =&gt;
+IgnoreAction p m m -&gt; m
+forall (p :: * -&gt; * -&gt; *) m a b.
+(Bifoldable p, Monoid m) =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; IgnoreAction p a b -&gt; m
+forall (p :: * -&gt; * -&gt; *) c a b.
+Bifoldable p =&gt;
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *) a c b.
+Bifoldable p =&gt;
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+forall (p :: * -&gt; * -&gt; *).
+(forall m. Monoid m =&gt; p m m -&gt; m)
+-&gt; (forall m a b. Monoid m =&gt; (a -&gt; m) -&gt; (b -&gt; m) -&gt; p a b -&gt; m)
+-&gt; (forall a c b.
+    (a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; p a b -&gt; c)
+-&gt; (forall c a b.
+    (c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; p a b -&gt; c)
+-&gt; Bifoldable p
+$cbifold :: forall (p :: * -&gt; * -&gt; *) m.
+(Bifoldable p, Monoid m) =&gt;
+IgnoreAction p m m -&gt; m
+bifold :: forall m. Monoid m =&gt; IgnoreAction p m m -&gt; m
+$cbifoldMap :: forall (p :: * -&gt; * -&gt; *) m a b.
+(Bifoldable p, Monoid m) =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; IgnoreAction p a b -&gt; m
+bifoldMap :: forall m a b.
+Monoid m =&gt;
+(a -&gt; m) -&gt; (b -&gt; m) -&gt; IgnoreAction p a b -&gt; m
+$cbifoldr :: forall (p :: * -&gt; * -&gt; *) a c b.
+Bifoldable p =&gt;
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+bifoldr :: forall a c b.
+(a -&gt; c -&gt; c) -&gt; (b -&gt; c -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+$cbifoldl :: forall (p :: * -&gt; * -&gt; *) c a b.
+Bifoldable p =&gt;
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+bifoldl :: forall c a b.
+(c -&gt; a -&gt; c) -&gt; (c -&gt; b -&gt; c) -&gt; c -&gt; IgnoreAction p a b -&gt; c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Bifoldable</span></span></span></span></span></span><span class="hs-special">,</span><span>
+</span><span id="line-53"></span><span>       </span><span id="local-6989586621679087816"><span id="local-6989586621679087820"><span id="local-6989586621679087824"><span id="local-6989586621679087828"><span id="local-6989586621679087835"><span class="annot"><span class="annottext">(forall a b c d.
+ (a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a d)
+-&gt; (forall a b c.
+    (a -&gt; b) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a c)
+-&gt; (forall b c a.
+    (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c)
+-&gt; (forall a b c (q :: * -&gt; * -&gt; *).
+    Coercible c b =&gt;
+    q b c -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c)
+-&gt; (forall a b c (q :: * -&gt; * -&gt; *).
+    Coercible b a =&gt;
+    IgnoreAction p b c -&gt; q a b -&gt; IgnoreAction p a c)
+-&gt; Profunctor (IgnoreAction p)
+forall a b c. (a -&gt; b) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a c
+forall b c a. (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a d
+forall a b c (q :: * -&gt; * -&gt; *).
+Coercible b a =&gt;
+IgnoreAction p b c -&gt; q a b -&gt; IgnoreAction p a c
+forall a b c (q :: * -&gt; * -&gt; *).
+Coercible c b =&gt;
+q b c -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *) a b c.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *) b c a.
+Profunctor p =&gt;
+(b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *) a b c d.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a d
+forall (p :: * -&gt; * -&gt; *) a b c (q :: * -&gt; * -&gt; *).
+(Profunctor p, Coercible b a) =&gt;
+IgnoreAction p b c -&gt; q a b -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *) a b c (q :: * -&gt; * -&gt; *).
+(Profunctor p, Coercible c b) =&gt;
+q b c -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+forall (p :: * -&gt; * -&gt; *).
+(forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d)
+-&gt; (forall a b c. (a -&gt; b) -&gt; p b c -&gt; p a c)
+-&gt; (forall b c a. (b -&gt; c) -&gt; p a b -&gt; p a c)
+-&gt; (forall a b c (q :: * -&gt; * -&gt; *).
+    Coercible c b =&gt;
+    q b c -&gt; p a b -&gt; p a c)
+-&gt; (forall a b c (q :: * -&gt; * -&gt; *).
+    Coercible b a =&gt;
+    p b c -&gt; q a b -&gt; p a c)
+-&gt; Profunctor p
+$cdimap :: forall (p :: * -&gt; * -&gt; *) a b c d.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a d
+dimap :: forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a d
+$clmap :: forall (p :: * -&gt; * -&gt; *) a b c.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a c
+lmap :: forall a b c. (a -&gt; b) -&gt; IgnoreAction p b c -&gt; IgnoreAction p a c
+$crmap :: forall (p :: * -&gt; * -&gt; *) b c a.
+Profunctor p =&gt;
+(b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+rmap :: forall b c a. (b -&gt; c) -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+$c#. :: forall (p :: * -&gt; * -&gt; *) a b c (q :: * -&gt; * -&gt; *).
+(Profunctor p, Coercible c b) =&gt;
+q b c -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+#. :: forall a b c (q :: * -&gt; * -&gt; *).
+Coercible c b =&gt;
+q b c -&gt; IgnoreAction p a b -&gt; IgnoreAction p a c
+$c.# :: forall (p :: * -&gt; * -&gt; *) a b c (q :: * -&gt; * -&gt; *).
+(Profunctor p, Coercible b a) =&gt;
+IgnoreAction p b c -&gt; q a b -&gt; IgnoreAction p a c
+.# :: forall a b c (q :: * -&gt; * -&gt; *).
+Coercible b a =&gt;
+IgnoreAction p b c -&gt; q a b -&gt; IgnoreAction p a c
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Profunctor</span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087159"><span id="local-6989586621679087160"><span id="local-6989586621679087857"><span id="local-6989586621679087863"><span id="local-6989586621679087868"><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087159"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087160"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-type">IgnoreAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087159"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087160"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621679087877"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; IgnoreAction p a a -&gt; f (IgnoreAction p a b)
+</span><span class="hs-identifier hs-var hs-var hs-var">traverse</span></span></span><span> </span><span id="local-6989586621679087878"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679087878"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(p a b -&gt; IgnoreAction p a b)
+-&gt; f (p a b) -&gt; f (IgnoreAction p a b)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">p a b -&gt; IgnoreAction p a b
+forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; IgnoreAction p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-var">IgnoreAction</span></a></span><span> </span><span class="annot"><span class="annottext">(f (p a b) -&gt; f (IgnoreAction p a b))
+-&gt; (IgnoreAction p a a -&gt; f (p a b))
+-&gt; IgnoreAction p a a
+-&gt; f (IgnoreAction p a b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; p a a -&gt; f (p a b)
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; p a a -&gt; f (p a b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679087878"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(p a a -&gt; f (p a b))
+-&gt; (IgnoreAction p a a -&gt; p a a) -&gt; IgnoreAction p a a -&gt; f (p a b)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">IgnoreAction p a a -&gt; p a a
+forall (p :: * -&gt; * -&gt; *) a b. IgnoreAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runIgnoreAction"><span class="hs-identifier hs-var">runIgnoreAction</span></a></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087165"><span class="annot"><span class="hs-identifier hs-type">Bitraversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679087165"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bitraversable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-type">IgnoreAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087165"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-59"></span><span>    </span><span id="local-6989586621679087893"><span class="annot"><span class="annottext">bitraverse :: forall (f :: * -&gt; *) a c b d.
+Applicative f =&gt;
+(a -&gt; f c)
+-&gt; (b -&gt; f d) -&gt; IgnoreAction p a b -&gt; f (IgnoreAction p c d)
+</span><span class="hs-identifier hs-var hs-var hs-var">bitraverse</span></span></span><span> </span><span id="local-6989586621679087894"><span class="annot"><span class="annottext">a -&gt; f c
+</span><a href="#local-6989586621679087894"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679087895"><span class="annot"><span class="annottext">b -&gt; f d
+</span><a href="#local-6989586621679087895"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(p c d -&gt; IgnoreAction p c d)
+-&gt; f (p c d) -&gt; f (IgnoreAction p c d)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">p c d -&gt; IgnoreAction p c d
+forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; IgnoreAction p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-var">IgnoreAction</span></a></span><span> </span><span class="annot"><span class="annottext">(f (p c d) -&gt; f (IgnoreAction p c d))
+-&gt; (IgnoreAction p a b -&gt; f (p c d))
+-&gt; IgnoreAction p a b
+-&gt; f (IgnoreAction p c d)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; p a b -&gt; f (p c d)
+forall (f :: * -&gt; *) a c b d.
+Applicative f =&gt;
+(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; p a b -&gt; f (p c d)
+forall (t :: * -&gt; * -&gt; *) (f :: * -&gt; *) a c b d.
+(Bitraversable t, Applicative f) =&gt;
+(a -&gt; f c) -&gt; (b -&gt; f d) -&gt; t a b -&gt; f (t c d)
+</span><span class="hs-identifier hs-var">bitraverse</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f c
+</span><a href="#local-6989586621679087894"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; f d
+</span><a href="#local-6989586621679087895"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">(p a b -&gt; f (p c d))
+-&gt; (IgnoreAction p a b -&gt; p a b) -&gt; IgnoreAction p a b -&gt; f (p c d)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">IgnoreAction p a b -&gt; p a b
+forall (p :: * -&gt; * -&gt; *) a b. IgnoreAction p a b -&gt; p a b
+</span><a href="Data.Bifunctor.Monad.Module.html#runIgnoreAction"><span class="hs-identifier hs-var">runIgnoreAction</span></a></span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679087174"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087174"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087174"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679087173"><span class="annot"><a href="#local-6989586621679087173"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087174"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087173"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#HalfModule"><span class="hs-identifier hs-type">HalfModule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#IgnoreAction"><span class="hs-identifier hs-type">IgnoreAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087174"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679087910"><span class="annot"><span class="annottext">firstAction :: forall a a' b.
+(a -&gt; Proxy a') -&gt; IgnoreAction p a b -&gt; IgnoreAction p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#firstAction"><span class="hs-identifier hs-var hs-var hs-var">firstAction</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Proxy a') -&gt; IgnoreAction p a b -&gt; IgnoreAction p a' b
+forall (p :: * -&gt; * -&gt; *) a (m :: * -&gt; *) a' b.
+(Bifunctor p, Profunctor p) =&gt;
+(a -&gt; m a') -&gt; p a b -&gt; p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#ignoreAction"><span class="hs-identifier hs-var">ignoreAction</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span id="local-6989586621679087183"><span id="local-6989586621679087184"><span id="local-6989586621679087185"><span id="local-6989586621679087186"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#phantomFirst"><span class="hs-identifier hs-type">phantomFirst</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087183"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087183"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087183"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087184"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087185"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087183"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087186"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087185"><span class="hs-identifier hs-type">b</span></a></span></span></span></span></span><span>
+</span><span id="line-65"></span><span id="phantomFirst"><span class="annot"><span class="annottext">phantomFirst :: forall (p :: * -&gt; * -&gt; *) a b a'.
+(Bifunctor p, Profunctor p) =&gt;
+p a b -&gt; p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#phantomFirst"><span class="hs-identifier hs-var hs-var">phantomFirst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a' -&gt; ()) -&gt; p () b -&gt; p a' b
+forall a b c. (a -&gt; b) -&gt; p b c -&gt; p a c
+forall (p :: * -&gt; * -&gt; *) a b c.
+Profunctor p =&gt;
+(a -&gt; b) -&gt; p b c -&gt; p a c
+</span><span class="hs-identifier hs-var">lmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; a' -&gt; ()
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(p () b -&gt; p a' b) -&gt; (p a b -&gt; p () b) -&gt; p a b -&gt; p a' b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; ()) -&gt; p a b -&gt; p () b
+forall a b c. (a -&gt; b) -&gt; p a c -&gt; p b c
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; a -&gt; ()
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span id="local-6989586621679087178"><span id="local-6989586621679087179"><span id="local-6989586621679087180"><span id="local-6989586621679087181"><span id="local-6989586621679087182"><span class="annot"><a href="Data.Bifunctor.Monad.Module.html#ignoreAction"><span class="hs-identifier hs-type">ignoreAction</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087178"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679087178"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679087179"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087180"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087181"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087178"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087179"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087182"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679087178"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087181"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679087182"><span class="hs-identifier hs-type">b</span></a></span></span></span></span></span></span><span>
+</span><span id="line-68"></span><span id="ignoreAction"><span class="annot"><span class="annottext">ignoreAction :: forall (p :: * -&gt; * -&gt; *) a (m :: * -&gt; *) a' b.
+(Bifunctor p, Profunctor p) =&gt;
+(a -&gt; m a') -&gt; p a b -&gt; p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#ignoreAction"><span class="hs-identifier hs-var hs-var">ignoreAction</span></a></span></span><span> </span><span class="annot"><span class="annottext">a -&gt; m a'
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p a b -&gt; p a' b
+forall (p :: * -&gt; * -&gt; *) a b a'.
+(Bifunctor p, Profunctor p) =&gt;
+p a b -&gt; p a' b
+</span><a href="Data.Bifunctor.Monad.Module.html#phantomFirst"><span class="hs-identifier hs-var">phantomFirst</span></a></span></pre></body></html>

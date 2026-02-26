@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Bifunctor.Kan.Ran.html"><span class="hs-identifier">Data.Bifunctor.Kan.Ran</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">newtype</span><span> </span><span id="Ran"><span class="annot"><a href="Data.Bifunctor.Kan.Ran.html#Ran"><span class="hs-identifier hs-var">Ran</span></a></span></span><span> </span><span id="local-6989586621679086474"><span class="annot"><a href="#local-6989586621679086474"><span class="hs-identifier hs-type">p1</span></a></span></span><span> </span><span id="local-6989586621679086475"><span class="annot"><a href="#local-6989586621679086475"><span class="hs-identifier hs-type">p2</span></a></span></span><span> </span><span id="local-6989586621679086476"><span class="annot"><a href="#local-6989586621679086476"><span class="hs-identifier hs-type">q</span></a></span></span><span> </span><span id="local-6989586621679086477"><span class="annot"><a href="#local-6989586621679086477"><span class="hs-identifier hs-type">c</span></a></span></span><span> </span><span id="local-6989586621679086478"><span class="annot"><a href="#local-6989586621679086478"><span class="hs-identifier hs-type">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Ran2"><span class="annot"><a href="Data.Bifunctor.Kan.Ran.html#Ran2"><span class="hs-identifier hs-var">Ran2</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-8"></span><span>    </span><span id="runRan"><span class="annot"><span class="annottext">forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       d.
+Ran p1 p2 q c d
+-&gt; forall a b. (c -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b
+</span><a href="Data.Bifunctor.Kan.Ran.html#runRan"><span class="hs-identifier hs-var hs-var">runRan</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679086480"><span class="annot"><a href="#local-6989586621679086480"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679086481"><span class="annot"><a href="#local-6989586621679086481"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086477"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086474"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086480"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086481"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679086478"><span class="hs-identifier hs-type">d</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086475"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086480"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086481"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679086476"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086480"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086481"><span class="hs-identifier hs-type">b</span></a></span><span>
+</span><span id="line-9"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679086537"><span id="local-6989586621679086539"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Ran p1 p2 q c a -&gt; Ran p1 p2 q c b)
+-&gt; (forall a b. a -&gt; Ran p1 p2 q c b -&gt; Ran p1 p2 q c a)
+-&gt; Functor (Ran p1 p2 q c)
+forall a b. a -&gt; Ran p1 p2 q c b -&gt; Ran p1 p2 q c a
+forall a b. (a -&gt; b) -&gt; Ran p1 p2 q c a -&gt; Ran p1 p2 q c b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       a b.
+a -&gt; Ran p1 p2 q c b -&gt; Ran p1 p2 q c a
+forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       a b.
+(a -&gt; b) -&gt; Ran p1 p2 q c a -&gt; Ran p1 p2 q c b
+$cfmap :: forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       a b.
+(a -&gt; b) -&gt; Ran p1 p2 q c a -&gt; Ran p1 p2 q c b
+fmap :: forall a b. (a -&gt; b) -&gt; Ran p1 p2 q c a -&gt; Ran p1 p2 q c b
+$c&lt;$ :: forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       a b.
+a -&gt; Ran p1 p2 q c b -&gt; Ran p1 p2 q c a
+&lt;$ :: forall a b. a -&gt; Ran p1 p2 q c b -&gt; Ran p1 p2 q c a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679086518"><span id="local-6989586621679086519"><span id="local-6989586621679086520"><span id="local-6989586621679086547"><span id="local-6989586621679086551"><span class="annot"><span class="hs-identifier hs-type">Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Bifunctor.Kan.Ran.html#Ran"><span class="hs-identifier hs-type">Ran</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086518"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086519"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679086520"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>    </span><span id="local-6989586621679086554"><span class="annot"><span class="annottext">bimap :: forall a b c d.
+(a -&gt; b) -&gt; (c -&gt; d) -&gt; Ran p1 p2 q a c -&gt; Ran p1 p2 q b d
+</span><a href="#local-6989586621679086554"><span class="hs-identifier hs-var hs-var hs-var">bimap</span></a></span></span><span> </span><span id="local-6989586621679086556"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086556"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679086557"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679086557"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679086558"><span class="annot"><span class="annottext">Ran p1 p2 q a c
+</span><a href="#local-6989586621679086558"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a b. (b -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b)
+-&gt; Ran p1 p2 q b d
+forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       d.
+(forall a b. (c -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b)
+-&gt; Ran p1 p2 q c d
+</span><a href="Data.Bifunctor.Kan.Ran.html#Ran2"><span class="hs-identifier hs-var">Ran2</span></a></span><span> </span><span class="annot"><span class="annottext">((forall a b. (b -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b)
+ -&gt; Ran p1 p2 q b d)
+-&gt; (forall a b. (b -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b)
+-&gt; Ran p1 p2 q b d
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679086559"><span class="annot"><span class="annottext">b -&gt; p1 a b
+</span><a href="#local-6989586621679086559"><span class="hs-identifier hs-var">k1</span></a></span></span><span> </span><span id="local-6989586621679086560"><span class="annot"><span class="annottext">d -&gt; p2 a b
+</span><a href="#local-6989586621679086560"><span class="hs-identifier hs-var">k2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ran p1 p2 q a c
+-&gt; forall a b. (a -&gt; p1 a b) -&gt; (c -&gt; p2 a b) -&gt; q a b
+forall (p1 :: * -&gt; * -&gt; *) (p2 :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) c
+       d.
+Ran p1 p2 q c d
+-&gt; forall a b. (c -&gt; p1 a b) -&gt; (d -&gt; p2 a b) -&gt; q a b
+</span><a href="Data.Bifunctor.Kan.Ran.html#runRan"><span class="hs-identifier hs-var">runRan</span></a></span><span> </span><span class="annot"><span class="annottext">Ran p1 p2 q a c
+</span><a href="#local-6989586621679086558"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; p1 a b
+</span><a href="#local-6989586621679086559"><span class="hs-identifier hs-var">k1</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; p1 a b) -&gt; (a -&gt; b) -&gt; a -&gt; p1 a b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679086556"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">d -&gt; p2 a b
+</span><a href="#local-6989586621679086560"><span class="hs-identifier hs-var">k2</span></a></span><span> </span><span class="annot"><span class="annottext">(d -&gt; p2 a b) -&gt; (c -&gt; d) -&gt; c -&gt; p2 a b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679086557"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span></pre></body></html>
