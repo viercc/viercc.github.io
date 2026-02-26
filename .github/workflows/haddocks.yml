@@ -41,8 +41,13 @@ jobs:
       - name: Unpack and place artifact
         run: |
           mkdir -p "${RUNNER_TEMP}/haddocks"
+          echo "(directory contents)"
           ls "${GITHUB_WORKSPACE}/"
-          tar --directory "${RUNNER_TEMP}/haddocks" -xvf "${GITHUB_WORKSPACE}/artifact.tar"
+          echo "Extract tarball"
+          tar -C "${RUNNER_TEMP}/haddocks" -xf "${GITHUB_WORKSPACE}/artifact.tar"
+          echo "(extracted files)"
+          ls "${RUNNER_TEMP}/haddocks/"
+          echo "Copy"
           cp -a "${RUNNER_TEMP}/haddocks/*" site-root/haddocks
       
       - name: Commit Changes
