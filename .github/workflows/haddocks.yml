@@ -21,14 +21,23 @@ jobs:
           ref:  master
           path: site-root
       
+      - name: Get latest workflow run
+        id: get_run
+        run: |
+          RUN_ID=$(gh api repos/viercc/Build-haddock/actions/workflows/build.yml/runs \
+            --jq '.workflow_runs[0].id')
+          echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.PAT_READ_PRIVATE }}
+
       - name: Retrieve build artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: haddock-all
-          path: $GITHUB_WORKSPACE
+          run-id: ${{ steps.get_run.outputs.run-id }}
           github-token: ${{ secrets.PAT_READ_PRIVATE }}
           repository: viercc/Build-haddock
-      
+            
       - name: Unpack and place artifact
         run: |
           mkdir -p "${RUNNER_TEMP}/haddocks"
