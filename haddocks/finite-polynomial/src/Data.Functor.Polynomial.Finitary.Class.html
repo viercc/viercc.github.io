@@ -1,0 +1,574 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE TypeApplications #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE AllowAmbiguousTypes #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE StandaloneDeriving #-}</span><span>
+</span><span id="line-10"></span><span class="hs-pragma">{-# LANGUAGE NoStarIsType #-}</span><span>
+</span><span id="line-11"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-12"></span><span class="hs-pragma">{-# LANGUAGE FlexibleContexts #-}</span><span>
+</span><span id="line-13"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-14"></span><span class="hs-pragma">{-# LANGUAGE DerivingVia #-}</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html"><span class="hs-identifier">Data.Functor.Polynomial.Finitary.Class</span></a></span><span class="hs-special">(</span><span>
+</span><span id="line-16"></span><span>    </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier">FinitaryPolynomial</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor.Identity</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">S</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier">C</span></span><span class="hs-special">,</span><span class="annot"><span class="hs-identifier">D</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Polynomial.html"><span class="hs-identifier">Data.Polynomial</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html"><span class="hs-identifier">Data.Functor.Polynomial.Finitary</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="annot"><span class="hs-comment">-- | Non-zero polynomial functor</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="FinitaryPolynomial"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-var">FinitaryPolynomial</span></a></span></span><span> </span><span id="local-6989586621679147338"><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span id="local-6989586621679147338"><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Polynomial.html#P"><span class="hs-identifier hs-type">P</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span>    </span><span id="sPolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-type">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>    </span><span id="toPoly"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-type">toPoly</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679147345"><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147345"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#Ev"><span class="hs-identifier hs-type">Ev</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679147345"><span class="hs-identifier hs-type">x</span></a></span></span><span>
+</span><span id="line-32"></span><span>    </span><span id="fromPoly"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-type">fromPoly</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679147346"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#Ev"><span class="hs-identifier hs-type">Ev</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679147346"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679147338"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147346"><span class="hs-identifier hs-type">x</span></a></span></span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147349"><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679147349"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#Ev"><span class="hs-identifier hs-type">Ev</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147349"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#Ev"><span class="hs-identifier hs-type">Ev</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147349"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679147349"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621679147544"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (Ev p))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing p
+Sing (PolyRep (Ev p))
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span>
+</span><span id="line-37"></span><span>    </span><span id="local-6989586621679147546"><span class="annot"><span class="annottext">toPoly :: forall x. Ev p x -&gt; Ev (PolyRep (Ev p)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ev p x -&gt; Ev p x
+Ev p x -&gt; Ev (PolyRep (Ev p)) x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-38"></span><span>    </span><span id="local-6989586621679147548"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (Ev p)) x -&gt; Ev p x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ev p x -&gt; Ev p x
+Ev (PolyRep (Ev p)) x -&gt; Ev p x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Proxy</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-42"></span><span>    </span><span id="local-6989586621679147556"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep Proxy)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep Proxy)
+SingP 'U
+</span><a href="Data.Polynomial.html#SingU"><span class="hs-identifier hs-var">SingU</span></a></span><span>
+</span><span id="line-43"></span><span>    </span><span id="local-6989586621679147558"><span class="annot"><span class="annottext">toPoly :: forall x. Proxy x -&gt; Ev (PolyRep Proxy) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+Ev (PolyRep Proxy) x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span>
+</span><span id="line-44"></span><span>    </span><span id="local-6989586621679147560"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep Proxy) x -&gt; Proxy x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep Proxy) x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Proxy x
+forall {k} (t :: k). Proxy t
+</span><span class="hs-identifier hs-var">Proxy</span></span><span>
+</span><span id="line-45"></span><span> </span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#T"><span class="hs-identifier hs-type">T</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679147569"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep Identity)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SingP 'U -&gt; SingP ('T 'U)
+forall (p :: P). SingP p -&gt; SingP ('T p)
+</span><a href="Data.Polynomial.html#SingT"><span class="hs-identifier hs-var">SingT</span></a></span><span> </span><span class="annot"><span class="annottext">SingP 'U
+</span><a href="Data.Polynomial.html#SingU"><span class="hs-identifier hs-var">SingU</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679147571"><span class="annot"><span class="annottext">toPoly :: forall x. Identity x -&gt; Ev (PolyRep Identity) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span> </span><span id="local-6989586621679147573"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147573"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147573"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; Ev 'U x -&gt; Ev ('T 'U) x
+forall x (p1 :: P). x -&gt; Ev p1 x -&gt; Ev ('T p1) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#%3A%3A%3A"><span class="hs-operator hs-var">:::</span></a></span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679147575"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep Identity) x -&gt; Identity x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679147577"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147577"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#%3A%3A%3A"><span class="hs-operator hs-type">:::</span></a></span><span> </span><span class="annot"><span class="annottext">Ev p1 x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; Identity x
+forall a. a -&gt; Identity a
+</span><span class="hs-identifier hs-var">Identity</span></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147577"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">U1</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">U1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679147586"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep U1)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep U1)
+SingP 'U
+</span><a href="Data.Polynomial.html#SingU"><span class="hs-identifier hs-var">SingU</span></a></span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621679147587"><span class="annot"><span class="annottext">toPoly :: forall x. U1 x -&gt; Ev (PolyRep U1) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">U1 x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+Ev (PolyRep U1) x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span id="local-6989586621679147588"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep U1) x -&gt; U1 x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep U1) x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">U1 x
+forall k (p :: k). U1 p
+</span><span class="hs-identifier hs-var">U1</span></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="annot"><span class="hs-comment">-- | Quick&amp;dirty alternative to @Finitary c =&gt; FinitaryPolynomial (K1 i c)@</span></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147378"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">K1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147378"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">K1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147378"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679147597"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (K1 i ()))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep (K1 i ()))
+SingP 'U
+</span><a href="Data.Polynomial.html#SingU"><span class="hs-identifier hs-var">SingU</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span id="local-6989586621679147598"><span class="annot"><span class="annottext">toPoly :: forall x. K1 i () x -&gt; Ev (PolyRep (K1 i ())) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">K1 i () x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+Ev (PolyRep (K1 i ())) x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679147599"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (K1 i ())) x -&gt; K1 i () x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep (K1 i ())) x
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; K1 i () x
+forall k i c (p :: k). c -&gt; K1 i c p
+</span><span class="hs-identifier hs-var">K1</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="annot"><span class="hs-comment">-- | Quick&amp;dirty alternative to @Finitary c =&gt; FinitaryPolynomial (K1 i c)@</span></span><span>
+</span><span id="line-67"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147386"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">K1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147386"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">K1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147386"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679147611"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (K1 i Bool))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing ('S 'U)
+Sing (PolyRep (K1 i Bool))
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span>    </span><span id="local-6989586621679147612"><span class="annot"><span class="annottext">toPoly :: forall x. K1 i Bool x -&gt; Ev (PolyRep (K1 i Bool)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">K1</span></span><span> </span><span id="local-6989586621679147613"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679147613"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679147613"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Ev 'U x -&gt; Ev ('S 'U) x
+forall (p1 :: P) x. Ev p1 x -&gt; Ev ('S p1) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#Go"><span class="hs-identifier hs-var">Go</span></a></span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Ev ('S 'U) x
+Ev (PolyRep (K1 i Bool)) x
+forall (p1 :: P) x. Ev ('S p1) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#Stop"><span class="hs-identifier hs-var">Stop</span></a></span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679147616"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (K1 i Bool)) x -&gt; K1 i Bool x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep (K1 i Bool)) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#Stop"><span class="hs-identifier hs-var">Stop</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; K1 i Bool x
+forall k i c (p :: k). c -&gt; K1 i c p
+</span><span class="hs-identifier hs-var">K1</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-73"></span><span>    </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#Go"><span class="hs-identifier hs-type">Go</span></a></span><span> </span><span class="annot"><span class="annottext">Ev p1 x
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; K1 i Bool x
+forall k i c (p :: k). c -&gt; K1 i c p
+</span><span class="hs-identifier hs-var">K1</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147402"><span id="local-6989586621679147403"><span id="local-6989586621679147404"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147402"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">M1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147403"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147404"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147402"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">M1</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="#local-6989586621679147402"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147402"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-77"></span><span>    </span><span id="local-6989586621679147629"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (M1 i m f))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147402"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-78"></span><span>    </span><span id="local-6989586621679147631"><span class="annot"><span class="annottext">toPoly :: forall x. M1 i m f x -&gt; Ev (PolyRep (M1 i m f)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Ev (PolyRep f) x
+forall x. f x -&gt; Ev (PolyRep f) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Ev (PolyRep f) x)
+-&gt; (M1 i m f x -&gt; f x) -&gt; M1 i m f x -&gt; Ev (PolyRep f) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">M1 i m f x -&gt; f x
+forall k i (c :: Meta) (f :: k -&gt; Type) (p :: k). M1 i c f p -&gt; f p
+</span><span class="hs-identifier hs-var">unM1</span></span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679147635"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (M1 i m f)) x -&gt; M1 i m f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; M1 i m f x
+forall k i (c :: Meta) (f :: k -&gt; Type) (p :: k). f p -&gt; M1 i c f p
+</span><span class="hs-identifier hs-var">M1</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; M1 i m f x)
+-&gt; (Ev (PolyRep f) x -&gt; f x) -&gt; Ev (PolyRep f) x -&gt; M1 i m f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x -&gt; f x
+forall x. Ev (PolyRep f) x -&gt; f x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147422"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147422"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rec1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147422"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rec1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147422"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147422"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679147647"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (Rec1 f))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147422"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679147649"><span class="annot"><span class="annottext">toPoly :: forall x. Rec1 f x -&gt; Ev (PolyRep (Rec1 f)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Ev (PolyRep f) x
+forall x. f x -&gt; Ev (PolyRep f) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Ev (PolyRep f) x)
+-&gt; (Rec1 f x -&gt; f x) -&gt; Rec1 f x -&gt; Ev (PolyRep f) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Rec1 f x -&gt; f x
+forall k (f :: k -&gt; Type) (p :: k). Rec1 f p -&gt; f p
+</span><span class="hs-identifier hs-var">unRec1</span></span><span>
+</span><span id="line-85"></span><span>    </span><span id="local-6989586621679147652"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (Rec1 f)) x -&gt; Rec1 f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Rec1 f x
+forall k (f :: k -&gt; Type) (p :: k). f p -&gt; Rec1 f p
+</span><span class="hs-identifier hs-var">Rec1</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Rec1 f x)
+-&gt; (Ev (PolyRep f) x -&gt; f x) -&gt; Ev (PolyRep f) x -&gt; Rec1 f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x -&gt; f x
+forall x. Ev (PolyRep f) x -&gt; f x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147435"><span id="local-6989586621679147436"><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:+:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#%2B"><span class="hs-operator hs-type">+</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679147669"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (f :+: g))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g) -&gt; Sing (PolyRep f + PolyRep g)
+forall k (x :: k) (y :: k).
+SPlus k =&gt;
+Sing x -&gt; Sing y -&gt; Sing (x + y)
+forall (x :: P) (y :: P). Sing x -&gt; Sing y -&gt; Sing (x + y)
+</span><a href="Data.Polynomial.html#%25%2B"><span class="hs-operator hs-var">%+</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span>    </span><span id="local-6989586621679147677"><span class="annot"><span class="annottext">toPoly :: forall x. (:+:) f g x -&gt; Ev (PolyRep (f :+: g)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">L1</span></span><span> </span><span id="local-6989586621679147679"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147679"><span class="hs-identifier hs-var">fx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g)
+-&gt; (:+:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+-&gt; Ev (PolyRep f + PolyRep g) x
+forall (p :: P) (q :: P) x.
+Sing p -&gt; Sing q -&gt; (:+:) (Ev p) (Ev q) x -&gt; Ev (p + q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#fromSum"><span class="hs-identifier hs-var">fromSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ev (PolyRep f) x -&gt; (:+:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+f p -&gt; (:+:) f g p
+</span><span class="hs-identifier hs-var">L1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f x -&gt; Ev (PolyRep f) x
+forall x. f x -&gt; Ev (PolyRep f) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147679"><span class="hs-identifier hs-var">fx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>    </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">R1</span></span><span> </span><span id="local-6989586621679147682"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679147682"><span class="hs-identifier hs-var">gx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g)
+-&gt; (:+:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+-&gt; Ev (PolyRep f + PolyRep g) x
+forall (p :: P) (q :: P) x.
+Sing p -&gt; Sing q -&gt; (:+:) (Ev p) (Ev q) x -&gt; Ev (p + q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#fromSum"><span class="hs-identifier hs-var">fromSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ev (PolyRep g) x -&gt; (:+:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+g p -&gt; (:+:) f g p
+</span><span class="hs-identifier hs-var">R1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g x -&gt; Ev (PolyRep g) x
+forall x. g x -&gt; Ev (PolyRep g) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679147682"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679147687"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (f :+: g)) x -&gt; (:+:) f g x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span id="local-6989586621679147688"><span class="annot"><span class="annottext">Ev (PolyRep (f :+: g)) x
+</span><a href="#local-6989586621679147688"><span class="hs-identifier hs-var">hx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g)
+-&gt; Ev (PolyRep f + PolyRep g) x
+-&gt; (:+:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+forall (p :: P) (q :: P) x.
+Sing p -&gt; Sing q -&gt; Ev (p + q) x -&gt; (:+:) (Ev p) (Ev q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#toSum"><span class="hs-identifier hs-var">toSum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147435"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147436"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f + PolyRep g) x
+Ev (PolyRep (f :+: g)) x
+</span><a href="#local-6989586621679147688"><span class="hs-identifier hs-var">hx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-96"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">L1</span></span><span> </span><span id="local-6989586621679147690"><span class="annot"><span class="annottext">Ev (PolyRep f) x
+</span><a href="#local-6989586621679147690"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f x -&gt; (:+:) f g x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+f p -&gt; (:+:) f g p
+</span><span class="hs-identifier hs-var">L1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ev (PolyRep f) x -&gt; f x
+forall x. Ev (PolyRep f) x -&gt; f x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x
+</span><a href="#local-6989586621679147690"><span class="hs-identifier hs-var">fx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-97"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">R1</span></span><span> </span><span id="local-6989586621679147691"><span class="annot"><span class="annottext">Ev (PolyRep g) x
+</span><a href="#local-6989586621679147691"><span class="hs-identifier hs-var">gx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">g x -&gt; (:+:) f g x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+g p -&gt; (:+:) f g p
+</span><span class="hs-identifier hs-var">R1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ev (PolyRep g) x -&gt; g x
+forall x. Ev (PolyRep g) x -&gt; g x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep g) x
+</span><a href="#local-6989586621679147691"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147458"><span id="local-6989586621679147459"><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-100"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#%2A"><span class="hs-operator hs-type">*</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-101"></span><span>    </span><span>
+</span><span id="line-102"></span><span>    </span><span id="local-6989586621679147707"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (f :*: g))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g) -&gt; Sing (PolyRep f * PolyRep g)
+forall k (x :: k) (y :: k).
+STimes k =&gt;
+Sing x -&gt; Sing y -&gt; Sing (x * y)
+forall (x :: P) (y :: P). Sing x -&gt; Sing y -&gt; Sing (x * y)
+</span><a href="Data.Polynomial.html#%25%2A"><span class="hs-operator hs-var">%*</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-103"></span><span>    </span><span id="local-6989586621679147713"><span class="annot"><span class="annottext">toPoly :: forall x. (:*:) f g x -&gt; Ev (PolyRep (f :*: g)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679147714"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147714"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span id="local-6989586621679147716"><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679147716"><span class="hs-identifier hs-var">gx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g)
+-&gt; (:*:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+-&gt; Ev (PolyRep f * PolyRep g) x
+forall (p :: P) (q :: P) x.
+Sing p -&gt; Sing q -&gt; (:*:) (Ev p) (Ev q) x -&gt; Ev (p * q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#fromProduct"><span class="hs-identifier hs-var">fromProduct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f x -&gt; Ev (PolyRep f) x
+forall x. f x -&gt; Ev (PolyRep f) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147714"><span class="hs-identifier hs-var">fx</span></a></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x
+-&gt; Ev (PolyRep g) x -&gt; (:*:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+f p -&gt; g p -&gt; (:*:) f g p
+</span><span class="hs-operator hs-var">:*:</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; Ev (PolyRep g) x
+forall x. g x -&gt; Ev (PolyRep g) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">g x
+</span><a href="#local-6989586621679147716"><span class="hs-identifier hs-var">gx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>    </span><span id="local-6989586621679147722"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (f :*: g)) x -&gt; (:*:) f g x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span id="local-6989586621679147723"><span class="annot"><span class="annottext">Ev (PolyRep (f :*: g)) x
+</span><a href="#local-6989586621679147723"><span class="hs-identifier hs-var">hx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g)
+-&gt; Ev (PolyRep f * PolyRep g) x
+-&gt; (:*:) (Ev (PolyRep f)) (Ev (PolyRep g)) x
+forall (p :: P) (q :: P) x.
+Sing p -&gt; Sing q -&gt; Ev (p * q) x -&gt; (:*:) (Ev p) (Ev q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#toProduct"><span class="hs-identifier hs-var">toProduct</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147458"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147459"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f * PolyRep g) x
+Ev (PolyRep (f :*: g)) x
+</span><a href="#local-6989586621679147723"><span class="hs-identifier hs-var">hx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-105"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679147725"><span class="annot"><span class="annottext">Ev (PolyRep f) x
+</span><a href="#local-6989586621679147725"><span class="hs-identifier hs-var">fx</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*:</span></span><span> </span><span id="local-6989586621679147726"><span class="annot"><span class="annottext">Ev (PolyRep g) x
+</span><a href="#local-6989586621679147726"><span class="hs-identifier hs-var">gx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x -&gt; f x
+forall x. Ev (PolyRep f) x -&gt; f x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f) x
+</span><a href="#local-6989586621679147725"><span class="hs-identifier hs-var">fx</span></a></span><span> </span><span class="annot"><span class="annottext">f x -&gt; g x -&gt; (:*:) f g x
+forall k (f :: k -&gt; Type) (g :: k -&gt; Type) (p :: k).
+f p -&gt; g p -&gt; (:*:) f g p
+</span><span class="hs-operator hs-var">:*:</span></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep g) x -&gt; g x
+forall x. Ev (PolyRep g) x -&gt; g x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep g) x
+</span><a href="#local-6989586621679147726"><span class="hs-identifier hs-var">gx</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Par1</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Par1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Polynomial.html#T"><span class="hs-identifier hs-type">T</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#U"><span class="hs-identifier hs-type">U</span></a></span><span>
+</span><span id="line-109"></span><span>    </span><span id="local-6989586621679147734"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep Par1)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SingP 'U -&gt; SingP ('T 'U)
+forall (p :: P). SingP p -&gt; SingP ('T p)
+</span><a href="Data.Polynomial.html#SingT"><span class="hs-identifier hs-var">SingT</span></a></span><span> </span><span class="annot"><span class="annottext">SingP 'U
+</span><a href="Data.Polynomial.html#SingU"><span class="hs-identifier hs-var">SingU</span></a></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span>    </span><span id="local-6989586621679147735"><span class="annot"><span class="annottext">toPoly :: forall x. Par1 x -&gt; Ev (PolyRep Par1) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Par1</span></span><span> </span><span id="local-6989586621679147737"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147737"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147737"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; Ev 'U x -&gt; Ev ('T 'U) x
+forall x (p1 :: P). x -&gt; Ev p1 x -&gt; Ev ('T p1) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#%3A%3A%3A"><span class="hs-operator hs-var">:::</span></a></span><span> </span><span class="annot"><span class="annottext">Ev 'U x
+forall x. Ev 'U x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span>
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621679147738"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep Par1) x -&gt; Par1 x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679147740"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147740"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.html#%3A%3A%3A"><span class="hs-operator hs-type">:::</span></a></span><span> </span><span class="annot"><span class="annottext">Ev p1 x
+</span><a href="Data.Functor.Polynomial.Finitary.html#End"><span class="hs-identifier hs-var">End</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; Par1 x
+forall p. p -&gt; Par1 p
+</span><span class="hs-identifier hs-var">Par1</span></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679147740"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147485"><span id="local-6989586621679147486"><span class="hs-special">(</span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:.:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-115"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:.:</span></span><span> </span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="Data.Polynomial.html#%3C%3C"><span class="hs-operator hs-type">&lt;&lt;</span></a></span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-116"></span><span>    </span><span id="local-6989586621679147757"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (f :.: g))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="annottext">Sing (PolyRep f)
+-&gt; Sing (PolyRep g) -&gt; Sing (PolyRep f &lt;&lt; PolyRep g)
+forall k (x :: k) (y :: k).
+SCompose k =&gt;
+Sing x -&gt; Sing y -&gt; Sing (x &lt;&lt; y)
+forall (x :: P) (y :: P). Sing x -&gt; Sing y -&gt; Sing (x &lt;&lt; y)
+</span><a href="Data.Polynomial.html#%25%3C%3C"><span class="hs-operator hs-var">%&lt;&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span>
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span>    </span><span id="local-6989586621679147764"><span class="annot"><span class="annottext">toPoly :: forall x. (:.:) f g x -&gt; Ev (PolyRep (f :.: g)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comp1</span></span><span> </span><span id="local-6989586621679147766"><span class="annot"><span class="annottext">f (g x)
+</span><a href="#local-6989586621679147766"><span class="hs-identifier hs-var">fgx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SingP (PolyRep f)
+-&gt; SingP (PolyRep g)
+-&gt; Ev (PolyRep f) (Ev (PolyRep g) x)
+-&gt; Ev (PolyRep f &lt;&lt; PolyRep g) x
+forall (p :: P) (q :: P) x.
+SingP p -&gt; SingP q -&gt; Ev p (Ev q x) -&gt; Ev (p &lt;&lt; q) x
+</span><a href="Data.Functor.Polynomial.Finitary.html#fromComp"><span class="hs-identifier hs-var">fromComp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f (Ev (PolyRep g) x) -&gt; Ev (PolyRep f) (Ev (PolyRep g) x)
+forall x. f x -&gt; Ev (PolyRep f) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(g x -&gt; Ev (PolyRep g) x) -&gt; f (g x) -&gt; f (Ev (PolyRep g) x)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">g x -&gt; Ev (PolyRep g) x
+forall x. g x -&gt; Ev (PolyRep g) x
+forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="annot"><span class="annottext">f (g x)
+</span><a href="#local-6989586621679147766"><span class="hs-identifier hs-var">fgx</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>    </span><span id="local-6989586621679147773"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (f :.: g)) x -&gt; (:.:) f g x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span id="local-6989586621679147774"><span class="annot"><span class="annottext">Ev (PolyRep (f :.: g)) x
+</span><a href="#local-6989586621679147774"><span class="hs-identifier hs-var">hx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f (g x) -&gt; (:.:) f g x
+forall k2 k1 (f :: k2 -&gt; Type) (g :: k1 -&gt; k2) (p :: k1).
+f (g p) -&gt; (:.:) f g p
+</span><span class="hs-identifier hs-var">Comp1</span></span><span> </span><span class="annot"><span class="annottext">(f (g x) -&gt; (:.:) f g x) -&gt; f (g x) -&gt; (:.:) f g x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Ev (PolyRep g) x -&gt; g x) -&gt; f (Ev (PolyRep g) x) -&gt; f (g x)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(f (Ev (PolyRep g) x) -&gt; f (g x))
+-&gt; f (Ev (PolyRep g) x) -&gt; f (g x)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="annottext">(Ev (PolyRep f) (Ev (PolyRep g) x) -&gt; f (Ev (PolyRep g) x))
+-&gt; Ev (PolyRep f) (Ev (PolyRep g) x) -&gt; f (Ev (PolyRep g) x)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">SingP (PolyRep f)
+-&gt; SingP (PolyRep g)
+-&gt; Ev (PolyRep f &lt;&lt; PolyRep g) x
+-&gt; Ev (PolyRep f) (Ev (PolyRep g) x)
+forall (p :: P) (q :: P) x.
+SingP p -&gt; SingP q -&gt; Ev (p &lt;&lt; q) x -&gt; Ev p (Ev q x)
+</span><a href="Data.Functor.Polynomial.Finitary.html#toComp"><span class="hs-identifier hs-var">toComp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147485"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679147486"><span class="hs-identifier hs-type">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ev (PolyRep f &lt;&lt; PolyRep g) x
+Ev (PolyRep (f :.: g)) x
+</span><a href="#local-6989586621679147774"><span class="hs-identifier hs-var">hx</span></a></span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="hs-comment">-- via Generically1</span><span>
+</span><span id="line-122"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679147515"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generic1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span id="PolyRep"><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-var">PolyRep</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#PolyRep"><span class="hs-identifier hs-type">PolyRep</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>    </span><span id="local-6989586621679147787"><span class="annot"><span class="annottext">sPolyRep :: Sing (PolyRep (Generically1 f))
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var hs-var hs-var">sPolyRep</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type).
+FinitaryPolynomial f =&gt;
+Sing (PolyRep f)
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#sPolyRep"><span class="hs-identifier hs-var">sPolyRep</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-125"></span><span>    </span><span id="local-6989586621679147790"><span class="annot"><span class="annottext">toPoly :: forall x. Generically1 f x -&gt; Ev (PolyRep (Generically1 f)) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var hs-var hs-var">toPoly</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span id="local-6989586621679147792"><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147792"><span class="hs-identifier hs-var">fx</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+f x -&gt; Ev (PolyRep f) x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#toPoly"><span class="hs-identifier hs-var">toPoly</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Rep1 f x -&gt; Ev (PolyRep (Generically1 f)) x)
+-&gt; (f x -&gt; Rep1 f x) -&gt; f x -&gt; Ev (PolyRep (Generically1 f)) x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">f x -&gt; Rep1 f x
+forall a. f a -&gt; Rep1 f a
+forall k (f :: k -&gt; Type) (a :: k). Generic1 f =&gt; f a -&gt; Rep1 f a
+</span><span class="hs-identifier hs-var">from1</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Ev (PolyRep (Generically1 f)) x)
+-&gt; f x -&gt; Ev (PolyRep (Generically1 f)) x
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">f x
+</span><a href="#local-6989586621679147792"><span class="hs-identifier hs-var">fx</span></a></span><span>
+</span><span id="line-126"></span><span>    </span><span id="local-6989586621679147796"><span class="annot"><span class="annottext">fromPoly :: forall x. Ev (PolyRep (Generically1 f)) x -&gt; Generically1 f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var hs-var hs-var">fromPoly</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f x -&gt; Generically1 f x
+forall {k} (f :: k -&gt; Type) (a :: k). f a -&gt; Generically1 f a
+</span><span class="hs-identifier hs-var">Generically1</span></span><span> </span><span class="annot"><span class="annottext">(f x -&gt; Generically1 f x)
+-&gt; (Ev (PolyRep (Rep1 f)) x -&gt; f x)
+-&gt; Ev (PolyRep (Rep1 f)) x
+-&gt; Generically1 f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Rep1 f x -&gt; f x
+forall a. Rep1 f a -&gt; f a
+forall k (f :: k -&gt; Type) (a :: k). Generic1 f =&gt; Rep1 f a -&gt; f a
+</span><span class="hs-identifier hs-var">to1</span></span><span> </span><span class="annot"><span class="annottext">(Rep1 f x -&gt; f x)
+-&gt; (Ev (PolyRep (Rep1 f)) x -&gt; Rep1 f x)
+-&gt; Ev (PolyRep (Rep1 f)) x
+-&gt; f x
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) x.
+FinitaryPolynomial f =&gt;
+Ev (PolyRep f) x -&gt; f x
+</span><a href="Data.Functor.Polynomial.Finitary.Class.html#fromPoly"><span class="hs-identifier hs-var">fromPoly</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Rep1</span></span><span> </span><span class="annot"><a href="#local-6989586621679147515"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span id="local-6989586621679147802"><span id="local-6989586621679147809"><span id="local-6989586621679147816"><span class="hs-keyword">deriving</span><span>
+</span><span id="line-129"></span><span>  </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Generically1</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span>
+</span><span id="line-130"></span><span>  </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Data.Functor.Polynomial.Finitary.Class.html#FinitaryPolynomial"><span class="hs-identifier hs-type">FinitaryPolynomial</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span></span></span></span><span>
+</span><span id="line-131"></span></pre></body></html>
