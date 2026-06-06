@@ -17,62 +17,55 @@
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Newtype wrapper</span></span><span>
 </span><span id="line-19"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ForgetCocartesian"><span class="hs-identifier">ForgetCocartesian</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
-</span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Utility functions handling product @(,)@ and coproduct @Either@ of</span></span><span>
-</span><span id="line-22"></span><span>    </span><span class="hs-comment">--   Haskell types</span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#assocEither"><span class="hs-identifier">assocEither</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#unassocEither"><span class="hs-identifier">unassocEither</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-25"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distL"><span class="hs-identifier">distL</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#undistL"><span class="hs-identifier">undistL</span></a></span><span class="hs-special">,</span><span>
-</span><span id="line-26"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distR"><span class="hs-identifier">distR</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#undistR"><span class="hs-identifier">undistR</span></a></span><span>
-</span><span id="line-27"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">absurd</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Profunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(:-&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor.Monad</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Day.html"><span class="hs-identifier">Data.Profunctor.Day</span></a></span><span>
 </span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">absurd</span></span><span class="hs-special">)</span><span>
-</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Profunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(:-&gt;)</span></span><span class="hs-special">)</span><span>
-</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html"><span class="hs-identifier">Data.Profunctor.Cartesian</span></a></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Bifunctor</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Profunctor.Monad</span></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Profunctor.Day.html"><span class="hs-identifier">Data.Profunctor.Day</span></a></span><span>
-</span><span id="line-35"></span><span>
-</span><span id="line-36"></span><span class="annot"><span class="hs-comment">-- * Free Cocartesian</span></span><span>
-</span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span class="hs-comment">-- | Free Cocartesian profunctor is 'FreeMonoidal' profunctor with respect to</span><span>
-</span><span id="line-39"></span><span class="hs-comment">--   @Either@.</span><span>
-</span><span id="line-40"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-41"></span><span class="hs-comment">-- ==== Caution about 'Cartesian' instance</span><span>
-</span><span id="line-42"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-43"></span><span class="hs-comment">-- Note that @'FreeCocartesian' p@ have an instance of 'Cartesian', by distributing</span><span>
-</span><span id="line-44"></span><span class="hs-comment">-- product on sums to sum of products of individual profunctors.</span><span>
-</span><span id="line-45"></span><span class="hs-comment">-- When it is desirable to disable @Cartesian@ instance of @FreeCocartesian p@,</span><span>
-</span><span id="line-46"></span><span class="hs-comment">-- use 'Data.Profunctor.Cartesian.Free.ForgetCartesian' to ignore @Cartesian@ instance of @p@.</span><span>
-</span><span id="line-47"></span><span class="hs-comment">--</span><span>
-</span><span id="line-48"></span><span class="hs-comment">-- Because there are some profunctors which are both @Cartesian@ and @Cocartesian@</span><span>
-</span><span id="line-49"></span><span class="hs-comment">-- but do not satisfy distributive laws,</span><span>
-</span><span id="line-50"></span><span class="hs-comment">-- using 'FreeCocartesian' with such profunctors might cause a surprising behavior.</span><span>
-</span><span id="line-51"></span><span class="hs-comment">--</span><span>
-</span><span id="line-52"></span><span class="hs-comment">-- For example, @'Data.Bifunctor.Joker.Joker' []@ is not distributive,</span><span>
-</span><span id="line-53"></span><span class="hs-comment">-- as @Alternative []@ is not distributive as shown below.</span><span>
-</span><span id="line-54"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-55"></span><span class="hs-comment">-- &gt;&gt;&gt; import Control.Applicative</span><span>
-</span><span id="line-56"></span><span class="hs-comment">-- &gt;&gt;&gt; let x = [id, id]</span><span>
-</span><span id="line-57"></span><span class="hs-comment">-- &gt;&gt;&gt; let y = [1]; z = [2]</span><span>
-</span><span id="line-58"></span><span class="hs-comment">-- &gt;&gt;&gt; x &lt;*&gt; (y &lt;|&gt; z)</span><span>
-</span><span id="line-59"></span><span class="hs-comment">-- [1,2,1,2]</span><span>
-</span><span id="line-60"></span><span class="hs-comment">-- &gt;&gt;&gt; (x &lt;*&gt; y) &lt;|&gt; (x &lt;*&gt; z)</span><span>
-</span><span id="line-61"></span><span class="hs-comment">-- [1,1,2,2]</span><span>
-</span><span id="line-62"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-63"></span><span class="hs-comment">-- With such non-distributive @Cartesian p@, 'foldFreeCocartesian' does not preserve</span><span>
-</span><span id="line-64"></span><span class="hs-comment">-- the @Cartesian@ operations. The following equation does not have to hold.</span><span>
-</span><span id="line-65"></span><span class="hs-comment">--</span><span>
-</span><span id="line-66"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-67"></span><span class="hs-comment">-- -- Not necessarily holds!</span><span>
-</span><span id="line-68"></span><span class="hs-comment">-- foldFreeCocartesian id (ps *** qs)</span><span>
-</span><span id="line-69"></span><span class="hs-comment">--  == foldFreeCocartesian id ps *** foldFreeCocartesian id qs</span><span>
-</span><span id="line-70"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-71"></span><span class="hs-comment">-- </span><span>
-</span><span id="line-72"></span><span class="hs-keyword">data</span><span> </span><span id="FreeCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-var">FreeCocartesian</span></a></span></span><span> </span><span id="local-6989586621679173788"><span class="annot"><a href="#local-6989586621679173788"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679173787"><span class="annot"><a href="#local-6989586621679173787"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679173789"><span class="annot"><a href="#local-6989586621679173789"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-73"></span><span>    </span><span id="Neutral"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-var">Neutral</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173787"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Cons"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173788"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173788"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679173787"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173789"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-75"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679174106"><span id="local-6989586621679174110"><span class="annot"><span class="annottext">(forall a b.
+</span><span id="line-29"></span><span class="annot"><span class="hs-comment">-- * Free Cocartesian</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- | Free Cocartesian profunctor is 'FreeMonoidal' profunctor with respect to</span><span>
+</span><span id="line-32"></span><span class="hs-comment">--   @Either@.</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- ==== Caution about 'Cartesian' instance</span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- Note that @'FreeCocartesian' p@ have an instance of 'Cartesian', by distributing</span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- product on sums to sum of products of individual profunctors.</span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- When it is desirable to disable @Cartesian@ instance of @FreeCocartesian p@,</span><span>
+</span><span id="line-39"></span><span class="hs-comment">-- use 'Data.Profunctor.Cartesian.Free.ForgetCartesian' to ignore @Cartesian@ instance of @p@.</span><span>
+</span><span id="line-40"></span><span class="hs-comment">--</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- Because there are some profunctors which are both @Cartesian@ and @Cocartesian@</span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- but do not satisfy distributive laws,</span><span>
+</span><span id="line-43"></span><span class="hs-comment">-- using 'FreeCocartesian' with such profunctors might cause a surprising behavior.</span><span>
+</span><span id="line-44"></span><span class="hs-comment">--</span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- For example, @'Data.Bifunctor.Joker.Joker' []@ is not distributive,</span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- as @Alternative []@ is not distributive as shown below.</span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-48"></span><span class="hs-comment">-- &gt;&gt;&gt; import Control.Applicative</span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- &gt;&gt;&gt; let x = [id, id]</span><span>
+</span><span id="line-50"></span><span class="hs-comment">-- &gt;&gt;&gt; let y = [1]; z = [2]</span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- &gt;&gt;&gt; x &lt;*&gt; (y &lt;|&gt; z)</span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- [1,2,1,2]</span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- &gt;&gt;&gt; (x &lt;*&gt; y) &lt;|&gt; (x &lt;*&gt; z)</span><span>
+</span><span id="line-54"></span><span class="hs-comment">-- [1,1,2,2]</span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- With such non-distributive @Cartesian p@, 'foldFreeCocartesian' does not preserve</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- the @Cartesian@ operations. The following equation does not have to hold.</span><span>
+</span><span id="line-58"></span><span class="hs-comment">--</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- -- Not necessarily holds!</span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- foldFreeCocartesian id (ps *** qs)</span><span>
+</span><span id="line-62"></span><span class="hs-comment">--  == foldFreeCocartesian id ps *** foldFreeCocartesian id qs</span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-65"></span><span class="hs-keyword">data</span><span> </span><span id="FreeCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-var">FreeCocartesian</span></a></span></span><span> </span><span id="local-6989586621679173825"><span class="annot"><a href="#local-6989586621679173825"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679173824"><span class="annot"><a href="#local-6989586621679173824"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679173826"><span class="annot"><a href="#local-6989586621679173826"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-66"></span><span>    </span><span id="Neutral"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-var">Neutral</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173824"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Cons"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173825"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173825"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679173824"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173826"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679174117"><span id="local-6989586621679174121"><span class="annot"><span class="annottext">(forall a b.
  (a -&gt; b) -&gt; FreeCocartesian p a a -&gt; FreeCocartesian p a b)
 -&gt; (forall a b.
     a -&gt; FreeCocartesian p a b -&gt; FreeCocartesian p a a)
@@ -95,18 +88,18 @@ $c&lt;$ :: forall (p :: * -&gt; * -&gt; *) a a b.
 a -&gt; FreeCocartesian p a b -&gt; FreeCocartesian p a a
 &lt;$ :: forall a b. a -&gt; FreeCocartesian p a b -&gt; FreeCocartesian p a a
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span>
-</span><span id="line-76"></span><span>
-</span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173736"><span id="local-6989586621679173737"><span id="local-6989586621679174120"><span id="local-6989586621679174125"><span id="local-6989586621679174128"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173736"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173736"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173737"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-78"></span><span>  </span><span id="local-6989586621679174133"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; FreeCocartesian p a a
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173773"><span id="local-6989586621679173774"><span id="local-6989586621679174131"><span id="local-6989586621679174136"><span id="local-6989586621679174139"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173773"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173773"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173774"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>  </span><span id="local-6989586621679174144"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; FreeCocartesian p a a
 </span><span class="hs-identifier hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; FreeCocartesian p a a
 forall (p :: * -&gt; * -&gt; *) b a. Cartesian p =&gt; b -&gt; p a b
 </span><a href="Data.Profunctor.Cartesian.html#pureDefault"><span class="hs-identifier hs-var">pureDefault</span></a></span><span>
-</span><span id="line-79"></span><span>  </span><span id="local-6989586621679174136"><span class="annot"><span class="annottext">liftA2 :: forall a b c.
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679174147"><span class="annot"><span class="annottext">liftA2 :: forall a b c.
 (a -&gt; b -&gt; c)
 -&gt; FreeCocartesian p a a
 -&gt; FreeCocartesian p a b
 -&gt; FreeCocartesian p a c
-</span><a href="#local-6989586621679174136"><span class="hs-identifier hs-var hs-var hs-var">liftA2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; c)
+</span><a href="#local-6989586621679174147"><span class="hs-identifier hs-var hs-var hs-var">liftA2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; c)
 -&gt; FreeCocartesian p a a
 -&gt; FreeCocartesian p a b
 -&gt; FreeCocartesian p a c
@@ -114,26 +107,26 @@ forall (p :: * -&gt; * -&gt; *) a b c x.
 Cartesian p =&gt;
 (a -&gt; b -&gt; c) -&gt; p x a -&gt; p x b -&gt; p x c
 </span><a href="Data.Profunctor.Cartesian.html#liftA2Default"><span class="hs-identifier hs-var">liftA2Default</span></a></span><span>
-</span><span id="line-80"></span><span>
-</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173779"><span id="local-6989586621679174141"><span id="local-6989586621679174145"><span id="local-6989586621679174148"><span id="local-6989586621679174154"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173779"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679174162"><span class="annot"><span class="annottext">dimap :: forall a b c d.
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173816"><span id="local-6989586621679174152"><span id="local-6989586621679174156"><span id="local-6989586621679174159"><span id="local-6989586621679174165"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173816"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span>    </span><span id="local-6989586621679174173"><span class="annot"><span class="annottext">dimap :: forall a b c d.
 (a -&gt; b)
 -&gt; (c -&gt; d) -&gt; FreeCocartesian p b c -&gt; FreeCocartesian p a d
-</span><a href="#local-6989586621679174162"><span class="hs-identifier hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span id="local-6989586621679174164"><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679174164"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679174165"><span class="annot"><span class="annottext">c -&gt; d
-</span><a href="#local-6989586621679174165"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679174166"><span class="annot"><span class="annottext">FreeCocartesian p b c
-</span><a href="#local-6989586621679174166"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p b c
-</span><a href="#local-6989586621679174166"><span class="hs-identifier hs-var">fp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-83"></span><span>        </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174167"><span class="annot"><span class="annottext">b -&gt; Void
-</span><a href="#local-6989586621679174167"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; FreeCocartesian p a d
+</span><a href="#local-6989586621679174173"><span class="hs-identifier hs-var hs-var hs-var">dimap</span></a></span></span><span> </span><span id="local-6989586621679174175"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679174175"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679174176"><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679174176"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span id="local-6989586621679174177"><span class="annot"><span class="annottext">FreeCocartesian p b c
+</span><a href="#local-6989586621679174177"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p b c
+</span><a href="#local-6989586621679174177"><span class="hs-identifier hs-var">fp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-76"></span><span>        </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174178"><span class="annot"><span class="annottext">b -&gt; Void
+</span><a href="#local-6989586621679174178"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; FreeCocartesian p a d
 forall (p :: * -&gt; * -&gt; *) a b. (a -&gt; Void) -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-var">Neutral</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; Void
-</span><a href="#local-6989586621679174167"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Void) -&gt; (a -&gt; b) -&gt; a -&gt; Void
+</span><a href="#local-6989586621679174178"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">(b -&gt; Void) -&gt; (a -&gt; b) -&gt; a -&gt; Void
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679174164"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span>        </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679174169"><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) b c
-</span><a href="#local-6989586621679174169"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) a d -&gt; FreeCocartesian p a d
+</span><a href="#local-6989586621679174175"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>        </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span id="local-6989586621679174180"><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) b c
+</span><a href="#local-6989586621679174180"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) a d -&gt; FreeCocartesian p a d
 forall (p :: * -&gt; * -&gt; *) a b.
 Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b)
@@ -149,28 +142,28 @@ forall (p :: * -&gt; * -&gt; *) a b c d.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
 </span><span class="hs-identifier hs-var">dimap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
-</span><a href="#local-6989586621679174164"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
-</span><a href="#local-6989586621679174165"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) b c
-</span><a href="#local-6989586621679174169"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-85"></span><span>
-</span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ProfunctorFunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-87"></span><span>  </span><span id="local-6989586621679174174"><span class="annot"><span class="annottext">promap :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *).
+</span><a href="#local-6989586621679174175"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">c -&gt; d
+</span><a href="#local-6989586621679174176"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) b c
+</span><a href="#local-6989586621679174180"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ProfunctorFunctor</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679174185"><span class="annot"><span class="annottext">promap :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *).
 Profunctor p =&gt;
 (p :-&gt; q) -&gt; FreeCocartesian p :-&gt; FreeCocartesian q
-</span><a href="#local-6989586621679174174"><span class="hs-identifier hs-var hs-var hs-var">promap</span></a></span></span><span> </span><span id="local-6989586621679174176"><span class="annot"><span class="annottext">p :-&gt; q
-</span><a href="#local-6989586621679174176"><span class="hs-identifier hs-var">pq</span></a></span></span><span> </span><span id="local-6989586621679174177"><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174177"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174177"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-88"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174178"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174178"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; FreeCocartesian q a b
+</span><a href="#local-6989586621679174185"><span class="hs-identifier hs-var hs-var hs-var">promap</span></a></span></span><span> </span><span id="local-6989586621679174187"><span class="annot"><span class="annottext">p :-&gt; q
+</span><a href="#local-6989586621679174187"><span class="hs-identifier hs-var">pq</span></a></span></span><span> </span><span id="local-6989586621679174188"><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174188"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174188"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-81"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174189"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679174189"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; FreeCocartesian q a b
 forall (p :: * -&gt; * -&gt; *) a b. (a -&gt; Void) -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-var">Neutral</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174178"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-89"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174182"><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174182"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174183"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174183"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174184"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174184"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174185"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174185"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day Either q (FreeCocartesian q) a b -&gt; FreeCocartesian q a b
+</span><a href="#local-6989586621679174189"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174193"><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174193"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174194"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174194"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174195"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
+</span><a href="#local-6989586621679174195"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174196"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174196"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Day Either q (FreeCocartesian q) a b -&gt; FreeCocartesian q a b
 forall (p :: * -&gt; * -&gt; *) a b.
 Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">(Day Either q (FreeCocartesian q) a b -&gt; FreeCocartesian q a b)
@@ -187,8 +180,8 @@ p a1 b1
 -&gt; q a2 b2 -&gt; (a -&gt; t a1 a2) -&gt; (t b1 b2 -&gt; b) -&gt; Day t p q a b
 </span><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-var">Day</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a1 b1
 p :-&gt; q
-</span><a href="#local-6989586621679174176"><span class="hs-identifier hs-var">pq</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174182"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(p :-&gt; q) -&gt; FreeCocartesian p :-&gt; FreeCocartesian q
+</span><a href="#local-6989586621679174187"><span class="hs-identifier hs-var">pq</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174193"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(p :-&gt; q) -&gt; FreeCocartesian p :-&gt; FreeCocartesian q
 forall {k} {k1} (t :: (* -&gt; * -&gt; *) -&gt; k -&gt; k1 -&gt; *)
        (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *).
 (ProfunctorFunctor t, Profunctor p) =&gt;
@@ -198,30 +191,30 @@ Profunctor p =&gt;
 (p :-&gt; q) -&gt; FreeCocartesian p :-&gt; FreeCocartesian q
 </span><span class="hs-identifier hs-var">promap</span></span><span> </span><span class="annot"><span class="annottext">p a b -&gt; q a b
 p :-&gt; q
-</span><a href="#local-6989586621679174176"><span class="hs-identifier hs-var">pq</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174183"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174184"><span class="hs-identifier hs-var">opA</span></a></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174185"><span class="hs-identifier hs-var">opB</span></a></span><span>
-</span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span id="local-6989586621679173823"><span id="local-6989586621679173824"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-type">emptyF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173823"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><a href="#local-6989586621679173824"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
-</span><span id="line-92"></span><span id="emptyF"><span class="annot"><span class="annottext">emptyF :: forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
+</span><a href="#local-6989586621679174187"><span class="hs-identifier hs-var">pq</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174194"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a1 a2
+</span><a href="#local-6989586621679174195"><span class="hs-identifier hs-var">opA</span></a></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174196"><span class="hs-identifier hs-var">opB</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span id="local-6989586621679173860"><span id="local-6989586621679173861"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-type">emptyF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173860"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><a href="#local-6989586621679173861"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-85"></span><span id="emptyF"><span class="annot"><span class="annottext">emptyF :: forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-var hs-var">emptyF</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Void -&gt; Void) -&gt; FreeCocartesian p Void b
 forall (p :: * -&gt; * -&gt; *) a b. (a -&gt; Void) -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-var">Neutral</span></a></span><span> </span><span class="annot"><span class="annottext">Void -&gt; Void
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span>
-</span><span id="line-93"></span><span>
-</span><span id="line-94"></span><span id="local-6989586621679173828"><span id="local-6989586621679173829"><span id="local-6989586621679173830"><span id="local-6989586621679173831"><span id="local-6989586621679173832"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-type">sumF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173828"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173829"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173830"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173828"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173831"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173832"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173828"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173829"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173831"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173830"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173832"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
-</span><span id="line-95"></span><span id="sumF"><span class="annot"><span class="annottext">sumF :: forall (p :: * -&gt; * -&gt; *) a b a' b'.
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span id="local-6989586621679173865"><span id="local-6989586621679173866"><span id="local-6989586621679173867"><span id="local-6989586621679173868"><span id="local-6989586621679173869"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-type">sumF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173865"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173866"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173867"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173865"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173868"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173869"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173865"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173866"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173868"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173867"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173869"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-88"></span><span id="sumF"><span class="annot"><span class="annottext">sumF :: forall (p :: * -&gt; * -&gt; *) a b a' b'.
 FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
-</span><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-var hs-var">sumF</span></a></span></span><span> </span><span id="local-6989586621679174188"><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174188"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span id="local-6989586621679174189"><span class="annot"><span class="annottext">FreeCocartesian p a' b'
-</span><a href="#local-6989586621679174189"><span class="hs-identifier hs-var">qs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174188"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-96"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174190"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174190"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Either a a' -&gt; a')
+</span><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-var hs-var">sumF</span></a></span></span><span> </span><span id="local-6989586621679174199"><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174199"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span id="local-6989586621679174200"><span class="annot"><span class="annottext">FreeCocartesian p a' b'
+</span><a href="#local-6989586621679174200"><span class="hs-identifier hs-var">qs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174199"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-89"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174201"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679174201"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Either a a' -&gt; a')
 -&gt; (b' -&gt; Either b b')
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
@@ -238,18 +231,18 @@ forall a. Void -&gt; a
 </span><span class="hs-identifier hs-var">absurd</span></span><span> </span><span class="annot"><span class="annottext">(Void -&gt; a') -&gt; (a -&gt; Void) -&gt; a -&gt; a'
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174190"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a' -&gt; a'
+</span><a href="#local-6989586621679174201"><span class="hs-identifier hs-var">z</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a' -&gt; a'
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">b' -&gt; Either b b'
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a' b'
-</span><a href="#local-6989586621679174189"><span class="hs-identifier hs-var">qs</span></a></span><span>
-</span><span id="line-97"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174195"><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174195"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174196"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174196"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174197"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174197"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174198"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174198"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-98"></span><span>    </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) (Either a a') (Either b b')
+</span><a href="#local-6989586621679174200"><span class="hs-identifier hs-var">qs</span></a></span><span>
+</span><span id="line-90"></span><span>  </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174209"><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174209"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174210"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174210"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174211"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
+</span><a href="#local-6989586621679174211"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174212"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174212"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) (Either a a') (Either b b')
 -&gt; FreeCocartesian p (Either a a') (Either b b')
 forall (p :: * -&gt; * -&gt; *) a b.
 Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
@@ -268,7 +261,7 @@ forall (p :: * -&gt; * -&gt; *) a1 b1 (q :: * -&gt; * -&gt; *) a2 b2 a
 p a1 b1
 -&gt; q a2 b2 -&gt; (a -&gt; t a1 a2) -&gt; (t b1 b2 -&gt; b) -&gt; Day t p q a b
 </span><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-var">Day</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174195"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174209"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a2 a') (Either b2 b')
 forall (p :: * -&gt; * -&gt; *) a b a' b'.
@@ -276,10 +269,13 @@ FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-var">sumF</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174196"><span class="hs-identifier hs-var">ps'</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a' b'
-</span><a href="#local-6989586621679174189"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either (Either a1 a2) a' -&gt; Either a1 (Either a2 a')
+</span><a href="#local-6989586621679174210"><span class="hs-identifier hs-var">ps'</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a' b'
+</span><a href="#local-6989586621679174200"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either (Either a1 a2) a' -&gt; Either a1 (Either a2 a')
 forall a b c. Either (Either a b) c -&gt; Either a (Either b c)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#assocEither"><span class="hs-identifier hs-var">assocEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (Either a1 a2) a' -&gt; Either a1 (Either a2 a'))
+forall (p :: * -&gt; * -&gt; *) a b c.
+Assoc p =&gt;
+p (p a b) c -&gt; p a (p b c)
+</span><span class="hs-identifier hs-var">assoc</span></span><span> </span><span class="annot"><span class="annottext">(Either (Either a1 a2) a' -&gt; Either a1 (Either a2 a'))
 -&gt; (Either a a' -&gt; Either (Either a1 a2) a')
 -&gt; Either a a'
 -&gt; Either a1 (Either a2 a')
@@ -290,77 +286,34 @@ forall (p :: * -&gt; * -&gt; *) a b c.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; p a c -&gt; p b c
 </span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174197"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b) -&gt; Either (Either b1 b2) b' -&gt; Either b b'
+</span><a href="#local-6989586621679174211"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b) -&gt; Either (Either b1 b2) b' -&gt; Either b b'
 forall a b c. (a -&gt; b) -&gt; Either a c -&gt; Either b c
 forall (p :: * -&gt; * -&gt; *) a b c.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; p a c -&gt; p b c
 </span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174198"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (Either b1 b2) b' -&gt; Either b b')
+</span><a href="#local-6989586621679174212"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (Either b1 b2) b' -&gt; Either b b')
 -&gt; (Either b1 (Either b2 b') -&gt; Either (Either b1 b2) b')
 -&gt; Either b1 (Either b2 b')
 -&gt; Either b b'
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Either b1 (Either b2 b') -&gt; Either (Either b1 b2) b'
 forall a b c. Either a (Either b c) -&gt; Either (Either a b) c
-</span><a href="Data.Profunctor.Cocartesian.Free.html#unassocEither"><span class="hs-identifier hs-var">unassocEither</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-99"></span><span>
-</span><span id="line-100"></span><span id="local-6989586621679173849"><span id="local-6989586621679173850"><span id="local-6989586621679173851"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#assocEither"><span class="hs-identifier hs-type">assocEither</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173849"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173850"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679173851"><span class="hs-identifier hs-type">c</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173849"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173850"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173851"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span></span></span></span><span>
-</span><span id="line-101"></span><span id="assocEither"><span class="annot"><span class="annottext">assocEither :: forall a b c. Either (Either a b) c -&gt; Either a (Either b c)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#assocEither"><span class="hs-identifier hs-var hs-var">assocEither</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Either a b -&gt; Either a (Either b c))
--&gt; (c -&gt; Either a (Either b c))
--&gt; Either (Either a b) c
--&gt; Either a (Either b c)
-forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
-</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b -&gt; Either b c) -&gt; Either a b -&gt; Either a (Either b c)
-forall b c a. (b -&gt; c) -&gt; Either a b -&gt; Either a c
-forall (p :: * -&gt; * -&gt; *) b c a.
-Bifunctor p =&gt;
-(b -&gt; c) -&gt; p a b -&gt; p a c
-</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Either b c
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either b c -&gt; Either a (Either b c)
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Either b c -&gt; Either a (Either b c))
--&gt; (c -&gt; Either b c) -&gt; c -&gt; Either a (Either b c)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; Either b c
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
-</span><span id="line-102"></span><span>
-</span><span id="line-103"></span><span id="local-6989586621679173856"><span id="local-6989586621679173857"><span id="local-6989586621679173858"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#unassocEither"><span class="hs-identifier hs-type">unassocEither</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173856"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173857"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173858"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173856"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173857"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679173858"><span class="hs-identifier hs-type">c</span></a></span></span></span></span><span>
-</span><span id="line-104"></span><span id="unassocEither"><span class="annot"><span class="annottext">unassocEither :: forall a b c. Either a (Either b c) -&gt; Either (Either a b) c
-</span><a href="Data.Profunctor.Cocartesian.Free.html#unassocEither"><span class="hs-identifier hs-var hs-var">unassocEither</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Either (Either a b) c)
--&gt; (Either b c -&gt; Either (Either a b) c)
--&gt; Either a (Either b c)
--&gt; Either (Either a b) c
-forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
-</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either a b -&gt; Either (Either a b) c
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(Either a b -&gt; Either (Either a b) c)
--&gt; (a -&gt; Either a b) -&gt; a -&gt; Either (Either a b) c
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a b
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b -&gt; Either a b) -&gt; Either b c -&gt; Either (Either a b) c
-forall a b c. (a -&gt; b) -&gt; Either a c -&gt; Either b c
 forall (p :: * -&gt; * -&gt; *) a b c.
-Bifunctor p =&gt;
-(a -&gt; b) -&gt; p a c -&gt; p b c
-</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">b -&gt; Either a b
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
-</span><span id="line-105"></span><span>
-</span><span id="line-106"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173891"><span id="local-6989586621679174208"><span id="local-6989586621679174213"><span id="local-6989586621679174216"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679173891"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173891"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-107"></span><span>    </span><span id="local-6989586621679174221"><span class="annot"><span class="annottext">proEmpty :: forall b. FreeCocartesian p Void b
-</span><a href="#local-6989586621679174221"><span class="hs-identifier hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p Void b
+Assoc p =&gt;
+p a (p b c) -&gt; p (p a b) c
+</span><span class="hs-identifier hs-var">unassoc</span></span><span class="hs-special">)</span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173921"><span id="local-6989586621679174221"><span id="local-6989586621679174226"><span id="local-6989586621679174229"><span class="annot"><span class="hs-identifier hs-type">Profunctor</span></span><span> </span><span class="annot"><a href="#local-6989586621679173921"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173921"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621679174234"><span class="annot"><span class="annottext">proEmpty :: forall b. FreeCocartesian p Void b
+</span><a href="#local-6989586621679174234"><span class="hs-identifier hs-var hs-var hs-var">proEmpty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p Void b
 forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-var">emptyF</span></a></span><span>
-</span><span id="line-108"></span><span>    </span><span id="local-6989586621679174223"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679174236"><span class="annot"><span class="annottext">+++ :: forall a b a' b'.
 FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
-</span><a href="#local-6989586621679174223"><span class="hs-operator hs-var hs-var hs-var">(+++)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174236"><span class="hs-operator hs-var hs-var hs-var">(+++)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
 forall (p :: * -&gt; * -&gt; *) a b a' b'.
@@ -368,19 +321,19 @@ FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (Either a a') (Either b b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#sumF"><span class="hs-identifier hs-var">sumF</span></a></span><span>
-</span><span id="line-109"></span><span>
-</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173738"><span id="local-6989586621679174230"><span id="local-6989586621679174234"><span id="local-6989586621679174237"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173738"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173738"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-111"></span><span>    </span><span id="local-6989586621679174243"><span class="annot"><span class="annottext">proUnit :: forall a. FreeCocartesian p a ()
-</span><a href="#local-6989586621679174243"><span class="hs-identifier hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p a () -&gt; FreeCocartesian p a ()
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679173775"><span id="local-6989586621679174243"><span id="local-6989586621679174247"><span id="local-6989586621679174250"><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173775"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-type">Cartesian</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173775"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679174256"><span class="annot"><span class="annottext">proUnit :: forall a. FreeCocartesian p a ()
+</span><a href="#local-6989586621679174256"><span class="hs-identifier hs-var hs-var hs-var">proUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p a () -&gt; FreeCocartesian p a ()
 forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-var">liftF</span></a></span><span> </span><span class="annot"><span class="annottext">p a ()
 forall a. p a ()
 forall (p :: * -&gt; * -&gt; *) a. Cartesian p =&gt; p a ()
 </span><a href="Data.Profunctor.Cartesian.html#proUnit"><span class="hs-identifier hs-var">proUnit</span></a></span><span>
-</span><span id="line-112"></span><span>    </span><span id="local-6989586621679174245"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
+</span><span id="line-99"></span><span>    </span><span id="local-6989586621679174258"><span class="annot"><span class="annottext">*** :: forall a b a' b'.
 FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b' -&gt; FreeCocartesian p (a, a') (b, b')
-</span><a href="#local-6989586621679174245"><span class="hs-operator hs-var hs-var hs-var">(***)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ProductOp p p p
+</span><a href="#local-6989586621679174258"><span class="hs-operator hs-var hs-var hs-var">(***)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ProductOp p p p
 -&gt; FreeCocartesian p a b
 -&gt; FreeCocartesian p a' b'
 -&gt; FreeCocartesian p (a, a') (b, b')
@@ -396,19 +349,19 @@ forall (p :: * -&gt; * -&gt; *) a b a' b'.
 Cartesian p =&gt;
 p a b -&gt; p a' b' -&gt; p (a, a') (b, b')
 </span><a href="Data.Profunctor.Cartesian.html#%2A%2A%2A"><span class="hs-operator hs-var">(***)</span></a></span><span>
-</span><span id="line-113"></span><span>
-</span><span id="line-114"></span><span class="hs-keyword">type</span><span> </span><span id="ProductOp"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-var">ProductOp</span></a></span></span><span> </span><span id="local-6989586621679174248"><span class="annot"><a href="#local-6989586621679174248"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679174249"><span class="annot"><a href="#local-6989586621679174249"><span class="hs-identifier hs-type">q</span></a></span></span><span> </span><span id="local-6989586621679174250"><span class="annot"><a href="#local-6989586621679174250"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679174251"><span class="annot"><a href="#local-6989586621679174251"><span class="hs-identifier hs-type">a1</span></a></span></span><span> </span><span id="local-6989586621679174252"><span class="annot"><a href="#local-6989586621679174252"><span class="hs-identifier hs-type">b1</span></a></span></span><span> </span><span id="local-6989586621679174253"><span class="annot"><a href="#local-6989586621679174253"><span class="hs-identifier hs-type">a2</span></a></span></span><span> </span><span id="local-6989586621679174254"><span class="annot"><a href="#local-6989586621679174254"><span class="hs-identifier hs-type">b2</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679174248"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174251"><span class="hs-identifier hs-type">a1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174252"><span class="hs-identifier hs-type">b1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679174249"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174253"><span class="hs-identifier hs-type">a2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174254"><span class="hs-identifier hs-type">b2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679174250"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174251"><span class="hs-identifier hs-type">a1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679174253"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174252"><span class="hs-identifier hs-type">b1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679174254"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-115"></span><span>
-</span><span id="line-116"></span><span id="local-6989586621679173926"><span id="local-6989586621679173927"><span id="local-6989586621679173928"><span id="local-6989586621679173929"><span id="local-6989586621679173930"><span id="local-6989586621679173931"><span id="local-6989586621679173932"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-type">multF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-type">ProductOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173926"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173927"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173928"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173926"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173929"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173930"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173927"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173931"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173932"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173928"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173929"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173931"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173930"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173932"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
-</span><span id="line-117"></span><span id="multF"><span class="annot"><span class="annottext">multF :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) (r :: * -&gt; * -&gt; *) a b
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span class="hs-keyword">type</span><span> </span><span id="ProductOp"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-var">ProductOp</span></a></span></span><span> </span><span id="local-6989586621679174261"><span class="annot"><a href="#local-6989586621679174261"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679174262"><span class="annot"><a href="#local-6989586621679174262"><span class="hs-identifier hs-type">q</span></a></span></span><span> </span><span id="local-6989586621679174263"><span class="annot"><a href="#local-6989586621679174263"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679174264"><span class="annot"><a href="#local-6989586621679174264"><span class="hs-identifier hs-type">a1</span></a></span></span><span> </span><span id="local-6989586621679174265"><span class="annot"><a href="#local-6989586621679174265"><span class="hs-identifier hs-type">b1</span></a></span></span><span> </span><span id="local-6989586621679174266"><span class="annot"><a href="#local-6989586621679174266"><span class="hs-identifier hs-type">a2</span></a></span></span><span> </span><span id="local-6989586621679174267"><span class="annot"><a href="#local-6989586621679174267"><span class="hs-identifier hs-type">b2</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679174261"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174264"><span class="hs-identifier hs-type">a1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174265"><span class="hs-identifier hs-type">b1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679174262"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174266"><span class="hs-identifier hs-type">a2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174267"><span class="hs-identifier hs-type">b2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679174263"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174264"><span class="hs-identifier hs-type">a1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679174266"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174265"><span class="hs-identifier hs-type">b1</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679174267"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span id="local-6989586621679173956"><span id="local-6989586621679173957"><span id="local-6989586621679173958"><span id="local-6989586621679173959"><span id="local-6989586621679173960"><span id="local-6989586621679173961"><span id="local-6989586621679173962"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-type">multF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-type">ProductOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173956"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173957"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173958"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173956"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173959"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173960"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173957"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173961"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173962"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173958"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173959"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173961"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173960"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173962"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
+</span><span id="line-104"></span><span id="multF"><span class="annot"><span class="annottext">multF :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) (r :: * -&gt; * -&gt; *) a b
        a' b'.
 ProductOp p q r
 -&gt; FreeCocartesian p a b
 -&gt; FreeCocartesian q a' b'
 -&gt; FreeCocartesian r (a, a') (b, b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-var hs-var">multF</span></a></span></span><span> </span><span class="annot"><span class="annottext">ProductOp p q r
-</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174256"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174256"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174269"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679174269"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void)
 -&gt; FreeCocartesian r Void (b, b')
 -&gt; FreeCocartesian r (a, a') (b, b')
@@ -418,21 +371,21 @@ forall (p :: * -&gt; * -&gt; *) a b c.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; p b c -&gt; p a c
 </span><span class="hs-identifier hs-var">lmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174256"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; ((a, a') -&gt; a) -&gt; (a, a') -&gt; Void
+</span><a href="#local-6989586621679174269"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; ((a, a') -&gt; a) -&gt; (a, a') -&gt; Void
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a, a') -&gt; a
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian r Void (b, b')
 forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-var">emptyF</span></a></span><span>
-</span><span id="line-118"></span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-var">multF</span></a></span><span> </span><span id="local-6989586621679174259"><span class="annot"><span class="annottext">ProductOp p q r
-</span><a href="#local-6989586621679174259"><span class="hs-identifier hs-var">prod</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174264"><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174264"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174265"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174265"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174266"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174266"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174267"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174267"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679174268"><span class="annot"><span class="annottext">FreeCocartesian q a' b'
-</span><a href="#local-6989586621679174268"><span class="hs-identifier hs-var">qs</span></a></span></span><span>
-</span><span id="line-119"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Either (a1, a') (a2, a'))
+</span><span id="line-105"></span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-var">multF</span></a></span><span> </span><span id="local-6989586621679174272"><span class="annot"><span class="annottext">ProductOp p q r
+</span><a href="#local-6989586621679174272"><span class="hs-identifier hs-var">prod</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174277"><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174277"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174278"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174278"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174279"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
+</span><a href="#local-6989586621679174279"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174280"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174280"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679174281"><span class="annot"><span class="annottext">FreeCocartesian q a' b'
+</span><a href="#local-6989586621679174281"><span class="hs-identifier hs-var">qs</span></a></span></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Either (a1, a') (a2, a'))
 -&gt; (Either (b1, b') (b2, b') -&gt; (b, b'))
 -&gt; FreeCocartesian
      r (Either (a1, a') (a2, a')) (Either (b1, b') (b2, b'))
@@ -444,8 +397,8 @@ forall (p :: * -&gt; * -&gt; *) a b c d.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
 </span><span class="hs-identifier hs-var">dimap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either a1 a2, a') -&gt; Either (a1, a') (a2, a')
-forall a1 a2 b. (Either a1 a2, b) -&gt; Either (a1, b) (a2, b)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#distR"><span class="hs-identifier hs-var">distR</span></a></span><span> </span><span class="annot"><span class="annottext">((Either a1 a2, a') -&gt; Either (a1, a') (a2, a'))
+forall a b c. (Either a b, c) -&gt; Either (a, c) (b, c)
+</span><a href="Data.Profunctor.Cartesian.html#distL"><span class="hs-identifier hs-var">distL</span></a></span><span> </span><span class="annot"><span class="annottext">((Either a1 a2, a') -&gt; Either (a1, a') (a2, a'))
 -&gt; ((a, a') -&gt; (Either a1 a2, a'))
 -&gt; (a, a')
 -&gt; Either (a1, a') (a2, a')
@@ -456,20 +409,20 @@ forall (p :: * -&gt; * -&gt; *) a b c.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; p a c -&gt; p b c
 </span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174266"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b) -&gt; (Either b1 b2, b') -&gt; (b, b')
+</span><a href="#local-6989586621679174279"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b) -&gt; (Either b1 b2, b') -&gt; (b, b')
 forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
 forall (p :: * -&gt; * -&gt; *) a b c.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; p a c -&gt; p b c
 </span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174267"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">((Either b1 b2, b') -&gt; (b, b'))
+</span><a href="#local-6989586621679174280"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">((Either b1 b2, b') -&gt; (b, b'))
 -&gt; (Either (b1, b') (b2, b') -&gt; (Either b1 b2, b'))
 -&gt; Either (b1, b') (b2, b')
 -&gt; (b, b')
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Either (b1, b') (b2, b') -&gt; (Either b1 b2, b')
-forall a1 b a2. Either (a1, b) (a2, b) -&gt; (Either a1 a2, b)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#undistR"><span class="hs-identifier hs-var">undistR</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(FreeCocartesian
+forall a c b. Either (a, c) (b, c) -&gt; (Either a b, c)
+</span><a href="Data.Profunctor.Cartesian.html#undistL"><span class="hs-identifier hs-var">undistL</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(FreeCocartesian
    r (Either (a1, a') (a2, a')) (Either (b1, b') (b2, b'))
  -&gt; FreeCocartesian r (a, a') (b, b'))
 -&gt; FreeCocartesian
@@ -477,7 +430,7 @@ forall a1 b a2. Either (a1, b) (a2, b) -&gt; (Either a1 a2, b)
 -&gt; FreeCocartesian r (a, a') (b, b')
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-120"></span><span>      </span><span class="annot"><span class="annottext">FreeCocartesian r (a1, a') (b1, b')
+</span><span id="line-107"></span><span>      </span><span class="annot"><span class="annottext">FreeCocartesian r (a1, a') (b1, b')
 -&gt; FreeCocartesian r (a2, a') (b2, b')
 -&gt; FreeCocartesian
      r (Either (a1, a') (a2, a')) (Either (b1, b') (b2, b'))
@@ -497,9 +450,9 @@ ProductOp p q r
 -&gt; FreeCocartesian r (a, a') (b, b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-var">distLeftFree</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a2 b2 -&gt; r (a1, a2) (b1, b2)
 ProductOp p q r
-</span><a href="#local-6989586621679174259"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174264"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
-</span><a href="#local-6989586621679174268"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ProductOp p q r
+</span><a href="#local-6989586621679174272"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174277"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
+</span><a href="#local-6989586621679174281"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ProductOp p q r
 -&gt; FreeCocartesian p a2 b2
 -&gt; FreeCocartesian q a' b'
 -&gt; FreeCocartesian r (a2, a') (b2, b')
@@ -511,12 +464,12 @@ ProductOp p q r
 -&gt; FreeCocartesian r (a, a') (b, b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#multF"><span class="hs-identifier hs-var">multF</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a2 b2 -&gt; r (a1, a2) (b1, b2)
 ProductOp p q r
-</span><a href="#local-6989586621679174259"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174265"><span class="hs-identifier hs-var">ps'</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
-</span><a href="#local-6989586621679174268"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-121"></span><span>
-</span><span id="line-122"></span><span id="local-6989586621679173956"><span id="local-6989586621679173957"><span id="local-6989586621679173958"><span id="local-6989586621679173959"><span id="local-6989586621679173960"><span id="local-6989586621679173961"><span id="local-6989586621679173962"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-type">distLeftFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-type">ProductOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173956"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173957"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173958"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679173956"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173959"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173960"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173957"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173961"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173962"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173958"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173959"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173961"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173960"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173962"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
-</span><span id="line-123"></span><span id="distLeftFree"><span class="annot"><span class="annottext">distLeftFree :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) (r :: * -&gt; * -&gt; *) a b
+</span><a href="#local-6989586621679174272"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174278"><span class="hs-identifier hs-var">ps'</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a' b'
+</span><a href="#local-6989586621679174281"><span class="hs-identifier hs-var">qs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span id="local-6989586621679173986"><span id="local-6989586621679173987"><span id="local-6989586621679173988"><span id="local-6989586621679173989"><span id="local-6989586621679173990"><span id="local-6989586621679173991"><span id="local-6989586621679173992"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-type">distLeftFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ProductOp"><span class="hs-identifier hs-type">ProductOp</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173986"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173987"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173988"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679173986"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173989"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173990"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173987"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173991"><span class="hs-identifier hs-type">a'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173992"><span class="hs-identifier hs-type">b'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173988"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173989"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173991"><span class="hs-identifier hs-type">a'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173990"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">,</span><span class="annot"><a href="#local-6989586621679173992"><span class="hs-identifier hs-type">b'</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
+</span><span id="line-110"></span><span id="distLeftFree"><span class="annot"><span class="annottext">distLeftFree :: forall (p :: * -&gt; * -&gt; *) (q :: * -&gt; * -&gt; *) (r :: * -&gt; * -&gt; *) a b
        a' b'.
 ProductOp p q r
 -&gt; p a b
@@ -524,8 +477,8 @@ ProductOp p q r
 -&gt; FreeCocartesian r (a, a') (b, b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-var hs-var">distLeftFree</span></a></span></span><span> </span><span class="annot"><span class="annottext">ProductOp p q r
 </span><span class="hs-identifier">_</span></span><span>    </span><span class="annot"><span class="annottext">p a b
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174271"><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679174271"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174286"><span class="annot"><span class="annottext">a' -&gt; Void
+</span><a href="#local-6989586621679174286"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, a') -&gt; Void)
 -&gt; FreeCocartesian r Void (b, b')
 -&gt; FreeCocartesian r (a, a') (b, b')
 forall a b c.
@@ -534,20 +487,20 @@ forall (p :: * -&gt; * -&gt; *) a b c.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; p b c -&gt; p a c
 </span><span class="hs-identifier hs-var">lmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a' -&gt; Void
-</span><a href="#local-6989586621679174271"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">(a' -&gt; Void) -&gt; ((a, a') -&gt; a') -&gt; (a, a') -&gt; Void
+</span><a href="#local-6989586621679174286"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">(a' -&gt; Void) -&gt; ((a, a') -&gt; a') -&gt; (a, a') -&gt; Void
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a, a') -&gt; a'
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian r Void (b, b')
 forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-var">emptyF</span></a></span><span>
-</span><span id="line-124"></span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-var">distLeftFree</span></a></span><span> </span><span id="local-6989586621679174273"><span class="annot"><span class="annottext">ProductOp p q r
-</span><a href="#local-6989586621679174273"><span class="hs-identifier hs-var">prod</span></a></span></span><span> </span><span id="local-6989586621679174274"><span class="annot"><span class="annottext">p a b
-</span><a href="#local-6989586621679174274"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174277"><span class="annot"><span class="annottext">q a1 b1
-</span><a href="#local-6989586621679174277"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span id="local-6989586621679174278"><span class="annot"><span class="annottext">FreeCocartesian q a2 b2
-</span><a href="#local-6989586621679174278"><span class="hs-identifier hs-var">qs'</span></a></span></span><span> </span><span id="local-6989586621679174279"><span class="annot"><span class="annottext">a' -&gt; Either a1 a2
-</span><a href="#local-6989586621679174279"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174280"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b'
-</span><a href="#local-6989586621679174280"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day Either r (FreeCocartesian r) (a, a') (b, b')
+</span><span id="line-111"></span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-var">distLeftFree</span></a></span><span> </span><span id="local-6989586621679174288"><span class="annot"><span class="annottext">ProductOp p q r
+</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">prod</span></a></span></span><span> </span><span id="local-6989586621679174289"><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679174289"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174292"><span class="annot"><span class="annottext">q a1 b1
+</span><a href="#local-6989586621679174292"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span id="local-6989586621679174293"><span class="annot"><span class="annottext">FreeCocartesian q a2 b2
+</span><a href="#local-6989586621679174293"><span class="hs-identifier hs-var">qs'</span></a></span></span><span> </span><span id="local-6989586621679174294"><span class="annot"><span class="annottext">a' -&gt; Either a1 a2
+</span><a href="#local-6989586621679174294"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174295"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b'
+</span><a href="#local-6989586621679174295"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day Either r (FreeCocartesian r) (a, a') (b, b')
 -&gt; FreeCocartesian r (a, a') (b, b')
 forall (p :: * -&gt; * -&gt; *) a b.
 Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
@@ -567,9 +520,9 @@ p a1 b1
 -&gt; q a2 b2 -&gt; (a -&gt; t a1 a2) -&gt; (t b1 b2 -&gt; b) -&gt; Day t p q a b
 </span><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-var">Day</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">p a b -&gt; q a1 b1 -&gt; r (a, a1) (b, b1)
 ProductOp p q r
-</span><a href="#local-6989586621679174273"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
-</span><a href="#local-6989586621679174274"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">q a1 b1
-</span><a href="#local-6989586621679174277"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ProductOp p q r
+</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679174289"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">q a1 b1
+</span><a href="#local-6989586621679174292"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ProductOp p q r
 -&gt; p a b
 -&gt; FreeCocartesian q a2 b2
 -&gt; FreeCocartesian r (a, a2) (b, b2)
@@ -581,11 +534,11 @@ ProductOp p q r
 -&gt; FreeCocartesian r (a, a') (b, b')
 </span><a href="Data.Profunctor.Cocartesian.Free.html#distLeftFree"><span class="hs-identifier hs-var">distLeftFree</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a2 b2 -&gt; r (a1, a2) (b1, b2)
 ProductOp p q r
-</span><a href="#local-6989586621679174273"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
-</span><a href="#local-6989586621679174274"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a2 b2
-</span><a href="#local-6989586621679174278"><span class="hs-identifier hs-var">qs'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a, Either a1 a2) -&gt; Either (a, a1) (a, a2)
-forall a b1 b2. (a, Either b1 b2) -&gt; Either (a, b1) (a, b2)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#distL"><span class="hs-identifier hs-var">distL</span></a></span><span> </span><span class="annot"><span class="annottext">((a, Either a1 a2) -&gt; Either (a, a1) (a, a2))
+</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">prod</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679174289"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian q a2 b2
+</span><a href="#local-6989586621679174293"><span class="hs-identifier hs-var">qs'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a, Either a1 a2) -&gt; Either (a, a1) (a, a2)
+forall c a b. (c, Either a b) -&gt; Either (c, a) (c, b)
+</span><a href="Data.Profunctor.Cartesian.html#distR"><span class="hs-identifier hs-var">distR</span></a></span><span> </span><span class="annot"><span class="annottext">((a, Either a1 a2) -&gt; Either (a, a1) (a, a2))
 -&gt; ((a, a') -&gt; (a, Either a1 a2))
 -&gt; (a, a')
 -&gt; Either (a, a1) (a, a2)
@@ -596,103 +549,27 @@ forall (p :: * -&gt; * -&gt; *) b c a.
 Bifunctor p =&gt;
 (b -&gt; c) -&gt; p a b -&gt; p a c
 </span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">a' -&gt; Either a1 a2
-</span><a href="#local-6989586621679174279"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b') -&gt; (b, Either b1 b2) -&gt; (b, b')
+</span><a href="#local-6989586621679174294"><span class="hs-identifier hs-var">opA</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Either b1 b2 -&gt; b') -&gt; (b, Either b1 b2) -&gt; (b, b')
 forall b c a. (b -&gt; c) -&gt; (a, b) -&gt; (a, c)
 forall (p :: * -&gt; * -&gt; *) b c a.
 Bifunctor p =&gt;
 (b -&gt; c) -&gt; p a b -&gt; p a c
 </span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b'
-</span><a href="#local-6989586621679174280"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">((b, Either b1 b2) -&gt; (b, b'))
+</span><a href="#local-6989586621679174295"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="annot"><span class="annottext">((b, Either b1 b2) -&gt; (b, b'))
 -&gt; (Either (b, b1) (b, b2) -&gt; (b, Either b1 b2))
 -&gt; Either (b, b1) (b, b2)
 -&gt; (b, b')
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Either (b, b1) (b, b2) -&gt; (b, Either b1 b2)
-forall a b1 b2. Either (a, b1) (a, b2) -&gt; (a, Either b1 b2)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#undistL"><span class="hs-identifier hs-var">undistL</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-125"></span><span>
-</span><span id="line-126"></span><span id="local-6989586621679173950"><span id="local-6989586621679173951"><span id="local-6989586621679173952"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distR"><span class="hs-identifier hs-type">distR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173950"><span class="hs-identifier hs-type">a1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173951"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173952"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173950"><span class="hs-identifier hs-type">a1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173952"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173951"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173952"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
-</span><span id="line-127"></span><span id="distR"><span class="annot"><span class="annottext">distR :: forall a1 a2 b. (Either a1 a2, b) -&gt; Either (a1, b) (a2, b)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#distR"><span class="hs-identifier hs-var hs-var">distR</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679174282"><span class="annot"><span class="annottext">Either a1 a2
-</span><a href="#local-6989586621679174282"><span class="hs-identifier hs-var">ea</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679174283"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679174283"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a1 -&gt; (a1, b))
--&gt; (a2 -&gt; (a2, b)) -&gt; Either a1 a2 -&gt; Either (a1, b) (a2, b)
-forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; Either a c -&gt; Either b d
-forall (p :: * -&gt; * -&gt; *) a b c d.
-Bifunctor p =&gt;
-(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
-</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679174283"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679174283"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either a1 a2
-</span><a href="#local-6989586621679174282"><span class="hs-identifier hs-var">ea</span></a></span><span>
-</span><span id="line-128"></span><span>
-</span><span id="line-129"></span><span id="local-6989586621679173953"><span id="local-6989586621679173954"><span id="local-6989586621679173955"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#undistR"><span class="hs-identifier hs-type">undistR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173953"><span class="hs-identifier hs-type">a1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173954"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173955"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173954"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173953"><span class="hs-identifier hs-type">a1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173955"><span class="hs-identifier hs-type">a2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173954"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
-</span><span id="line-130"></span><span id="undistR"><span class="annot"><span class="annottext">undistR :: forall a1 b a2. Either (a1, b) (a2, b) -&gt; (Either a1 a2, b)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#undistR"><span class="hs-identifier hs-var hs-var">undistR</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a1, b) -&gt; (Either a1 a2, b))
--&gt; ((a2, b) -&gt; (Either a1 a2, b))
--&gt; Either (a1, b) (a2, b)
--&gt; (Either a1 a2, b)
-forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
-</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a1 -&gt; Either a1 a2) -&gt; (a1, b) -&gt; (Either a1 a2, b)
-forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
-forall (p :: * -&gt; * -&gt; *) a b c.
-Bifunctor p =&gt;
-(a -&gt; b) -&gt; p a c -&gt; p b c
-</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a1 -&gt; Either a1 a2
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a2 -&gt; Either a1 a2) -&gt; (a2, b) -&gt; (Either a1 a2, b)
-forall a b c. (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
-forall (p :: * -&gt; * -&gt; *) a b c.
-Bifunctor p =&gt;
-(a -&gt; b) -&gt; p a c -&gt; p b c
-</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="annot"><span class="annottext">a2 -&gt; Either a1 a2
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
-</span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span id="local-6989586621679173988"><span id="local-6989586621679173989"><span id="local-6989586621679173990"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#distL"><span class="hs-identifier hs-type">distL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173988"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173989"><span class="hs-identifier hs-type">b1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173990"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173988"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173989"><span class="hs-identifier hs-type">b1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173988"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173990"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span></span></span></span><span>
-</span><span id="line-133"></span><span id="distL"><span class="annot"><span class="annottext">distL :: forall a b1 b2. (a, Either b1 b2) -&gt; Either (a, b1) (a, b2)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#distL"><span class="hs-identifier hs-var hs-var">distL</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679174288"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679174289"><span class="annot"><span class="annottext">Either b1 b2
-</span><a href="#local-6989586621679174289"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b1 -&gt; (a, b1))
--&gt; (b2 -&gt; (a, b2)) -&gt; Either b1 b2 -&gt; Either (a, b1) (a, b2)
-forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; Either a c -&gt; Either b d
-forall (p :: * -&gt; * -&gt; *) a b c d.
-Bifunctor p =&gt;
-(a -&gt; b) -&gt; (c -&gt; d) -&gt; p a c -&gt; p b d
-</span><span class="hs-identifier hs-var">bimap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679174288"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either b1 b2
-</span><a href="#local-6989586621679174289"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-134"></span><span>
-</span><span id="line-135"></span><span id="local-6989586621679173991"><span id="local-6989586621679173992"><span id="local-6989586621679173993"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#undistL"><span class="hs-identifier hs-type">undistL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173991"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173992"><span class="hs-identifier hs-type">b1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173991"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679173993"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679173991"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="#local-6989586621679173992"><span class="hs-identifier hs-type">b1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173993"><span class="hs-identifier hs-type">b2</span></a></span><span class="hs-special">)</span></span></span></span><span>
-</span><span id="line-136"></span><span id="undistL"><span class="annot"><span class="annottext">undistL :: forall a b1 b2. Either (a, b1) (a, b2) -&gt; (a, Either b1 b2)
-</span><a href="Data.Profunctor.Cocartesian.Free.html#undistL"><span class="hs-identifier hs-var hs-var">undistL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a, b1) -&gt; (a, Either b1 b2))
--&gt; ((a, b2) -&gt; (a, Either b1 b2))
--&gt; Either (a, b1) (a, b2)
--&gt; (a, Either b1 b2)
-forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
-</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b1 -&gt; Either b1 b2) -&gt; (a, b1) -&gt; (a, Either b1 b2)
-forall b c a. (b -&gt; c) -&gt; (a, b) -&gt; (a, c)
-forall (p :: * -&gt; * -&gt; *) b c a.
-Bifunctor p =&gt;
-(b -&gt; c) -&gt; p a b -&gt; p a c
-</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">b1 -&gt; Either b1 b2
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b2 -&gt; Either b1 b2) -&gt; (a, b2) -&gt; (a, Either b1 b2)
-forall b c a. (b -&gt; c) -&gt; (a, b) -&gt; (a, c)
-forall (p :: * -&gt; * -&gt; *) b c a.
-Bifunctor p =&gt;
-(b -&gt; c) -&gt; p a b -&gt; p a c
-</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">b2 -&gt; Either b1 b2
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
-</span><span id="line-137"></span><span>
-</span><span id="line-138"></span><span class="annot"><span class="hs-comment">-- * ProfunctorMonad structures</span></span><span>
-</span><span id="line-139"></span><span>
-</span><span id="line-140"></span><span id="local-6989586621679173918"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-type">liftF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679173918"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173918"><span class="hs-identifier hs-type">p</span></a></span></span><span>
-</span><span id="line-141"></span><span id="liftF"><span class="annot"><span class="annottext">liftF :: forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; FreeCocartesian p a b
-</span><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-var hs-var">liftF</span></a></span></span><span> </span><span id="local-6989586621679174292"><span class="annot"><span class="annottext">p a b
-</span><a href="#local-6989586621679174292"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
+forall c a b. Either (c, a) (c, b) -&gt; (c, Either a b)
+</span><a href="Data.Profunctor.Cartesian.html#undistR"><span class="hs-identifier hs-var">undistR</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span class="annot"><span class="hs-comment">-- * ProfunctorMonad structures</span></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span id="local-6989586621679173948"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-type">liftF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679173948"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679173948"><span class="hs-identifier hs-type">p</span></a></span></span><span>
+</span><span id="line-116"></span><span id="liftF"><span class="annot"><span class="annottext">liftF :: forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; FreeCocartesian p a b
+</span><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-var hs-var">liftF</span></a></span></span><span> </span><span id="local-6989586621679174299"><span class="annot"><span class="annottext">p a b
+</span><a href="#local-6989586621679174299"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
 forall (p :: * -&gt; * -&gt; *) a b.
 Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-var">Cons</span></a></span><span> </span><span class="annot"><span class="annottext">(Day Either p (FreeCocartesian p) a b -&gt; FreeCocartesian p a b)
@@ -708,7 +585,7 @@ forall (p :: * -&gt; * -&gt; *) a1 b1 (q :: * -&gt; * -&gt; *) a2 b2 a
 p a1 b1
 -&gt; q a2 b2 -&gt; (a -&gt; t a1 a2) -&gt; (t b1 b2 -&gt; b) -&gt; Day t p q a b
 </span><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-var">Day</span></a></span><span> </span><span class="annot"><span class="annottext">p a b
-</span><a href="#local-6989586621679174292"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p Void Void
+</span><a href="#local-6989586621679174299"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p Void Void
 forall (p :: * -&gt; * -&gt; *) b. FreeCocartesian p Void b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#emptyF"><span class="hs-identifier hs-var">emptyF</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a Void
 forall a b. a -&gt; Either a b
@@ -719,42 +596,42 @@ forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">Void -&gt; b
 forall a. Void -&gt; a
 </span><span class="hs-identifier hs-var">absurd</span></span><span class="hs-special">)</span><span>
-</span><span id="line-142"></span><span>
-</span><span id="line-143"></span><span id="local-6989586621679174013"><span id="local-6989586621679174014"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#foldFree"><span class="hs-identifier hs-type">foldFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174013"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174014"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="#local-6989586621679174013"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174014"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="#local-6989586621679174013"><span class="hs-identifier hs-type">q</span></a></span></span></span><span>
-</span><span id="line-144"></span><span id="foldFree"><span class="annot"><span class="annottext">foldFree :: forall (q :: * -&gt; * -&gt; *) (p :: * -&gt; * -&gt; *).
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span id="local-6989586621679174030"><span id="local-6989586621679174031"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#foldFree"><span class="hs-identifier hs-type">foldFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Cartesian.html#Cocartesian"><span class="hs-identifier hs-type">Cocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174030"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679174031"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="#local-6989586621679174030"><span class="hs-identifier hs-type">q</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174031"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:-&gt;</span></span><span> </span><span class="annot"><a href="#local-6989586621679174030"><span class="hs-identifier hs-type">q</span></a></span></span></span><span>
+</span><span id="line-119"></span><span id="foldFree"><span class="annot"><span class="annottext">foldFree :: forall (q :: * -&gt; * -&gt; *) (p :: * -&gt; * -&gt; *).
 Cocartesian q =&gt;
 (p :-&gt; q) -&gt; FreeCocartesian p :-&gt; q
-</span><a href="Data.Profunctor.Cocartesian.Free.html#foldFree"><span class="hs-identifier hs-var hs-var">foldFree</span></a></span></span><span> </span><span id="local-6989586621679174298"><span class="annot"><span class="annottext">p :-&gt; q
-</span><a href="#local-6989586621679174298"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span id="local-6989586621679174299"><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174299"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
-</span><a href="#local-6989586621679174299"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-145"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174300"><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174300"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; q Void b -&gt; q a b
+</span><a href="Data.Profunctor.Cocartesian.Free.html#foldFree"><span class="hs-identifier hs-var hs-var">foldFree</span></a></span></span><span> </span><span id="local-6989586621679174305"><span class="annot"><span class="annottext">p :-&gt; q
+</span><a href="#local-6989586621679174305"><span class="hs-identifier hs-var">handle</span></a></span></span><span> </span><span id="local-6989586621679174306"><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174306"><span class="hs-identifier hs-var">ps</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a b
+</span><a href="#local-6989586621679174306"><span class="hs-identifier hs-var">ps</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-120"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Neutral"><span class="hs-identifier hs-type">Neutral</span></a></span><span> </span><span id="local-6989586621679174307"><span class="annot"><span class="annottext">a -&gt; Void
+</span><a href="#local-6989586621679174307"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Void) -&gt; q Void b -&gt; q a b
 forall a b c. (a -&gt; b) -&gt; q b c -&gt; q a c
 forall (p :: * -&gt; * -&gt; *) a b c.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; p b c -&gt; p a c
 </span><span class="hs-identifier hs-var">lmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Void
-</span><a href="#local-6989586621679174300"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">q Void b
+</span><a href="#local-6989586621679174307"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">q Void b
 forall b. q Void b
 forall (p :: * -&gt; * -&gt; *) b. Cocartesian p =&gt; p Void b
 </span><a href="Data.Profunctor.Cartesian.html#proEmpty"><span class="hs-identifier hs-var">proEmpty</span></a></span><span>
-</span><span id="line-146"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174304"><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174304"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174305"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174305"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174306"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174306"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174307"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174307"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Either a1 a2)
+</span><span id="line-121"></span><span>    </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#Cons"><span class="hs-identifier hs-type">Cons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Profunctor.Day.html#Day"><span class="hs-identifier hs-type">Day</span></a></span><span> </span><span id="local-6989586621679174311"><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174311"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679174312"><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174312"><span class="hs-identifier hs-var">ps'</span></a></span></span><span> </span><span id="local-6989586621679174313"><span class="annot"><span class="annottext">a -&gt; Either a1 a2
+</span><a href="#local-6989586621679174313"><span class="hs-identifier hs-var">opA</span></a></span></span><span> </span><span id="local-6989586621679174314"><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174314"><span class="hs-identifier hs-var">opB</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Either a1 a2)
 -&gt; (Either b1 b2 -&gt; b) -&gt; q (Either a1 a2) (Either b1 b2) -&gt; q a b
 forall a b c d. (a -&gt; b) -&gt; (c -&gt; d) -&gt; q b c -&gt; q a d
 forall (p :: * -&gt; * -&gt; *) a b c d.
 Profunctor p =&gt;
 (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
 </span><span class="hs-identifier hs-var">dimap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Either a1 a2
-</span><a href="#local-6989586621679174306"><span class="hs-identifier hs-var">opA</span></a></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
-</span><a href="#local-6989586621679174307"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a1 b1
+</span><a href="#local-6989586621679174313"><span class="hs-identifier hs-var">opA</span></a></span><span> </span><span class="annot"><span class="annottext">Either b1 b2 -&gt; b
+</span><a href="#local-6989586621679174314"><span class="hs-identifier hs-var">opB</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">p a1 b1 -&gt; q a1 b1
 p :-&gt; q
-</span><a href="#local-6989586621679174298"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
-</span><a href="#local-6989586621679174304"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">q a1 b1 -&gt; q a2 b2 -&gt; q (Either a1 a2) (Either b1 b2)
+</span><a href="#local-6989586621679174305"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">p a1 b1
+</span><a href="#local-6989586621679174311"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">q a1 b1 -&gt; q a2 b2 -&gt; q (Either a1 a2) (Either b1 b2)
 forall a b a' b'. q a b -&gt; q a' b' -&gt; q (Either a a') (Either b b')
 forall (p :: * -&gt; * -&gt; *) a b a' b'.
 Cocartesian p =&gt;
@@ -765,18 +642,18 @@ Cocartesian q =&gt;
 (p :-&gt; q) -&gt; FreeCocartesian p :-&gt; q
 </span><a href="Data.Profunctor.Cocartesian.Free.html#foldFree"><span class="hs-identifier hs-var">foldFree</span></a></span><span> </span><span class="annot"><span class="annottext">p a b -&gt; q a b
 p :-&gt; q
-</span><a href="#local-6989586621679174298"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
-</span><a href="#local-6989586621679174305"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-147"></span><span>
-</span><span id="line-148"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ProfunctorMonad</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-149"></span><span>    </span><span id="local-6989586621679174315"><span class="annot"><span class="annottext">proreturn :: forall (p :: * -&gt; * -&gt; *). Profunctor p =&gt; p :-&gt; FreeCocartesian p
-</span><a href="#local-6989586621679174315"><span class="hs-identifier hs-var hs-var hs-var">proreturn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p a b -&gt; FreeCocartesian p a b
+</span><a href="#local-6989586621679174305"><span class="hs-identifier hs-var">handle</span></a></span><span> </span><span class="annot"><span class="annottext">FreeCocartesian p a2 b2
+</span><a href="#local-6989586621679174312"><span class="hs-identifier hs-var">ps'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ProfunctorMonad</span></span><span> </span><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#FreeCocartesian"><span class="hs-identifier hs-type">FreeCocartesian</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-124"></span><span>    </span><span id="local-6989586621679174322"><span class="annot"><span class="annottext">proreturn :: forall (p :: * -&gt; * -&gt; *). Profunctor p =&gt; p :-&gt; FreeCocartesian p
+</span><a href="#local-6989586621679174322"><span class="hs-identifier hs-var hs-var hs-var">proreturn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p a b -&gt; FreeCocartesian p a b
 forall (p :: * -&gt; * -&gt; *) a b. p a b -&gt; FreeCocartesian p a b
 </span><a href="Data.Profunctor.Cocartesian.Free.html#liftF"><span class="hs-identifier hs-var">liftF</span></a></span><span>
-</span><span id="line-150"></span><span>    </span><span id="local-6989586621679174319"><span class="annot"><span class="annottext">projoin :: forall (p :: * -&gt; * -&gt; *).
+</span><span id="line-125"></span><span>    </span><span id="local-6989586621679174326"><span class="annot"><span class="annottext">projoin :: forall (p :: * -&gt; * -&gt; *).
 Profunctor p =&gt;
 FreeCocartesian (FreeCocartesian p) :-&gt; FreeCocartesian p
-</span><a href="#local-6989586621679174319"><span class="hs-identifier hs-var hs-var hs-var">projoin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FreeCocartesian p :-&gt; FreeCocartesian p)
+</span><a href="#local-6989586621679174326"><span class="hs-identifier hs-var hs-var hs-var">projoin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FreeCocartesian p :-&gt; FreeCocartesian p)
 -&gt; FreeCocartesian (FreeCocartesian p) :-&gt; FreeCocartesian p
 forall (q :: * -&gt; * -&gt; *) (p :: * -&gt; * -&gt; *).
 Cocartesian q =&gt;
@@ -785,13 +662,13 @@ Cocartesian q =&gt;
 forall a. a -&gt; a
 FreeCocartesian p :-&gt; FreeCocartesian p
 </span><span class="hs-identifier hs-var">id</span></span><span>
-</span><span id="line-151"></span><span>
-</span><span id="line-152"></span><span class="annot"><span class="hs-comment">-- * Utility newtype wrappers</span></span><span>
-</span><span id="line-153"></span><span>
-</span><span id="line-154"></span><span class="annot"><span class="hs-comment">-- | Forgets 'Cocartesian' instance from a 'Profunctor'.</span></span><span>
-</span><span id="line-155"></span><span class="hs-keyword">newtype</span><span> </span><span id="ForgetCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ForgetCocartesian"><span class="hs-identifier hs-var">ForgetCocartesian</span></a></span></span><span> </span><span id="local-6989586621679174037"><span class="annot"><a href="#local-6989586621679174037"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679174038"><span class="annot"><a href="#local-6989586621679174038"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679174039"><span class="annot"><a href="#local-6989586621679174039"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ForgetCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ForgetCocartesian"><span class="hs-identifier hs-var">ForgetCocartesian</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="recallCocartesian"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) a b. ForgetCocartesian p a b -&gt; p a b
-</span><a href="Data.Profunctor.Cocartesian.Free.html#recallCocartesian"><span class="hs-identifier hs-var hs-var">recallCocartesian</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679174037"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174038"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174039"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-156"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679174325"><span id="local-6989586621679174329"><span class="annot"><span class="annottext">(forall a b.
+</span><span id="line-126"></span><span>
+</span><span id="line-127"></span><span class="annot"><span class="hs-comment">-- * Utility newtype wrappers</span></span><span>
+</span><span id="line-128"></span><span>
+</span><span id="line-129"></span><span class="annot"><span class="hs-comment">-- | Forgets 'Cocartesian' instance from a 'Profunctor'.</span></span><span>
+</span><span id="line-130"></span><span class="hs-keyword">newtype</span><span> </span><span id="ForgetCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ForgetCocartesian"><span class="hs-identifier hs-var">ForgetCocartesian</span></a></span></span><span> </span><span id="local-6989586621679174054"><span class="annot"><a href="#local-6989586621679174054"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679174055"><span class="annot"><a href="#local-6989586621679174055"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679174056"><span class="annot"><a href="#local-6989586621679174056"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ForgetCocartesian"><span class="annot"><a href="Data.Profunctor.Cocartesian.Free.html#ForgetCocartesian"><span class="hs-identifier hs-var">ForgetCocartesian</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="recallCocartesian"><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) a b. ForgetCocartesian p a b -&gt; p a b
+</span><a href="Data.Profunctor.Cocartesian.Free.html#recallCocartesian"><span class="hs-identifier hs-var hs-var">recallCocartesian</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679174054"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174055"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679174056"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-131"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679174332"><span id="local-6989586621679174336"><span class="annot"><span class="annottext">(forall a b.
  (a -&gt; b) -&gt; ForgetCocartesian p a a -&gt; ForgetCocartesian p a b)
 -&gt; (forall a b.
     a -&gt; ForgetCocartesian p a b -&gt; ForgetCocartesian p a a)
@@ -817,7 +694,7 @@ $c&lt;$ :: forall (p :: * -&gt; * -&gt; *) a a b.
 Functor (p a) =&gt;
 a -&gt; ForgetCocartesian p a b -&gt; ForgetCocartesian p a a
 &lt;$ :: forall a b. a -&gt; ForgetCocartesian p a b -&gt; ForgetCocartesian p a a
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679174335"><span id="local-6989586621679174339"><span id="local-6989586621679174343"><span id="local-6989586621679174347"><span id="local-6989586621679174354"><span class="annot"><span class="annottext">(forall a b c d.
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679174342"><span id="local-6989586621679174346"><span id="local-6989586621679174350"><span id="local-6989586621679174354"><span id="local-6989586621679174361"><span class="annot"><span class="annottext">(forall a b c d.
  (a -&gt; b)
  -&gt; (c -&gt; d) -&gt; ForgetCocartesian p b c -&gt; ForgetCocartesian p a d)
 -&gt; (forall a b c.
@@ -900,7 +777,7 @@ ForgetCocartesian p b c -&gt; q a b -&gt; ForgetCocartesian p a c
 .# :: forall a b c (q :: * -&gt; * -&gt; *).
 Coercible b a =&gt;
 ForgetCocartesian p b c -&gt; q a b -&gt; ForgetCocartesian p a c
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Profunctor</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679174369"><span id="local-6989586621679174373"><span id="local-6989586621679174377"><span id="local-6989586621679174381"><span id="local-6989586621679174385"><span class="annot"><span class="annottext">Profunctor (ForgetCocartesian p)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Profunctor</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679174376"><span id="local-6989586621679174380"><span id="local-6989586621679174384"><span id="local-6989586621679174388"><span id="local-6989586621679174392"><span class="annot"><span class="annottext">Profunctor (ForgetCocartesian p)
 Profunctor (ForgetCocartesian p) =&gt;
 (forall a. ForgetCocartesian p a ())
 -&gt; (forall a a1 a2 b1 b2 b.
@@ -1014,5 +891,5 @@ KnownNat n =&gt;
 ForgetCocartesian p a b
 -&gt; ForgetCocartesian p (Finite n -&gt; a) (Finite n -&gt; b)
 </span><a href="Data.Profunctor.Cartesian.html#Cartesian"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Cartesian</span></a></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-157"></span><span>  </span><span class="hs-comment">-- DO NOT add &quot;deriving Cocartesian&quot; clause!</span><span>
-</span><span id="line-158"></span></pre></body></html>
+</span><span id="line-132"></span><span>  </span><span class="hs-comment">-- DO NOT add &quot;deriving Cocartesian&quot; clause!</span><span>
+</span><span id="line-133"></span></pre></body></html>
