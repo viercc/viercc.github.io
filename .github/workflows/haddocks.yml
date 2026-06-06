@@ -2,13 +2,10 @@ name: Build Haddocks
 on:
   # Trigger the workflow on every 1 week
   schedule:
-    # Scheduled 30 min after build
-    - cron: '46 8 * * 2'
+    # Scheduled 90 min after build
+    - cron: '46 9 * * 2'
   # Or trigger manually
   workflow_dispatch:
-
-env:
-  ghc-version: 9.12.2
 
 jobs:
   build-docs:
@@ -16,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout publish root
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref:  master
           path: site-root
@@ -60,7 +57,7 @@ jobs:
 
     steps:
       - name: Checkout publish root
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: publish
       
