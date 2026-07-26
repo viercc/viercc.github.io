@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - listmonad-unit</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>listmonad-unit</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/listmonad-unit.md</li>
+            
+            
+                <li>Last modified on 2026-03-06</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#it-must-be-return-x-x-for-any-possible-monad-instance" id="toc-it-must-be-return-x-x-for-any-possible-monad-instance">It must be <code>return x = [x]</code> for any possible <code>Monad []</code> instance</a>
+<ul>
+<li><a href="#statement" id="toc-statement">Statement</a></li>
+<li><a href="#preliminary" id="toc-preliminary">Preliminary</a></li>
+<li><a href="#proof" id="toc-proof">Proof</a></li>
+</ul></li>
+</ul></div>
+<h1 id="it-must-be-return-x-x-for-any-possible-monad-instance">It must be <code>return x = [x]</code> for any possible <code>Monad []</code> instance</h1>
+<p>This is inspired by <a href="https://qiita.com/1to100pen/items/4c0909d07174203c1f8b">the original proof</a> written by
+<span class="citation" data-cites="1to100pen">@1to100pen</span>(<a href="https://twitter.com/1to100pen">twitter</a>). Large portion of the arguments are same to the original,
+but many notational changes might make it look less alike.</p>
+<p>I’ve reused the notations from my related, <a href="https://viercc.github.io/blog/posts/2019-12-16-fixed-proof-for-monads-more.html">older proof</a> about some polynomial functors lacking any “singleton” value can’t have a lawful <code>Monad</code> instance.</p>
+<h2 id="statement">Statement</h2>
+<p>For any possible <code>Monad</code> instance on the list functor <code>[]</code>,
+the only possible choice of <code>return</code> is <code>\x -&gt; [x]</code>.</p>
+<h2 id="preliminary">Preliminary</h2>
+<ul>
+<li>Any function <code>f</code> with type <code>∀a. a -&gt; [a]</code> is characterized
+by the length of <code>f x :: [a]</code>, a constant which doesn’t depend on
+neither type nor value of <code>x</code>.</li>
+</ul>
+<p>Suppose the length of <code>return ()</code> be <code>n ∈ ℕ∪{∞}</code>.
+The statement is the only choice of <code>n</code> is <code>n=1</code>.</p>
+<p>Let n be the length of <code>return ()</code> and <code>us</code> be a list of length n where
+each element is its own index. In other words, <code>us = [0,1,2, ..., ... n-1]</code>
+(or <code>us = [0,1,...]</code> for <code>n=∞</code>.)</p>
+<p>I’ll use the following definitions for conveniences:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">u ::</span> (<span class="dt">Nat</span> <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> [x]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>u f <span class="ot">=</span> f <span class="op">&lt;$&gt;</span> us</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">sw ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> x <span class="ot">-&gt;</span> x <span class="ot">-&gt;</span> [x]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sw i x y <span class="ot">=</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> x <span class="kw">else</span> y</span></code></pre></div>
+<p>I’ll use these facts without saying so.</p>
+<ul>
+<li><p><code>join [] = []</code></p></li>
+<li><p><code>return a = u (const a) = sw i a a</code></p></li>
+</ul>
+<h2 id="proof">Proof</h2>
+<ul>
+<li><p><strong>Fact1</strong>: n &gt; 0.</p>
+<p>Do proof by contradiction.
+Suppose n=0, which means <code>return = const []</code>. Then</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">.</span> <span class="fu">return</span> <span class="ot">=</span> join <span class="op">.</span> <span class="fu">const</span> [] <span class="ot">=</span> <span class="fu">const</span> (join []) <span class="ot">=</span> <span class="fu">const</span> []</span></code></pre></div>
+<p>But by the monad laws <code>join . return = id</code>. Contradiction.</p></li>
+<li><p><strong>Fact2</strong>: Any n×n-shaped list of lists <code>xss</code> can be represented as <code>xss = u $ \i -&gt; u $ \j -&gt; f i j</code>,
+using some function <code>f :: Nat -&gt; Nat -&gt; a</code>. <code>join</code> on <code>xss</code> is taking the diagonal elements i.e.
+<code>join xss = u $ \i -&gt; f i i</code>.</p>
+<p>Let <code>uss :: [[Nat]]</code> be a n*n-shaped list of lists of “coordinates” defined as below.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>uss <span class="ot">=</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\j <span class="ot">-&gt;</span> (i,j)) us) us</span></code></pre></div>
+<p>Because <code>join xss = join (fmap (fmap (uncurry f)) uss) = fmap (uncurry f) (join uss)</code>, it suffices to show:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>join uss <span class="ot">=</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> (i,i)) us <span class="ot">=</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> (i,i)</span></code></pre></div>
+<p>Using the monad laws, <code>join uss</code> must satisfy the following equations</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fst</span> <span class="op">&lt;$&gt;</span> join uss</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> <span class="fu">fst</span>) uss</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\j <span class="ot">-&gt;</span> <span class="fu">fst</span> (i,j)) us) us</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">fmap</span> (<span class="fu">const</span> i) us) us</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">return</span> i) us</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> <span class="fu">return</span> us</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> us</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">snd</span> <span class="op">&lt;$&gt;</span> join uss</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> <span class="fu">snd</span>) uss</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\j <span class="ot">-&gt;</span> <span class="fu">snd</span> (i,j)) us) us</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> <span class="fu">fmap</span> (\j <span class="ot">-&gt;</span> j) us) us</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">fmap</span> (\i <span class="ot">-&gt;</span> us) us</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> <span class="fu">return</span> us</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> us</span></code></pre></div>
+<p>And the only possible value of <code>join uss</code> satisfying them is <code>(\i -&gt; (i,i)) &lt;$&gt; us</code>.</p></li>
+</ul>
+<p>As a corollary, the following holds (join-sw-sw):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> sw i (sw i xx xy) (sw i yx yy) <span class="ot">=</span> sw i xx yy</span></code></pre></div>
+<p>Think about the properties of the following functions:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">at ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>at i a <span class="ot">=</span> join <span class="op">$</span> sw i (<span class="fu">return</span> a) []</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">hole ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>hole i as <span class="ot">=</span> join <span class="op">$</span> sw i [] as</span></code></pre></div>
+<ul>
+<li><p><strong>Fact3</strong>: <code>length (at i x) &gt; 0</code></p>
+<p>Consider the following value:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sweep ::</span> [[<span class="dt">Nat</span>]]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sweep <span class="ot">=</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> at i i</span></code></pre></div>
+<p>By the monad laws, <code>join sweep = us</code> can be shown.
+For any <code>i</code> such that <code>0 &lt;= i &lt; n</code>, it shouldn’t be <code>at i x = []</code>,
+as there must be one or more elements of value <code>i</code> in <code>at i i</code>
+to have <code>i</code> in <code>join sweep</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>join sweep</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> at i i</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> join <span class="op">$</span> sw i (<span class="fu">return</span> i) []</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> sw i (<span class="fu">return</span> i) []</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> i <span class="kw">else</span> []</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Fact2)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> i <span class="kw">then</span> <span class="fu">return</span> i <span class="kw">else</span> []</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \i <span class="ot">-&gt;</span> <span class="fu">return</span> i</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> <span class="fu">return</span> <span class="op">$</span> u <span class="fu">id</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> us</span></code></pre></div></li>
+</ul>
+<p>Let’s prepare several lemma about <code>at</code>.</p>
+<ul>
+<li><p><strong>join-at</strong>: <code>join (at i xs) = join (sw i xs [])</code></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i xs</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> sw i (<span class="fu">return</span> xs) []</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> sw i (<span class="fu">return</span> xs) []</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (join <span class="op">$</span> <span class="fu">return</span> xs) (join [])</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i xs []</span></code></pre></div></li>
+<li><p><strong>join-at-u</strong>: <code>join (at i (u f)) = at i (f i)</code></p>
+<p>First show <code>join (at i us) = at i i</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i us</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-at)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i us []</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (join <span class="op">$</span> <span class="fu">fmap</span> <span class="fu">return</span> us) (join <span class="op">$</span> <span class="fu">return</span> [])</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> sw i (<span class="fu">fmap</span> <span class="fu">return</span> us) (<span class="fu">return</span> [])</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> sw i (<span class="fu">fmap</span> <span class="fu">return</span> us) (<span class="fu">return</span> [])</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> u <span class="op">$</span> \k <span class="ot">-&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> k <span class="kw">else</span> []</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Fact2)</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> j <span class="kw">else</span> []</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> i <span class="kw">else</span> []</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (<span class="fu">return</span> i) []</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> at i i</span></code></pre></div>
+<p>Then the lemma follows from naturality.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i (u f)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> at i (<span class="fu">fmap</span> f us)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> f) <span class="op">$</span> at i us</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> f <span class="op">$</span> join <span class="op">$</span> at i us</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="fu">fmap</span> f <span class="op">$</span> at i i</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> at i (f i)</span></code></pre></div></li>
+<li><p><strong>join-u-at</strong>: <code>join (u (at i)) = at i i</code></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> u <span class="op">$</span> at i</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> at i j</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> join <span class="op">$</span> sw i (<span class="fu">return</span> j) []</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> sw i (<span class="fu">return</span> j) []</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> u <span class="op">$</span> \k <span class="ot">-&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> k <span class="kw">then</span> <span class="fu">return</span> j <span class="kw">else</span> []</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (Fact2)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> j <span class="kw">else</span> []</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> <span class="fu">return</span> i <span class="kw">else</span> []</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> at i i</span></code></pre></div></li>
+<li><p><strong>(hole-at)</strong>: <code>hole i (at i x) = []</code></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hole i (at i x)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i [] (at i x)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (join <span class="op">$</span> <span class="fu">return</span> []) (join <span class="op">$</span> sw i (<span class="fu">return</span> x) [])</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> sw i (<span class="fu">return</span> []) (sw i (<span class="fu">return</span> x) [])</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> sw i (<span class="fu">return</span> []) (sw i (<span class="fu">return</span> x) [])</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-sw-sw)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i [] []</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> []</span></code></pre></div></li>
+<li><p><strong>Fact4</strong>: If <code>length (at i x) = length (at j x)</code>, then <code>i = j</code>.</p>
+<p>Because <code>at i :: a -&gt; [a]</code> for any <code>i</code>,
+the only difference between <code>at i x</code> and <code>at j x</code> is its length.
+When the lengths of <code>at i x</code> and <code>at j x</code> are equal, which implies <code>at i = at j</code>,
+<code>at i i = join (u (at i)) = join (u (at j)) = at j j</code> by (join-u-at).
+By Fact3, both <code>at i i</code> and <code>at j j</code> are not empty.
+Thus <code>i = j</code> must hold.</p></li>
+<li><p><strong>Fact5</strong>: <code>length (at i x) = 1</code> for any <code>i</code>.</p>
+<p>Suppose <code>length (at i x) &gt;= 2</code>. Then there should be
+a function <code>con :: a -&gt; a -&gt; [a]</code> where <code>con x x = at i x</code>
+and <code>con x y</code> contains both <code>x</code> and <code>y</code> as its elements.</p>
+<p>By <code>con x x = at i x</code> and parametricity,
+<code>hole i (con x y) = []</code> follows from (hole-at). Let’s name this equation (hole-con).
+Then the following (join-at-con) holds:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i (con x y)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-at)</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (con x y) []</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (hole-con)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (con x y) (hole i (con x y))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (join <span class="op">.</span> <span class="fu">return</span> <span class="op">$</span> con x y) (join <span class="op">$</span> sw i [] (con x y))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> sw i (<span class="fu">return</span> (con x y)) (sw i [] (con x y))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> sw i (<span class="fu">return</span> (con x y)) (sw i [] (con x y))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-sw-sw)</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (con x y) (con x y)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> con x y</span></code></pre></div>
+<p>Consider the following function:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">extra ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [a]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>extra i x y z <span class="ot">=</span> join <span class="op">$</span> sw i (con x y) (<span class="fu">return</span> z)</span></code></pre></div>
+<p>Using <code>con x x = at i x</code>, <code>extra i x x z</code> can be calculated as follows:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>extra i x x z</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (con x x) (<span class="fu">return</span> z)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (at i x) (<span class="fu">return</span> z)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (join <span class="op">$</span> sw i (<span class="fu">return</span> x) []) (join <span class="op">.</span> <span class="fu">return</span> <span class="op">$</span> <span class="fu">return</span> z)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> sw i (sw i (<span class="fu">return</span> x) []) (<span class="fu">return</span> <span class="op">$</span> <span class="fu">return</span> z)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> sw i (sw i (<span class="fu">return</span> x) []) (<span class="fu">return</span> <span class="op">$</span> <span class="fu">return</span> z)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-sw-sw)</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> sw i (<span class="fu">return</span> x) (<span class="fu">return</span> z)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> sw i x z</span></code></pre></div>
+<p>By parametricity, <code>extra i x y z</code> depends on <code>z</code> and either <code>x</code> or <code>y</code>, exclusive.</p>
+<p>But by calculating in another way,</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> at i (extra i x y z)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> at i <span class="op">$</span> join <span class="op">$</span> sw i (con x y) (<span class="fu">return</span> z)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> <span class="fu">fmap</span> join <span class="op">$</span> at i <span class="op">$</span> sw i (con x y) (<span class="fu">return</span> z)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> at i <span class="op">$</span> sw i (con x y) (<span class="fu">return</span> z)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">.</span> join <span class="op">$</span> at i <span class="op">$</span> u <span class="op">$</span> \j <span class="ot">-&gt;</span> <span class="kw">if</span> i <span class="op">==</span> j <span class="kw">then</span> con x y <span class="kw">else</span> <span class="fu">return</span> z</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-at-u)</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> join <span class="op">$</span> at i (con x y)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-at-con)</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> con x y</span></code></pre></div>
+<p>Which by definition depends on both <code>x</code> and <code>y</code>, leading contradiction.</p>
+<p>Thus the hypothesis, <code>length (at i x) &gt;= 2</code>, was false. Considering Fact3 (<code>length (at i x) &gt; 0</code>),
+the only possible length of <code>at i x</code> is 1.</p></li>
+</ul>
+<p>Fact1 states <code>n &gt; 0</code>.
+Fact4 states the length of <code>at i x</code> is distinct for each different <code>i</code>, <code>0 &lt;= i &lt; n</code>.
+Fact5 states the length of <code>at i x</code> is always 1.
+To satisfy both, there can’t be two different <code>i,j</code> such that <code>0 &lt;= i,j &lt; n</code>.
+Therefore, <code>n = 1</code>.</p>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - FunctorのDay畳み込み積に関するHopfモノイド</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.css" integrity="sha384-sMefv1J1YJCHsg0mTa9YG+n/9KnJb9lGrJUUY5arg6bAL1qps/oZjmUwaHlX5Ugg" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.js" integrity="sha384-i9p+YmlwbK0lT9RcfgdAo/Cikui1KeFMeV/0Fwsu+rzgsCvas6oUptNOmo29C33p" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>FunctorのDay畳み込み積に関するHopfモノイド</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/hopf-monoid-in-functor.md</li>
+            
+            
+                <li>Last modified on 2026-07-22</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#目標" id="toc-目標">目標</a></li>
+<li><a href="#hopfモノイド" id="toc-hopfモノイド">Hopfモノイド</a>
+<ul>
+<li><a href="#双モノイドがhopfモノイドになるならばその方法は唯一" id="toc-双モノイドがhopfモノイドになるならばその方法は唯一">双モノイドがHopfモノイドになるならば、その方法は唯一</a></li>
+</ul></li>
+<li><a href="#haskellでのfunctor上のhopfモノイドの定義" id="toc-haskellでのfunctor上のhopfモノイドの定義">Haskellでの<code>Functor</code>上のHopfモノイドの定義</a>
+<ul>
+<li><a href="#モノイド" id="toc-モノイド">モノイド</a>
+<ul>
+<li><a href="#shape関手はapplicativeをmonoidに写す" id="toc-shape関手はapplicativeをmonoidに写す"><code>Shape</code>関手は<code>Applicative</code>を<code>Monoid</code>に写す</a></li>
+</ul></li>
+<li><a href="#余モノイド" id="toc-余モノイド">余モノイド</a>
+<ul>
+<li><a href="#余モノイドは形状を変えない" id="toc-余モノイドは形状を変えない">余モノイドは形状を変えない</a></li>
+</ul></li>
+<li><a href="#双モノイド" id="toc-双モノイド">双モノイド</a>
+<ul>
+<li><a href="#bimonoid則のうち2つは自動的" id="toc-bimonoid則のうち2つは自動的"><code>Bimonoid</code>則のうち2つは自動的</a></li>
+</ul></li>
+<li><a href="#hopfモノイド-1" id="toc-hopfモノイド-1">Hopfモノイド</a>
+<ul>
+<li><a href="#shapeはhopfモノイドを群に写す" id="toc-shapeはhopfモノイドを群に写す"><code>Shape</code>はHopfモノイドを群に写す</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#コンテナの圏contにおけるhopfモノイド" id="toc-コンテナの圏contにおけるhopfモノイド">コンテナの圏<span class="math inline">\Cont</span>におけるHopfモノイド</a>
+<ul>
+<li><a href="#contの定義" id="toc-contの定義"><span class="math inline">\Cont</span>の定義</a></li>
+<li><a href="#コンテナの圏contの並行積-day畳み込み積の対応物" id="toc-コンテナの圏contの並行積-day畳み込み積の対応物">コンテナの圏<span class="math inline">\Cont</span>の並行積: Day畳み込み積の対応物</a></li>
+<li><a href="#contにおけるモノイド" id="toc-contにおけるモノイド"><span class="math inline">\Cont</span>におけるモノイド</a></li>
+<li><a href="#contにおける余モノイド" id="toc-contにおける余モノイド"><span class="math inline">\Cont</span>における余モノイド</a></li>
+<li><a href="#contにおける双モノイド" id="toc-contにおける双モノイド"><span class="math inline">\Cont</span>における双モノイド</a></li>
+<li><a href="#contにおけるhopfモノイド" id="toc-contにおけるhopfモノイド"><span class="math inline">\Cont</span>におけるHopfモノイド</a></li>
+</ul></li>
+</ul></div>
+<pre class="math-block"><code>% basic set manipulation
+  \gdef\id{\mathop{\mathrm{id}}}
+  \gdef\comp{\circ}
+  \gdef\placeholder{{-}}
+% category theory
+  \gdef\Set{\mathbf{Set}}
+  \gdef\Hask{\mathbf{Hask}}
+  \gdef\op{\mathrm{op}}
+  \gdef\map{\mathop{\mathrm{map}}}
+  \gdef\functorcat#1#2{\left\lbrack {#1}, {#2} \right\rbrack}
+  \gdef\terminal{\mathord{!}}
+% containers
+  \gdef\Cont{\mathbf{Cont}}
+  \gdef\asfunctor#1{\left. \llbracket {#1} \rrbracket^{c} \right.}
+  \gdef\rightposact{\mathbin{/\!/}}</code></pre>
+<h2 id="目標">目標</h2>
+<p>対称モノイダル圏<span class="math inline">(\mathcal{V},1,\otimes)</span>において考えられるHopfモノイド対象というものがある。
+ここでは一般の<span class="math inline">\mathcal{V}</span>についてはHopfモノイドの定義だけ述べ、</p>
+<ol type="1">
+<li><p>Haskellの<code>Functor</code>の圏、すなわち型と関数のなす圏<span class="math inline">\Hask</span>上の自己関手の圏<span class="math inline">\functorcat{\Hask}{\Hask}</span>を、
+Day畳み込み積 <code>Day :: Functor -&gt; Functor -&gt; Functor</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Day</span> f g x <span class="ot">=</span> <span class="kw">forall</span> a b<span class="op">.</span> <span class="dt">Day</span> (f a) (g b) (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> x)</span></code></pre></div>
+<p>によってモノイダル圏とみなしたもの</p></li>
+<li><p>コンテナの圏<span class="math inline">\Cont</span> 、すなわち多項式関手とその間の自然変換を表現するデータの圏、
+においてDay畳み込み積に相当する並行積 <span class="math inline">\otimes</span> でモノイド積を入れたもの</p></li>
+</ol>
+<p>におけるHopfモノイド対象について考察する。特に、</p>
+<ul>
+<li>1.におけるHopfモノイド対象をHaskellの型クラスとして定義する</li>
+<li>明らかに2.は1.の部分圏とみなせる。2.という特別な場合に、Hopfモノイド対象の具体的な表示を得る</li>
+</ul>
+<p>ことを目標にする。</p>
+<h2 id="hopfモノイド">Hopfモノイド</h2>
+<p><span class="math inline">\mathcal{V}</span>を<span class="math inline">\otimes</span>をモノイド積、<span class="math inline">1</span>をモノイド単位とする
+対称モノイダル圏とする。対称モノイド構造を与える結合手<span class="math inline">\alpha</span>・単位手<span class="math inline">\lambda, \rho</span>・対称性<span class="math inline">\sigma</span>
+は以下のような型の<span class="math inline">\mathcal{V}</span>の同型射の族とする。</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; \alpha_{x,y,z} : \mathcal{V}((x \otimes y) \otimes z, x \otimes (y \otimes z)) \\
+  &amp; \lambda_{x} : \mathcal{V}(1 \otimes x, x) \\
+  &amp; \rho_{x} : \mathcal{V}(x \otimes 1, x) \\
+  &amp; \sigma_{x,y} : \mathcal{V}(x \otimes y, y \otimes x)
+\end{align*}</code></pre>
+<ul>
+<li><p><span class="math inline">\mathcal{V}</span>の<strong>モノイド対象</strong><span class="math inline">a</span> は、射</p>
+<ul>
+<li><strong>単位</strong> <span class="math inline">\eta : \mathcal{V}(1, a)</span></li>
+<li><strong>乗法</strong> <span class="math inline">m : \mathcal{V}(a \otimes a, a)</span></li>
+</ul>
+<p>であって、更に以下の可換図式<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>（単位律と結合律）を満たすものを備えた対象である。</p>
+<ul>
+<li><p><strong>単位律</strong></p>
+<pre class="math-block"><code>\begin{CD}
+  {1 \otimes a} @&gt;{\eta \otimes \id}&gt;&gt; {a \otimes a} @&lt;{\id \otimes \eta}&lt;&lt; a \otimes 1\\
+  @V{\lambda}VV   @VV{m}V  @VV{\rho}V \\
+  a @= a @= a
+\end{CD}</code></pre></li>
+<li><p><strong>結合律</strong></p>
+<pre class="math-block"><code>\begin{CD}
+  {(a \otimes a) \otimes a} @&gt;{m \otimes \id}&gt;&gt; {a \otimes a} @&gt;{m}&gt;&gt; a \\
+  @V{\alpha}VV   @.   @|| \\
+  {a \otimes (a \otimes a)} @&gt;&gt;{\id \otimes m}&gt; {a \otimes a} @&gt;&gt;{m}&gt; a
+\end{CD}</code></pre></li>
+</ul></li>
+</ul>
+<ul>
+<li><p><span class="math inline">\mathcal{V}</span>の<strong>余モノイド対象</strong><span class="math inline">a</span> は、射</p>
+<ul>
+<li><strong>余単位</strong> <span class="math inline">\epsilon : \mathcal{V}(a, 1)</span></li>
+<li><strong>余乗法</strong> <span class="math inline">\delta : \mathcal{V}(a, a \otimes a)</span></li>
+</ul>
+<p>であって、更に以下の可換図式（余単位律と余結合律）を満たすものを備えた対象である。</p>
+<ul>
+<li><p><strong>余単位律</strong></p>
+<pre class="math-block"><code>\begin{CD}
+  a @= a @= a \\
+  @V{\lambda^{-1}}VV   @V{\delta}VV  @VV{\rho^{-1}}V \\
+  {1 \otimes a} @&lt;{\epsilon \otimes \id}&lt;&lt; {a \otimes a} @&gt;{\id \otimes \epsilon}&gt;&gt; a \otimes 1\\
+\end{CD}</code></pre></li>
+<li><p><strong>余結合律</strong></p>
+<pre class="math-block"><code>\begin{CD}
+  {(a \otimes a) \otimes a} @&lt;{\delta \otimes \id}&lt;&lt; {a \otimes a} @&lt;&lt;{\delta}&lt;&lt; a \\
+  @V{\alpha}VV   @.   @|| \\
+  {a \otimes (a \otimes a)} @&lt;&lt;{\id \otimes \delta}&lt; {a \otimes a} @&lt;&lt;{\delta}&lt; a
+\end{CD}</code></pre></li>
+</ul></li>
+<li><p><span class="math inline">\mathcal{V}</span>の<strong>双モノイド対象</strong><span class="math inline">a</span> は、モノイド対象かつ余モノイド対象である対象<span class="math inline">a</span>であって、
+その乗法と余乗法を関連付ける以下の可換図式<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>をすべて満足するものである。</p>
+<pre class="math-block"><code>\begin{alignat*}{2}
+  &amp; \begin{CD}
+    1 @=   1\\
+    @V{\eta}VV   @| \\
+    a @&gt;&gt;{\epsilon}&gt; 1
+  \end{CD} &amp; \mskip{3em}
+  &amp; \begin{CD}
+    1 @&gt;{\lambda_1^{-1}}&gt;&gt; 1 \otimes 1\\
+    @V{\eta}VV    @VV{\eta \otimes \eta}V \\
+    a @&gt;&gt;{\delta}&gt; {a \otimes a}
+  \end{CD} \\
+
+  &amp; \begin{CD}
+    {a \otimes a} @&gt;{\epsilon \otimes \epsilon}&gt;&gt; {1 \otimes 1} \\
+    @V{\mu}VV  @V{\lambda_1}VV \\
+    a   @&gt;&gt;{\epsilon}&gt; 1
+  \end{CD} &amp;
+  &amp; \begin{CD}
+    {a \otimes a} @&gt;{\delta \otimes \delta}&gt;&gt; {(a \otimes a) \otimes (a \otimes a)} @&gt;{\mathrm{inter}}&gt;&gt; {(a \otimes a) \otimes (a \otimes a)} \\
+    @V{\mu}VV  @.  @VV{\mu \otimes \mu}V \\
+    a @&gt;&gt;{\delta}&gt; {a \otimes a} @= {a \otimes a}
+  \end{CD} \\
+\end{alignat*}</code></pre>
+<p>ただし、</p>
+<p><span class="math display">
+\mathrm{inter}_{x,y,x',y'} : (x \otimes y) \otimes (x' \otimes y') \to (x \otimes x') \otimes (y \otimes y')
+</span></p>
+<p>はモノイド積の並び替えを行う次の同型射である。</p>
+<pre class="math-block"><code>\begin{CD}
+(x \otimes y) \otimes (x' \otimes y')
+  @&gt;{\alpha}&gt;&gt;
+x \otimes (y \otimes (x' \otimes y'))
+  @&gt;{\id \otimes \alpha^{-1}}&gt;&gt;
+x \otimes ((y \otimes x') \otimes y')
+  @&gt;{\id \otimes (\sigma_{y,x'} \otimes \id)}&gt;&gt;
+x \otimes ((x' \otimes y) \otimes y')
+  @&gt;{\id \otimes \alpha}&gt;&gt;
+x \otimes (x' \otimes (y \otimes y'))
+  @&gt;{\alpha^{-1}}&gt;&gt;
+(x \otimes x') \otimes (y \otimes y')
+\end{CD}</code></pre></li>
+</ul>
+<ul>
+<li><p><span class="math inline">\mathcal{V}</span>の<strong>Hopfモノイド対象</strong><span class="math inline">a</span> は、双モノイド対象<span class="math inline">a</span>であって、
+更に対蹠射とよばれる射<span class="math inline">s : \mathcal{V}(a,a)</span>であって以下の図式を可換にするものを追加で備えたものである。</p>
+<pre class="math-block"><code>\begin{CD}
+a \otimes a @&lt;{\delta}&lt;&lt; a @&gt;{\delta}&gt;&gt; a \otimes a \\
+@V{s \otimes \id}VV  @V{\epsilon;\eta}VV   @VV{\id \otimes s}V \\
+a \otimes a @&gt;&gt;{\mu}&gt; a @&lt;&lt;{\mu}&lt; a \otimes a
+\end{CD}</code></pre></li>
+</ul>
+<h3 id="双モノイドがhopfモノイドになるならばその方法は唯一">双モノイドがHopfモノイドになるならば、その方法は唯一</h3>
+<p><span class="math inline">\mathcal{V}</span>上の余モノイド<span class="math inline">a</span>とモノイド<span class="math inline">b</span>があるとき、<span class="math inline">\mathcal{V}</span>の射のなすクラス<span class="math inline">\mathcal{V}(a,b)</span>上に_convolution product_という積<span class="math inline">\ast</span>を次のように定義できる。</p>
+<pre class="math-block"><code>(- \ast -) : \mathcal{V}(a,b) \times \mathcal{V}(a,b) \to \mathcal{V}(a,b)
+f \ast g = \delta_a; (f \otimes g); \mu_b : a \to b</code></pre>
+<p><span class="math inline">\ast</span>は<span class="math inline">e = \epsilon_a; \eta_b</span>を単位元として<span class="math inline">\mathcal{V}(a,b)</span>をモノイド(<em>convolution monoid</em>)にする。
+実際、右単位律は</p>
+<pre class="math-block"><code>\begin{align}
+(f \ast e)
+  &amp;= \delta_a; (f \otimes (\epsilon_a; \eta_b)); \mu_b \\
+  &amp;= \delta_a; (\id_a \otimes \epsilon_a); (f \otimes \id_1); (\id_b \otimes \eta_b); \mu_b \\
+  &amp;= \id_a; f; \id_b \\
+  &amp;= f;
+\end{align}</code></pre>
+<p>として成り立つ。左単位律・結合律もそれぞれ余モノイド・モノイドの（余）単位律と（余）結合律から成立する。
+もし<span class="math inline">\mathcal{V}</span>が局所小圏であれば、<span class="math inline">\mathcal{V}(a,b)</span>は集合であり、
+実際に<span class="math inline">\Set</span>における通常の意味でのモノイドである。</p>
+<p>さて、ここで<span class="math inline">a</span>が双モノイドであり<span class="math inline">b = a</span>である場合に、convolution monoidの元<span class="math inline">s : \mathcal{V}(a,a)</span>が
+同じくconvolution monoidの元<span class="math inline">\id_a : \mathcal{V}(a,a)</span>の右かつ左逆元であることは、<span class="math inline">s</span>が<span class="math inline">a</span>をHopfモノイドとする対蹠射であることにほかならない。
+モノイドの一般論から、モノイドのある元の右かつ左逆元は存在すれば一意であるから、<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a><span class="math inline">a</span>をHopfモノイドとする対蹠射も存在すれば一意である。</p>
+<h2 id="haskellでのfunctor上のhopfモノイドの定義">Haskellでの<code>Functor</code>上のHopfモノイドの定義</h2>
+<p>Haskellの<code>Functor</code>のなす対称モノイダル圏 <span class="math inline">(\functorcat{\Hask}{\Hask}, 1 = \mathtt{Identity}, \otimes = \mathtt{Day})</span>
+におけるHopfモノイドについて検討する。
+以下、<code>Functor</code>のなす圏<span class="math inline">\functorcat{\Hask}{\Hask}</span>といえば、暗黙にこの対称モノイダル圏のことを指している。
+（なお、ここでの議論はすべて<span class="math inline">(\functorcat{\Set}{\Set})</span>でも同じことが可能である。）</p>
+<h3 id="モノイド">モノイド</h3>
+<p><span class="math inline">\functorcat{\Hask}{\Hask}</span>における
+モノイド対象 <code>f</code> を考えると、それは<code>Applicative f</code>そのものだということはよく知られた事実である。実際、</p>
+<ul>
+<li>単位<span class="math inline">\eta</span> = <code>pure . runIdentity :: Identity ~&gt; f</code></li>
+<li>乗法<span class="math inline">m</span> = <code>dap :: Applicative f =&gt; Day f f ~&gt; f</code></li>
+</ul>
+<p>とでき、逆に<span class="math inline">\eta</span>から<code>pure</code>, <span class="math inline">m</span>から<code>(&lt;*&gt;)</code>を取り出すことも可能であり、それらは逆の操作になっている。</p>
+<h4 id="shape関手はapplicativeをmonoidに写す"><code>Shape</code>関手は<code>Applicative</code>を<code>Monoid</code>に写す</h4>
+<p>与えられた<code>Functor f</code>に対して、型<code>f ()</code>すなわち<code>f</code>の”形状”だけを表す型を対応させる<code>Shape</code>という型コンストラクタを考える。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Shape</span> f <span class="ot">=</span> <span class="dt">Shape</span> {<span class="ot"> unShape ::</span> f () }</span></code></pre></div>
+<p><code>Shape</code>は<code>Functor</code>の圏から<span class="math inline">\Hask</span>への関手となっている。
+さらに、<code>Shape</code>は以下の自然変換により <em>強</em> モノイダル関手でもある。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">unitShape ::</span> () <span class="ot">-&gt;</span> <span class="dt">Shape</span> <span class="dt">Identity</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>unitShape <span class="ot">=</span> coerce</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ot">combineShape ::</span> (<span class="dt">Shape</span> f, <span class="dt">Shape</span> g) <span class="ot">-&gt;</span> <span class="dt">Shape</span> (<span class="dt">Day</span> f g)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>combineShape (<span class="dt">Shape</span> f1) (<span class="dt">Shape</span> g1) <span class="ot">=</span> <span class="dt">Shape</span> (<span class="dt">Day</span> f1 g1 (\_ _ <span class="ot">-&gt;</span> ()))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="ot">splitShape ::</span> <span class="dt">Shape</span> (<span class="dt">Day</span> f g) <span class="ot">-&gt;</span> (<span class="dt">Shape</span> f, <span class="dt">Shape</span> g) </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>splitShape (<span class="dt">Shape</span> (<span class="dt">Day</span> f1 g1 _)) <span class="ot">=</span> (<span class="dt">Shape</span> (void f1), <span class="dt">Shape</span> (void g1))</span></code></pre></div>
+<p>すなわち、<code>Shape</code>は<code>Functor</code>上のモノイド<code>Applicative f</code>を<span class="math inline">\Hask</span>上のモノイド<code>Monoid (Shape f)</code>
+へと写す。</p>
+<h3 id="余モノイド">余モノイド</h3>
+<p>余モノイド対象を表す型クラス<code>Comonoid</code>を定義する。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Comonoid with respect to Day convolution.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- ==== Laws</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- 'coapply' must satisfy the following equations. Here, @erase1@ and @erase2@</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- are defined using 'extract' method inherited from 'Comonad'.</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- 'erase1' . 'coapply' = id</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- 'erase2' . 'coapply' = id</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- 'trans1' 'coapply' . 'coapply' = 'assoc' . 'trans2' 'coapply' . 'coapply'</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">-- Furthermore, 'duplicateDefault' derived from @coapply@ must be equivalent to 'duplicate'</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">-- inherited from 'Comonad'.</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- 'duplicateDefault' = 'dayToCompose' . coapply</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">--                  = 'duplicate'</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">-- @</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Comonad</span> f <span class="ot">=&gt;</span> <span class="dt">Comonoid</span> f <span class="kw">where</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="ot">  coapply ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Day</span> f f a</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Every 'Comonoid' is a 'Comonad'.</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="ot">duplicateDefault ::</span> <span class="dt">Comonoid</span> f <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f (f a)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>duplicateDefault <span class="ot">=</span> dayToCompose <span class="op">.</span> coapply</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">-- | @'Day' f g@ can be turned into a composition of @f@ and @g@.</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="ot">dayToCompose ::</span> (<span class="dt">Functor</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Day</span> f g a <span class="ot">-&gt;</span> f (g a)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>dayToCompose (<span class="dt">Day</span> fb fc op) <span class="ot">=</span> <span class="fu">fmap</span> (\b <span class="ot">-&gt;</span> <span class="fu">fmap</span> (op b) fc) fb</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co">-- | @erase1 = elim1 . trans1 (Identity . extract)@</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="ot">erase1 ::</span> (<span class="dt">Comonad</span> f, <span class="dt">Functor</span> g) <span class="ot">=&gt;</span> <span class="dt">Day</span> f g c <span class="ot">-&gt;</span> g c</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>erase1 fg <span class="ot">=</span> <span class="kw">case</span> fg <span class="kw">of</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Day</span> f g op <span class="ot">-&gt;</span> op (extract f) <span class="op">&lt;$&gt;</span> g</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co">-- | @erase2 = elim2 . trans2 (Identity . extract)@</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="ot">erase2 ::</span> (<span class="dt">Functor</span> f, <span class="dt">Comonad</span> g) <span class="ot">=&gt;</span> <span class="dt">Day</span> f g c <span class="ot">-&gt;</span> f c</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>erase2 fg <span class="ot">=</span> <span class="kw">case</span> fg <span class="kw">of</span></span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Day</span> f g op <span class="ot">-&gt;</span> (\a <span class="ot">-&gt;</span> op a (extract g)) <span class="op">&lt;$&gt;</span> f</span></code></pre></div>
+<p>ただし、ここでは定義の単なる翻訳ではなく少しだけ実用上の工夫がされていることに注意されたい。
+この定義では、<code>Comonoid</code>は<code>Comonad</code>を拡張する子クラスとし、
+余単位<span class="math inline">\epsilon</span>は<code>Comonad</code>の<code>extract :: forall a. f a -&gt; a</code>をそのまま継承している。
+これは、</p>
+<ul>
+<li>モノイド積<code>Day</code>の単位も、<code>Functor</code>の合成<code>Compose</code>をモノイド積と見たときの単位も、
+どちらも<code>Identity</code>（と同型）であること</li>
+<li><code>Day</code>に関する任意の余モノイド積<code>coapply</code> = <span class="math inline">\delta</span> からは、<code>duplicateDefault</code>を用いて常に
+<code>duplicate :: f a -&gt; f (f a)</code>が作れること</li>
+</ul>
+<p>より、ある一貫した<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>方法で<code>Comonoid</code>は<code>Comonad</code>とみなせることを表している。</p>
+<h4 id="余モノイドは形状を変えない">余モノイドは形状を変えない</h4>
+<p><span class="math inline">\Set</span>や<span class="math inline">\Hask</span>のようなカルテシアン閉圏（モノイド積は直積<span class="math inline">\times</span>、モノイド単位は終対象<span class="math inline">1</span>）
+において、対象<span class="math inline">a</span>上の任意の余モノイドは</p>
+<ul>
+<li><span class="math inline">\epsilon = \terminal_a : a \to 1</span></li>
+<li><span class="math inline">\delta = \Delta_a = (x \mapsto (x, x)) : a \to a \times a</span></li>
+</ul>
+<p>でなければならないことが知られている。<code>Functor</code>の圏<span class="math inline">\functorcat{\Hask}{\Hask}</span>においても、
+一意に決定するほどではないが、余モノイドは次のような制約を受ける。</p>
+<ul>
+<li><p>任意の<code>Comonoid f</code>と<code>x1 :: f ()</code>に対して、次の等式が成り立つ</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>coapply x1 <span class="ot">=</span> <span class="dt">Day</span> x1 x1 (\_ _ <span class="ot">-&gt;</span> ())</span></code></pre></div></li>
+</ul>
+<p>これは、前述した<code>Shape</code>関手が強モノイダル関手であることに由来する。
+強モノイダル関手はoplaxモノイダル関手でもあり、oplaxモノイダル関手は余モノイドを余モノイドに写すのだから、
+<code>Comonoid f</code>に対して<code>Shape f</code>は<span class="math inline">\Hask</span>上の余モノイドである。
+しかし、<span class="math inline">\Hask</span>上の余モノイドは一意に定まるのであったから、<code>Shape</code>によって写された余乗法</p>
+<pre><code>comult :: Shape f -&gt; (Shape f, Shape f)
+comult = splitShape . Shape . coapply . unShape</code></pre>
+<p>は<code>comult s = (s,s)</code>と一致しなければならない。したがって</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Shape</span> (coapply x1)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> combineShape <span class="op">.</span> splitShape <span class="op">.</span> <span class="dt">Shape</span> <span class="op">.</span> coapply <span class="op">$</span> unShape (<span class="dt">Shape</span> x1)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> combineShape <span class="op">$</span> (splitShape <span class="op">.</span> <span class="dt">Shape</span> <span class="op">.</span> coapply <span class="op">.</span> unShape) (<span class="dt">Shape</span> x1)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> combineShape <span class="op">$</span> comult (<span class="dt">Shape</span> x1)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> combineShape (<span class="dt">Shape</span> x1, <span class="dt">Shape</span> x1)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Shape</span> <span class="op">$</span> <span class="dt">Day</span> (void x1) (void x1) (\_ _ <span class="ot">-&gt;</span> ())</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- void = fmap (const ()) :: forall a. f a -&gt; f ()</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- void @() = fmap (const @() @() ()) = fmap (id @()) = id</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Shape</span> <span class="op">$</span> <span class="dt">Day</span> x1 x1 (\_ _ <span class="ot">-&gt;</span> ())</span></code></pre></div>
+<p>を得る。</p>
+<p>言い換えれば、<code>f</code>の形状だけに注目すると、
+余乗法<code>coapply</code>は <em>同じ形状を複製することしかできない</em> 。
+特に、<code>coapply</code>は<code>x :: f b</code>の「内容物」すなわち<code>b</code>型の値の配置だけに影響を与える。</p>
+<h3 id="双モノイド">双モノイド</h3>
+<p>双モノイド <code>f</code> は、<code>Applicative f</code>かつ<code>Comonoid f</code>であって、
+それらが互いにcompatibleという条件を<code>pure, &lt;*&gt;, extract, coapply</code>を用いて書き下せばよい。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Bimonoid of functors</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- ===== Laws</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- - @extract@ is an applicative morphism to Identity applicative in the following sense:</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">--     - @extract (pure a) = a@</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">--     - @extract (x &lt;*&gt; y) = extract x (extract y)@</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- - @coapply@ is an applicative morphism to (Day f f)</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">--     - @coapply (pure a) = pure a@</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">--     - @coapply (x &lt;*&gt; y) = coapply x &lt;*&gt; coapply y@</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Applicative</span> f, <span class="dt">Comonoid</span> f) <span class="ot">=&gt;</span> <span class="dt">Bimonoid</span> f</span></code></pre></div>
+<p>ただし、ここでは<code>Day f g</code>上の<code>Applicative</code>インスタンス</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> (<span class="dt">Applicative</span> f, <span class="dt">Applicative</span> g) <span class="ot">=&gt;</span> <span class="dt">Applicative</span> (<span class="dt">Day</span> f g) <span class="kw">where</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> a <span class="ot">=</span> <span class="dt">Day</span> (<span class="fu">pure</span> ()) (<span class="fu">pure</span> ()) (\_ _ <span class="ot">-&gt;</span> a)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  fg <span class="op">&lt;*&gt;</span> f'g' <span class="ot">=</span> trans2 dap <span class="op">.</span> trans1 dap <span class="op">.</span> interchange <span class="op">$</span> day fg f'g'</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="ot">day ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> g a <span class="ot">-&gt;</span> <span class="dt">Day</span> f g b</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>day fab ga <span class="ot">=</span> <span class="dt">Day</span> fab ga (<span class="op">$</span>) </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="ot">dap ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Day</span> f f a <span class="ot">-&gt;</span> f a</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>dap (<span class="dt">Day</span> fa fb op) <span class="ot">=</span> liftA2 op fa fb</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="ot">interchange ::</span> <span class="dt">Day</span> (<span class="dt">Day</span> f g) (<span class="dt">Day</span> f' g') x <span class="ot">-&gt;</span> <span class="dt">Day</span> (<span class="dt">Day</span> f f') (<span class="dt">Day</span> g g') x</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>interchange (<span class="dt">Day</span> (<span class="dt">Day</span> fa gb ab_x) (<span class="dt">Day</span> fc gd cd_y) xy_r) <span class="ot">=</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Day</span> (<span class="dt">Day</span> fa fc (,)) (<span class="dt">Day</span> gb gd (,)) (\(a,c) (b,d) <span class="ot">-&gt;</span> xy_r (ab_x a b) (cd_y c d))</span></code></pre></div>
+<p>が用いられている。<code>trans2 dap . trans1 dap . interchange</code> は双モノイドの定義の一部に可換図式として現れた
+<span class="math inline">\delta \circ m = (m \otimes m) \circ \mathrm{inter} \circ (\delta \otimes \delta)</span>
+の<span class="math inline">(m \otimes m) \circ \mathrm{inter}</span>という部分に該当する。</p>
+<h4 id="bimonoid則のうち2つは自動的"><code>Bimonoid</code>則のうち2つは自動的</h4>
+<p><code>Bimonoid</code>則のうち、<code>extract (pure a) = a</code>と<code>coapply (pure a) = pure a</code>は
+<code>Comonoid</code>が形状を変えないという前節での観察と<code>coapply, extract, pure</code>の自然性から、
+任意の<code>(Applicative f, Comonoid f)</code>に対して成り立つ。</p>
+<p>前者は特にたやすく、自然変換<code>extract . pure</code>は<code>forall a. a -&gt; a</code>という型をもつが、
+このような自然変換がいずれも<code>id</code>に等しいことはよく知られている。
+後者も以下のように示すことができる。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>coapply (<span class="fu">pure</span> a)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> copply (<span class="fu">fmap</span> (<span class="fu">const</span> a) (<span class="fu">pure</span> ()))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">const</span> a) <span class="op">$</span> coapply (<span class="fu">pure</span> ())</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>   <span class="co">-- Comonoid は形状を変えない</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">fmap</span> (<span class="fu">const</span> a) <span class="op">$</span> <span class="dt">Day</span> (<span class="fu">pure</span> ()) (<span class="fu">pure</span> ()) (\_ _ <span class="ot">-&gt;</span> ())</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">Day</span> (<span class="fu">pure</span> ()) (<span class="fu">pure</span> ()) (\_ _ <span class="ot">-&gt;</span> a)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="fu">pure</span> a</span></code></pre></div>
+<p>一方、それ以外の2つの等式は適当なインスタンス<code>(Applicative f, Comonoid f)</code>
+に対しては成り立たない場合があり、それが<code>Bimonoid f</code>であるためには個別に証明する必要がある。</p>
+<h3 id="hopfモノイド-1">Hopfモノイド</h3>
+<p>最後にHopfモノイドは次のように定義できる。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Hopf monoid of Functors.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- Bimonoid with a (kind of) inverse operation @antipode@.</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- ==== Law</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- @dap . trans1 antipode . coapply = dap . trans2 antipode . coapply = pure . extract@</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> (<span class="dt">Bimonoid</span> f) <span class="ot">=&gt;</span> <span class="dt">Hopf</span> f <span class="kw">where</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="ot">  antipode ::</span> f a <span class="ot">-&gt;</span> f a</span></code></pre></div>
+<h4 id="shapeはhopfモノイドを群に写す"><code>Shape</code>はHopfモノイドを群に写す</h4>
+<p><span class="math inline">\Hask</span>における任意のモノイドは、唯一の余モノイド構造と合わせて双モノイドでもあり、
+更に<span class="math inline">\Hask</span>におけるHopfモノイドは対蹠射が逆元をとる演算である群のことである。
+これまでと同様の議論から、<code>Shape</code>は<code>Hopf f</code>を<code>Shape f</code>上の群に写すことがいえる。</p>
+<h2 id="コンテナの圏contにおけるhopfモノイド">コンテナの圏<span class="math inline">\Cont</span>におけるHopfモノイド</h2>
+<h3 id="contの定義"><span class="math inline">\Cont</span>の定義</h3>
+<p>コンテナの圏<span class="math inline">\Cont</span>については以前ブログで触れた。
+(<a href="../posts/2024-09-06-directed-containers-explained.html">解説: Directed Containers as Categoires</a>)
+定義を簡潔にまとめると、</p>
+<ul>
+<li><p><span class="math inline">\Cont</span>の対象<span class="math inline">C</span>は、集合<span class="math inline">S</span>と<span class="math inline">S</span>で添字付けられた集合族<span class="math inline">P : S \to \Set</span>
+の組<span class="math inline">C = (S,P)</span></p>
+<ul>
+<li><span class="math inline">S</span>のことを<span class="math inline">C</span>の形状、<span class="math inline">P(s)</span>のことを<span class="math inline">C</span>の(<span class="math inline">s \in S</span>における)位置
+とよぶ</li>
+</ul></li>
+<li><p><span class="math inline">\Cont</span>の射<span class="math inline">\phi : (S,P) \to (S',P')</span>は、形状に対するの順方向の関数<span class="math inline">t : S \to S'</span>
+と、位置に対する逆方向の関数の族<span class="math inline">(q_s : P'(ts) \to P(s))_{s \in S}</span>の組<span class="math inline">(t,q)</span></p></li>
+</ul>
+<p>である。<span class="math inline">\Cont</span>の対象<span class="math inline">C=(S,P)</span>を多項式関手</p>
+<p><span class="math display">
+\begin{align*}
+&amp; \asfunctor{C} : \Set \to \Set \\
+&amp; \asfunctor{C}(X) = \sum_{s : S} (P(s) \to X)
+\end{align*}
+</span></p>
+<p>とみなす対応<span class="math inline">\asfunctor{-}</span>は<span class="math inline">\Cont</span>の射に対する作用も追加で定義して充満忠実関手<span class="math inline">\Cont \to \functorcat{\Set}{\Set}</span>にすることができ、
+<span class="math inline">\Cont</span>は多項式関手がなす<span class="math inline">\functorcat{\Set}{\Set}</span>の充満部分圏と同一視することができる<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>。</p>
+<h3 id="コンテナの圏contの並行積-day畳み込み積の対応物">コンテナの圏<span class="math inline">\Cont</span>の並行積: Day畳み込み積の対応物</h3>
+<p><span class="math inline">\Set</span>の自己関手の圏<span class="math inline">\functorcat{\Set}{\Set}</span>を、
+モノイド積<span class="math inline">(\times, 1)</span>に関するDay畳み込み<span class="math inline">\otimes : \functorcat{\Set}{\Set} \times \functorcat{\Set}{\Set} \to \functorcat{\Set}{\Set}</span>
+によって対称モノイダル圏とみなす。
+<span class="math inline">\otimes</span>は多項式関手(の組)を多項式関手に写す関手になっており、
+その<span class="math inline">\Cont</span>における対応物が <em>並行積</em>(<em>parallel produce</em>)である。
+記号の濫用により、<span class="math inline">\Cont</span>の並行積と<span class="math inline">\functorcat{\Set}{\Set}</span>のDay畳み込みに同じ記号<span class="math inline">\otimes : \Cont \times \Cont \to \Cont</span>
+を用いる。この並行積は以下のように定義される。</p>
+<ul>
+<li><p>対象<span class="math inline">C_1 = (S_1,P_1), C_2 = (S_2,P_2)</span>に対し、<span class="math inline">D = C_1 \otimes C_2 = (S',P')</span>は</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; S' : \Set \\
+  &amp; S' = S_1 \times S_2 \\
+  &amp; P' : S' \to \Set \\
+  &amp; P'(s_1,s_2) = P_1(s_1) \times P_2(s_2)
+\end{align*}</code></pre>
+<p>と定義する。</p></li>
+<li><p>任意の対象<span class="math inline">C = (S_C,P_C), D = (S_D,P_D), E = (S_E, P_E)</span>に対して、
+射<span class="math inline">(t,q) : C \to D</span>に対して<span class="math inline">\otimes</span>の双関手としての作用を</p>
+<pre class="math-block"><code>\begin{align*}
+  &amp; (t,q) \otimes \id : C \otimes E \to D \otimes E \\
+  &amp; (t,q) \otimes \id = (t \times \id_{S_E}, q' = ((c,e) \mapsto q_c \times \id_{P_E(e)})) \\
+  &amp; \id \otimes (t,q) : E \otimes C \to E \otimes D \\
+  &amp; \id \otimes (t,q) = (\id_{S_E} \times t, q' = ((e,c) \mapsto \id_{P_E(e)} \times q_c))
+\end{align*}</code></pre>
+<p>となるように定義する。</p></li>
+</ul>
+<p>並行積は<span class="math inline">\functorcat{\Set}{\Set}</span>に写すとDay畳み込みになっている、
+すなわち<span class="math inline">\asfunctor{C \otimes D} \cong \asfunctor{C} \otimes \asfunctor{D}</span>
+が成り立ち、Day畳み込みが対称モノイド積であることを反映して
+<span class="math inline">(\Cont, \otimes, I)</span>も対称モノイダル圏になっている。
+モノイド単位<span class="math inline">I</span>は恒等関手<span class="math inline">\mathrm{Identity}</span>に対応するコンテナであり、
+形状が単元集合<span class="math inline">1 = \set{*}</span>、位置も単元集合<span class="math inline">(* \mapsto 1)</span>となっている。</p>
+<p>この節では以降、圏<span class="math inline">\Cont</span>といえば対称モノイダル圏<span class="math inline">(\Cont, \otimes, I)</span>を指すことにし、
+そこでのモノイド、余モノイド、双モノイド、Hopfモノイドについて調べる。</p>
+<h3 id="contにおけるモノイド"><span class="math inline">\Cont</span>におけるモノイド</h3>
+<p><span class="math inline">\Cont</span>におけるモノイドは多項式関手上の<code>Applicative</code>に相当し、
+このブログでも<a href="../posts/2020-11-25-faccat.html">記事</a>にしている。
+当該記事とは用語法などが色々と異なるので、改めて記述する。</p>
+<p><span class="math inline">\Cont</span>におけるモノイド対象<span class="math inline">C = (S,P)</span>は、以下の射によって定まる。</p>
+<ul>
+<li>単位 <span class="math inline">\eta = (\eta_0, \eta^\#) : I \to C</span>
+<ul>
+<li><span class="math inline">\eta_0 : 1 \to S</span></li>
+<li><span class="math inline">\eta^\#_{*} : P(\eta_0(*)) \to 1</span></li>
+</ul></li>
+<li>乗法 <span class="math inline">m = (m_0, m^\#) : C \times C \to C</span>
+<ul>
+<li><span class="math inline">m_0 : S \times S \to S</span></li>
+<li><span class="math inline">m^\#_{(x,y) \in S \times S} : P(m_0(x,y)) \to P(x) \times P(y)</span></li>
+</ul></li>
+</ul>
+<p>ここで、これらの射を見やすいように</p>
+<ul>
+<li><p><span class="math inline">\eta^\#</span> は単元集合への関数であるから一意に決まり、考慮する必要がない</p></li>
+<li><p><span class="math inline">\eta_0 : 1 \to S</span> は代わりに <span class="math inline">\eta_0(*) = 1_S</span>なる<span class="math inline">S</span>の元<span class="math inline">1_S</span>で表す</p></li>
+<li><p><span class="math inline">m_0 : S \times S \to S</span> は2項演算<span class="math inline">(- \cdot -)</span>として<span class="math inline">m_0(x,y) = x \cdot y</span>で表す</p></li>
+<li><p><span class="math inline">m^\#_{(x,y)} : P(x \cdot y) \to P(x) \times P(y)</span> は、各成分に分解して</p>
+<pre class="math-block"><code>\begin{align*}
+&amp; m^\#_{x,y}(p) = (l_{x,y}(p), r_{x,y}(p)) \\
+&amp; \mskip{2em} \mathbf{where}\quad l_{x,y} : P(x \cdot y) \to P(x)\\
+&amp; \mskip{2em} \phantom{\mathbf{where}\quad} r_{x,y} : P(x \cdot y) \to P(y)
+\end{align*}</code></pre></li>
+</ul>
+<p>と表記することにすると、モノイド対象の単位律・結合律は</p>
+<ul>
+<li><p><span class="math inline">(S,\cdot,1_S)</span>は<span class="math inline">\Set</span>上の(普通の)モノイドである</p></li>
+<li><p><span class="math inline">l,r</span>は以下の等式(1.)-(5.)を満足する</p>
+<pre class="math-block"><code>\begin{align}
+\tag{\text{1.}} l_{x,1} &amp;= \id\\
+\tag{\text{2.}} r_{1,y} &amp;= \id\\
+\tag{\text{3.}} l_{x,y} \circ l_{x\cdot y, z} &amp;= l_{x, y \cdot z}\\
+\tag{\text{4.}} r_{x,y} \circ l_{x\cdot y, z} &amp;= l_{y, z} \circ r_{x, y \cdot z}\\
+\tag{\text{5.}} r_{x \cdot y,z} &amp;= r_{y, z} \circ r_{x, y \cdot z}
+\end{align}</code></pre></li>
+</ul>
+<p>という条件と同値になる。</p>
+<h3 id="contにおける余モノイド"><span class="math inline">\Cont</span>における余モノイド</h3>
+<p><span class="math inline">\Cont</span>における余モノイド対象<span class="math inline">C = (S,P)</span>は、以下の射によって定まる。</p>
+<ul>
+<li>余単位 <span class="math inline">\epsilon = (\epsilon_0, \epsilon^\#) : C \to I</span>
+<ul>
+<li><span class="math inline">\epsilon_0 : S \to 1</span></li>
+<li><span class="math inline">\epsilon^\#_{x} : 1 \to P(x)</span></li>
+</ul></li>
+<li>余乗法 <span class="math inline">\delta = (\delta_0, \delta^\#) : C \to C \times C</span>
+<ul>
+<li><span class="math inline">\delta_0 : S \to S \times S</span></li>
+<li><span class="math inline">\delta^\#_{x \in S} : P(\mathrm{fst}(\delta_0(x))) \times P(\mathrm{snd}(\delta_0(x))) \to P(x)</span></li>
+</ul></li>
+</ul>
+<p>ここで、余単位律と余結合律から<span class="math inline">(S,\epsilon_0,\delta_0)</span>は集合<span class="math inline">S</span>上の
+余モノイドであり、したがって<span class="math inline">\delta_0(x) = (x,x)</span>に限られることが言える。
+よって<span class="math inline">\delta^\#_{x}</span>の型は簡潔に</p>
+<p><span class="math inline">\delta^\#_{x} : P(x) \times P(x) \to P(x)</span></p>
+<p>と書ける。<span class="math inline">\delta^\#_{x}</span>を2項演算<span class="math inline">(- \bullet_x -)</span>で書くことにし、
+<span class="math inline">\epsilon^\#_{x} : 1 \to P(x)</span>を代わりに<span class="math inline">P(x)</span>の元<span class="math inline">e_x</span>で表すことにすると、
+余単位律と余結合律は<span class="math inline">\bullet_x</span>が<span class="math inline">P(x)</span>上の結合的な2項演算であり、
+<span class="math inline">e_x</span>がその単位元であること、すなわち<span class="math inline">(P(x),\bullet_x, e_x)</span>がモノイドであることと同値なことがわかる。</p>
+<p>結果、<span class="math inline">\Cont</span>における余モノイド対象<span class="math inline">C = (S,P)</span>とは、集合族<span class="math inline">P</span>の各成分
+<span class="math inline">P(x)</span>それぞれにモノイド構造が備わっているコンテナ<span class="math inline">(S,P)</span>
+であったことがわかる。以後、余モノイド対象<span class="math inline">C = (S,P)</span>に対して<span class="math inline">(\bullet_x, e_x)</span>で
+余モノイド構造を定める<span class="math inline">P(x)</span>上のモノイド演算を表すことにし、文脈から推測可能なときは添字を省略して<span class="math inline">(\bullet, e)</span>
+とも書く。</p>
+<h3 id="contにおける双モノイド"><span class="math inline">\Cont</span>における双モノイド</h3>
+<p>ここまでの記法を用いると、<span class="math inline">\Cont</span>における双モノイド対象<span class="math inline">C = (S,P)</span>は</p>
+<ul>
+<li><span class="math inline">S</span>上のモノイド構造<span class="math inline">(\cdot, 1_S)</span></li>
+<li><span class="math inline">l_{x,y} : P(x\cdot y) \to P(x)</span>と<span class="math inline">r_{x,y} : P(x \cdot y) \to P(y)</span>であって
+前述の等式(1.)-(5.)を満たすもの</li>
+<li>各<span class="math inline">x \in S</span>ごとに<span class="math inline">P(x)</span>上に備わったモノイド構造<span class="math inline">\bullet_x, e_x</span></li>
+</ul>
+<p>をもち、更にcompatibilityからくる</p>
+<ul>
+<li><span class="math inline">\epsilon \circ m = (\epsilon \otimes \epsilon) \circ \lambda_1^{-1}</span>より:
+<ul>
+<li><span class="math inline">l_{x,y}(e_{x\cdot y}) = e_x</span></li>
+<li><span class="math inline">r_{x,y}(e_{x\cdot y}) = e_y</span></li>
+</ul></li>
+<li><span class="math inline">\delta \circ m = (m \otimes m) \circ \mathrm{inter} \circ (\delta \otimes \delta)</span>より、任意の<span class="math inline">p,q : P(x\cdot y)</span>に対して
+<ul>
+<li><span class="math inline">l_{x,y}(p\bullet q) = l_{x,y}(p) \bullet l_{x,y}(q)</span></li>
+<li><span class="math inline">r_{x,y}(p\bullet q) = r_{x,y}(p) \bullet r_{x,y}(q)</span></li>
+</ul></li>
+</ul>
+<p>すなわち<span class="math inline">l_{x,y}, r_{x,y}</span>はそれぞれモノイド準同型であるという条件を満たすものである。</p>
+<h3 id="contにおけるhopfモノイド"><span class="math inline">\Cont</span>におけるHopfモノイド</h3>
+<p><span class="math inline">\Cont</span>におけるHopfモノイド対象<span class="math inline">C = (S,P)</span>は、
+双モノイド対象であって、更に対蹠射<span class="math inline">\mathrm{inv} : C \to C</span>をもつものであった。</p>
+<p><span class="math inline">\mathrm{inv}</span>の成分をそれぞれ<span class="math inline">(-)^{-1} : S \to S</span>、
+<span class="math inline">s_x : P(x^{-1}) \to P(x)</span>と表記すると、まず<span class="math inline">(S, \cdot, 1_s, (-)^{-1})</span>は群である。更に、位置に関しては</p>
+<ul>
+<li><span class="math inline">s_x(l_{x^{-1},x}(p)) \bullet r_{x^{-1},x}(p) = e_x</span></li>
+<li><span class="math inline">l_{x,x^{-1}}(p) \bullet s_{x}(r_{x,x^{-1}}(p)) = e_x</span></li>
+</ul>
+<p>が任意の<span class="math inline">x : S</span>と<span class="math inline">p : P(1)</span>に対して成り立つことが条件であるとわかる。</p>
+<p>ここで特に<span class="math inline">x = 1_S</span>の場合を考えると、<span class="math inline">1^{-1} = 1, l_{1,1} = r_{1,1} = \id</span>より<span class="math inline">s_1(p) \bullet p = p \bullet s_1(p) = e_1</span>であるから、
+<span class="math inline">s_1</span>はモノイド<span class="math inline">P(1),\bullet,e_1</span>における逆元をとる演算になっており、<span class="math inline">P(1)</span>を群にしていることがわかる。</p>
+<p>さて、この条件をさらに簡潔にするため、<a href="../posts/2021-01-01-faccat2.html">過去の記事</a>で述べたことと同様の変形によって、
+任意のHopfモノイド<span class="math inline">C=(S,P)</span>はより簡潔な記述を持つ<span class="math inline">C'=(S,\overline{P})</span>と同型であることを示そう。</p>
+<p>Hopfモノイド<span class="math inline">C=(S,P)</span>において、モノイド<span class="math inline">P(x)</span>は群<span class="math inline">P(1)</span>と同型である。実際、<span class="math inline">l_{1,x} : P(x) \to P(1)</span>は<span class="math inline">C</span>が双モノイドであることからモノイド準同型（特に<span class="math inline">P(1)</span>が群であるから群準同型）であり、更に</p>
+<pre class="math-block"><code>\begin{align*}
+l_{1,x} \circ l_{x,x^{-1}}
+  &amp;= l_{1, x \cdot x^{-1}} \\
+  &amp;= l_{1, 1} \\
+  &amp;= \id_{P(1)} \\
+l_{x,x^{-1}} \circ l_{1,x}
+  &amp;= l_{x, x^{-1}\cdot x} \\
+  &amp;= l_{x, 1} \\
+  &amp;= \id_{P(x)}
+\end{align*}</code></pre>
+<p>より逆<span class="math inline">l_{1,x}^{-1} = l_{x,x^{-1}}</span>が存在、すなわち<span class="math inline">P(x)</span>と<span class="math inline">P(1)</span>の間の同型を与えていることがわかる。
+更に、任意の<span class="math inline">l_{x,y} : P(x \cdot y) \to P(x)</span>はこれらの同型<span class="math inline">l_{1,-}</span>で<span class="math inline">P(1)</span>を通り因数分解されている。</p>
+<pre class="math-block"><code>\begin{align*}
+l_{1, x}^{-1} \circ l_{1, x \cdot y}
+  &amp;= l_{x,x^{-1}} \circ l_{1, x \cdot y} \\
+  &amp;= l_{x,x^{-1} \cdot x \cdot y} \\
+  &amp;= l_{x,y}
+\end{align*}</code></pre>
+<p>そこで、これらの群同型射が恒等写像に写るように、新たなHopfモノイド<span class="math inline">C'=(S,\overline{P})</span>を次のように定める。</p>
+<ul>
+<li><p><span class="math inline">\overline{P} : S \to \Set</span>はどの<span class="math inline">x:S</span>に対しても<span class="math inline">P(1)</span>を返す定数族</p></li>
+<li><p><span class="math inline">C' = (S,\overline{P})</span>上のHopfモノイド構造は、コンテナの同型</p>
+<pre class="math-block"><code>\begin{align*}
+&amp; \tau : C \to C' \\
+&amp; \tau = (\id_S, \tau^\#) \\
+&amp; \tau^\#_{x} = l_{1,x}
+\end{align*}</code></pre>
+<p>によって<span class="math inline">C</span>上の演算を写して得る。</p></li>
+</ul>
+<p><span class="math inline">\tau</span>は形状については恒等写像であり、余モノイドとしての
+<span class="math inline">\overline{P}(x)</span>上のモノイド演算はどの<span class="math inline">x</span>においても<span class="math inline">P(1)</span>のモノイド演算になっているから、<span class="math inline">C'</span>のHopfモノイドの演算は
+モノイド乗法の形状部分<span class="math inline">l',r'</span>と対蹠射の形状部分<span class="math inline">s'</span>だけが異なっている。
+とはいえ、<span class="math inline">l'</span>は消えるように同型<span class="math inline">\tau</span>は選ばれている。実際</p>
+<pre class="math-block"><code>\begin{align*}
+l'_{x,y} &amp;: \overline{P}(x\cdot y) \to \overline{P}(x)\\
+l'_{x,y}
+  &amp;= \tau^\#_{x} \comp l_{x,y} \comp (\tau^\#_{x \cdot y})^{-1} \\
+  &amp;= l_{1,x} \comp l_{x, y} \comp l_{1, x\cdot y}^{-1} \\
+  &amp;= l_{1,x} \comp l_{1,x}^{-1} \comp l_{1,x \cdot y} \comp l_{1, x\cdot y}^{-1} \\
+  &amp;= \id_{P(1)}
+\end{align*}</code></pre>
+<p>である。また、<span class="math inline">r'</span>は</p>
+<pre class="math-block"><code>\begin{align*}
+r'_{x,y} &amp;: \overline{P}(x\cdot y) \to \overline{P}(y)\\
+r'_{x,y}
+  &amp;= \tau^\#_{y} \comp r_{x,y} \comp (\tau^\#_{x \cdot y})^{-1} \\
+  &amp;= l_{1,y} \comp r_{x,y} \comp l_{x\cdot y, y^{-1} \cdot x^{-1}} \\
+  &amp;= r_{x,1} \comp l_{x,y} \comp l_{x\cdot y, y^{-1} \cdot x^{-1}} \\
+  &amp;= r_{x,1} \comp l_{x, y \cdot y^{-1} \cdot x^{-1}} \\
+  &amp;= r_{x,1} \comp l_{x, x^{-1}}
+\end{align*}</code></pre>
+<p>と計算でき、<span class="math inline">r'_{x,y}</span>は<span class="math inline">y</span>に依存せず決まる。
+このことを明示して、<span class="math inline">r'_{x,y}(p) = p \rightposact x</span>と表記することにする。
+改めて<span class="math inline">l'_{x,y} = \id, r'_{x,y} = (- \rightposact x)</span>を用いて
+<span class="math inline">(S,\overline{P})</span>がモノイド対象であることで得られる等式を確認すると、</p>
+<pre class="math-block"><code>\begin{align}
+\tag{\text{1.}}
+l'_{x,1} &amp;= \id
+  &amp; &amp;\iff &amp; \id = \id\\
+\tag{\text{2.}}
+r'_{1,y} &amp;= \id
+  &amp; &amp;\iff &amp; (- \rightposact 1) &amp;= \id\\
+\tag{\text{3.}}
+l'_{x,y} \circ l'_{x\cdot y, z} &amp;= l'_{x, y \cdot z}
+  &amp; &amp;\iff &amp; \id \circ \id &amp;= \id\\
+\tag{\text{4.}}
+r'_{x,y} \circ l'_{x\cdot y, z} &amp;= l'_{y, z} \circ r'_{x, y \cdot z}
+  &amp; &amp;\iff &amp; (- \rightposact x) \circ \id &amp;= \id \circ (- \rightposact x) \\
+\tag{\text{5.}}
+r'_{x \cdot y,z} &amp;= r'_{y, z} \circ r'_{x, y \cdot z}
+  &amp; &amp;\iff &amp; (- \rightposact (x \cdot y)) &amp;= ((- \rightposact x) \rightposact y)
+\end{align}</code></pre>
+<p>となっているが、ここで1, 3, 4は自明な恒等式であり、2, 5は
+<span class="math inline">r'_{x,y} = (- \rightposact x)</span>が群<span class="math inline">S</span>の<span class="math inline">P(1)</span>への右作用であることを意味している。</p>
+<p>最後に、対蹠射<span class="math inline">\mathrm{inv}' = ((-)^{-1}, s') : C' \to C'</span>について考える。元の<span class="math inline">C</span>と同じように、<span class="math inline">s'</span>の満たすべき等式は</p>
+<ul>
+<li><span class="math inline">s'_x(l'_{x^{-1},x}(p)) \bullet r'_{x^{-1},x}(p) = e_1</span></li>
+<li><span class="math inline">l'_{x,x^{-1}}(p) \bullet s'_{x}(r'_{x,x^{-1}}(p)) = e_1</span></li>
+</ul>
+<p>すなわち</p>
+<ul>
+<li><span class="math inline">s'_x(p) \bullet (p \rightposact x^{-1}) = e_1</span></li>
+<li><span class="math inline">p \bullet s'_{x}(p \rightposact x) = e_1</span></li>
+</ul>
+<p>である。後者は<span class="math inline">p = q \rightposact x^{-1}</span>とおくことで（<span class="math inline">- \rightposact x</span>は群作用なので全単射であり、これは常に可能）</p>
+<ul>
+<li><span class="math inline">(q \rightposact x^{-1}) \bullet s'_{x}(q) = e_1</span></li>
+</ul>
+<p>となり、どちらの等式も<span class="math inline">s'_{x}</span>は</p>
+<ul>
+<li><span class="math inline">s'_x(p) = (p \rightposact x^{-1})^{-1}</span></li>
+</ul>
+<p>に定まることを示している。つまるところ、<span class="math inline">C'</span>のHopfモノイドとしての構造は、
+<span class="math inline">S</span>と<span class="math inline">P(1)</span>の群構造と双モノイドとしての右群作用<span class="math inline">\rightposact : P(1) \to S \to P(1)</span>から一意に決定される。</p>
+<p><span class="math inline">C'</span>は任意のHopfモノイド<span class="math inline">C</span>から、<span class="math inline">l_{x,y}</span>が”消える”正規化として、任意性を含まない方法で得たのだった。<span class="math inline">s'</span>のこの一意性は<span class="math inline">C</span>にも反映され、結局<span class="math inline">C</span>においてもHopfモノイド構造は双モノイド構造から上記の方法で一意に決まる。あるモノイドに逆元をとる操作を付加して群にすることは、不可能であるか一意な方法でできるかのいずれかであるから、双モノイド<span class="math inline">C</span>がHopfモノイド構造を追加で持てるならば、それは上記のように書かれるものに限ることがわかる。これは、前述した任意の対称モノイダル圏における事実の<span class="math inline">\Cont</span>における具体的な形である。</p>
+<p>まとめると、Hopfモノイド<span class="math inline">C</span>は、<span class="math inline">C</span>と同型な”正規化”Hopfモノイド<span class="math inline">C'</span>が存在して、それは以下のように記述される。</p>
+<ul>
+<li><span class="math inline">C' = (S,\overline{P})</span>、<span class="math inline">\overline{P}(x)</span>は<span class="math inline">x</span>によらず同じ集合<span class="math inline">P_1</span></li>
+<li><span class="math inline">S</span>は群<span class="math inline">(S,\cdot,1)</span>で、<span class="math inline">P_1</span>は<span class="math inline">S</span>の右作用<span class="math inline">\rightposact</span>を持つ</li>
+<li>モノイド構造は<span class="math inline">l'_{x,y}=\id_{P_1}</span>, <span class="math inline">r'_{x,y}=(- \rightposact x)</span></li>
+<li><span class="math inline">P_1</span>は群<span class="math inline">(P_1, \bullet, e)</span>であり、余モノイド構造を定める</li>
+<li><span class="math inline">(- \rightposact x)</span>は群同型、すなわち<span class="math inline">P_1</span>は<span class="math inline">S</span>の右群作用をもつ群</li>
+<li><span class="math inline">s'_x(p) = (p \rightposact x^{-1})^{-1}</span>と定義して、対蹠射は<span class="math inline">((-)^{-1}, s') : C' \to C'</span></li>
+</ul>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>この記事で数式を書くのに使っているKaTeXの制限上、可換図式が不格好なのはお許しいただきたい<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>この可換図式（が表す性質）は、モノイドと余モノイドが <em>compatible</em> である、などと言われたりするが、
+性質自体に「結合律」のような名前がついているのかは私は知らない。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>通常、これはモノイドの元全体が集合をなす（すなわち<span class="math inline">\Set</span>のモノイド対象である）場合の定理である。
+その主張はモノイドの元に関する等式と全称量化を使うだけであり、主張の証明もモノイドの公理だけで行うことができるので、
+元全体の集合の濃度などの集合論的な議論を必要としない。そのため、<span class="math inline">\mathcal{V}(a,a)</span>が真のクラスであっても問題なく同じ証明ができる。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><code>Shape</code>が実際に関手であり、さらにこれら<code>combinShape, splitShape</code>
+が<code>Shape</code>を強モノイダル関手<span class="math inline">(\functorcat{\Hask}{\Hask}, \mathtt{Day}, \mathtt{Identity}) \to (\Hask, \mathtt{(,)}, \mathtt{()})</span>
+にしていることの証明は略する。
+関手性は単純作業であるが、<code>combineShape</code>と<code>splitShape</code>が互いに逆である証明はやや注意を要し、
+これには<code>Day</code>がコエンドとして定義されているため<code>Day (p &lt;$&gt; f) (q &lt;*&gt; g) op = Day (f g (\a b -&gt; p a `op` q b))</code>
+が成り立つことを用いる。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>“一貫した”、というのはこの構成が適当な意味で関手的であることを指す。
+ただし、この構成は通常の<code>Day</code>-余モノイドとコモナドの定義からcanonicalに決まっているものではないため、
+“<code>Comonoid</code>は<code>Comonad</code>を拡張する”というのはプログラミング的利便性を考えた数学的にはarbitraryな規約だ。
+ちなみに、“<code>Monad</code>は<code>Applicative</code>(=<code>Day</code>-モノイド)を拡張する”というHaskellにおける標準定義も
+全く同様であり、一貫しているがcanonicalでない利便性のための規約である。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p><span class="math inline">\functorcat{\Set}{\Set}</span>は局所小圏でないため、“充満忠実関手”などの概念は素朴には定義できない。
+素直に定式化するならばグロタンディーク宇宙<span class="math inline">U</span>の存在を仮定して<span class="math inline">\Set</span>を<span class="math inline">U</span>-small集合の圏と再定義し、
+<span class="math inline">\Cont</span>の対象となる集合(族)も<span class="math inline">U</span>-smallとする。
+<span class="math inline">\functorcat{\Set}{\Set}</span>のホム”セット”は（<span class="math inline">U</span>に含まれないが）集合ではあるようになったので、
+（これも<span class="math inline">U</span>に含まれない）全単射<span class="math inline">\Cont(C,D) \cong \functorcat{\Set}{\Set}(\asfunctor{C}, \asfunctor{D})</span>
+の存在を言うことができる。<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

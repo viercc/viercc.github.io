@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - コンテナの圏の内部圏</title>
+        
+          <!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.css" integrity="sha384-sMefv1J1YJCHsg0mTa9YG+n/9KnJb9lGrJUUY5arg6bAL1qps/oZjmUwaHlX5Ugg" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.20/dist/katex.min.js" integrity="sha384-i9p+YmlwbK0lT9RcfgdAo/Cikui1KeFMeV/0Fwsu+rzgsCvas6oUptNOmo29C33p" crossorigin="anonymous"></script>
+<script defer type="text/javascript" src="../js/katex-render-hook.js"></script>
+
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>コンテナの圏の内部圏</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/category-internal-to-containers.md</li>
+            
+            
+                <li>Last modified on 2025-11-14</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#コンテナの圏の内部圏" id="toc-コンテナの圏の内部圏">コンテナの圏の内部圏</a>
+<ul>
+<li><a href="#前提" id="toc-前提">前提</a>
+<ul>
+<li><a href="#集合の引き戻しと押し出し" id="toc-集合の引き戻しと押し出し">集合の引き戻しと押し出し</a></li>
+<li><a href="#関手圏における引き戻しと押し出し" id="toc-関手圏における引き戻しと押し出し">関手圏における引き戻しと押し出し</a></li>
+<li><a href="#コンテナの圏" id="toc-コンテナの圏">コンテナの圏</a></li>
+<li><a href="#コンテナの関手としての実現" id="toc-コンテナの関手としての実現">コンテナの関手としての実現</a></li>
+</ul></li>
+<li><a href="#圏対象-internal-category" id="toc-圏対象-internal-category">圏対象 (internal category)</a></li>
+<li><a href="#contの内部圏" id="toc-contの内部圏"><span class="math inline">\Cont</span>の内部圏</a>
+<ul>
+<li><a href="#コンテナを多項式関手として見る" id="toc-コンテナを多項式関手として見る">コンテナを多項式関手として見る</a></li>
+<li><a href="#定義からそのまま組み合わせ論的なデータとして考える" id="toc-定義からそのまま組み合わせ論的なデータとして考える">定義からそのまま組み合わせ論的なデータとして考える</a>
+<ul>
+<li><a href="#c-1-のケース" id="toc-c-1-のケース"><span class="math inline">C = 1</span> のケース</a></li>
+<li><a href="#cがモノイドのケース" id="toc-cがモノイドのケース"><span class="math inline">C</span>がモノイドのケース</a></li>
+<li><a href="#一般の圏cのケース" id="toc-一般の圏cのケース">一般の圏<span class="math inline">C</span>のケース</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></div>
+<pre class="math-block"><code>% basic set manipulation
+  \gdef\id{\mathop{\mathrm{id}}}
+  \gdef\comp{\circ}
+  \gdef\placeholder{{-}}
+% category theory
+  \gdef\Set{\mathrm{\mathbf{Set}}}
+  \gdef\Cat{\mathrm{\mathbf{Cat}}}
+  \gdef\Fun#1#2{\mathrm{\mathbf{Fun}}({#1},{#2})}
+  \gdef\Ob{\mathop{\mathrm{Ob}}}
+  \gdef\Mor{\mathop{\mathrm{Mor}}}
+  \gdef\op{\mathrm{op}}
+  \gdef\dom{\mathop{\mathrm{dom}}}
+  \gdef\cod{\mathop{\mathrm{cod}}}
+  \gdef\map{\mathop{\mathrm{map}}}
+
+  \gdef\pullback#1#2{\mathbin{{}_{#1}\otimes_{#2}}}
+  \gdef\pushout#1#2{\mathbin{{}_{#1}\sqcup_{#2}}}
+  \gdef\prodmap#1#2{\left\langle{#1},{#2}\right\rangle}
+  \gdef\summap#1#2{\left\lbrack{#1},{#2}\right\rbrack}
+  \gdef\inj{\iota}
+
+  \gdef\inl{\operatorname{\mathtt{inl}}}
+  \gdef\inr{\operatorname{\mathtt{inr}}}
+
+% custom notations
+  \gdef\Cont{\mathrm{\mathbf{Cont}}}
+  \gdef\interp#1{\llbracket{#1}\rrbracket}
+%  \gdef\Shape{\operatorname{Sh}}
+%  \gdef\Position{\operatorname{Pos}}
+  \gdef\shpart#1{\overline{#1}}
+  \gdef\pospart#1{{#1}^\#}</code></pre>
+<h1 id="コンテナの圏の内部圏">コンテナの圏の内部圏</h1>
+<h2 id="前提">前提</h2>
+<h3 id="集合の引き戻しと押し出し">集合の引き戻しと押し出し</h3>
+<dl>
+<dt><span class="math inline">\Set</span>での引き戻し</dt>
+<dd>
+<p>集合の圏<span class="math inline">\Set</span>には、任意のコスパン<span class="math inline">A \xrightarrow{f} C \xleftarrow{g} B</span>に対して、
+その引き戻し<span class="math inline">A \pullback{f}{g} B</span>が存在する。
+すなわち以下の図式</p>
+<pre class="math-block"><code>\begin{CD}
+  A\pullback{f}{g} B @&gt;{\pi_2}&gt;&gt; B \\
+  @V{\pi_1}VV {\scriptstyle \mathrm{p.b.}}  @VV{g}V \\
+  A @&gt;&gt;{f}&gt; C
+\end{CD}</code></pre>
+<p>を可換にする集合<span class="math inline">A\pullback{f}{g} B</span>と関数<span class="math inline">(\pi_1, \pi_2)</span>であって、以下の引き戻しの普遍性
+を満たすものがある。</p>
+<ul>
+<li><p>任意の集合<span class="math inline">E</span>と関数<span class="math inline">\alpha : E \to A, \beta : E \to B</span>であって図式</p>
+<pre class="math-block"><code>\begin{CD}
+  E @&gt;{\beta}&gt;&gt; B \\
+  @V{\alpha}VV  @VV{g}V \\
+  A @&gt;&gt;{f}&gt; C
+\end{CD}</code></pre>
+<p>を可換にするものに対して、次のような関数<span class="math inline">\gamma : E \to A \pullback{f}{g} B</span>が一意に存在する。</p>
+<pre class="math-block"><code>\begin{align}
+  \begin{cases}
+    \alpha = \pi_1 \comp \gamma\\
+    \beta = \pi_2 \comp \gamma
+  \end{cases}
+\end{align}</code></pre></li>
+</ul>
+<p>特に、図式を可換にする<span class="math inline">\alpha, \beta</span>の組に対して、普遍性で定まる<span class="math inline">\gamma</span>を対応させる関数
+<span class="math inline">\prodmap{-}{-}</span>が存在する。</p>
+</dd>
+<dt><span class="math inline">\Set</span>での引き戻しの具体的表現</dt>
+<dd>
+<p><span class="math inline">\Set</span>における引き戻し<span class="math inline">A \pullback{f}{g} B</span>は、具体的に以下のように表現できる。</p>
+<pre class="math-block"><code>\begin{align}
+A \pullback{f}{g} B &amp;= \set{(a,b) \mid (a,b) \in A \times B, f a = g b } \\
+\pi_1(a,b) &amp;= a \\
+\pi_2(a,b) &amp;= b
+\end{align}</code></pre>
+<p>この表現を用いると、普遍性から定まる関数<span class="math inline">\prodmap{-}{-}</span>は以下のようになる。</p>
+<pre class="math-block"><code>\prodmap{\alpha}{\beta}(x) = (\alpha x, \beta x)</code></pre>
+</dd>
+</dl>
+<p>特に断らない限り、<span class="math inline">\Set</span>での引き戻し<span class="math inline">A \pullback{f}{g} B</span>は上記の表現である。</p>
+<dl>
+<dt><span class="math inline">\Set</span>での押し出し</dt>
+<dd>
+<p>集合の圏<span class="math inline">\Set</span>には、任意のスパン<span class="math inline">A \xleftarrow{f} C \xrightarrow{g} B</span>に対して、
+その押し出し<span class="math inline">A \pushout{f}{g} B</span>が存在する。
+すなわち以下の図式</p>
+<pre class="math-block"><code>\begin{CD}
+  C @&gt;{f}&gt;&gt; B \\
+  @V{g}VV {\scriptstyle \mathrm{p.o.}}  @VV{\inj_2}V \\
+  A @&gt;&gt;{\inj_1}&gt; A \pushout{f}{g} B
+\end{CD}</code></pre>
+<p>を可換にする集合<span class="math inline">A\pushout{f}{g} B</span>と関数<span class="math inline">(\inj_1, \inj_2)</span>であって、以下の押し出しの普遍性
+を満たすものがある。</p>
+<ul>
+<li><p>任意の集合<span class="math inline">E</span>と関数<span class="math inline">\alpha : A \to E, \beta : B \to E</span>であって図式</p>
+<pre class="math-block"><code>\begin{CD}
+  C @&gt;{g}&gt;&gt; B \\
+  @V{f}VV  @VV{\beta}V \\
+  A @&gt;&gt;{\alpha}&gt; E
+\end{CD}</code></pre>
+<p>を可換にするものに対して、次のような関数<span class="math inline">\gamma : A \pushout{f}{g} B \to E</span>が一意に存在する。</p>
+<pre class="math-block"><code>\begin{align}
+  \begin{cases}
+    \alpha = \gamma \comp \inj_1\\
+    \beta = \gamma \comp \inj_2
+  \end{cases}
+\end{align}</code></pre></li>
+</ul>
+<p>特に、図式を可換にする<span class="math inline">\alpha, \beta</span>の組に対して普遍性で定まる<span class="math inline">\gamma</span>を対応させる関数
+<span class="math inline">\summap{-}{-}</span>が存在する。</p>
+</dd>
+<dt><span class="math inline">\Set</span>での押し出しの具体的表現</dt>
+<dd>
+<p><span class="math inline">\Set</span>における押し出し<span class="math inline">A \pushout{f}{g} B</span>は、具体的に以下のように表現できる。</p>
+<pre class="math-block"><code>\begin{align}
+A \pushout{f}{g} B &amp;= (A + B) / \sim \\
+(\sim) &amp;= \set{ (\inl (f c), \inr (g c)) \mid c \in C } \\
+\inj_1(a) &amp;= \lbrack \inl a \rbrack \\
+\inj_2(b) &amp;= \lbrack \inr b \rbrack
+\end{align}</code></pre>
+<p>ここで<span class="math inline">A + B</span>は集合の直和、<span class="math inline">\sim</span>は任意の<span class="math inline">c</span>に対して
+<span class="math inline">\inl (f c)</span>と<span class="math inline">\inr (g c)</span>を同一視する関係であり、
+<span class="math inline">A \pushout{f}{g} B</span>は<span class="math inline">\sim</span>の同値閉包による商集合である。
+また、<span class="math inline">\inj_1, \inj_2</span>は標準入射である。</p>
+<p>この表現を用いると、普遍性から定まる関数<span class="math inline">\summap{-}{-}</span>は以下のようになる。</p>
+<pre class="math-block"><code>\summap{\alpha}{\beta}(\lbrack \inl a \rbrack) = \alpha a \\
+\summap{\alpha}{\beta}(\lbrack \inr b \rbrack) = \beta b</code></pre>
+<p>この関数は<span class="math inline">\alpha \comp f = \beta \comp g</span>よりwell-definedである。</p>
+</dd>
+</dl>
+<p>特に断らない限り、<span class="math inline">\Set</span>での押し出し<span class="math inline">A \pushout{f}{g} B</span>は上記の表現である。</p>
+<h3 id="関手圏における引き戻しと押し出し">関手圏における引き戻しと押し出し</h3>
+<dl>
+<dt>関手圏における引き戻しは成分毎(pointwise)に定義できる</dt>
+<dd>
+<p><span class="math inline">\mathcal{C}</span>を圏、<span class="math inline">\mathcal{D}</span>をすべての引き戻しをもつ圏とする。
+関手圏<span class="math inline">\Fun{\mathcal{C}}{{\mathcal{D}}}</span>はすべての引き戻しをもつ。</p>
+<p>また、<span class="math inline">\Fun{\mathcal{C}}{{\mathcal{D}}}</span>における任意の引き戻し四角形</p>
+<pre class="math-block"><code>\begin{CD}
+  E @&gt;{\pi_2}&gt;&gt; F_2 \\
+  @V{\pi_1}VV {\scriptstyle \mathrm{p.b.}}  @VV{\psi}V \\
+  F_1 @&gt;&gt;{\varphi}&gt; G
+\end{CD}</code></pre>
+<p>において、<span class="math inline">E</span>は以下のように成分毎の引き戻しとして定義される関手と同型
+である。</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; E : \Set \to \Set \\
+&amp; E(X) = F_1(X) \pullback{\varphi_X}{\psi_X} F_2(X) \\
+&amp; E(f : X \to Y) : F_1(X) \pullback{\varphi_X}{\psi_X} F_2(X)
+    \to F_1(Y) \pullback{\varphi_Y}{\psi_Y} F_2(Y) \\
+&amp; E(f : X \to Y) = \prodmap{F_1(f)\comp \pi_1}{F_2(f)\comp \pi_2}
+\end{aligned}</code></pre>
+<p>また、引き戻しからの射影も成分毎の射影<span class="math inline">\pi_{i,X} : E(X) \to F_i(X)</span>である。</p>
+</dd>
+</dl>
+<details>
+<summary>
+証明
+</summary>
+<p>各成分において可換図式</p>
+<pre class="math-block"><code>\begin{CD}
+  E(X) @&gt;{\pi_{2,X}}&gt;&gt; F_2(X) \\
+  @V{\pi_{1,X}}VV @VV{\psi_X}V \\
+  F_1(X) @&gt;&gt;{\varphi_X}&gt; G(X)
+\end{CD}</code></pre>
+<p>が成り立っており、引き戻しの普遍性も各成分で成り立っているため、<span class="math inline">E</span>の関手性と成分毎の射影<span class="math inline">\pi_i</span>、引き戻しの普遍性が自然変換であることを確かめれば十分である。
+<span class="math inline">E</span>の関手性は</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; E(\id_X) = \prodmap{F_1(\id_X) \comp \pi_1}{F_2(\id_X) \comp \pi_2} = \prodmap{\pi_1}{\pi_2} = \id_{F_1(X)\otimes F_2(X)} \\
+&amp; E(f) \comp E(g) \\
+&amp; \quad = \prodmap{F_1(f) \comp \pi_1}{F_2(f) \comp \pi_2}
+      \comp \prodmap{F_1(g) \comp \pi_1}{F_2(g) \comp \pi_2} \\
+&amp; \quad = \prodmap{F_1(f) \comp F_1(g) \comp \pi_1}{F_2(f) \comp F_2(g) \comp \pi_2} \\
+&amp; \quad = \prodmap{F_1(f \comp g) \comp \pi_1}{F_2(f \comp g) \comp \pi_2} \\
+&amp; \quad = E(f \comp g)
+\end{aligned}</code></pre>
+<p>より成立。また射影が自然変換であることは</p>
+<pre class="math-block"><code>\begin{aligned}
+\pi_{1,Y} \comp E(f) &amp;=
+  \pi_{1,Y} \comp \prodmap{F_1(f) \comp \pi_{1,X}}{F_2(f) \comp \pi_{2,X}} \\
+  &amp;= F_1(f) \comp \pi_{1,X}
+\pi_{2,Y} \comp E(f) &amp;=
+  \pi_{2,Y} \comp \prodmap{F_1(f) \comp \pi_{1,X}}{F_2(f) \comp \pi_{2,X}} \\
+  &amp;= F_2(f) \comp \pi_{2,X}
+\end{aligned}</code></pre>
+<p>として、引き戻しの普遍性</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; \prodmap{\alpha : D \Rightarrow F_1}{\beta : D \Rightarrow F_2} : D \Rightarrow E \\
+&amp; \prodmap{\alpha}{\beta}_X = \prodmap{\alpha_X}{\beta_X} : D(X) \to E(X)
+\end{aligned}</code></pre>
+<p>が自然変換であることは</p>
+<pre class="math-block"><code>\begin{aligned}
+\prodmap{\alpha}{\beta}_Y \comp D(f) &amp;=
+  \prodmap{\alpha_Y}{\beta_Y} \comp D(f) \\
+  &amp;= \prodmap{\alpha_Y \comp D(f)}{\beta_Y \comp D(f)} \\
+  &amp;= \prodmap{F_1(f) \comp \alpha_X}{F_2(f) \comp \beta_X} \\
+  &amp;= \prodmap{F_1(f) \comp \pi_1}{F_2(f) \comp \pi_2} \comp \prodmap{\alpha_X}{\beta_X} \\
+  &amp;= E(f) \comp \prodmap{\alpha}{\beta}_X
+\end{aligned}</code></pre>
+として確かめられる。
+</details>
+<h3 id="コンテナの圏">コンテナの圏</h3>
+<dl>
+<dt>コンテナ</dt>
+<dd>
+集合<span class="math inline">S : \Set</span>と<span class="math inline">S</span>で添字付けられた集合の族<span class="math inline">P : S \to \Set</span>の組<span class="math inline">C=(S,P)</span>を<em>コンテナ</em>とよぶ。また、<span class="math inline">S</span>の元を<em>形状</em>(<em>shape</em>)、ある形状<span class="math inline">s</span>に対して<span class="math inline">P(s)</span>の元を(<span class="math inline">s</span>がもつ)<em>位置</em>(<em>position</em>)とよぶ。
+</dd>
+<dt>コンテナの射</dt>
+<dd>
+<p>コンテナ<span class="math inline">(S,P)</span>から<span class="math inline">(S',P')</span>への<em>射</em><span class="math inline">f</span>は、<em>形状の関数</em></p>
+<pre class="math-block"><code>\shpart{f} : S \to S'</code></pre>
+<p>および<em>位置の関数</em></p>
+<pre class="math-block"><code>\pospart{f} : \prod_{s \in S} P'(\shpart{f}s) \to P(s)</code></pre>
+<p>の組<span class="math inline">(\shpart{f}, \pospart{f})</span>である。ここで、　<span class="math inline">\shpart{(\square)}</span>や<span class="math inline">\pospart{(\square)}</span>はコンテナの射からその各部分を射影する演算子のように扱う。</p>
+</dd>
+<dt>コンテナの圏<span class="math inline">\Cont</span></dt>
+<dd>
+<p>対象をコンテナとし射をコンテナの射とする圏<span class="math inline">\Cont</span>を、恒等射と射の合成を以下のように定義することで定める。</p>
+<ul>
+<li><p>恒等射 <span class="math inline">\id_{(S,P)} : (S,P) \to (S,P)</span> を以下の通り定める。</p>
+<pre class="math-block"><code>\begin{align}
+&amp; \shpart{\id} = \id_S \\
+&amp; \pospart{\id}(s) = \id_{P(s)}
+\end{align}</code></pre></li>
+<li><p><span class="math inline">f : (S',P') \to (S'',P'')</span>, <span class="math inline">g : (S,P) \to (S',P')</span>に対し、
+合成 <span class="math inline">f \comp g</span> を以下の通り定める。</p>
+<pre class="math-block"><code>\begin{align}
+&amp; \shpart{f \comp g} = \shpart{f} \comp \shpart{g} \\
+&amp; \pospart{\left( f \comp g \right)}(s) =
+    \pospart{g}(s) \comp \pospart{f}(\shpart{g}s)
+\end{align}</code></pre></li>
+</ul>
+</dd>
+</dl>
+<blockquote>
+<p><strong>Remark</strong><br />
+コンテナの射の合成は、図式に書けば次のようになっている。</p>
+<ul>
+<li><p><span class="math inline">\shpart{f \comp g} : S \to S''</span>は以下の合成</p>
+<pre class="math-block"><code>\begin{CD}
+S @&gt;{\shpart{g}}&gt;&gt; S' @&gt;{\shpart{f}}&gt;&gt; S''
+\end{CD}</code></pre></li>
+<li><p><span class="math inline">\pospart{(f\comp g)}(s) : P''(\shpart{(f \comp g)}(s)) \to P(s)</span>は
+以下の合成</p>
+<pre class="math-block"><code>\begin{CD}
+P(s) @&lt;{\pospart{g}(s)}&lt;&lt; P'(\shpart{g}s) @&lt;{\pospart{f}(\shpart{g}s)}&lt;&lt; P''(\shpart{f}(\shpart{g}(s)))
+\end{CD}</code></pre></li>
+</ul>
+</blockquote>
+<dl>
+<dt>コンテナの引き戻し</dt>
+<dd>
+<p>コンテナの圏<span class="math inline">\Cont</span>は、任意のコスパン<span class="math inline">C_1 \xrightarrow{f} D \xleftarrow{g} C_2</span></p>
+<p>に対してその引き戻し<span class="math inline">E = C_1 \pullback{f}{g} C_2</span>をもつ。</p>
+<pre class="math-block"><code>\begin{CD}
+  E @&gt;{\pi_2}&gt;&gt; C_2 \\
+  @V{\pi_1}VV {\scriptstyle \mathrm{p.b.}}  @VV{g}V \\
+  C_1 @&gt;&gt;{f}&gt; D
+\end{CD}</code></pre>
+</dd>
+<dt>コンテナの引き戻しの具体的構成</dt>
+<dd>
+<p>引き戻しの具体的な構成は次のようになっている。まず、引き戻し四角形の各頂点にある
+コンテナの成分を次のようにおく。</p>
+<pre class="math-block"><code>\begin{aligned}
+C_1 &amp;= (S_1, P_1) \\
+C_2 &amp;= (S_2, P_2) \\
+D   &amp;= (T,Q) \\
+C_1 \pullback{f}{g} C_2 &amp;= (V,R)
+\end{aligned}</code></pre>
+<p>このとき、<span class="math inline">(V,R)</span>はそれぞれ以下のように定まる。</p>
+<ul>
+<li><p>引き戻し<span class="math inline">E</span>の形状部分<span class="math inline">V</span>は<span class="math inline">\Set</span>での引き戻し</p>
+<pre class="math-block"><code>\begin{CD}
+V @&gt;{\shpart{\pi}_2}&gt;&gt; S_2 \\
+@V{\shpart{\pi}_1}VV {\scriptstyle \mathrm{p.b.}}  @VV{\shpart{g}}V \\
+S_1 @&gt;&gt;{\shpart{f}}&gt; T
+\end{CD}</code></pre>
+<p>である。</p></li>
+<li><p>引き戻し<span class="math inline">E</span>の位置部分<span class="math inline">R</span>は、形状<span class="math inline">(s_1,s_2) \in V</span>に対して<span class="math inline">R(s_1,s_2)</span>が<span class="math inline">P_1(s_1)</span>と<span class="math inline">P_2(s_2)</span>の<span class="math inline">\Set</span>での押し出し</p>
+<pre class="math-block"><code>\begin{CD}
+Q(t) @&gt;{\pospart{g}s_2}&gt;&gt; P_2(s_2) \\
+@V{\pospart{f}s_1}VV {\scriptstyle \mathrm{p.o.}}  @VV{\pospart{\pi_2}}V \\
+P_1(s_1) @&gt;&gt;{\pospart{\pi_1}}&gt; R(s_1,s_2)
+\end{CD}</code></pre>
+<p>である。ただし<span class="math inline">t = \shpart{f}s_1 = \shpart{g}s_2</span>とおいた。</p></li>
+<li><p>形状部分と位置部分の図式に記入されているように、コンテナの引き戻しにおける
+引き戻しからの射影<span class="math inline">\pi_i \;(i = 1,2)</span>は、それぞれ形状部分の射影と位置部分の入射
+の組からなるコンテナの射<span class="math inline">\pi_i = (\shpart{\pi_i}, \pospart{\pi_i})</span>である。</p></li>
+</ul>
+<p>任意の<span class="math inline">f \circ \alpha = g \circ \beta</span>となる組<span class="math inline">\alpha : A \to C_1, \beta : A \to C_2</span>に対して
+引き戻しの普遍性から定まる<span class="math inline">\prodmap{\alpha}{\beta} : A \to C_1 \pullback{f}{g} C_2</span>は、</p>
+<ul>
+<li><p>形状部分は<span class="math inline">\Set</span>の引き戻しの普遍性</p>
+<pre class="math-block"><code>\begin{align}
+\shpart{\prodmap{\alpha}{\beta}}(s)
+  &amp;= \prodmap{\shpart{\alpha}}{\shpart{\beta}}(s) \notag\\
+  &amp;= (\shpart{\alpha} s, \shpart{\beta} s)
+\end{align}</code></pre></li>
+<li><p>位置部分は<span class="math inline">\Set</span>の押し出しの普遍性</p>
+<pre class="math-block"><code>\begin{align}
+\pospart{\prodmap{\alpha}{\beta}}(s)
+  &amp;= \summap{\pospart{\alpha} s}{\pospart{\beta} s}
+\end{align}</code></pre></li>
+</ul>
+<p>で定義される。</p>
+</dd>
+</dl>
+<h3 id="コンテナの関手としての実現">コンテナの関手としての実現</h3>
+<dl>
+<dt>コンテナの実現</dt>
+<dd>
+<p>任意のコンテナ<span class="math inline">C=(S,P)</span>に対して、その<em>実現</em>(または<em>解釈</em>, <em>interpretation</em>)
+という<span class="math inline">\Set</span>上の自己関手<span class="math inline">\interp{C} : \Set \to \Set</span>を次のように定義する。</p>
+<pre class="math-block"><code>\interp{C} = \sum_{s \in S} (P(s) \to (-))</code></pre>
+<p>ただし<span class="math inline">(=) \to (-)</span>はホム関手、<span class="math inline">\sum</span>は関手圏<span class="math inline">\Set^\Set</span>における余積である。
+言い換えると、この関手は</p>
+<ul>
+<li><p>対象<span class="math inline">X : \Set</span>に対して</p>
+<pre class="math-block"><code>\interp{C}(X) = \sum_{s \in S} (P(s) \to X)</code></pre></li>
+<li><p>射<span class="math inline">h : X \to Y</span>に対して</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; \interp{C}(h) : \interp{C}(X) \to \interp{C}(Y) \\
+&amp; \interp{C}(h)(s : S, v : P(s) \to X) = (s, h \comp v)
+\end{aligned}</code></pre></li>
+</ul>
+<p>として作用する。</p>
+</dd>
+</dl>
+<p>コンテナ<span class="math inline">(S,P)</span>の実現の表記は<span class="math inline">\interp{(S,P)}</span>であるが、
+2つ組を表すための丸括弧を省略して<span class="math inline">\interp{S,P}</span>と表記してもよいことにする。</p>
+<dl>
+<dt>コンテナの射の実現</dt>
+<dd>
+<p>任意のコンテナの射<span class="math inline">f : (S,P) \to (S',P')</span>に対して、その<em>実現</em>(または<em>解釈</em>, <em>interpretation</em>)
+である自然変換<span class="math inline">\interp{f} : \interp{S,P} \Rightarrow \interp{S',P'}</span>を次のように定義する。</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; \interp{f}_X : \interp{S,P}_X \to \interp{S',P'}_X \\
+&amp; \interp{f}_X(s : S, v : P(s) \to X) = \\
+&amp; \qquad (\shpart{f}(s) : S', v \comp \pospart{f}(s) : P'(\shpart{f}(s)) \to X)
+\end{aligned}</code></pre>
+<p>文脈から明らかなときは、自然変換の成分を示す添字<span class="math inline">{()}_X</span>は省略する。</p>
+</dd>
+<dt>実現は忠実充満関手である</dt>
+<dd>
+<p>コンテナとその射の実現は関手</p>
+<pre class="math-block"><code>\interp{-} : \Cont \to \Set^{\Set}</code></pre>
+<p>とみなすことができる。また、この関手は忠実充満である。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+</dd>
+</dl>
+<p>忠実充満関手であることから、実現<span class="math inline">\interp{-}</span>は任意の極限を反映する。
+加えて、<span class="math inline">\Set^{\Set}</span>において多項式関手からなるコスパンの引き戻しは再び多項式関手になっており、
+特に以下のことが成り立っている。</p>
+<dl>
+<dt>実現は引き戻しを保つ</dt>
+<dd>
+コンテナとその射の実現は引き戻しを保つ。すなわち、
+<span class="math inline">\Cont</span>におけるコスパン<span class="math inline">C_1 \xrightarrow{f} D \xleftarrow{g} C_2</span>に対し、
+<span class="math inline">(\interp{C_1 \pullback{f}{g} C_2}, \interp{\pi_1}, \interp{\pi_2})</span>は関手圏<span class="math inline">\Set^{\Set}</span>における
+<span class="math inline">\interp{C_1} \xrightarrow{\interp{f}} \interp{D} \xleftarrow{\interp{g}} \interp{C_2}</span>の引き戻しである。
+</dd>
+</dl>
+<h2 id="圏対象-internal-category">圏対象 (internal category)</h2>
+<p>すべての引き戻しをもつ圏<span class="math inline">\mathcal{C}</span>において、<span class="math inline">\mathcal{C}</span>の内部圏とは
+bicategory <span class="math inline">\mathrm{Span}(\mathcal{C})</span>上のモナドである。言い換えると、
+対象<span class="math inline">C_0, C_1</span>と射<span class="math inline">s,t : C_1 \to C_0</span></p>
+<pre class="math-block"><code>\begin{CD}
+  C_0 @&lt;{s}&lt;&lt; C_1 @&gt;{t}&gt;&gt; C_0
+\end{CD}</code></pre>
+<p>および単位<span class="math inline">e : C_0 \to C_1</span>と合成<span class="math inline">m : C_1 \pullback{t}{s} C_1 \to C_1</span>を合わせた6つ組
+<span class="math inline">\mathcal{I} = (C_0,C_1,s,t,e,m)</span>であって、
+更に以下の6つの等式(<em>内部圏の公理</em>)を満たすものである。</p>
+<pre class="math-block"><code>\begin{align}
+s \comp e &amp;= t \comp e = \id_{C_0}\\
+s \comp m &amp;= s \comp \pi_1\\
+t \comp m &amp;= t \comp \pi_2 \\
+m \comp \prodmap{\id}{e\comp t} &amp;= \id_{C_1} \\
+m \comp \prodmap{e\comp s}{\id} &amp;= \id_{C_1} \\
+m \comp \prodmap{m \comp \pi_1}{\pi_2} &amp;= m \comp \prodmap{\pi_1}{m \comp \pi_2} \comp \mathrm{assoc}
+\end{align}</code></pre>
+<p>ただし<span class="math inline">\mathrm{assoc}</span>は<span class="math inline">\otimes</span>の結合を変える同型</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; \mathrm{assoc} : (C_1 \pullback{t}{s} C_1)
+  \pullback{t \comp \pi_2}{s} C_1
+    \to
+  C_1 \pullback{t}{s \comp \pi_1}
+    (C_1 \pullback{t}{s} C_1) \\
+&amp; \mathrm{assoc} = \left\langle
+  \langle \pi_1, \pi_1 \comp \pi_2 \rangle,
+  \pi_2 \comp \pi_2
+\right\rangle
+\end{aligned}</code></pre>
+<p>とした。</p>
+<blockquote>
+<p><strong>Remark</strong>
+<span class="math inline">\Set</span>の内部圏は、小さい圏の定義に一致する。</p>
+</blockquote>
+<h2 id="contの内部圏"><span class="math inline">\Cont</span>の内部圏</h2>
+<p>コンテナの圏<span class="math inline">\Cont</span>における内部圏について詳しく考える。
+この文書では2つの視点から<span class="math inline">\Cont</span>の内部圏<span class="math inline">\mathcal{I}</span>を考える。</p>
+<ol type="1">
+<li>コンテナの多項式関手としての実現により、関手圏<span class="math inline">\Set^{\Set}</span>における内部圏とみなす</li>
+<li>定義をそのまま展開し、組み合わせ論的なデータとして考える</li>
+</ol>
+<h3 id="コンテナを多項式関手として見る">コンテナを多項式関手として見る</h3>
+<p>内部圏を定義するデータ<span class="math inline">\mathcal{I} = (C_0, C_1, s, t, e, m)</span>をコンテナの実現<span class="math inline">\interp{-}</span>によって関手圏<span class="math inline">\Set^{\Set}</span>に写すと、
+これは<span class="math inline">\Set^{\Set}</span>における内部圏<span class="math inline">(\interp{C_0}, \interp{C_1}, \interp{s}, \interp{t}, \interp{e}, \interp{m})</span>
+とみなすことができる。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>更に、<span class="math inline">\Set^{\Set}</span>の内部圏は、<span class="math inline">\Set</span>から小さい圏への関手<span class="math inline">\Set \to \Cat</span>と同じものとみなすことができる。</p>
+<dl>
+<dt><span class="math inline">\Set^{\Set}</span>の内部圏から関手<span class="math inline">\Set \to \Cat</span></dt>
+<dd>
+<p><span class="math inline">\Set^{\Set}</span>の内部圏<span class="math inline">\mathcal{I}=(F_0,F_1,s,t,e,m)</span>が与えられたとき、
+その構成要素の関手・自然変換は各成分ごとに<span class="math inline">\Set</span>の内部圏すなわち小さい圏になっている。
+これを関手<span class="math inline">\mathcal{J} : \Set \to \Cat</span>として次のように構成できる。</p>
+<p>集合<span class="math inline">X</span>に対して、<span class="math inline">\mathcal{J}_X</span>を</p>
+<ul>
+<li><span class="math inline">\Ob(\mathcal{J}_X) = F_0(X)</span></li>
+<li><span class="math inline">\Mor(\mathcal{J}_X) = F_1(X)</span></li>
+<li><span class="math inline">\dom = s_X : \Mor(\mathcal{J}_X) \to \Ob(\mathcal{J}_X)</span></li>
+<li><span class="math inline">\cod = t_X : \Mor(\mathcal{J}_X) \to \Ob(\mathcal{J}_X)</span></li>
+<li>対象<span class="math inline">a \in \Ob(\mathcal{J}_X)</span>に対し、
+<span class="math inline">\id_{a} = e_X(a) : \Mor(\mathcal{J}_X)</span></li>
+<li>射<span class="math inline">t,u \in \Mor(\mathcal{J}_X)</span>であって<span class="math inline">\cod t = \dom u</span>であるものに対し、
+<span class="math inline">t;u = m(t,u) : \Mor(\mathcal{J}_X)</span></li>
+</ul>
+<p>として定まる小さい圏とする。また関数<span class="math inline">f : X \to Y</span>に対して
+(厳密)関手<span class="math inline">\mathcal{J}_f : \mathcal{J}_X \to \mathcal{J}_Y</span>を</p>
+<ul>
+<li>対象<span class="math inline">a \in \Ob(\mathcal{J}_X)</span>に対して<span class="math inline">\mathcal{J}_f(a) = F_0(f)(a) \in \Ob(\mathcal{J}_Y)</span></li>
+<li>射<span class="math inline">t \in \Mor(\mathcal{J}_X)</span>に対して<span class="math inline">\mathcal{J}_f(t) = F_1(f)(t) \in \Mor(\mathcal{J}_Y)</span></li>
+</ul>
+<p>で定める。</p>
+</dd>
+<dt>関手<span class="math inline">\Set \to \Cat</span>から<span class="math inline">\Set^{\Set}</span>の内部圏</dt>
+<dd>
+<p>関手<span class="math inline">\mathcal{J} : \Set \to \Cat</span>が与えられたとき、
+<span class="math inline">\Set^{\Set}</span>の内部圏<span class="math inline">\mathcal{I} = (F_0, F_1, s, t, e, m)</span>を次のように構成できる。</p>
+<p>関手<span class="math inline">F_0, F_1</span>は、パラメータ<span class="math inline">X</span>をもつ小さい圏<span class="math inline">\mathcal{J}_X</span>
+の対象と射の集合のみを取り出すことで得る。対象については</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; F_0 : \Set \to \Set \\
+&amp; F_0(X) = \Ob(\mathcal{J}_X) \\
+&amp; F_1 : \Set \to \Set \\
+&amp; F_1(X) = \Mor(\mathcal{J}_X)
+\end{aligned}</code></pre>
+<p>として、射については</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; F_0(f : X \to Y) : \Ob(\mathcal{J}_X) \to \Ob(\mathcal{J}_Y) \\
+&amp; F_0(f : X \to Y) = a \mapsto \mathcal{J}f(a) \\
+&amp; F_1(f : X \to Y) : \Mor(\mathcal{J}_X) \to \Mor(\mathcal{J}_Y) \\
+&amp; F_1(f : X \to Y) = t \mapsto \mathcal{J}f(t)
+\end{aligned}</code></pre>
+<p>となっている。この式は<span class="math inline">\mathcal{J}f</span>が<span class="math inline">\Cat</span>の射すなわち関手<span class="math inline">\mathcal{J}_X \to \mathcal{J}_Y</span>
+であることを利用して表記しており、
+小さい圏である<span class="math inline">\mathcal{J}_X</span>の対象と射のどちらに作用するかはオーバーロードされている。</p>
+<p>自然変換<span class="math inline">s,t,e,m</span>は、各<span class="math inline">X</span>成分を<span class="math inline">\mathcal{J}_X</span>の圏としての演算として得られる。
+例えば<span class="math inline">e : F_0 \Rightarrow F_1</span>は</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; e_X : F_0(X) \to F_1(X) \\
+&amp; e_X(a \in \Ob(\mathcal{J}_X)) = \id_{a} \in \Mor(\mathcal{J}_X)
+\end{aligned}</code></pre>
+<p>のようになる。このように定めた関数の族が自然変換であることは、
+以下に<span class="math inline">e</span>の場合で例示するように<span class="math inline">\mathcal{J}f</span>が関手であることから得られる。
+ほかの自然変換についても同様である。</p>
+<pre class="math-block"><code>\begin{aligned}
+F_1(f) \comp e_X &amp;= (a \mapsto \mathcal{J}f(\id_a)) \\
+  &amp;= (a \mapsto \id_{\mathcal{J}f(a)}) \\
+  &amp;= (b \mapsto \id_b) \comp (a \mapsto \mathcal{J}f(a)) \\
+  &amp;= e_Y \comp F_0(f)
+\end{aligned}</code></pre>
+</dd>
+</dl>
+<p>上記の構成が互いの逆を与えていることは、定義を展開すると簡単にわかる。</p>
+<p><strong>(例1):</strong> 集合<span class="math inline">X</span>が与えられたときに、<span class="math inline">X</span>の有限リスト<span class="math inline">\mathrm{List}(X)</span>が結合に関してなすモノイドを
+対象が1つの圏とみなしたものを与える対応を関手<span class="math inline">\mathrm{List'} : \Set \to \Cat</span>とみなすことができる。
+<span class="math inline">\mathrm{List'} : \Set \to \Cat</span>に対応する<span class="math inline">\Set^\Set</span>の内部圏、<span class="math inline">\Cont</span>の内部圏は何だろうか？</p>
+<p><span class="math inline">\Set^\Set</span>の内部圏としての表現は次のようになる。</p>
+<ul>
+<li><p>対象の集合を与える関手<span class="math inline">F_0</span>は定数関手<span class="math inline">F_0(X) = \set{*}</span>、</p></li>
+<li><p>射の集合を与える関手<span class="math inline">F_1</span>はリスト関手<span class="math inline">F_1(X) = \mathrm{List}(X)</span></p></li>
+<li><p><span class="math inline">s,t : F_1 \Rightarrow F_0</span>はユニーク（<span class="math inline">F_0</span>は終対象になっている）</p></li>
+<li><p><span class="math inline">e : F_0 \Rightarrow F_1</span>は常に空リストを返す自然変換<span class="math inline">e_X(*) = \lbrack\rbrack</span>、</p></li>
+<li><p><span class="math inline">m : F_1 \pullback{t}{s} F_1 \Rightarrow F_1</span>はリストの結合<span class="math inline">\mathrm{append}_X : \mathrm{List}(X) \times \mathrm{List}(X) \to \mathrm{List}(X)</span></p>
+<ul>
+<li><span class="math inline">F_0</span>が<span class="math inline">\Set^\Set</span>の終対象になっているため<span class="math inline">F_1 \pullback{t}{s} F_1 = F_1 \times F_1</span>を用いた</li>
+</ul></li>
+</ul>
+<p><span class="math inline">F_0, F_1</span>は多項式関手であるため、これはある<span class="math inline">\Cont</span>の内部圏の実現でもある。<span class="math inline">F_0, F_1</span>を表すコンテナは、
+例えば</p>
+<ul>
+<li><span class="math inline">F_0 \simeq \interp{C_0}</span>, <span class="math inline">C_0 = (S_0, P_0) = (\set{*}, * \mapsto \emptyset)</span></li>
+<li><span class="math inline">F_1 \simeq \interp{C_1}</span>, <span class="math inline">C_1 = (S_1, P_1) = (\N, n \mapsto \set{0,\ldots,n-1})</span></li>
+</ul>
+<p>とすることができる。射については省略する。</p>
+<h3 id="定義からそのまま組み合わせ論的なデータとして考える">定義からそのまま組み合わせ論的なデータとして考える</h3>
+<p>内部圏の定義をひらいて考えると、</p>
+<ul>
+<li><p>コンテナ<span class="math inline">C_0 = (S_0, P_0), C_1 = (S_1, P_1)</span></p></li>
+<li><p>コンテナの射</p>
+<pre class="math-block"><code>\begin{aligned}
+s,t &amp;: C_1 \to C_0 \\
+e &amp;: C_0 \to C_1 \\
+m &amp;: C_1 \pullback{t}{s} C_1 \to C_1
+\end{aligned}</code></pre></li>
+</ul>
+<p>であって、前述した内部圏の公理を満たすものである。</p>
+<p>形状部分だけを取り出すと、これは単に小さい圏<span class="math inline">C</span>を定義している。
+（<span class="math inline">\Cont</span>や<span class="math inline">\Set</span>との混同を避けるため、<span class="math inline">C</span>の単位射を<span class="math inline">u</span>・合成を<span class="math inline">(-;-)</span>で書くことにする。）</p>
+<ul>
+<li><p>対象の集合<span class="math inline">\Ob(C) = S_0</span>, 射の集合<span class="math inline">\Mor(C) = S_1</span></p></li>
+<li><p><span class="math inline">\dom = \shpart{s} : S_1 \to S_0</span></p></li>
+<li><p><span class="math inline">\cod = \shpart{t} : S_1 \to S_0</span></p></li>
+<li><p><span class="math inline">u_{c} = \shpart{e}(c) : S_1</span></p></li>
+<li><p><span class="math inline">(f,g) \in S_1 \pullback{\cod}{\dom} S_1</span>、すなわち
+<span class="math inline">\cod f = \dom g</span> である組<span class="math inline">(f,g)</span>に対して、</p>
+<p><span class="math inline">f;g = \shpart{m}(f,g) : S_1</span></p></li>
+<li><p>小さい圏としての等式は内部圏としての等式から抽出できる</p></li>
+</ul>
+<p>そこで、<span class="math inline">\shpart{s},\shpart{t},\shpart{e},\shpart{m}</span>を圏<span class="math inline">C</span>の演算に置き換えたもので
+位置部分について考えよう。</p>
+<h4 id="c-1-のケース"><span class="math inline">C = 1</span> のケース</h4>
+<p><span class="math inline">C</span>が終圏<span class="math inline">1</span>、すなわち対象も射も1つしか存在しない圏という
+もっとも単純なケースにおいて、位置の部分がどう記述されるかを考えてみる。</p>
+<p><span class="math inline">S_0 = S_1 = \set{\bullet}</span>としてもよいだろう。更に、<span class="math inline">P_0(\bullet)=X, P_1(\bullet) = Y</span>とおくと、<span class="math inline">\Cont</span>の内部圏を定義するデータは</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp;s, t : X \to Y\\
+&amp;e : Y \to X \\
+&amp;m : Y \to Y \pushout{t}{s} Y
+\end{aligned}</code></pre>
+<p>であり、以下の等式を満たすものである。</p>
+<pre class="math-block"><code>\begin{align}
+e \comp s = e \comp t = \id_X\\
+m \comp s = \inj_1 \comp s\\
+m \comp t = \inj_2 \comp t\\
+\summap{s \comp e}{\id_Y} \comp m = \id_Y \\
+\summap{\id_Y}{t \comp e} \comp m = \id_Y \\
+\summap{\inj_1 \comp m}{\inj_2} \comp m = \mathrm{assoc} \comp \summap{\inj_1}{\inj_2 \comp m} \comp m
+\end{align}</code></pre>
+<p>これは(small) <em>cocategory</em>とよばれる構造であり(<a href="https://ncatlab.org/nlab/show/cocategory">cocategory - nLab</a>)、特に<span class="math inline">(1 \rightarrow 1 \leftarrow 1)</span>と<span class="math inline">(1 \xrightarrow{p_0} 2 \xleftarrow{p_1} 1)</span>（後者のコスパンは<span class="math inline">p_0 \ne p_1</span>）の余積となっていることが知られている。</p>
+<details>
+<summary>
+(証明)
+</summary>
+<p>これらの演算は<span class="math inline">e : Y \to X</span>のファイバー<span class="math inline">Y_x = \set{y | e y = x}</span>ごとに定義できる。<span class="math inline">e \comp s = e \comp t = \id_X</span>より、<span class="math inline">s,t : X \to Y</span>は<span class="math inline">e</span>のセクションであり、<span class="math inline">x</span>ごとに決まる点</p>
+<pre class="math-block"><code>s_x, t_x : Y_x</code></pre>
+<p>として表すことができる。</p>
+<p><span class="math inline">m</span>の行き先である<span class="math inline">Y \pushout{s}{t} Y</span>は、
+ファイバーごとに一点で連結したものの直和</p>
+<pre class="math-block"><code>\sum_{x \in X} (Y_x + Y_x) / (\inl t_x \sim \inr s_x)</code></pre>
+<p>と同型となっている。いま、<span class="math inline">\summap{s \comp e}{\id_Y}</span>はファイバーを保存し、<span class="math inline">\id_Y</span>も当然に保存するから、<span class="math inline">m</span>も保存しなければならず、<span class="math inline">m</span>もファイバー毎に定義された関数</p>
+<pre class="math-block"><code>m_x : Y_x \to (Y_x + Y_x) / (\inl t_x \sim \inr s_x)</code></pre>
+<p>によって表現できる。任意の<span class="math inline">y \in Y_x</span>に対して<span class="math inline">m_x(y)</span>は<span class="math inline">\inj_1 (Y_x \setminus t_x)</span>, <span class="math inline">\set{\inj_1 t_x} = \set{\inj_2 s_x}</span>, <span class="math inline">\inj_2 (Y_x \setminus s_x)</span>の3つのどれかに属するが、</p>
+<pre class="math-block"><code>\summap{\operatorname{const} s_x}{\id_{Y_x}} (m_x(y)) = y</code></pre>
+<p>より、<span class="math inline">y = s_x</span>のときを除いて<span class="math inline">m_x(y) = \inj_2 y</span>でなければならない。同様にして、</p>
+<pre class="math-block"><code>\summap{\id_{Y_x}}{\operatorname{const} t_x} (m_x(y)) = y</code></pre>
+<p>より<span class="math inline">y = t_x</span>のときを除いて<span class="math inline">m_x(y) = \inj_1 y</span>でなければならない。
+<span class="math inline">y \notin \set{s_x, t_x}</span>となることは<span class="math inline">\inj_1 y \neq \inj_2 y</span>より不可能であり、<span class="math inline">Y_x = \set{s_x, t_x}</span>であることがわかる。</p>
+<pre class="math-block"><code>\begin{align}
+Y_x = \set{s_x, t_x}
+\end{align}</code></pre>
+<p><span class="math inline">s_x = t_x</span>である場合が<span class="math inline">1 \to 1 \leftarrow 1</span>のケースに、<span class="math inline">s_x \neq t_x</span>である場合が<span class="math inline">1 \to 2 \leftarrow 1</span>のケースに該当する。</p>
+<p>これ以外の等式もファイバー毎に成立を確かめればよく、どちらのケースでも等式は満たしているため、</p>
+<ul>
+<li><span class="math inline">(X,Y,s,t,e,m)</span>がcocategoryとなっている</li>
+<li><span class="math inline">s,t</span>は<span class="math inline">e</span>のセクション、<span class="math inline">m</span>はファイバーを保つ写像になっており、各ファイバーは<span class="math inline">Y_x = \set{s_x, t_x}</span>、<span class="math inline">m</span>はファイバー毎に<span class="math inline">m_x(s_x) = \inj_1 s_x, m_x(t_x) = \inj_2 t_x</span>で定義される。</li>
+</ul>
+は同値である。後者はこのcocategoryが<span class="math inline">1 \to 1 \leftarrow 1</span>と<span class="math inline">1 \to 2 \leftarrow 1</span>の<span class="math inline">|X|</span>個の直和であることと同値である。
+</details>
+<p>(TODO: このケースは関手<span class="math inline">\Set \to \Cat</span>としては何なのか？を書く。
+既存の解説によるとその関手はright adjointであり、逆にright adjointは全てこのケースとのこと)</p>
+<h4 id="cがモノイドのケース"><span class="math inline">C</span>がモノイドのケース</h4>
+<p>少しだけ一般化して、<span class="math inline">C</span>がモノイド、すなわち対象が1つしか存在しない圏である場合を考える。
+<span class="math inline">S_0 = \set{*}, S_1 = M</span>とし、<span class="math inline">M</span>はモノイド<span class="math inline">(M,1,\cdot)</span>である。
+このとき、位置部分のデータは</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; \pospart{s}, \pospart{t} : \prod_{x \in M} P_0(*) \to P_1(x) \\
+&amp; \pospart{e} : P_1(1) \to P_0(*) \\
+&amp; \pospart{m} :
+    \prod_{(x,y) \in M^2} P_1(x \cdot y)
+      \to P_1(x) \pushout{\pospart{t}x}{\pospart{s}y} P_2(y)
+\end{aligned}</code></pre>
+<p>という型をもつ。簡潔に書くため<span class="math inline">\pospart{(-)}</span>を省略し<span class="math inline">P_0(*) = A, P_1(x) = B_x</span>とおくと、</p>
+<pre class="math-block"><code>\begin{aligned}
+&amp; s_x, t_x : A \to B_x \\
+&amp; e : B_1 \to A \\
+&amp; m_{x,y} : B_{x \cdot y} \to B_x \pushout{t_x}{s_y} B_y
+\end{aligned}</code></pre>
+<p>となっている。また、これらが満たすべき等式は以下のように書ける。</p>
+<pre class="math-block"><code>\begin{align}
+&amp; e \comp s_1 = e \comp t_1 = \id_A\\
+&amp; m_{x,y} \comp s_x = \inj_1 \comp s_x\\
+&amp; m_{x,y} \comp t_y = \inj_2 \comp t_y\\
+&amp; \summap{s_y \comp e}{\id_{B_y}} \comp m_{1,y} = \id_{B_y}\\
+&amp; \summap{\id_{B_x}}{t_x \comp e} \comp m_{x,1} = \id_{B_x}\\
+&amp; \summap{\inj_1 \comp m_{x,y}}{\inj_2} \comp m_{x\cdot y, z} =
+  \mathrm{assoc} \comp \summap{\inj_1}{\inj_2 \comp m_{y,z}} \comp m_{x, y\cdot z}
+\end{align}</code></pre>
+<p>特に <span class="math inline">P_0(*) = A = \emptyset</span> の場合、<span class="math inline">P_1(1) = B_1 = \emptyset</span>かつ
+押し出し<span class="math inline">B_x \pushout{t_x}{s_y} B_y</span>は直和<span class="math inline">B_x + B_y</span>となる。
+この場合、<span class="math inline">e,s,t</span>はいずれも空集合からの関数となり一意であるから、内部圏を定義するデータは
+<span class="math inline">B_x</span>と<span class="math inline">m</span>のみとなる。</p>
+<pre class="math-block"><code>\begin{align*}
+&amp; B_1 = \emptyset \\
+&amp; m_{x,y} : B_{x\cdot y} \to B_x + B_y \\
+&amp; m_{1,y} = \id_{B_y} : B_y \to \emptyset + B_y \\
+&amp; m_{x,1} = \id_{B_x} : B_x \to B_x + \emptyset \\
+&amp; \summap{\inj_1 \comp m_{x,y}}{\inj_2} \comp m_{x\cdot y, z} =
+  \mathrm{assoc} \comp \summap{\inj_1}{\inj_2 \comp m_{y,z}} \comp m_{x, y\cdot z}
+   : B_{x\cdot y \cdot z} \to B_x + B_y + B_z
+\end{align*}</code></pre>
+<p><strong>(例2):</strong> モノイド<span class="math inline">M</span>をアルファベット<span class="math inline">\Sigma</span>上の自由モノイド<span class="math inline">\mathrm{List}(\Sigma)</span>とする。</p>
+<pre class="math-block"><code>\begin{aligned}
+A &amp;= \emptyset \\
+B_1 &amp;= \emptyset \\
+B_x &amp;= B_{x_1x_2 \cdots x_l} \\ 
+    &amp;= B_{x_1} + B_{x_2} + \cdots + B_{x_l}
+\end{aligned}</code></pre>
+<p>とし、<span class="math inline">m_{x,y}</span>を「文字列<span class="math inline">xy</span>に対応する直和を<span class="math inline">x,y</span>の切れ目で分割する」ようにとると
+内部圏になる。</p>
+<p>この例は(例1)で構成した内部圏の一般化になっている。実際、<span class="math inline">\Sigma</span>を単元集合、
+<span class="math inline">B_a</span>も適当な単元集合とすると、<span class="math inline">\mathrm{List}(\Sigma) = \set{a^n \mid n \in \N} \simeq \N</span>、
+<span class="math inline">B_{a^n} = \set{*} + \cdots (n\;\text{copies}) \cdots + \set{*} \simeq \set{0, \ldots, n-1}</span>となっている。
+これは(例1)のコンテナの定義そのものである。</p>
+<p><strong>(例3):</strong> モノイド<span class="math inline">M</span>をアルファベット<span class="math inline">\Sigma</span>上の自由モノイド<span class="math inline">\Sigma^*</span>とする。
+<span class="math inline">A</span>を単元集合<span class="math inline">\set{\top}</span>とし、<span class="math inline">B_x</span>は例1の<span class="math inline">B_x</span>に2点<span class="math inline">\top_L, \top_R</span>を付加した集合、すなわち</p>
+<pre class="math-block"><code>\begin{aligned}
+A &amp;= \set{\top} \\
+B_x &amp;= \set{\top_L} + B'_x + \set{\top_R} \\
+B'_x &amp;= B'_{x_1x_2 \cdots x_k} \\
+    &amp;= B'_{x_1} + B'_{x_2} + \cdots + B'_{x_k}
+\end{aligned}</code></pre>
+<p>とすると、<span class="math inline">s,t,e</span>を</p>
+<pre class="math-block"><code>\begin{aligned}
+s(\top) &amp;= \top_L \\
+t(\top) &amp;= \top_R \\
+e(\_) &amp;= \top
+\end{aligned}</code></pre>
+<p>とできる。<span class="math inline">m_{x,y}</span>の値域の集合は</p>
+<pre class="math-block"><code>\begin{aligned}
+B_x \pushout{t_x}{s_y} B_y
+ &amp;= \left( \set{\top_L} + B'_{x_1} + \cdots + B'_{x_k} + \set{\top_R}
+   + \set{\top'_L} + B'_{y_1} + \cdots + B'_{y_l} + \set{\top'_R}
+   \right) / (\top_R \sim \top'_L) \\
+ &amp;= \set{\top_L} + B'_{x_1} + \cdots + B'_{x_k} + \set{\top_{\mathrm{mid}}}
+   + B'_{y_1} + \cdots + B'_{y_l} + \set{\top'_R}
+\end{aligned}</code></pre>
+<p>となっており、<span class="math inline">m_{x,y}</span>を「文字列<span class="math inline">xy</span>に対応する直和を<span class="math inline">x,y</span>の切れ目で分割する、
+ただし<span class="math inline">\top_L \mapsto \top_L, \top_R \mapsto \top'_R</span>と対応付け、<span class="math inline">\top_{\mathrm{mid}}</span>に写される元はない」ようにとると内部圏になる。</p>
+<p>(TODO: 群の場合?)</p>
+<h4 id="一般の圏cのケース">一般の圏<span class="math inline">C</span>のケース</h4>
+<p>(TODO: モノイドの場合から大して複雑にはなっていないことを説明する)</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>関手圏<span class="math inline">\Set^{\Set}</span>は局所小でないので、「忠実充満」という性質は通常通り定義することができない。
+幸い、多項式関手は <span class="math inline">\kappa</span>-accessible であり、
+すなわち基数 <span class="math inline">\kappa=\sup_{s\in S}|P(s)|</span> に対して <span class="math inline">\kappa</span>-filtered colimit を保存する。
+この性質により、多項式関手 <span class="math inline">F,G</span> の間の自然変換 <span class="math inline">\alpha:F\Rightarrow G</span> は
+基数 <span class="math inline">|X|\le\kappa</span> の集合に対する成分の族 <span class="math inline">(\alpha_X)_{|X|\le\kappa}</span> によって一意に決定される。
+そのような成分族の全体は集合を成すため、真のクラスになる <span class="math inline">\Set^{\Set}(F,G)</span> の代わりに
+その集合を用いて「忠実充満」を定義できる。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><span class="math inline">\interp{-}</span>が忠実充満関手であるため、引き戻しと射の等式はすべて一対一に対応し、
+どちらの圏の内部圏も同じものを定義している。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

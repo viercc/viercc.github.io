@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - traversable</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>traversable</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/traversable.md</li>
+            
+            
+                <li>Last modified on 2022-08-27</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#traversableに激似の抽象化たち" id="toc-traversableに激似の抽象化たち">Traversableに激似の抽象化たち・・・</a></li>
+</ul></div>
+<h1 id="traversableに激似の抽象化たち">Traversableに激似の抽象化たち・・・</h1>
+<p>(
+)</p>
+<div class="line-block">   | | <code>t</code>はどんな関手 | とる | 返す |</div>
+<p>|====|====|====|====|====|
+| Traversable t | traverse | () | <code>Star f a b</code> | <code>Star f (t a) (t b)</code> |
+| PTraversable t | ptraverse | () | <code>p a b</code> | <code>p (t a) (t b)</code> |
+| Bitraversable t | bitraverse | ( ^2 ) | <code>Star2 f a₁ a₂ b₁ b₂</code> | <code>Star f (t a₁ a₂) (t b₁ b₂)</code> |
+| Rank2.Traversable t | Rank2.traverse | ( ^k ) | <code>IxStar f a b</code> | <code>Star f (t a) (t b)</code> |</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Profunctor</span> p <span class="ot">=&gt;</span> <span class="dt">Cartesian</span> p <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    prounit ::</span> p () ()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    promult ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (a,a') (b,b')</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    provoid ::</span> p <span class="dt">Void</span> <span class="dt">Void</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    prosum  ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (<span class="dt">Either</span> a a') (<span class="dt">Either</span> b b')</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Star</span> f a b <span class="ot">=</span> <span class="dt">Star</span> (a <span class="ot">-&gt;</span> f b)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Profunctor</span> (<span class="dt">Star</span> f)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">Cartesian</span> (<span class="dt">Star</span> f)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- A morphism in the category Hask^2</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Hask2</span> a₁ a₂ b₁ b₂ <span class="ot">=</span> (a₁ <span class="ot">-&gt;</span> b₁, a₂ <span class="ot">-&gt;</span> b₂)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Profunctor on Hask^2</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Star2</span> f a₁ a₂ b₁ b₂ <span class="ot">=</span> <span class="dt">Star2</span> (<span class="dt">Hask2</span> a₁ a₂ (f b₁) (f b₂))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ot">dimapStar2 ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Hask2</span> a₁ a₂ b₁ b₂ <span class="ot">-&gt;</span> <span class="dt">Hask2</span> c₁ c₂ d₁ d₂ <span class="ot">-&gt;</span> <span class="dt">Star2</span> f b₁ b₂ c₁ c₂ <span class="ot">-&gt;</span> <span class="dt">Star2</span> f a₁ a₂ d₁ d₂</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- If `f` is an Applicative, `Star2 f` is a kind of `Cartesian` which is for `Hask^2`</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- A morphism in the category Hask^k, the category of types indexed by k.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span><span class="ot"> (~&gt;) ::</span> (k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> f <span class="op">~&gt;</span> g <span class="ot">=</span> <span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> g x</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Profunctor on Hask^k</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">IxProfunctor</span><span class="ot"> ::</span> ((k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Constraints</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">IxProfunctor</span> p <span class="kw">where</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ot">	ixdimap ::</span> (f' <span class="op">~&gt;</span> f) <span class="ot">-&gt;</span> (g <span class="op">~&gt;</span> g') <span class="ot">-&gt;</span> p f g <span class="ot">-&gt;</span> p f' g'</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">IxCartesian</span> p <span class="kw">where</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ot">    ixprounit ::</span> p <span class="dt">U1</span> <span class="dt">U1</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ot">    ixpromult ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (a <span class="op">:*:</span> a') (b <span class="op">:*:</span> b')</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ot">    ixprovoid ::</span> p <span class="dt">V1</span> <span class="dt">V1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ot">    ixprosum  ::</span> p a b <span class="ot">-&gt;</span> p a' b' <span class="ot">-&gt;</span> p (a <span class="op">:+:</span> a') (b <span class="op">:+:</span> b')</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">IxStar</span><span class="ot"> ::</span> (<span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Type</span>) <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">IxStar</span> f a b <span class="ot">=</span> <span class="dt">IxStar</span> (<span class="kw">forall</span> x<span class="op">.</span> a x <span class="ot">-&gt;</span> f (b x))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">IxProfunctor</span> (<span class="dt">IxStar</span> f) <span class="kw">where</span> <span class="op">...</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> <span class="dt">IxCartesian</span> (<span class="dt">IxStar</span> f) <span class="kw">where</span> <span class="op">...</span></span></code></pre></div>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

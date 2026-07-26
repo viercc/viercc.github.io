@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - monad-(2,2)</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>monad-(2,2)</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/monad-(2,2).md</li>
+            
+            
+                <li>Last modified on 2026-03-09</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#fx-2-x2-上のモナドについて" id="toc-fx-2-x2-上のモナドについて"><code>F(x) = 2 * x^2</code> 上のモナドについて</a>
+<ul>
+<li><a href="#記法の準備" id="toc-記法の準備">記法の準備</a></li>
+<li><a href="#同型を除いてのための正規化" id="toc-同型を除いてのための正規化">“同型を除いて”のための正規化</a>
+<ul>
+<li><a href="#f上の自然同型" id="toc-f上の自然同型"><code>F</code>上の自然同型</a></li>
+</ul></li>
+<li><a href="#第一正規型-pure_の固定" id="toc-第一正規型-pure_の固定">第一正規型: <code>pure_</code>の固定</a></li>
+<li><a href="#第二正規型と第三正規型-外側がのjoin_の固定" id="toc-第二正規型と第三正規型-外側がのjoin_の固定">第二正規型と第三正規型: 外側が<code>◯</code>の<code>join_</code>の固定</a></li>
+<li><a href="#外側がのjoin_" id="toc-外側がのjoin_">外側が<code>●</code>の<code>join_</code></a>
+<ul>
+<li><a href="#c-j-の場合" id="toc-c-j-の場合"><code>c(●) = j ●[●,●] = ◯</code>の場合</a></li>
+<li><a href="#c-j-の場合-1" id="toc-c-j-の場合-1"><code>c(●) = j●[●,●] = ●</code>の場合</a></li>
+</ul></li>
+</ul></li>
+</ul></div>
+<h1 id="fx-2-x2-上のモナドについて"><code>F(x) = 2 * x^2</code> 上のモナドについて</h1>
+<p>多項式関手 <code>F(x) = 2 * x^2</code> 、Haskellで表現するならば</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">F</span> x <span class="ot">=</span> <span class="dt">F</span> <span class="dt">Bool</span> x x</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> <span class="dt">Functor</span></span></code></pre></div>
+<p>という関手上に、どのような<code>Monad</code>のインスタンスが定義できるだろうか？
+それは同型で同一視できるものを除いていくつあるだろうか？という問題を考えました。</p>
+<p>結論としては、そのような<code>Monad</code>のインスタンスは同型を除いてちょうど3つあり、</p>
+<ul>
+<li><p><code>Product (Writer Xor) Identity</code> と同型なもの</p>
+<p>ただし</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Product</span> f g x <span class="ot">=</span> <span class="dt">Pair</span> (f x) (g x)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Writer</span> m x <span class="ot">=</span> <span class="dt">Writer</span> (m, x)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Identity</span> x <span class="ot">=</span> <span class="dt">Identity</span> x</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">xor ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>xor <span class="ot">=</span> (<span class="op">/=</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Xor</span> <span class="ot">=</span> <span class="dt">Xor</span> <span class="dt">Bool</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Xor</span> <span class="kw">where</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Xor</span> a <span class="op">&lt;&gt;</span> <span class="dt">Xor</span> b <span class="ot">=</span> <span class="dt">Xor</span> (a <span class="ot">`xor`</span> b)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Xor</span> <span class="kw">where</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Xor</span> <span class="dt">False</span></span></code></pre></div>
+<p>です。<code>Writer</code>と<code>Product</code>の<code>Monad</code>インスタンスは(TODO:リンク)を参照してください。</p></li>
+<li><p><code>Product (Writer Any) Identity</code> と同型なもの</p>
+<p>(TODO:<code>Any</code>のリンクor説明)</p></li>
+<li><p>以下のように定義されるインスタンスと同型なもの</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span><span class="ot"> ::</span> <span class="kw">forall</span> x<span class="op">.</span> x <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">F</span> <span class="dt">False</span> x x</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">join ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">F</span> (<span class="dt">F</span> x) <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>join (<span class="dt">F</span> a (<span class="dt">F</span> b0 x00 x01) (<span class="dt">F</span> b1 x10 x11)) <span class="ot">=</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> a <span class="kw">of</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">False</span> <span class="ot">-&gt;</span> <span class="dt">F</span> b0   x00 x11</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">True</span>  <span class="ot">-&gt;</span> <span class="dt">F</span> <span class="dt">True</span> x10 x11</span></code></pre></div></li>
+</ul>
+<p>となっています。この文書では、<em>なぜそのように言えるのか</em> ということを説明します。</p>
+<h2 id="記法の準備">記法の準備</h2>
+<p>いま考えている<code>F</code>上の<code>Monad</code>のインスタンスというものは、
+以下のような形をしています。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> x <span class="ot">=</span> <span class="dt">F</span> <span class="op">?</span> <span class="op">?</span> <span class="op">?</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>join (<span class="dt">F</span> <span class="dt">False</span> (<span class="dt">F</span> <span class="dt">False</span> x0 x1) (<span class="dt">F</span> <span class="dt">False</span> x2 x3)) <span class="ot">=</span> <span class="dt">F</span> <span class="op">?</span> <span class="op">?</span> <span class="op">?</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>join (<span class="dt">F</span> <span class="dt">False</span> (<span class="dt">F</span> <span class="dt">False</span> x0 x1) (<span class="dt">F</span> <span class="dt">True</span>  x2 x3)) <span class="ot">=</span> <span class="dt">F</span> <span class="op">?</span> <span class="op">?</span> <span class="op">?</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>join (<span class="dt">F</span> <span class="dt">False</span> (<span class="dt">F</span> <span class="dt">True</span>  x0 x1) (<span class="dt">F</span> <span class="dt">False</span> x2 x3)) <span class="ot">=</span> <span class="dt">F</span> <span class="op">?</span> <span class="op">?</span> <span class="op">?</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- などなど......</span></span></code></pre></div>
+<p>本記事の扱う内容で、<code>F False ...</code>などと記述していくのは冗長になってきます。
+そこで、
+記法を簡略化して<code>F b x y = b[x,y]</code>と書いてよいことにし、更に<code>Bool</code>型の値も<code>False</code>を白丸<code>◯</code>、<code>True</code>を黒丸<code>●</code>で表すことにします。
+上記の例にこの記法を使うと、</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pure</span> x <span class="ot">=</span> <span class="op">?</span>[<span class="op">?</span>,<span class="op">?</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> ◯[ ◯[x0,x1], ◯[x2,x3] ] <span class="ot">=</span> <span class="op">?</span>[<span class="op">?</span>,<span class="op">?</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> ◯[ ◯[x0,x1], ●[x2,x3] ] <span class="ot">=</span> <span class="op">?</span>[<span class="op">?</span>,<span class="op">?</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> ◯[ ●[x0,x1], ◯[x2,x3] ] <span class="ot">=</span> <span class="op">?</span>[<span class="op">?</span>,<span class="op">?</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>join <span class="op">$</span> ◯[ ◯[x0,x1], ●[x2,x3] ] <span class="ot">=</span> <span class="op">?</span>[<span class="op">?</span>,<span class="op">?</span>]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- などなど......</span></span></code></pre></div>
+<p>のようになり、見やすくなります。</p>
+<h2 id="同型を除いてのための正規化">“同型を除いて”のための正規化</h2>
+<p>先程、<code>Monad</code>インスタンスが”同型を除いて”3種類であると書きましたが、
+“同型を除いて”をはっきりと定義しておきましょう。</p>
+<p>まず、「モナドのインスタンス」とは、モナド則を満たす<code>pure</code>と<code>join</code>の組<code>MonadInstance m</code>のことであると定義しましょう。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">MonadInstance</span> m <span class="ot">=</span> <span class="dt">MonadInstance</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    pure_ ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> m a,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    join_ ::</span> <span class="kw">forall</span> a<span class="op">.</span> m (m a) <span class="ot">-&gt;</span> m a</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- ただし (pure_, join_) はモナド則</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- </span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- &gt; join_ . pure_ = id</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- &gt; join_ . fmap pure_ = id</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- &gt; join_ . join_ = join_ . fmap join_</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">--</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- を満たす組に限る</span></span></code></pre></div>
+<p>同じ<code>Functor m</code>の上に定義されたインスタンスが2つあったとします。
+それぞれ<code>def1, def2</code>と呼び、それらの<code>pure_</code>と<code>join_</code>も<code>pure1, pure2</code>などと番号を
+つけて区別しましょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>def1,<span class="ot"> def2 ::</span> <span class="dt">MonadInstance</span> m</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>def1 <span class="ot">=</span> <span class="dt">MonadInstance</span> { pure_ <span class="ot">=</span> pure1, join_ <span class="ot">=</span> join1 }</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>def2 <span class="ot">=</span> <span class="dt">MonadInstance</span> { pure_ <span class="ot">=</span> pure2, join_ <span class="ot">=</span> join2 }</span></code></pre></div>
+<p>自然変換 <code>tr :: forall a. m a -&gt; m a</code> が<code>def1</code>から<code>def2</code>へのモナド同型であるとは、以下の2条件をどちらも満たすことです。</p>
+<ol type="1">
+<li><p><code>tr</code> は自然同型である。言い換えれば、逆自然変換<code>tr'</code> すなわち <code>tr' :: forall a. m a -&gt; m a</code> であって <code>tr' . tr = tr . tr' = id</code>
+となるものが存在する。</p></li>
+<li><p><code>tr</code> はモナド演算を保つ、すなわち</p>
+<ol type="1">
+<li><code>tr . pure1 = pure2</code></li>
+<li><code>tr . join1 = join2 . fmap tr . tr</code></li>
+</ol>
+<p>が成り立つ。</p></li>
+</ol>
+<p><code>def1</code>と<code>def2</code>が同型であるというのは<code>def1</code>から<code>def2</code>へのモナド同型が少なくとも1つ存在すること
+と定義します。この「同型である」という関係は<code>MonadInstance m</code>上に同値関係を定めます。</p>
+<p><code>Monad F</code>として考えられるインスタンスが同型を除いて3種類だというのは、
+<code>MonadInstance F</code> の値を「同型である」という同値関係で分類すると、ちょうど3つの同値類に分けられること、という意味になります。</p>
+<p>以降はそのことを示していくのですが、その際の方針として、
+モナドのインスタンスの”正規型”を得る、というやり方をとります。
+モナドのインスタンスのうち、ある条件を満たすものを<em>第一正規型のインスタンス</em>
+と定義し、次にどんなインスタンスも、ある第一正規型のインスタンスと同型であることを示します。
+続けて、どんな第一正規型のインスタンスもある第二正規型のインスタンスと同型
+どんな第二正規型のインスタンスもある第三正規型のインスタンスと同型、と繰り返します。</p>
+<p>そのようにして定義した第三正規型という条件は、</p>
+<ul>
+<li>どんなインスタンスもある第三正規型のインスタンスと同型</li>
+<li>かつ、第三正規型のインスタンスの間の同型は「自明な同型」のみ、すなわち<code>id :: forall a. m a -&gt; m a</code>による自分自身への同型しか存在しない</li>
+</ul>
+<p>となっています。そして、第三正規型のインスタンスで異なるものをすべて考えるとそれがちょうど3つであることをもって
+「<code>F</code>上のモナドのインスタンスは同型を除いて3種類」であることを示します。</p>
+<h3 id="f上の自然同型"><code>F</code>上の自然同型</h3>
+<p><code>F</code>上の自然同型<code>forall a. F a -&gt; F a</code>にはどんな物があるのかを確認しましょう。
+<code>F</code>上の自然同型は 2*2*2 = 8個存在し、それぞれ</p>
+<ul>
+<li><p>コンストラクタ<code>◯</code>と<code>●</code>を入れ替えるか <code>notF</code> か、そのままにする <code>id</code></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">notF ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">F</span> x <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>notF b[x0,x1] <span class="ot">=</span> (<span class="fu">not</span> b)[x0,x1]</span></code></pre></div></li>
+<li><p>コンストラクタを変えずに、<code>◯</code>の2つの要素を入れ替える <code>swap_◯</code> か、 そのままにする <code>id</code></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>swap_◯<span class="ot"> ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">F</span> x <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>swap_◯ ◯[x0,x1] <span class="ot">=</span> ◯[x1,x0]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>swap_◯ fx <span class="ot">=</span> fx</span></code></pre></div></li>
+<li><p>コンストラクタを変えずに、<code>●</code>の2つの要素を入れ替える <code>swap_●</code> か、 そのままにする <code>id</code></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>swap_●<span class="ot"> ::</span> <span class="kw">forall</span> x<span class="op">.</span> <span class="dt">F</span> x <span class="ot">-&gt;</span> <span class="dt">F</span> x</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>swap_● ●[x0,x1] <span class="ot">=</span> ●[x1,x0]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>swap_● fx <span class="ot">=</span> fx</span></code></pre></div></li>
+</ul>
+<p>をそれぞれ組み合わせた</p>
+<pre><code>(swap_◯ | id) . (swap_● | id) . (notF | id)</code></pre>
+<p>の合計8パターンで全て尽くされています。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<h2 id="第一正規型-pure_の固定">第一正規型: <code>pure_</code>の固定</h2>
+<p>まず初めに、モナド単位 <code>pure_</code> について考えます。
+<code>pure_</code> 次の型をもっています。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pure_ ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="ot">-&gt;</span> <span class="dt">F</span> a</span></code></pre></div>
+<p>このような型をもつ定義は</p>
+<ul>
+<li><div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  pure_ x <span class="ot">=</span> ◯[x,x]</span></code></pre></div></li>
+<li><div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>  pure_ x <span class="ot">=</span> ●[x,x]</span></code></pre></div></li>
+</ul>
+<p>のどちらかしかありえません。なぜならば、<code>pure_</code>は任意の型<code>a</code>について定義されていなければならないため、
+引数<code>x :: a</code>対して<code>pure_</code>の定義として可能なことは、<code>x</code>をそのまま戻り値に使用する以外にないためです。
+さらに、</p>
+<ul>
+<li><code>x</code> 以外の <code>a</code> 型の値を得ることはできない</li>
+<li><code>x</code> の値をそのまま使う以外の方法で、<code>x</code>に依存して処理を変えることはできない
+(“パターンマッチ”ができない)</li>
+</ul>
+<p>ため、“どの<code>x</code>に対しても<code>◯[_,_]</code>というコンストラクタに<code>x</code>を詰めて返す” あるいは “<code>●[_,_]</code>に詰めて返す”
+以外の定義が不可能だからです。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>この2種類の<code>pure_</code>の両方を考えなくて済むように、<code>pure_ x = ◯[x,x]</code>であるインスタンスを
+<em>第一正規型のインスタンス</em> と呼び、以後は第一正規型のインスタンスだけを考慮することにします。
+これは問題なく可能であり、なぜならば前述したコンストラクタ<code>◯</code>と<code>●</code>を入れ替える同型<code>notF</code>
+によって、<code>pure_ x = ●[x,x]</code>であるようなインスタンスは、それと同型な<code>pure_ x = ◯[x,x]</code>であるようなインスタンスが存在するからです。</p>
+<p>さて、ひとたび<code>pure_</code>が定まると、モナド則のうち左右の単位則から次のことがわかります。</p>
+<pre><code>join_ ◯[ b[x0,x1], b[x0,x1] ] = b[x0,x1]
+join_ b[ ◯[y0,y0], ◯[y1,y1] ] = b[y0,y1]</code></pre>
+<p>となります。ここで、この2式に<code>b = ◯</code>とすることで</p>
+<pre><code>join_ ◯[ ◯[x0,x1], ◯[x0,x1] ] = ◯[x0,x1]
+join_ ◯[ ◯[y0,y0], ◯[y1,y1] ] = ◯[y0,y1]</code></pre>
+<p>が得られ、これを同時に満たすためには</p>
+<pre><code>join_ ◯[ ◯[x00,x01], ◯[x10,x11] ] = ◯[x00,x11] -- (join-◯-◯)</code></pre>
+<p>でなければなりません。この式は今後もよく用いるので、<code>(join-◯-◯)</code>と名前をつけておきます。</p>
+<h2 id="第二正規型と第三正規型-外側がのjoin_の固定">第二正規型と第三正規型: 外側が<code>◯</code>の<code>join_</code>の固定</h2>
+<p>第一正規型のインスタンスにおいて、外側が<code>◯</code>の<code>join_</code>、すなわち</p>
+<pre><code>join_ ◯[ b[x0,x1], b'[x2,x3] ] = ?[?,?]</code></pre>
+<p>については、この時点で多くのことがわかります。
+まず、<code>join_</code>の結果のコンストラクタ部分だけを表す関数を<code>j :: F Bool -&gt; Bool</code>とおきます。</p>
+<pre><code>join_ (F a (F b _ _) (F b' _ _)) = F (j (F a b b')) _ _</code></pre>
+<p>略記法では以下のようになります。</p>
+<pre><code>join_ a[ b[_,_], b'[_,_] ] = (j a[b,b'] )[_,_]</code></pre>
+<p>ここで、モナド則のの結合法則において外側の演算がすべて<code>◯</code>である場合を考えます。
+すなわち、モナド則から得られる</p>
+<pre><code>  join_ . join_      $ ◯[ ◯[ b00[_,_] , b01[_,_] ], ◯[ b10[_,_] , b11[_,_] ]]  -- (*1)
+= join_ . fmap join_ $ ◯[ ◯[ b00[_,_] , b01[_,_] ], ◯[ b10[_,_] , b11[_,_] ]]  -- (*2)</code></pre>
+<p>という等式です。<code>(*1)</code>の最初の<code>join_</code>は<code>(join-◯-◯)</code>が適用でき、<code>fmap join_</code>
+で<code>join_</code>を中に移動させると</p>
+<pre><code>  join_ ◯[ b00[_,_] , b11[_,_] ]  -- (*1')
+= join_ ◯[ join_ ◯[ b00[_,_] , b01[_,_] ], join_ ◯[ b10[_,_] , b11[_,_] ]]  -- (*2)</code></pre>
+<p>となります。この等式のコンストラクタ部分だけをとると、</p>
+<pre><code>j ◯[b00,b11] = j ◯[ j ◯[b00, b01], j ◯[b10, b11] ] -- (j-◯-◯)</code></pre>
+<p>です。さて、モナド則の単位則から</p>
+<pre><code>j ◯[◯,◯] = ◯
+j ◯[●,●] = ●</code></pre>
+<p>がわかっていますが、残りの2パターン</p>
+<pre><code>j ◯[●,◯] = ?
+j ◯[◯,●] = ?</code></pre>
+<p>についてはどうでしょうか？実は、
+「<code>j ◯[●,◯]</code>と<code>j ◯[◯,●]</code>のどちらか一方が<code>●</code>で、他方が<code>◯</code>である」
+ことが従います。なぜならば、両方とも<code>◯</code>のとき、
+両方とも<code>●</code>のときのどちらであってもモナド則に矛盾するからです。</p>
+<ul>
+<li><p>両方とも<code>◯</code>である場合:</p>
+<p><code>(j-◯-◯)</code>において<code>(b00,b01,b10,b11) = (●,◯,◯,●)</code>を代入した</p>
+<pre><code>j ◯[●, ●] = j ◯[ j ◯[●, ◯], j ◯[◯, ●] ]</code></pre>
+<p>を考えると、左辺は単位則から<code>●</code>に等しく、一方で右辺は仮定から</p>
+<pre><code>j ◯[j ◯[●,◯], j ◯[◯,●]] = j ◯[◯,◯] = ◯</code></pre>
+<p>となるため矛盾。</p></li>
+<li><p>両方とも<code>●</code>である場合:</p>
+<p><code>(j-◯-◯)</code>において<code>(b00,b01,b10,b11) = (◯,●,●,◯)</code>を代入した</p>
+<pre><code>j ◯[◯,◯] = j ◯[ j ◯[◯,●], j ◯[●,◯] ]</code></pre>
+<p>を考えると、左辺は単位則から<code>◯</code>に等しく、一方で右辺は仮定から</p>
+<pre><code>j ◯[ j ◯[◯, ●], j ◯[●, ◯] ] = j ◯[●,●] = ●</code></pre>
+<p>となるため矛盾。</p></li>
+</ul>
+<p><code>j ◯[●,◯]</code>と<code>j ◯[◯,●]</code>のどちらが<code>●</code>であるかは、
+<code>F</code>上の同型によって自由に選ぶことができます。実際、あるインスタンス
+<code>def = MonadInstance { pure_; join_ }</code>
+において<code>j ◯[●,◯] = ◯, j ◯[◯,●] = ●</code>であったとします。
+ここで、コンストラクタは固定したまま、<code>◯</code>の要素の並びを入れ替える同型<code>swap_◯</code>
+によって<code>def</code>と同型な別のインスタンスの<code>def' = MonadInstance {pure_; join'_}</code>を考えると、</p>
+<pre><code>join'_ = swap_◯ . join_ . fmap swap_◯ . swap_◯
+join'_ ◯[ ●[x00,x01], ◯[x10,x11] ]
+ = (swap_◯ . join_ . fmap swap_◯ . swap_◯) (◯[ ●[x00,x01], ◯[x10,x11] ])
+ = (swap_◯ . join_ . fmap swap_◯) (◯[ ◯[x10,x11], ●[x00,x01] ])
+ = (swap_◯ . join_) (◯[ swap_◯ ◯[x10,x11], swap_◯ ●[x00,x01] ])
+ = (swap_◯ . join_) (◯[ ◯[x11,x10], ●[x00,x01] ])
+ = swap_◯ ●[_,_]
+ = ●[_,_]</code></pre>
+<p>となっています。
+これを固定して考えるため、<em>第二正規型</em>のインスタンスを、
+第一正規型であってかつ</p>
+<pre><code>j ◯[●,◯] = ●
+j ◯[◯,●] = ◯</code></pre>
+<p>となるようなインスタンスだとしましょう。</p>
+<p>第二正規型のインスタンスにおける、要素部分も含めた<code>join_</code>
+全体はどうなっているでしょうか？</p>
+<pre><code>join_ ◯[ ●[x0,x1], ◯[x2,x3] ] = ●[?,?]
+join_ ◯[ ◯[x0,x1], ●[x2,x3] ] = ◯[?,?]</code></pre>
+<p>まず、すぐにわかるのが次の事実です。</p>
+<pre><code>join_ ◯[ ◯[x,x], ●[y,y] ] = ◯[x,y]</code></pre>
+<p>実際、</p>
+<pre><code>join_ ◯[ ◯[x,x], ●[y,y] ]
+    -- 各要素を書き換え
+  = join_ ◯[ join ◯[◯[x,x], ◯[x,x]], join ◯[●[y,y],◯[y,y]] ]
+  = join_ . fmap join_ $ ◯[ ◯[◯[x,x], ◯[x,x]], ◯[●[y,y],◯[y,y]] ]
+    -- モナド則
+  = join_ . join_      $ ◯[ ◯[◯[x,x], ◯[x,x]], ◯[●[y,y],◯[y,y]] ]
+    -- join-○-○ を2回適用
+  = join_ ◯[ ◯[x,x], ◯[y,y] ]
+  = ◯[x,y]</code></pre>
+<p>です。同じパターンにおいて変数を増やして考えると、</p>
+<pre><code>◯[x,y']
+  = join_ ◯[ ◯[x,x], ◯[y,y'] ]
+  = join_ . join_ $ ◯[ ◯[◯[x,x], ◯[x,x]], ◯[●[y,y],◯[y',y']] ]
+    -- モナド則
+  = join_ ◯[ join_ ◯[◯[x,x], ◯[x,x]], join_ ◯[●[y,y],◯[y',y']] ]
+  = join_ ◯[ ◯[x,x], join_ ◯[●[y,y],◯[y',y']] ]</code></pre>
+<p>となっています。ここで、左辺に<code>y'</code>が現れていることから、<code>join_ ◯[●[y,y],◯[y',y']] = ●[?,?]</code>の右辺の
+少なくとも片方には<code>y'</code>が現れていなければなりません。
+また、両方<code>y'</code>であることは否定できます。</p>
+<ul>
+<li><p>変数名を変更し、<code>join_ ◯[●[x,x],◯[y,y]] = ●[y,y]</code>と仮定して矛盾を導く。</p>
+<pre><code>●[y,y]
+  = join_ ◯[●[x,x],◯[y,y]]
+  = join_ . join_ $ ◯[ ◯[●[x,x],◯[y,y]], ◯[◯[x,x],◯[y,y]] ]
+    -- モナド則から
+  = join_ ◯[ join_ ◯[●[x,x],◯[y,y]], join_ ◯[◯[x,x],◯[y,y]] ]
+    -- 仮定から
+  = join_ ◯[ ●[y,y], ◯[x,y] ]</code></pre>
+<p>より、</p>
+<pre><code>   join_ ◯[●[x,x],◯[y,y]]
+ = join_ ◯[●[y,y],◯[x,y]]
+ = ●[y,y]</code></pre>
+<p>であるが、これが同時に成り立つためには</p>
+<pre><code>join_ ◯[ ●[_,_], ◯[_,y] ] = ●[y,y]</code></pre>
+<p>でなければならない。一方、</p>
+<pre><code>●[x,y]
+ = join_ ◯[●[x,y], ●[x,y]]
+ = join_ . join_ $ ◯[ ◯[●[x,y], ◯[x,y]], ◯[◯[x,y], ●[x,y]] ]
+ = join_ $ ◯[ join_ ◯[●[x,y], ◯[x,y]], join_ ◯[◯[x,y], ●[x,y]] ]
+ = join_ $ ◯[ ●[y,y], join_ ◯[◯[x,y], ●[x,y]] ]</code></pre>
+<p>でなければならないが、<code>join_ ◯[◯[x,y], ●[x,y]] = ◯[_,z]</code> (<code>z ∈ {x,y}</code>)よりこの右辺は
+<code>●[z,z]</code>に等しく、一般の<code>x,y</code>に対しては<code>z=x</code>でも<code>z=y</code>でも左辺と等しくならない。</p></li>
+</ul>
+<p>したがって、<code>join_ ◯[●[y,y],◯[y',y']]</code>は<code>●[y,y']</code>か<code>●[y',y]</code>のいずれかです。
+ここで三度、任意の第二正規型のインスタンスは、 <em>第三正規型</em> すなわち</p>
+<pre><code>join_ ◯[●[y,y],◯[y',y']] = ●[y,y'] -- (●-rep)</code></pre>
+<p>を満たすインスタンスに、適宜
+<code>●</code>のコンストラクタの要素を入れ替える同型<code>swap_●</code>を用いることで同型になります。</p>
+<p>さて、ここまでの”同型の中から選ぶ”ことで、<code>●</code>と<code>◯</code>の入れ替え、<code>◯</code>の要素の順序、
+<code>●</code>の要素の順序が固定されました。これらを固定する<code>F</code>上の同型はすでに恒等写像のみになっており、
+これ以上の”正規化”は存在しません。逆にいえば、
+異なる第三正規型をもつインスタンスどうしを同型にするようなモナド同型は存在しないので、
+<em>第三正規型のインスタンスを全て列挙することができれば</em>、<code>F</code>上のモナドのインスタンスを同型を除いて全て得られたことになります。</p>
+<p>第三正規型の条件である<code>(●-rep)</code>は、<code>(join-◯-◯)</code>から得られる<code>join_ ◯[◯[y,y],◯[y',y']] = ◯[y,y']</code>
+とそっくりな見た目をしており、これらを組み合わせると、任意の<code>b ∈ {●,◯}</code>について</p>
+<pre><code>join_ ◯[b[x,x],◯[y,y]] = b[x,y] -- (rep)</code></pre>
+<p>がいえます。
+この<code>(rep)</code>は非常に便利な等式です。任意の<code>b[_,_]</code>を外側が<code>◯</code>のjoinという
+単位律が使える形に書き換えてしまうからです。実際、<code>(rep)</code>によってすでに
+外側が<code>◯</code>であるjoinは全パターン決定できていることがわかります。</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>join_ ◯[b0[x,_],b1[_,y]] <span class="ot">=</span> b0[x,y] <span class="co">-- (join-◯)</span></span></code></pre></div>
+<ul>
+<li><p>証明: <code>(rep)</code>を使って等式変形をする。</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>join_ ◯[ b0[x,_], b1[_,y] ]</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- 内側に(rep)を適用</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join_ ◯[ join_ ◯[b0[x,x], ◯[_,_]], join_ ◯[ b1[_,_], ◯[y,y] ] ]</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- モナド則</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join_ <span class="op">.</span> join_ <span class="op">$</span> ◯[ ◯[b0[x,x], ◯[_,_]], ◯[ b1[_,_], ◯[y,y] ] ]</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (join-◯-◯)</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> join_ <span class="op">$</span> ◯[ b0[x,x], ◯[y,y] ]</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (rep)</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> b0[x,y]</span></code></pre></div></li>
+</ul>
+<p>第一から第三の正規型をまとめると、</p>
+<ul>
+<li>第一正規型: <code>pure_ x = ◯[x,x]</code>
+<ul>
+<li><code>pure_ x = ●[x,x]</code> ならば、 <code>notF</code> によって第一正規型のインスタンスと同型</li>
+</ul></li>
+<li>第二正規型: 第一正規型かつ <code>join_ ◯[ ●[_,_], ◯[_,_] ] = ●[_,_]</code>
+<ul>
+<li><code>join_ ◯[ ●[_,_], ◯[_,_] ] = ◯[_,_]</code> ならば、
+モナド則から <code>join_ ◯[ ◯[_,_], ●[_,_] ] = ●[_,_]</code> でなければならず、
+<code>swap_◯</code>によって第二正規型のインスタンスと同型</li>
+</ul></li>
+<li>第三正規型: 第二正規型かつ <code>join_ ◯[●[y,y],◯[y',y']] = ●[y,y']</code>
+<ul>
+<li>モナド則からこの右辺は<code>●[y,y']</code>と<code>●[y',y]</code>のどちらかに限られ、
+<code>●[y',y]</code>ならば <code>swap_●</code> によって第三正規型のインスタンスと同型</li>
+</ul></li>
+</ul>
+<p>となります。</p>
+<h2 id="外側がのjoin_">外側が<code>●</code>の<code>join_</code></h2>
+<p>第三正規型のインスタンスにおいて、ここまで得た<code>(rep)</code>などの等式を使うと、
+外側が<code>●</code>である<code>join_</code>についても多くの情報が得られます。</p>
+<pre><code>join_ ●[b0[x,x'],b1[y,y']]
+   -- (rep) を ●[b0[x,x'],b1[y,y']] に適用
+ = join_ . join_ $ ◯[ ●[b0[x,x'], b0[x,x']], ◯[ b1[y,y'], b1[y,y'] ] ]
+   -- モナド則
+ = join_ ◯[ join_ ●[b0[x,x'], b0[x,x']], join_ ◯[ b1[y,y'], b1[y,y'] ] ]
+   -- 右側の子の join_ を (join-◯) で簡約
+ = join_ ◯[ join_ ●[b0[x,x'], b0[x,x']], b1[y, y'] ]
+   -- (join-◯)より、外側が◯のjoinは右側の子のコンストラクタに依存しない
+ = join_ ◯[ join_ ●[b0[x,x'], b0[x,x']], ◯[y, y'] ]</code></pre>
+<p>すなわち、外側が<code>●</code>であるjoinは、<code>join_ ●[b0[x,x'], b0[x,x']]</code>
+だけ決めれば決定されているということです。
+そこで、次のようにおきましょう。</p>
+<pre><code>join_ ●[b[x,x'], b[x,x']] = c(b)[ z(b,x,x'), z'(x,x') ]
+  -- (define-cz)</code></pre>
+<p>ただし、<code>c,z,z'</code>は次の型をもつ未知の関数です。</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="ot">c ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="ot">z  ::</span> <span class="kw">forall</span> a<span class="op">.</span> (<span class="dt">Bool</span>,a,a) <span class="ot">-&gt;</span> a</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="ot">z' ::</span> <span class="kw">forall</span> a<span class="op">.</span> (<span class="dt">Bool</span>,a,a) <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>このとき、外側が<code>●</code>の任意の<code>join_</code>は<code>c, z</code>を用いて記述でき、特に<code>z'</code>は不要であることがわかります。</p>
+<pre><code>join_ ●[ b0[x,x'], b1[y,y'] ]
+   -- 前述の変形
+ = join_ ◯[ join_ ●[b0[x,x'], b1[x,x']], ◯[y, y'] ]
+   -- (define-cz)
+ = join_ ◯[ c(b)[ z(b,x,x'), z'(x,x') ], ◯[y, y'] ]
+   -- (rep)
+ = c(b)[ z(b,x,x'), y' ]</code></pre>
+<p>まとめると、</p>
+<pre><code>-- (join-●)
+join_ ●[b0[x,x'],b1[y,y']] = c(b0)[ z(b0,x,x'), y' ]</code></pre>
+<p>となります。</p>
+<p>更に、<code>z(b,x,x')</code>は<code>b</code>に依存しないこともいえます。
+実際、</p>
+<pre><code>c(b0)[ z(b0,x,x'), y']
+   -- (join-●)
+ = join_ ●[ b0[x,x'], b1[y,y'] ]
+   -- (join-◯) を内側の `b0[x,x'], b1[y,y']` に逆向きに適用
+ = join_ ●[ join_ ◯[ b0[x,x], b0[x',x'] ], join_ ◯[ b1[y,y], b1[y',y'] ] ]
+   -- モナド則
+ = join_ . join_ $ ●[ ◯[ b0[x,x], b0[x',x'] ], ◯[ b1[y,y], b1[y',y'] ] ]
+   -- (join-●)
+ = join_ c(◯)[ z(◯, b0[x,x], b0[x',x']), b1[y',y'] ]
+   -- (zのparametricity)
+ = join_ c(◯)[ b0[z(◯,x,x'), z(◯,x,x')], b1[y',y'] ]
+   -- c(◯) = j ●[◯,◯] = ●
+ = join_ ●[ b0[z(◯,x,x'), z(◯,x,x')], b1[y',y'] ]
+   -- (join-●)
+ = c(b0)[ z(b0, z(◯,x,x'), z(◯,x,x')), y']
+   -- (zのparametricity)
+ = c(b0)[ z(◯,x,x'), y']</code></pre>
+<p>より、<code>z(b0,x,x') = z(◯,x,x')</code>です。ただし、<code>(zのparametricity)</code>と書いたステップは、
+<code>pure_</code>が2通りしかありえないことを述べたときと同様の議論により
+「<code>z :: forall a. (Bool,a,a) -&gt; a</code>という型の関数<code>z</code>は
+<code>z(b,x,x')</code> が<code>x</code>の型<code>a</code>によらず <code>b :: Bool</code>の値のみに依存して<code>x</code>または<code>x'</code>を選択する関数である」
+が成り立つという事実を用いています。</p>
+<p><code>z(b,x,x') = z(x,x')</code>と再定義して、<code>(join-●)</code>は
+以下のように書き換えてしまいましょう。</p>
+<pre><code>c :: Bool -&gt; Bool
+c(b) = j ●[b,b]
+
+z :: forall a. (a,a) -&gt; a
+
+join_ ●[b0[x,x'],b1[y,y']] = c(b)[z(x,x'),y']</code></pre>
+<p>ここで、再定義前の<code>(zのparametricity)</code>と同様に、<code>z(x,x')</code>は<code>z(x,x')=x</code>もしくは<code>z(x,x')=x'</code>のどちらかであること、
+すなわち<code>z=fst</code>か<code>z=snd</code>のどちらかに限られています。</p>
+<p>更に、外側が◯のケースと●のケースをまとめてしまいましょう。</p>
+<pre><code>(*) :: Bool -&gt; Bool -&gt; Bool
+(◯ * b) = j ◯[b,b] = b
+(● * b) = j ●[b,b] = c(b)
+
+p :: forall a. (Bool,a,a) -&gt; a
+p(◯,x,x') = x
+p(●,x,x') = z(x,x')
+
+join_ a[b0[x,x'],b1[y,y']] = (a*b)[p(a,x,x'), y']</code></pre>
+<p>これがモナド則をすべて満たすためには、どのような制約が必要でしょうか？
+単位則はすでに満たしているので、結合則を確かめます。
+まず、もっとも外側が<code>◯</code>である場合には、モナド則は自動的に満たされています。</p>
+<pre><code>(左辺)
+ = join_ . join_ $ ◯[a0[b00[x0,x1], b01[x2,x3]], a1[b10[x4,x5], b11[x6,x7]] ]
+  = join_ $ a0[ b00[x0,x1], b11[x6,x7] ]
+  = (a0 * b00)[ p(a0,x0,x1), x7 ]
+= (右辺)
+ = join_ . fmap join_ $ ◯[a0[b00[x0,x1], b01[x2,x3]], a1[b10[x4,x5], b11[x6,x7]] ]
+  = join_ ◯[ join_ a0[b00[x0,x1], b01[x2,x3]], join_ a1[b10[x4,x5], b11[x6,x7]] ]
+  = join_ ◯[ (a0 * b00)[p(a0,x0,x1), x3], (a1 * b10)[_, x7] ]
+  = (a0 * b00)[ p(a0,x0,x1), x7 ]</code></pre>
+<p>もっとも外側が<code>●</code>である場合は以下の等式となり、</p>
+<pre><code>(左辺)
+ = join_ . join_ $ ●[　a0[b00[x0,x1], b01[x2,x3]], a1[b10[x4,x5], b11[x6,x7]] ]
+   = join_ $ c(a0)[ z(b00[x0,x1], b01[x2,x3]), x7 ]
+   = join_ $ c(a0)[ z(b00,b01)[z(x0,x2), z(x1,x3)], x7 ]
+   = (c(a0) * z(b00,b01))[ p(c(a0),z(x0,x2),z(x1,x3)), x7 ]
+= (右辺)
+ = join_ . fmap join_ $ ●[　a0[b00[x0,x1], b01[x2,x3]], a1[b10[x4,x5], b11[x6,x7]] ]
+   = join_ ●[ join　a0[b00[x0,x1], b01[x2,x3]], join_ a1[b10[x4,x5], b11[x6,x7]] ]
+   = join_ ●[ (a0 * b00)[p(a0,x0,x1), x3], (a1 * b10)[_, x7] ]
+   = c(a0 * b00)[ z(p(a0,x0,x1), x3), x7 ]</code></pre>
+<p>ですから、両辺の比較より</p>
+<pre><code>-- (eq1)
+c(a0) * z(b00,b01) = c(a0 * b00)
+-- (eq2)
+p(c(a0),z(x0,x2),z(x1,x3)) = z(p(a0,x0,x1), x3)</code></pre>
+<p>を満たせば、<code>c, z</code>から定義される<code>join</code>はモナド則を満たします。</p>
+<p><code>c(◯) = j ●[◯,◯] = ●</code>は既知なので、<code>c(●)</code>が<code>◯</code>と<code>●</code>のそれぞれの場合について検討してみましょう。</p>
+<h3 id="c-j-の場合"><code>c(●) = j ●[●,●] = ◯</code>の場合</h3>
+<p>この場合、<code>join_</code>には唯一の定義が定まります。<code>(eq1)</code>に<code>a0 = ●</code>を代入すると、</p>
+<pre><code>  (左辺) = c(●) * z(b00,b01) = ◯ * z(b00, b01) = z(b00, b01)
+= (右辺) = c(● * b00) = c(c(b00)) = b00</code></pre>
+<p>ですが、これが恒等的に成り立つためには<code>z(x,x') = x</code>すなわち<code>p(a,x,x') = x</code>が必要です。
+このとき<code>(eq2)</code>も成り立っているため、<code>c(●) = ◯, z(x,x') = x</code>は
+モナド則を満たす<code>join_</code>を定めます。</p>
+<p>これは <code>Product (Writer Xor) Identity</code> と同型なケースに該当し、そのことは</p>
+<pre><code>iso1 :: Product (Writer Xor) Identity a -&gt; F a
+iso1 (Pair (Writer (Xor b, x0)) (Identity x1)) = F b x0 x1</code></pre>
+<p>がモナド同型であることから確認できます。</p>
+<h3 id="c-j-の場合-1"><code>c(●) = j●[●,●] = ●</code>の場合</h3>
+<p><code>c(●)=●</code>のとき、任意の<code>b</code>について<code>c(b) = ●</code>です。<code>(eq1)</code>は</p>
+<pre><code>c(a0) * z(b00,b01) = ● * z(b00, b01) = ● = c(a0 * b00)</code></pre>
+<p>より<code>z</code>と無関係に成立し、<code>(eq2)</code>も</p>
+<ul>
+<li><p><code>z(x,x') = x</code>のとき</p>
+<pre><code>p(c(a0),z(x0,x2),z(x1,x3)) = p(●,x0,x1) = z(x0,x1) = x0
+z(p(a0,x0,x1), x3) = p(a0,x0,x1) = x0</code></pre>
+<p>より成立</p></li>
+<li><p><code>z(x,x') = x'</code>のとき</p>
+<pre><code>p(c(a0),z(x0,x2),z(x1,x3)) = p(●,x2,x3) = z(x2,x3) = x3
+z(p(a0,x0,x1), x3) = x3</code></pre>
+<p>より成立</p></li>
+</ul>
+<p>するため、<code>c(b) = ●</code>のとき、<code>z(x,x') = x</code>と<code>z(x,x') = x'</code>
+のどちらもモナド則を満たす<code>join_</code>を定めます。
+第三正規型であるインスタンスどうしが同型なのはもともと等しい場合に限るのでしたから、
+これらは同型ではありません。</p>
+<ul>
+<li><p><code>z(x,x') = x</code> の場合は <code>Product (Writer Any) Identity</code> と同型なケースに該当し、そのことは</p>
+<pre><code>iso2 :: Product (Writer Any) Identity a -&gt; F a
+iso2 (Pair (Writer (Any b, x0)) (Identity x1)) = F b x0 x1</code></pre>
+<p>がモナド同型であることから確認できます。</p></li>
+<li><p><code>z(x,x') = x'</code> の場合は、実は冒頭に述べた定義の3番目のケースそのものです。</p></li>
+</ul>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>ちなみに、この”全ての<code>F</code>上の自然同型8個の集合”は群を成しており、特に正四角形の対称性である二面体群 <span class="math inline">D_4</span>
+とよばれる群と同型です。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>このように<code>forall a. ...</code>という型のついた定義には制約がかかるという性質は
+<strong>parametricity</strong> と呼ばれており、より一般的かつ厳密な形で証明できる事実です。
+(TODO: 引用)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Too lazy to evaluate - タイトル</title>
+        
+        
+        <link rel="stylesheet" href="../css/syntax.css" />
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16" href="../favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon96.png" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Too lazy to evaluate</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../pdfs.html">PDFs</a>
+                <a href="../softwares.html">Softwares</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>タイトル</h1>
+            <article>
+    <section class="header">
+        <ul class="metadata_display_list">
+            
+                <li>Posted on Hakyll.Web.Template.Context.getItemUTC: could not parse time for note/efreet.md</li>
+            
+            
+                <li>Last modified on 2025-11-04</li>
+            
+            
+            
+        </ul>
+    </section>
+    <section>
+        <div id="post-toc">目次<ul>
+<li><a href="#トライ木がモナドになることについて" id="toc-トライ木がモナドになることについて">トライ木がモナドになることについて</a>
+<ul>
+<li><a href="#efreet型" id="toc-efreet型"><code>Efreet</code>型</a></li>
+<li><a href="#トライ木-trie-c-x" id="toc-トライ木-trie-c-x">トライ木 <code>Trie c x</code></a></li>
+<li><a href="#モナドとしてのtrie-c-x-は-何を表すのか" id="toc-モナドとしてのtrie-c-x-は-何を表すのか">モナドとしての<code>Trie c x</code> は 何を表すのか？</a></li>
+</ul></li>
+</ul></div>
+<h2 id="トライ木がモナドになることについて">トライ木がモナドになることについて</h2>
+<h3 id="efreet型"><code>Efreet</code>型</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Efreet</span> f x <span class="ot">=</span> x <span class="op">:&gt;</span> <span class="dt">Maybe</span> (f (<span class="dt">Efreet</span> f x))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> <span class="dt">Functor</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="dt">Efreet</span> f) <span class="kw">where</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> a <span class="ot">=</span> a <span class="op">:&gt;</span> <span class="dt">Nothing</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    (a <span class="op">:&gt;</span> rest) <span class="op">&gt;&gt;=</span> k <span class="ot">=</span> <span class="kw">case</span> rest <span class="kw">of</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> k a</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> fma <span class="ot">-&gt;</span> graft (k a) (<span class="fu">fmap</span> (<span class="op">&gt;&gt;=</span> k) fma)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- `graft mx fmy` replaces every leaf of mx (`x :&gt; Nothing`) with</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- `x :&gt; Just fmy`</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ot">graft ::</span> <span class="dt">Efreet</span> f x <span class="ot">-&gt;</span> f (<span class="dt">Efreet</span> f x) <span class="ot">-&gt;</span> <span class="dt">Efreet</span> f x</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>graft mx fmy <span class="ot">=</span> <span class="kw">case</span> mx <span class="kw">of</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    x <span class="op">:&gt;</span> <span class="dt">Nothing</span> <span class="ot">-&gt;</span> x <span class="op">:&gt;</span> <span class="dt">Just</span> fmy</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    x <span class="op">:&gt;</span> (<span class="dt">Just</span> fmx) <span class="ot">-&gt;</span> x <span class="op">:&gt;</span> <span class="dt">Just</span> (<span class="fu">fmap</span> (\mx' <span class="ot">-&gt;</span> graft mx' fmy) fmx)</span></code></pre></div>
+<h3 id="トライ木-trie-c-x">トライ木 <code>Trie c x</code></h3>
+<p>トライ木は以下のようなデータ構造だ。</p>
+<pre><code>data Trie c x = Trie x (Map c (Trie c x))</code></pre>
+<p>これは頂点に<code>x</code>型の値、辺に<code>c</code>型の値がラベル付けされた木構造である。
+(ここにトライ木のより丁寧な説明と図)</p>
+<p><code>Trie c</code> と同型な関手が<code>Efreet</code>を使って次のように書ける。
+つまり、<code>Trie c</code>もモナドとみなすことが可能である。</p>
+<pre><code>Trie c x
+  ~ (x, Map c (Trie c x))
+  ~ (x, Maybe (NonEmptyMap c (Trie c x)))
+
+Trie c x ~ Efreet (NonEmptyMap c) x</code></pre>
+<p>ここで、通常の<code>Map</code>から空な<code>Map</code>を除外した型を
+<code>NonEmptyMap</code>とおいた。</p>
+<h3 id="モナドとしてのtrie-c-x-は-何を表すのか">モナドとしての<code>Trie c x</code> は 何を表すのか？</h3>
+<p><code>Trie c x</code> は「<code>c</code>をアルファベットとする_prefix-closed finite language_ <code>s</code> と、その各元に対する<code>x</code>型の値の割当<code>s -&gt; x</code>」
+を保持するデータ構造と考えられる。</p>
+<ul>
+<li><p>言語(<em>language</em>)とは文字列の集合を意味する。また、言語<code>L</code>の要素である文字列を<code>L</code>の語(<em>word</em>)とよぶ。</p></li>
+<li><p>有限言語(<em>finite</em> language)は、有限個の語からなる言語である。</p></li>
+<li><p>ある言語<code>L</code>が<em>prefix-closed</em>であるとは、</p>
+<ol type="1">
+<li><code>L</code>は空文字列<code>ε</code>, <code>ε = ""</code>を含む</li>
+<li><code>x</code>が<code>L</code>に含まれる語のとき、<code>x</code>の任意の接頭辞(<em>prefix</em>)も<code>L</code>に含まれる</li>
+</ol>
+<p>を満たすことである。例えば、</p>
+<ul>
+<li><p>言語<code>L = ["", "a", "aa", "ab", "abc"]</code> はprefix-closedである。実際、
+<code>L</code>の語<code>"abc"</code>のprefix<code>"", "a", "ab", "abc"</code>はどれも<code>L</code>に含まれている。</p></li>
+<li><p>一方、言語<code>L' = ["", "a", "aa", "ab", "abcde"]</code> はprefix-closedでない。
+<code>"abcde"</code>のprefixである<code>"abc"</code>が<code>L'</code>に含まれていない。</p></li>
+<li><p>空集合<code>∅</code>はprefix-closedでない。prefix-closed言語は少なくとも<code>ε</code>を含まなければならない。</p></li>
+</ul></li>
+</ul>
+<p>Prefix-closed languageの(半順序”<code>x</code>は<code>y</code>の接頭辞である”に関する)極大元は、
+接頭符号(<em>prefix code</em>)という言語になっている。接頭符号は(1)空でない言語で(2)どの語も別の語の接頭辞になっていないものである。</p>
+<p>接頭符号の語をいくつか結合して長い文字列Sを作ったとき、もとの語に分解する方法は一意であり、更にこのSの先頭から、Sの接頭辞になっている語を切り出していくという方法で分解が得られる。</p>
+<p>例: c={0,1}, A={000, 001, 01, 1} は接頭符号</p>
+<p>0000011111 は [000, 001, 1, 1, 1, 1] と一意に分解される</p>
+<p>例: c={0,1}, A={00, 01, 010, 1} は接頭符号でない</p>
+<p>01 は 010 の接頭辞になっている。
+01001 は [01, 00, 1] か [010, 01] で曖昧である</p>
+<p>例: c={0,1}, A={0, 01, 011} は接頭符号でない
+分解は一意だが、接頭符号ではない。
+0 は 01 の接頭辞になっている</p>
+<ul>
+<li>接頭符号は辺に<code>c</code>型のラベルが付いた木で表せる</li>
+</ul>
+<p>[図]</p>
+<ul>
+<li><code>Trie c x</code> は、<code>c</code>型の”既知の文字”と<code>x</code>型の”変数記号”が交互に並んだ接頭符号</li>
+</ul>
+<p>[図]</p>
+<ul>
+<li><p><code>pure x :: Trie c x</code> は、ルートしか無い木で、ルート頂点に<code>x</code>のラベルが付いている。</p></li>
+<li><p><code>join :: Trie c (Trie c x) -&gt; Trie c x</code> は、各頂点vのラベルとして存在する<code>t :: Trie c x</code> をその場に展開して、
+vの子要素たち<code>fmx :: Map c (Trie c x)</code> を再帰的に <code>fmap join</code> で展開した結果を <code>t</code> の葉すべてに<code>graft</code>で繋げるという操作で木を作る。</p></li>
+</ul>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
