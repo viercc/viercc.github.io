@@ -1,0 +1,803 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE BlockArguments #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE PolyKinds #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE GADTs #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE TypeAbstractions #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE ExplicitNamespaces #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE MultiParamTypeClasses #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE QuantifiedConstraints #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="DistPoly.html"><span class="hs-identifier">DistPoly</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">id</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Store</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Store</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Store</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Store</span></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Travel</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Bool</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Kind</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Category</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Category</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons.Sigma</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Type.Equality</span></span><span> </span><span class="hs-special">(</span><span class="hs-keyword">type</span><span> </span><span class="annot"><span class="hs-operator">(:~:)</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Singletons.Decide</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SDecide</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Decision</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Action</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Act</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">type</span><span> </span><span id="Dist"><span class="annot"><a href="DistPoly.html#Dist"><span class="hs-identifier hs-var">Dist</span></a></span></span><span> </span><span id="local-6989586621679115388"><span class="annot"><a href="#local-6989586621679115388"><span class="hs-identifier hs-type">w</span></a></span></span><span> </span><span id="local-6989586621679115389"><span class="annot"><a href="#local-6989586621679115389"><span class="hs-identifier hs-type">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679115390"><span class="annot"><a href="#local-6989586621679115390"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="#local-6989586621679115388"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115389"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115390"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115389"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115388"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115390"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">type</span><span> </span><span id="Dir"><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-var">Dir</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115391"><span class="annot"><a href="#local-6989586621679115391"><span class="hs-identifier hs-type">cat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115392"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115392"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115393"><span class="annot"><a href="#local-6989586621679115393"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115392"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sigma</span></span><span> </span><span class="annot"><a href="#local-6989586621679115392"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TyCon</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115391"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115393"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="annot"><span class="hs-comment">-- | Data to define right natural distributive law</span></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Category</span></span><span> </span><span class="annot"><a href="#local-6989586621679115194"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Q"><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-var">Q</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115193"><span id="local-6989586621679115194"><span class="annot"><a href="#local-6989586621679115194"><span class="hs-identifier hs-type">cat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115193"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115193"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-comment">-- | Laws:</span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-comment">-- &gt; (Q1) q x y (x :&amp;: id) = y :&amp;: id</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-comment">-- &gt; (Q2) q x x dir = dir</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-comment">-- &gt; (Q3) q x y (x'' :&amp;: (g . f)) = (y'' :&amp;: (qg . qf))</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-comment">--      forall</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-comment">--        f :: cat x x'</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-comment">--        g :: cat x' x''</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-comment">--      where</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-comment">--        (y' :&amp;: qf) = q x y (x' :&amp;: f)</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-comment">--        (y'' :&amp;: qg) = q x' y' (x'' :&amp;: g)</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-comment">-- &gt; (Q4) q y z (q x y dir) = q x z dir</span><span>
+</span><span id="line-49"></span><span>  </span><span id="q"><span class="annot"><a href="DistPoly.html#q"><span class="hs-identifier hs-type">q</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679115222"><span id="local-6989586621679115223"><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115222"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115223"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115194"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115222"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115194"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115223"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="hs-comment">{-
+
+Q represents &quot;translation of morphism by their origin&quot;
+
+   x   y
+   | q |
+f  | &#8614; | qf
+   v   v
+   x'  y'
+
+Laws, schematically
+
+(Q1)
+
+   x   y
+   | q |
+id | &#8614; | id
+   v   v
+   x   y
+
+(Q2)
+
+   x   x
+   | q |
+ f | &#8614; | f
+   v   v
+   x'  x'
+
+(Q3)
+
+   x   y
+   | q |
+ f | &#8614; |
+   v   v
+  x'  y'
+   | q | 
+ g | &#8614; | 
+   v   v 
+  x'' y''
+
+  ===
+
+     x   y
+     | q |
+ g.f | &#8614; |
+     |   | 
+     v   v 
+    x'' y''
+
+(Q4)
+
+   x   y   z
+   | q | q |
+ f | &#8614; | &#8614; | 
+   v   v   v
+   x'  y'  z'
+
+   ===
+
+   x   z
+   | q |
+f  | &#8614; |
+   v   v
+   x'  z'
+
+-}</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span id="local-6989586621679115198"><span id="local-6989586621679115200"><span class="annot"><a href="DistPoly.html#theta"><span class="hs-identifier hs-type">theta</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679115198"><span class="hs-identifier hs-type">w</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115200"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dist"><span class="hs-identifier hs-type">Dist</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115198"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115200"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-120"></span><span id="theta"><span class="annot"><span class="annottext">theta :: forall {k} (w :: * -&gt; *) (cat :: k -&gt; k -&gt; *).
+(Comonad w, Q cat) =&gt;
+Dist w (Travel cat)
+</span><a href="DistPoly.html#theta"><span class="hs-identifier hs-var hs-var">theta</span></a></span></span><span> </span><span id="local-6989586621679115402"><span class="annot"><span class="annottext">w (Travel cat r)
+</span><a href="#local-6989586621679115402"><span class="hs-identifier hs-var">wa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">w (Travel cat r) -&gt; Travel cat r
+forall a. w a -&gt; a
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">w (Travel cat r)
+</span><a href="#local-6989586621679115402"><span class="hs-identifier hs-var">wa</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-121"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">MkTravel</span></span><span> </span><span id="local-6989586621679115406"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115406"><span class="hs-identifier hs-var">x0</span></a></span></span><span> </span><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; r
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-122"></span><span>    </span><span class="annot"><span class="annottext">Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; w r) -&gt; Travel cat (w r)
+forall k (cat :: k -&gt; k -&gt; *) r (a :: k).
+Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; r) -&gt; Travel cat r
+</span><span class="hs-identifier hs-var">MkTravel</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115406"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679115407"><span class="annot"><span class="annottext">Sigma k (TyCon (cat a))
+</span><a href="#local-6989586621679115407"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">w (Travel cat r)
+</span><a href="#local-6989586621679115402"><span class="hs-identifier hs-var">wa</span></a></span><span> </span><span class="annot"><span class="annottext">w (Travel cat r) -&gt; (Travel cat r -&gt; r) -&gt; w r
+forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MkTravel</span></span><span> </span><span id="local-6989586621679115409"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115409"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679115410"><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; r
+</span><a href="#local-6989586621679115410"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; r
+</span><a href="#local-6989586621679115410"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sing a
+-&gt; Sing a -&gt; Sigma k (TyCon (cat a)) -&gt; Sigma k (TyCon (cat a))
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115406"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115409"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Sigma k (TyCon (cat a))
+</span><a href="#local-6989586621679115407"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="annot"><a href="DistPoly.html#extractQ"><span class="hs-identifier hs-type">extractQ</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679115225"><span class="annot"><a href="#local-6989586621679115225"><span class="hs-identifier hs-type">k</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115226"><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115225"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115225"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-125"></span><span>     </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Category</span></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SDecide</span></span><span> </span><span class="annot"><a href="#local-6989586621679115225"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679115228"><span class="annot"><a href="#local-6989586621679115228"><span class="hs-identifier hs-type">w</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679115228"><span class="hs-identifier hs-type">w</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dist"><span class="hs-identifier hs-type">Dist</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115228"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679115229"><span class="annot"><a href="#local-6989586621679115229"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679115230"><span class="annot"><a href="#local-6989586621679115230"><span class="hs-identifier hs-type">b</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115229"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115230"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115229"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115230"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span id="extractQ"><span class="annot"><span class="annottext">extractQ :: forall k (cat :: k -&gt; k -&gt; *).
+(Category cat, SDecide k) =&gt;
+(forall (w :: * -&gt; *). Comonad w =&gt; Dist w (Travel cat))
+-&gt; forall (a :: k) (b :: k).
+   Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#extractQ"><span class="hs-identifier hs-var hs-var">extractQ</span></a></span></span><span> </span><span id="local-6989586621679115418"><span class="annot"><span class="annottext">forall (w :: * -&gt; *). Comonad w =&gt; Dist w (Travel cat)
+</span><a href="#local-6989586621679115418"><span class="hs-identifier hs-var hs-var">dist</span></a></span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span id="local-6989586621679115419"><span class="annot"><a href="#local-6989586621679115419"><span class="hs-identifier hs-type hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679115420"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115420"><span class="hs-identifier hs-var">x0</span></a></span></span><span> </span><span id="local-6989586621679115421"><span class="annot"><span class="annottext">Sing b
+</span><a href="#local-6989586621679115421"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679115422"><span class="annot"><span class="annottext">Dir cat a
+</span><a href="#local-6989586621679115422"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">StoreT Bool Identity (Travel cat (Maybe (Dir cat b)))
+-&gt; Travel cat (StoreT Bool Identity (Maybe (Dir cat b)))
+Dist (StoreT Bool Identity) (Travel cat)
+forall (w :: * -&gt; *). Comonad w =&gt; Dist w (Travel cat)
+</span><a href="#local-6989586621679115418"><span class="hs-identifier hs-var">dist</span></a></span><span> </span><span class="annot"><span class="annottext">StoreT Bool Identity (Travel cat (Maybe (Dir cat b)))
+</span><a href="#local-6989586621679115423"><span class="hs-identifier hs-var">sv</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-129"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">MkTravel</span></span><span> </span><span id="local-6989586621679115427"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115427"><span class="hs-identifier hs-var">x0'</span></a></span></span><span> </span><span id="local-6989586621679115428"><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; StoreT Bool Identity (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115428"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115420"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a -&gt; Sing a -&gt; Decision (a :~: a)
+forall (a :: k) (b :: k). Sing a -&gt; Sing b -&gt; Decision (a :~: b)
+forall k (a :: k) (b :: k).
+SDecide k =&gt;
+Sing a -&gt; Sing b -&gt; Decision (a :~: b)
+</span><span class="hs-operator hs-var">%~</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115427"><span class="hs-identifier hs-var">x0'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Proved</span></span><span> </span><span class="annot"><span class="annottext">a :~: a
+</span><span class="hs-identifier hs-var">Refl</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Bool
+-&gt; StoreT Bool Identity (Maybe (Dir cat b)) -&gt; Maybe (Dir cat b)
+forall a. Bool -&gt; StoreT Bool Identity a -&gt; a
+forall s (w :: * -&gt; *) a. ComonadStore s w =&gt; s -&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">Store.peek</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; StoreT Bool Identity (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115428"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat a
+Sigma k (TyCon (cat a))
+</span><a href="#local-6989586621679115422"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-131"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679115438"><span class="annot"><span class="annottext">Dir cat b
+</span><a href="#local-6989586621679115438"><span class="hs-identifier hs-var">dir'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Dir cat b
+</span><a href="#local-6989586621679115438"><span class="hs-identifier hs-var">dir'</span></a></span><span>
+</span><span id="line-132"></span><span>      </span><span class="annot"><span class="annottext">Maybe (Dir cat b)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Dir cat b
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Unlawful distributive law&quot;</span></span><span>
+</span><span id="line-133"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Disproved</span></span><span> </span><span class="annot"><span class="annottext">Refuted (a :~: a)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Dir cat b
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Unlawful distributive law&quot;</span></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-135"></span><span>    </span><span class="annot"><a href="#local-6989586621679115441"><span class="hs-identifier hs-type">a0</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115419"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-136"></span><span>    </span><span id="local-6989586621679115441"><span class="annot"><span class="annottext">a0 :: Travel cat (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115441"><span class="hs-identifier hs-var hs-var">a0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing a
+-&gt; (Dir cat a -&gt; Maybe (Dir cat b))
+-&gt; Travel cat (Maybe (Dir cat b))
+forall k (cat :: k -&gt; k -&gt; *) r (a :: k).
+Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; r) -&gt; Travel cat r
+</span><span class="hs-identifier hs-var">MkTravel</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115420"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe (Dir cat b) -&gt; Dir cat a -&gt; Maybe (Dir cat b)
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Maybe (Dir cat b)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span>    </span><span class="annot"><a href="#local-6989586621679115443"><span class="hs-identifier hs-type">a1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115419"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>    </span><span id="local-6989586621679115443"><span class="annot"><span class="annottext">a1 :: Travel cat (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115443"><span class="hs-identifier hs-var hs-var">a1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing b
+-&gt; (Dir cat b -&gt; Maybe (Dir cat b))
+-&gt; Travel cat (Maybe (Dir cat b))
+forall k (cat :: k -&gt; k -&gt; *) r (a :: k).
+Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; r) -&gt; Travel cat r
+</span><span class="hs-identifier hs-var">MkTravel</span></span><span> </span><span class="annot"><span class="annottext">Sing b
+</span><a href="#local-6989586621679115421"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat b -&gt; Maybe (Dir cat b)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span>    </span><span class="annot"><a href="#local-6989586621679115423"><span class="hs-identifier hs-type">sv</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Store</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115226"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115419"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-142"></span><span>    </span><span id="local-6989586621679115423"><span class="annot"><span class="annottext">sv :: StoreT Bool Identity (Travel cat (Maybe (Dir cat b)))
+</span><a href="#local-6989586621679115423"><span class="hs-identifier hs-var hs-var">sv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Travel cat (Maybe (Dir cat b)))
+-&gt; Bool -&gt; StoreT Bool Identity (Travel cat (Maybe (Dir cat b)))
+forall s a. (s -&gt; a) -&gt; s -&gt; Store s a
+</span><span class="hs-identifier hs-var">Store.store</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Travel cat (Maybe (Dir cat b))
+-&gt; Travel cat (Maybe (Dir cat b))
+-&gt; Bool
+-&gt; Travel cat (Maybe (Dir cat b))
+forall a. a -&gt; a -&gt; Bool -&gt; a
+</span><span class="hs-identifier hs-var">bool</span></span><span> </span><span class="annot"><span class="annottext">Travel cat (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115441"><span class="hs-identifier hs-var">a0</span></a></span><span> </span><span class="annot"><span class="annottext">Travel cat (Maybe (Dir cat b))
+</span><a href="#local-6989586621679115443"><span class="hs-identifier hs-var">a1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-143"></span><span>
+</span><span id="line-144"></span><span class="hs-comment">{-
+
+We want to represent distributive law
+
+    theta :: forall w. Comonad w =&gt; Dist w (Travel cat)
+    theta :: forall w r. (Comonad w) =&gt; w (Travel cat r) -&gt; Travel cat (w r)
+
+natural in Comonad w. Firstly, any such natural transformation
+without &quot;distributive law&quot; condition is represented by two functions
+
+    T :: k -&gt; k
+    (singT :: Sing a -&gt; Sing (T a))
+    p :: Sing a -&gt; Sing b -&gt; Dir cat (T a) -&gt; Either (Dir cat a) (Dir cat b)
+
+that is
+
+    theta wa = case extract wa of
+      MkTravel x0 h0 -&gt; MkTravel (singT x0) $
+        \dir -&gt; wa &lt;&amp;&gt; \(MkTravel x1 h1) -&gt; either h0 h1 (p x0 x1 dir)
+
+. (Proof omitted; uses parametricity argument etc.)
+
+The compatibility condition of Comonad-Comonad distributive law
+
+    (DW1) extract . theta = fmap extract :: w (Travel cat r) -&gt; w r
+    (DW2) fmap extract . theta = extract :: w (Travel cat r) -&gt; Travel cat r
+    (DW3) duplicate . theta = fmap theta . theta . fmap duplicate
+            :: w (Travel cat r) -&gt; Travel cat (Travel cat (w r))
+    (DW4) fmap duplicate . theta = theta . fmap theta . duplicate
+            :: w (Travel cat r) -&gt; Travel cat (w (w r))
+
+narrows (t,p) down.
+
+Start with the most easiest (DW2).
+
+  DW2LHS
+    = fmap extract (theta wa)
+    = fmap extract $ MkTravel (singT x) \dir -&gt;
+          wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+        where MkTravel x h0 = extract wa
+    = MkTravel (singT x) \dir -&gt; extract $ wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+    = MkTravel (singT x) \dir -&gt; extract wa &amp; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+    = MkTravel (singT x) \dir -&gt; either h0 h0 (p x x dir)
+
+  DW2RHS
+    = extract wa
+    = MkTravel x h0
+
+  Therefore
+
+  - (DW2-pos): singT x = x; T = id
+  - (DW2-dir): p x x dir = dir
+
+  (x, h0 are arbitrary.)
+
+  The type of p simplifies too.
+
+  p :: Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Either (Dir cat a) (Dir cat b)
+
+Using (DW2-pos), the definition of theta can be simplified.
+
+  (**)
+  theta wa = case extract wa of
+    MkTravel x h0 -&gt; MkTravel x $
+      \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+
+(DW4) is the next easy target.
+
+  DW4LHS
+    = fmap duplicate (theta wa)
+    = fmap duplicate $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+        where MkTravel x h0 = extract wa
+    = MkTravel x \dir -&gt; duplicate $ wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+    = MkTravel x \dir -&gt; duplicate wa &lt;&lt;&amp;&gt;&gt; \(MkTravel z h2) -&gt; either h0 h2 (p x z dir)
+
+  DW4RHS
+    = theta (fmap theta (duplicate wa))
+    = theta (fmap theta wwa)
+        where wwa = duplicate wa
+    = MkTravel x' \dir -&gt; fmap theta wwa &lt;&amp;&gt; \(MkTravel y' h1') -&gt;
+        either h0' h1' (p x' y' dir)
+        where
+          MkTravel x' h0'
+            = extract (fmap theta wwa)
+            = theta (extract wwa)
+            = theta wa
+            = MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+          
+          MkTravel x h0 = extract wa
+    = MkTravel x \dir -&gt; fmap theta wwa &lt;&amp;&gt; \(MkTravel y' h1') -&gt;
+        either h0' h1' (p x y' dir)
+        where
+          MkTravel x h0 = extract wa
+          h0' = \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h1) -&gt; either h0 h1 (p x y dir)
+    
+    = MkTravel x \dir -&gt; wwa &lt;&amp;&gt; \wa' -&gt;
+        let MkTravel y h1' = theta wa' 
+        in either h0' h1' (p x y dir)
+
+  Comparing both sides,
+
+    duplicate wa &lt;&amp;&gt; \wa' -&gt; wa' &lt;&amp;&gt; \(MkTravel z h2) -&gt; ...
+      =
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let MkTravel y h1' = theta wa'
+      in either h0' h1' (p x y dir)
+      =
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let MkTravel y h1' = theta wa'
+      in either (\dir' -&gt; wa &lt;&amp;&gt; ...) h1' (p x y dir)
+
+  Must hold. Since one can choose a Comonad such that the shape of
+  wa and wa' is different (for example Store Bool,), and (x, y, dir)
+  is arbitrary,
+  (p x y dir) can never be Left. therefore, one can assume
+
+    p x y dir = Right (q x y dir)
+
+  with some (q :: Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b).
+  It simplifies theta further:
+
+    (***)
+    theta wa = MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt; h (q x y dir)
+      where MkTravel x _ = extract wa
+
+  . By using (***) for the DW4LHS = DW4RHS,
+
+    duplicate wa &lt;&amp;&gt; \wa' -&gt; wa' &lt;&amp;&gt; \(MkTravel z h2) -&gt; h2 (q x z dir)
+    =
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let MkTravel y h1' = theta wa'
+            = let MkTravel y _ = extract wa'
+              in MkTravel y \dir' -&gt; wa' &lt;&amp;&gt; \(MkTravel z h2)
+                -&gt; h2 (q y z dir')
+      in h1' (q x y dir)=
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let MkTravel y _ = extract wa'
+              in MkTravel y \dir' -&gt; wa' &lt;&amp;&gt; \(MkTravel z h2)
+                -&gt; h2 (q y z dir')
+      in wa' &lt;&amp;&gt; \(MkTravel z h2) -&gt; h2 (q y z (q x y dir))
+
+  Which can be reduced to
+
+    (DW4-dir) q x z dir = q y z (q x y dir)
+
+  .
+
+Using simplified theta definition given as (***),
+(DW1) is transformed as below.
+
+  DW1LHS
+    = extract (theta wa)
+    = extract $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt; h (q x y dir)
+        where MkTravle x _ = extract wa
+    = wa &lt;&amp;&gt; \(MkTravel y h) -&gt; h (q x y (x :&amp;: id))
+    
+  DW1RHS
+    = fmap extract wa
+    = wa &lt;&amp;&gt; \(MkTravel y h) -&gt; h (y :&amp;: id)
+
+  Therefore
+
+    (DW1-dir) q x y (x :&amp;: id) = y :&amp;: id
+
+  .
+
+Finally, (DW3).
+
+  DW3LHS
+    = duplicate (theta wa)
+    = duplicate $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt; h (q x y dir)
+        where MkTravle x _ = extract wa
+    = MkTravel x \(x' :&amp;: f) -&gt;
+        MkTravel x' \(x'' :&amp;: g) -&gt;
+          wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+            h (q x y (x'' :&amp;: (g . f)))
+
+  DW3RHS
+    = fmap theta (theta (fmap duplicate wa))
+    = fmap theta $ theta waa
+        where waa = fmap duplicate wa
+    = fmap theta $ MkTravel xx \dir -&gt; waa &lt;&amp;&gt; \(MkTravel yy h') -&gt;
+        h' (q xx yy dir)
+        where MKTravel xx _ = extract waa
+                 = extract (fmap duplicate wa)
+                 = duplicate (extract wa)
+                 = ...
+                 = MkTravel x _
+              MkTravel x _ = extract wa
+    
+    = fmap theta $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+        let MkTravel yy h' = duplicate (MkTravel y h)
+        in h' (q x yy dir)
+    
+    = fmap theta $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+        let MkTravel yy h' = MkTravel y \(y' :&amp;: qf) -&gt; MkTravel y' \(y'' :&amp;: qg) -&gt;
+              h (y'' :&amp;: (qg . qf))
+        in h' (q x yy dir)
+    = fmap theta $ MkTravel x \dir -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+        let (y' :&amp;: qf) = q x y dir
+        in MkTravel y' \(y'' :&amp;: qg) -&gt; h (y'' :&amp;: (qg . qf))
+    = fmap theta $ MkTravel x \dir -&gt;
+        let shifter (MkTravel y h) =
+              let (y' :&amp;: qf) = q x y dir
+              in MkTravel y' \(y'' :&amp;: qg) -&gt; h (y'' :&amp;: (qg . qf))
+        in wa &lt;&amp;&gt; shifter
+    
+    = MkTravel x \dir -&gt; theta (wa &lt;&amp;&gt; shifter)
+    = MkTravel x \dir -&gt;
+        let MkTravel x_sh _ = extract (wa &lt;&amp;&gt; shifter)
+             = shifter (extract wa)
+             = shifter (MkTravel x _)
+             = let (y' :&amp;: qf) = q x x dir
+               in MkTravel y' _
+             = let (x' :&amp;: f) = dir
+               in MkTravel x' _
+        in MkTravel x_sh \dir' -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+            let MkTravel y_sh h_sh = shifter (MkTravel y h)
+            in h_sh (q x_sh y_sh dir')
+    
+    = MkTravel x \(x' :&amp;: f) -&gt;
+        MkTravel x' \dir' -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+          let MkTravel y_sh h_sh = shifter (MkTravel y h)
+                = let (y' :&amp;: qf) = q x y (x' :&amp;: f)
+                  in MkTravel y' \(y'' :&amp;: qg) -&gt; h (y'' :&amp;: qg . qf)
+          in h_sh (q x' y_sh dir')
+  
+    = MkTravel x \(x' :&amp;: f) -&gt;
+        MkTravel x' \dir' -&gt; wa &lt;&amp;&gt; \(MkTravel y h) -&gt;
+          let (y' :&amp;: qf) = q x y (x' :&amp;: f)
+              (y'' :&amp;: qg) = q x' y' dir'
+                  in MkTravel y' \(y'' :&amp;: qg) -&gt; h (y'' :&amp;: qg . qf)
+          in h (y'' :&amp;: qg . qf)
+
+  Comparing both sides,
+
+    (DW3-dir)
+    q x y (x'' :&amp;: g . f) = y'' :&amp;: qg . qf
+      where (y' :&amp;: qf) = q x y (x' :&amp;: f)
+            (y'' :&amp;: qg) = q x' y' (x'' :&amp;: g)
+
+-}</span><span>
+</span><span id="line-386"></span><span>
+</span><span id="line-387"></span><span class="hs-comment">-- Utility</span><span>
+</span><span id="line-388"></span><span>
+</span><span id="line-389"></span><span id="local-6989586621679115262"><span id="local-6989586621679115263"><span id="local-6989586621679115264"><span class="annot"><a href="DistPoly.html#%3C%3C%26%3E%3E"><span class="hs-operator hs-type">(&lt;&lt;&amp;&gt;&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679115262"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115262"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115262"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115263"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115263"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115264"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115262"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115262"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115264"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-390"></span><span id="local-6989586621679115449"><span class="annot"><span class="annottext">f (f a)
+</span><a href="#local-6989586621679115449"><span class="hs-identifier hs-var">ffa</span></a></span></span><span> </span><span id="%3C%3C%26%3E%3E"><span class="annot"><span class="annottext">&lt;&lt;&amp;&gt;&gt; :: forall (f :: * -&gt; *) a b.
+Functor f =&gt;
+f (f a) -&gt; (a -&gt; b) -&gt; f (f b)
+</span><a href="DistPoly.html#%3C%3C%26%3E%3E"><span class="hs-operator hs-var hs-var">&lt;&lt;&amp;&gt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679115450"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679115450"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f b) -&gt; f (f a) -&gt; f (f b)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; f a -&gt; f b
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679115450"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f (f a)
+</span><a href="#local-6989586621679115449"><span class="hs-identifier hs-var">ffa</span></a></span><span>
+</span><span id="line-391"></span><span>
+</span><span id="line-392"></span><span class="annot"><span class="hs-comment">-- * @Q cat@ implies cat is isomorphic to action category</span></span><span>
+</span><span id="line-393"></span><span>
+</span><span id="line-394"></span><span class="hs-keyword">newtype</span><span> </span><span id="M"><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span></span><span> </span><span id="local-6989586621679115302"><span class="annot"><a href="#local-6989586621679115302"><span class="hs-identifier hs-type">cat</span></a></span></span><span> </span><span id="local-6989586621679115303"><span class="annot"><a href="#local-6989586621679115303"><span class="hs-identifier hs-type">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="M"><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115302"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115303"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-395"></span><span>
+</span><span id="line-396"></span><span id="local-6989586621679115272"><span id="local-6989586621679115273"><span id="local-6989586621679115274"><span class="annot"><a href="DistPoly.html#compDir"><span class="hs-identifier hs-type">compDir</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Category</span></span><span> </span><span class="annot"><a href="#local-6989586621679115272"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115272"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115273"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115272"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115274"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115273"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115272"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115274"><span class="hs-identifier hs-type">a</span></a></span></span></span></span><span>
+</span><span id="line-397"></span><span id="compDir"><span class="annot"><span class="annottext">compDir :: forall {k} (cat :: k -&gt; k -&gt; *) (b :: k) (a :: k).
+Category cat =&gt;
+Dir cat b -&gt; cat a b -&gt; Dir cat a
+</span><a href="DistPoly.html#compDir"><span class="hs-identifier hs-var hs-var">compDir</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115455"><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115455"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&amp;:</span></span><span> </span><span id="local-6989586621679115457"><span class="annot"><span class="annottext">TyCon (cat b) @@ fst
+</span><a href="#local-6989586621679115457"><span class="hs-identifier hs-var">g</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679115458"><span class="annot"><span class="annottext">cat a b
+</span><a href="#local-6989586621679115458"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115455"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Sing fst -&gt; (TyCon (cat a) @@ fst) -&gt; Sigma k (TyCon (cat a))
+forall s (a :: s ~&gt; *) (fst :: s).
+Sing fst -&gt; (a @@ fst) -&gt; Sigma s a
+</span><span class="hs-operator hs-var">:&amp;:</span></span><span> </span><span class="annot"><span class="annottext">cat b fst
+TyCon (cat b) @@ fst
+</span><a href="#local-6989586621679115457"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">cat b fst -&gt; cat a b -&gt; cat a fst
+forall (b :: k) (c :: k) (a :: k). cat b c -&gt; cat a b -&gt; cat a c
+forall {k} (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">cat a b
+</span><a href="#local-6989586621679115458"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-398"></span><span>
+</span><span id="line-399"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115298"><span id="local-6989586621679115299"><span id="local-6989586621679115464"><span id="local-6989586621679115468"><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115298"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679115299"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115298"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115299"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-400"></span><span>  </span><span class="hs-comment">--  o -- [ g &lt;&gt; f ] --&gt; qy</span><span>
+</span><span id="line-401"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-402"></span><span>  </span><span class="hs-comment">--   def</span><span>
+</span><span id="line-403"></span><span>  </span><span class="hs-comment">--   ===</span><span>
+</span><span id="line-404"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-405"></span><span>  </span><span class="hs-comment">--  o --[f]--&gt; x --[qg]--&gt; qy</span><span>
+</span><span id="line-406"></span><span>  </span><span class="hs-comment">--                  &#8593;</span><span>
+</span><span id="line-407"></span><span>  </span><span class="hs-comment">--                  &#8593; q</span><span>
+</span><span id="line-408"></span><span>  </span><span class="hs-comment">--                  &#8593;</span><span>
+</span><span id="line-409"></span><span>  </span><span class="hs-comment">--             o --[g]--&gt; y</span><span>
+</span><span id="line-410"></span><span>  </span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span id="local-6989586621679115474"><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115474"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span id="local-6989586621679115475"><span class="annot"><span class="annottext">&lt;&gt; :: M cat o -&gt; M cat o -&gt; M cat o
+</span><span class="hs-operator hs-var hs-var hs-var">&lt;&gt;</span></span></span><span> </span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115479"><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115479"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&amp;:</span></span><span> </span><span id="local-6989586621679115480"><span class="annot"><span class="annottext">TyCon (cat o) @@ fst
+</span><a href="#local-6989586621679115480"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dir cat o -&gt; M cat o
+forall {k} (cat :: k -&gt; k -&gt; *) (o :: k). Dir cat o -&gt; M cat o
+</span><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span><span> </span><span class="annot"><span class="annottext">(Dir cat o -&gt; M cat o) -&gt; Dir cat o -&gt; M cat o
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sing o -&gt; Sing fst -&gt; Dir cat o -&gt; Dir cat fst
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span> </span><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115479"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115474"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat fst -&gt; cat o fst -&gt; Dir cat o
+forall {k} (cat :: k -&gt; k -&gt; *) (b :: k) (a :: k).
+Category cat =&gt;
+Dir cat b -&gt; cat a b -&gt; Dir cat a
+</span><a href="DistPoly.html#compDir"><span class="hs-operator hs-var">`compDir`</span></a></span><span> </span><span class="annot"><span class="annottext">cat o fst
+TyCon (cat o) @@ fst
+</span><a href="#local-6989586621679115480"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-411"></span><span>
+</span><span id="line-412"></span><span>  </span><span class="hs-comment">-- Associativity is evident from diagrams</span><span>
+</span><span id="line-413"></span><span>
+</span><span id="line-414"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115315"><span id="local-6989586621679115316"><span id="local-6989586621679115488"><span id="local-6989586621679115492"><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115315"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679115316"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115315"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115316"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-415"></span><span>  </span><span id="local-6989586621679115498"><span class="annot"><span class="annottext">mempty :: M cat o
+</span><span class="hs-identifier hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dir cat o -&gt; M cat o
+forall {k} (cat :: k -&gt; k -&gt; *) (o :: k). Dir cat o -&gt; M cat o
+</span><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sing o
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span> </span><span class="annot"><span class="annottext">Sing o -&gt; (TyCon (cat o) @@ o) -&gt; Dir cat o
+forall s (a :: s ~&gt; *) (fst :: s).
+Sing fst -&gt; (a @@ fst) -&gt; Sigma s a
+</span><span class="hs-operator hs-var">:&amp;:</span></span><span> </span><span class="annot"><span class="annottext">cat o o
+TyCon (cat o) @@ o
+forall (a :: k). cat a a
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k). Category cat =&gt; cat a a
+</span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span>
+</span><span id="line-416"></span><span>
+</span><span id="line-417"></span><span class="hs-keyword">data</span><span> </span><span id="X"><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-var">X</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115500"><span class="annot"><a href="#local-6989586621679115500"><span class="hs-identifier hs-type">cat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115501"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115501"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115502"><span class="annot"><a href="#local-6989586621679115502"><span class="hs-identifier hs-type">o</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115501"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-418"></span><span>  </span><span id="local-6989586621679115328"><span id="local-6989586621679115330"><span id="local-6989586621679115331"><span id="local-6989586621679115503"><span id="X"><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-var">X</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115503"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115328"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115330"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115328"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115328"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Type</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115331"><span class="hs-identifier hs-type">o</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115328"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-419"></span><span>
+</span><span id="line-420"></span><span id="local-6989586621679115319"><span id="local-6989586621679115320"><span id="local-6989586621679115321"><span class="annot"><a href="DistPoly.html#codDir"><span class="hs-identifier hs-type">codDir</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DistPoly.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115319"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115320"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115319"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115321"><span class="hs-identifier hs-type">b</span></a></span></span></span></span><span>
+</span><span id="line-421"></span><span id="codDir"><span class="annot"><span class="annottext">codDir :: forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Dir cat a -&gt; X cat b
+</span><a href="DistPoly.html#codDir"><span class="hs-identifier hs-var hs-var">codDir</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115506"><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115506"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&amp;:</span></span><span> </span><span class="annot"><span class="annottext">TyCon (cat a) @@ fst
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing fst -&gt; X cat b
+forall k (a :: k) (cat :: k -&gt; k -&gt; *) (o :: k). Sing a -&gt; X cat o
+</span><a href="DistPoly.html#X"><span class="hs-identifier hs-var">X</span></a></span><span> </span><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115506"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-422"></span><span>
+</span><span id="line-423"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115341"><span id="local-6989586621679115342"><span id="local-6989586621679115513"><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115341"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679115342"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Action</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115341"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115342"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115341"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115342"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-424"></span><span>  </span><span id="local-6989586621679115519"><span class="annot"><span class="annottext">act :: M cat o -&gt; X cat o -&gt; X cat o
+</span><a href="#local-6989586621679115519"><span class="hs-identifier hs-var hs-var hs-var">act</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115521"><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115521"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&amp;:</span></span><span> </span><span id="local-6989586621679115522"><span class="annot"><span class="annottext">TyCon (cat o) @@ fst
+</span><a href="#local-6989586621679115522"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span id="local-6989586621679115525"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115525"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dir cat a -&gt; X cat o
+forall {k} (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Dir cat a -&gt; X cat b
+</span><a href="DistPoly.html#codDir"><span class="hs-identifier hs-var">codDir</span></a></span><span> </span><span class="annot"><span class="annottext">(Dir cat a -&gt; X cat o) -&gt; Dir cat a -&gt; X cat o
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sing o -&gt; Sing a -&gt; Sigma k (TyCon (cat o)) -&gt; Dir cat a
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115525"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sing fst
+</span><a href="#local-6989586621679115521"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Sing fst -&gt; (TyCon (cat o) @@ fst) -&gt; Sigma k (TyCon (cat o))
+forall s (a :: s ~&gt; *) (fst :: s).
+Sing fst -&gt; (a @@ fst) -&gt; Sigma s a
+</span><span class="hs-operator hs-var">:&amp;:</span></span><span> </span><span class="annot"><span class="annottext">TyCon (cat o) @@ fst
+</span><a href="#local-6989586621679115522"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-425"></span><span>
+</span><span id="line-426"></span><span>  </span><span class="hs-comment">{-
+  
+  o --[f]-&gt; y
+      &#8595; q
+  x ------&gt; act (M (y :&amp;: f)) x
+  
+  -}</span><span>
+</span><span id="line-433"></span><span>
+</span><span id="line-434"></span><span class="hs-comment">{-
+
+Laws check:
+
+           o --[g]---&gt; z
+                &#8595;q
+o --[f]--&gt; y --[qg]--&gt; qz
+           &#8595;&#8728;
+o -------------------&gt; qz
+           &#8595;q
+o --------------------&gt; act (M (z :&amp;: g) &lt;&gt; M (y :&amp;: f)) x
+
+========================================
+
+let x' = Act (M (y :&amp;: f)) x
+    x'' = Act (Mor (z :&amp;: g)) x'
+
+           o  --[g]---&gt; z
+                 &#8595;q
+o --[f]--&gt; y --[qg]--&gt; qz
+    &#8595;q          &#8595;q
+x -------&gt; x' --------&gt; x''
+
+-}</span><span>
+</span><span id="line-458"></span><span>
+</span><span id="line-459"></span><span id="local-6989586621679115346"><span id="local-6989586621679115347"><span id="local-6989586621679115348"><span class="annot"><a href="DistPoly.html#travelToAct"><span class="hs-identifier hs-type">travelToAct</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115346"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679115347"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115346"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115348"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115346"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115347"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115346"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115347"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679115348"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-460"></span><span id="travelToAct"><span class="annot"><span class="annottext">travelToAct :: forall {k} (cat :: k -&gt; k -&gt; *) (o :: k) r.
+(Q cat, SingI o) =&gt;
+Travel cat r -&gt; Act (M cat o) (X cat o) r
+</span><a href="DistPoly.html#travelToAct"><span class="hs-identifier hs-var hs-var">travelToAct</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MkTravel</span></span><span> </span><span id="local-6989586621679115531"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115531"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679115532"><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; r
+</span><a href="#local-6989586621679115532"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">X cat o -&gt; (M cat o -&gt; r) -&gt; Act (M cat o) (X cat o) r
+forall g x a. x -&gt; (g -&gt; a) -&gt; Act g x a
+</span><span class="hs-identifier hs-var">Act</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sing a -&gt; X cat o
+forall k (a :: k) (cat :: k -&gt; k -&gt; *) (o :: k). Sing a -&gt; X cat o
+</span><a href="DistPoly.html#X"><span class="hs-identifier hs-var">X</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115531"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span id="local-6989586621679115534"><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115534"><span class="hs-identifier hs-var">dir0</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Sigma k (TyCon (cat a)) -&gt; r
+</span><a href="#local-6989586621679115532"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(Sigma k (TyCon (cat a)) -&gt; r) -&gt; Sigma k (TyCon (cat a)) -&gt; r
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sing o -&gt; Sing a -&gt; Dir cat o -&gt; Sigma k (TyCon (cat a))
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115531"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115534"><span class="hs-identifier hs-var">dir0</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-461"></span><span>
+</span><span id="line-462"></span><span id="local-6989586621679115359"><span id="local-6989586621679115360"><span id="local-6989586621679115361"><span class="annot"><a href="DistPoly.html#actToTravel"><span class="hs-identifier hs-type">actToTravel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115359"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SingI</span></span><span> </span><span class="annot"><a href="#local-6989586621679115360"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115359"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115360"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115359"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115360"><span class="hs-identifier hs-type">o</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679115361"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Travel</span></span><span> </span><span class="annot"><a href="#local-6989586621679115359"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115361"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-463"></span><span id="actToTravel"><span class="annot"><span class="annottext">actToTravel :: forall {k} (cat :: k -&gt; k -&gt; *) (o :: k) r.
+(Q cat, SingI o) =&gt;
+Act (M cat o) (X cat o) r -&gt; Travel cat r
+</span><a href="DistPoly.html#actToTravel"><span class="hs-identifier hs-var hs-var">actToTravel</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span id="local-6989586621679115543"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115543"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679115544"><span class="annot"><span class="annottext">M cat o -&gt; r
+</span><a href="#local-6989586621679115544"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; r) -&gt; Travel cat r
+forall k (cat :: k -&gt; k -&gt; *) r (a :: k).
+Sing a -&gt; (Sigma k (TyCon (cat a)) -&gt; r) -&gt; Travel cat r
+</span><span class="hs-identifier hs-var">MkTravel</span></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115543"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">M cat o -&gt; r
+</span><a href="#local-6989586621679115544"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">(M cat o -&gt; r)
+-&gt; (Sigma k (TyCon (cat a)) -&gt; M cat o)
+-&gt; Sigma k (TyCon (cat a))
+-&gt; r
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+forall {k} (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Dir cat o -&gt; M cat o
+forall {k} (cat :: k -&gt; k -&gt; *) (o :: k). Dir cat o -&gt; M cat o
+</span><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span><span> </span><span class="annot"><span class="annottext">(Dir cat o -&gt; M cat o)
+-&gt; (Sigma k (TyCon (cat a)) -&gt; Dir cat o)
+-&gt; Sigma k (TyCon (cat a))
+-&gt; M cat o
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+forall {k} (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Sing a -&gt; Sing o -&gt; Sigma k (TyCon (cat a)) -&gt; Dir cat o
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115543"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o
+forall {k} (a :: k). SingI a =&gt; Sing a
+</span><span class="hs-identifier hs-var">sing</span></span><span class="hs-special">)</span><span>
+</span><span id="line-464"></span><span>
+</span><span id="line-465"></span><span class="hs-comment">-- Choice of the origin does not affect M, X</span><span>
+</span><span id="line-466"></span><span>
+</span><span id="line-467"></span><span id="local-6989586621679115368"><span id="local-6989586621679115369"><span id="local-6989586621679115370"><span class="annot"><a href="DistPoly.html#translateM"><span class="hs-identifier hs-type">translateM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115368"><span class="hs-identifier hs-type">cat</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115369"><span class="hs-identifier hs-type">o</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Sing</span></span><span> </span><span class="annot"><a href="#local-6989586621679115370"><span class="hs-identifier hs-type">o'</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115368"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115369"><span class="hs-identifier hs-type">o</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115368"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115370"><span class="hs-identifier hs-type">o'</span></a></span></span></span></span><span>
+</span><span id="line-468"></span><span id="translateM"><span class="annot"><span class="annottext">translateM :: forall {k} (cat :: k -&gt; k -&gt; *) (o :: k) (o' :: k).
+Q cat =&gt;
+Sing o -&gt; Sing o' -&gt; M cat o -&gt; M cat o'
+</span><a href="DistPoly.html#translateM"><span class="hs-identifier hs-var hs-var">translateM</span></a></span></span><span> </span><span id="local-6989586621679115548"><span class="annot"><span class="annottext">Sing o
+</span><a href="#local-6989586621679115548"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span id="local-6989586621679115549"><span class="annot"><span class="annottext">Sing o'
+</span><a href="#local-6989586621679115549"><span class="hs-identifier hs-var">o'</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#M"><span class="hs-identifier hs-type">M</span></a></span><span> </span><span id="local-6989586621679115550"><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115550"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dir cat o' -&gt; M cat o'
+forall {k} (cat :: k -&gt; k -&gt; *) (o :: k). Dir cat o -&gt; M cat o
+</span><a href="DistPoly.html#M"><span class="hs-identifier hs-var">M</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Sing o -&gt; Sing o' -&gt; Dir cat o -&gt; Dir cat o'
+forall (a :: k) (b :: k).
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+forall k (cat :: k -&gt; k -&gt; *) (a :: k) (b :: k).
+Q cat =&gt;
+Sing a -&gt; Sing b -&gt; Dir cat a -&gt; Dir cat b
+</span><a href="DistPoly.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o
+</span><a href="#local-6989586621679115548"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Sing o'
+</span><a href="#local-6989586621679115549"><span class="hs-identifier hs-var">o'</span></a></span><span> </span><span class="annot"><span class="annottext">Dir cat o
+</span><a href="#local-6989586621679115550"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-469"></span><span>
+</span><span id="line-470"></span><span id="local-6989586621679115376"><span id="local-6989586621679115377"><span id="local-6989586621679115378"><span class="annot"><a href="DistPoly.html#translateX"><span class="hs-identifier hs-type">translateX</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115376"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115377"><span class="hs-identifier hs-type">o</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115376"><span class="hs-identifier hs-type">cat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115378"><span class="hs-identifier hs-type">o'</span></a></span></span></span></span><span>
+</span><span id="line-471"></span><span id="translateX"><span class="annot"><span class="annottext">translateX :: forall {k} (cat :: k -&gt; k -&gt; *) (o :: k) (o' :: k).
+X cat o -&gt; X cat o'
+</span><a href="DistPoly.html#translateX"><span class="hs-identifier hs-var hs-var">translateX</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DistPoly.html#X"><span class="hs-identifier hs-type">X</span></a></span><span> </span><span id="local-6989586621679115552"><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115552"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sing a -&gt; X cat o'
+forall k (a :: k) (cat :: k -&gt; k -&gt; *) (o :: k). Sing a -&gt; X cat o
+</span><a href="DistPoly.html#X"><span class="hs-identifier hs-var">X</span></a></span><span> </span><span class="annot"><span class="annottext">Sing a
+</span><a href="#local-6989586621679115552"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-472"></span><span>
+</span><span id="line-473"></span><span class="hs-comment">{-
+
+o, o' :: k
+tr = translateM o o' :: M cat o -&gt; M cat o'
+
+[tr is monoid isomorphism]
+
+Because `q o o'` is an invertible function (`q o' o` is the inverse),
+it is sufficient to show `tr` preserve unit and multiplication.
+
+tr mempty = tr (M (o :&amp;: id)) = M (q o o' (o :&amp;: id))
+ = M (o' :&amp;: id) = mempty
+
+tr (M (y :&amp;: g) &lt;&gt; M (x :&amp;: f))
+ = let (qy :&amp;: qg) = q o x (y :&amp;: g)
+   in tr $ M (qy :&amp;: qg . f)
+ = let (qy :&amp;: qg) = q o x (y :&amp;: g)
+   in M $ q o o' (qy :&amp;: qg . f)
+ = let (qy :&amp;: qg) = q o x (y :&amp;: g)
+       (x' :&amp;: f') = q o o' (x :&amp;: f)
+       (qy' :&amp;: qg') = q x x' (qy :&amp;: qg)
+   in M (qy' :&amp;: qg' . f')
+ = let (x' :&amp;: f') = q o o' (x :&amp;: f)
+       (qy' :&amp;: qg') = q x x' (q o x (y :&amp;: g))
+                     = q o x' (y :&amp;: g)
+                     = q o' x' (q o o' (y :&amp;: g))
+   in M (qy' :&amp;: qg' . f')
+ = let M (x' :&amp;: f') = tr (M (x :&amp;: f))
+       M (y' :&amp;: g') = tr (M (y :&amp;: g))
+      (qy' :&amp;: qg') = q o' x' (y' :&amp;: g')
+   in M (qy' :&amp;: qg' . f')
+ = tr (M (y :&amp;: g)) &lt;&gt; tr (M (x :&amp;: f))
+
+[tr does not change action on X]
+
+translateX $ act (M (y :&amp;: g) (X x))
+  = translateX $ codDir $ q o x (y :&amp;: g)
+  = codDir $ q o x (y :&amp;: g)
+
+act (tr (M (y :&amp;: g)))) (translateX (X x))
+  = act (M $ q o o' (y :&amp;: g)) (X x)
+  = codDir $ q o' x (q o o' (y :&amp;: g))
+  = codDir $ q o x (y :&amp;: g)
+
+-}</span></pre></body></html>

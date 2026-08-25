@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FunctionalDependencies #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE BlockArguments #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="DistAct.html"><span class="hs-identifier">DistAct</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Store</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Store</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Store</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Store</span></span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Semigroup.Action</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Comonad.Act</span></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span id="local-6989586621679115065"><span id="local-6989586621679115066"><span class="annot"><a href="DistAct.html#%2F%2F"><span class="hs-operator hs-type">(//)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Torsor</span></span><span> </span><span class="annot"><a href="#local-6989586621679115065"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115066"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115066"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115066"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115065"><span class="hs-identifier hs-type">m</span></a></span></span></span><span>
+</span><span id="line-15"></span><span id="%2F%2F"><span class="annot"><span class="annottext">// :: forall m x. Torsor m x =&gt; x -&gt; x -&gt; m
+</span><a href="DistAct.html#%2F%2F"><span class="hs-operator hs-var hs-var">(//)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; x -&gt; m
+forall m x. Torsor m x =&gt; x -&gt; x -&gt; m
+</span><span class="hs-identifier hs-var">difference</span></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="DistAct.html#%2F%2F"><span class="hs-operator hs-type">//</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="annot"><span class="hs-comment">-- | Data to define distributive law (?)</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Action</span></span><span> </span><span class="annot"><a href="#local-6989586621679115070"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115071"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Q"><span class="annot"><a href="DistAct.html#Q"><span class="hs-identifier hs-var">Q</span></a></span></span><span> </span><span id="local-6989586621679115070"><span class="annot"><a href="#local-6989586621679115070"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679115071"><span class="annot"><a href="#local-6989586621679115071"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-comment">-- | Laws:</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-comment">-- &gt; (Q1) q x0 x1 mempty = mempty</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-comment">-- &gt; (Q2) q x0 x0 m = m</span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-comment">-- &gt; (Q3) q x0 x1 (n &lt;&gt; m) = q (act m x0) (act m' x1) n &lt;&gt; m'</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-comment">--      where m' = q x0 x1 m</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-comment">-- &gt; (Q4) q x1 x2 (q x0 x1 m) = q x0 x2 m</span><span>
+</span><span id="line-28"></span><span>  </span><span id="q"><span class="annot"><a href="DistAct.html#q"><span class="hs-identifier hs-type">q</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679115071"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115071"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115070"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115070"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- Comonad-Comonad distributive law natural in w must be (?) of this form</span><span>
+</span><span id="line-31"></span><span id="local-6989586621679115074"><span id="local-6989586621679115076"><span id="local-6989586621679115077"><span id="local-6989586621679115078"><span class="annot"><a href="DistAct.html#theta"><span class="hs-identifier hs-type">theta</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Comonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679115074"><span class="hs-identifier hs-type">w</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="DistAct.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115076"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115077"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115074"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="annot"><a href="#local-6989586621679115076"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115077"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115078"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="annot"><a href="#local-6989586621679115076"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115077"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115074"><span class="hs-identifier hs-type">w</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115078"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-32"></span><span id="theta"><span class="annot"><span class="annottext">theta :: forall (w :: * -&gt; *) m x r.
+(Comonad w, Q m x) =&gt;
+w (Act m x r) -&gt; Act m x (w r)
+</span><a href="DistAct.html#theta"><span class="hs-identifier hs-var hs-var">theta</span></a></span></span><span> </span><span id="local-6989586621679115144"><span class="annot"><span class="annottext">w (Act m x r)
+</span><a href="#local-6989586621679115144"><span class="hs-identifier hs-var">wa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; (m -&gt; w r) -&gt; Act m x (w r)
+forall g x a. x -&gt; (g -&gt; a) -&gt; Act g x a
+</span><span class="hs-identifier hs-var">Act</span></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115146"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679115147"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679115147"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">w (Act m x r)
+</span><a href="#local-6989586621679115144"><span class="hs-identifier hs-var">wa</span></a></span><span> </span><span class="annot"><span class="annottext">w (Act m x r) -&gt; (Act m x r -&gt; r) -&gt; w r
+forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span id="local-6989586621679115148"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115148"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span id="local-6989586621679115149"><span class="annot"><span class="annottext">m -&gt; r
+</span><a href="#local-6989586621679115149"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">m -&gt; r
+</span><a href="#local-6989586621679115149"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; x -&gt; m -&gt; m
+forall m x. Q m x =&gt; x -&gt; x -&gt; m -&gt; m
+</span><a href="DistAct.html#q"><span class="hs-identifier hs-var">q</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115146"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115148"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679115147"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679115146"><span class="annot"><span class="annottext">x0 :: x
+</span><a href="#local-6989586621679115146"><span class="hs-identifier hs-var hs-var">x0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Act m x r -&gt; x
+forall g x a. Act g x a -&gt; x
+</span><span class="hs-identifier hs-var">locate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">w (Act m x r) -&gt; Act m x r
+forall a. w a -&gt; a
+forall (w :: * -&gt; *) a. Comonad w =&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">extract</span></span><span> </span><span class="annot"><span class="annottext">w (Act m x r)
+</span><a href="#local-6989586621679115144"><span class="hs-identifier hs-var">wa</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-comment">{-
+
+[Reasons]
+
+We want to represent distributive law
+
+    theta :: forall w r. (Comonad w) =&gt; w (Act m x r) -&gt; Act m x (w r)
+
+natural in Comonad w. Firstly, any such natural transformation
+without &quot;distributive law&quot; condition is represented by two functions
+
+    t :: x -&gt; x
+    p :: x -&gt; x -&gt; m -&gt; Either m m
+
+that is
+
+    theta wa = Act (t x0) \m -&gt; wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+      where Act x0 h = extract wa
+
+. (Proof omitted; uses parametricity argument etc.)
+
+The compatibility condition of Comonad-Comonad distributive law
+
+    (DW1) extract . theta = fmap extract :: w (Act m x r) -&gt; w r
+    (DW2) fmap extract . theta = extract :: w (Act m x r) -&gt; Act m x r
+    (DW3) duplicate . theta = fmap theta . theta . fmap duplicate
+            :: w (Act m x r) -&gt; Act m x (Act m x (w r))
+    (DW4) fmap duplicate . theta = theta . fmap theta . duplicate
+            :: w (Act m x r) -&gt; Act m x (w (w r))
+
+narrows (t,p) down.
+
+Start with the most easiest (DW2).
+
+  DW2LHS
+    = fmap extract (theta wa)
+    = fmap extract $ Act (t x0) \m -&gt; wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+        where Act x0 h0 = extract wa
+    = Act (t x0) \m -&gt; extract $ wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+    = Act (t x0) \m -&gt; extract wa &amp; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+    = Act (t x0) \m -&gt; either h0 h0 (p x0 x0 m)
+
+  DW2RHS
+    = extract wa
+    = Act x0 h0
+
+  Therefore
+
+  - (DW2-pos): t = id
+  - (DW2-dir): p x0 x0 m = m
+
+  (x0, h0 can be set arbitrarily.)
+
+Using (DW2-pos), the definition of theta can be simplified.
+
+  (**)
+  theta wa = Act x0 \m -&gt; (\(Act x1 h1) -&gt; ) 
+    where Act x0 h0 = extract wa
+
+(DW4) is the next easy target.
+
+  DW4LHS
+    = fmap duplicate (theta wa)
+    = fmap duplicate $ Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+        where Act x0 h0 = extract wa
+    = Act x0 \m -&gt; duplicate $ wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+    = Act x0 \m -&gt; duplicate wa &lt;&lt;&amp;&gt;&gt; \(Act x2 h2) -&gt; either h0 h2 (p x0 x2 m)
+
+  DW4RHS
+    = theta (fmap theta (duplicate wa))
+    = theta (fmap theta wwa)
+        where wwa = duplicate wa
+    = Act x0' \m -&gt; fmap theta wwa &lt;&amp;&gt; \(Act x1' h1') -&gt;
+        either h0' h1' (p x0' x1' m)
+        where
+          Act x0' h0'
+            = extract (fmap theta wwa)
+            = theta (extract wwa)
+            = theta wa
+            = Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h1) -&gt; either h0 h1 (p x0 x1 m)
+          
+          Act x0 h0 = extract wa
+    
+    = Act x0 \m -&gt; wwa &lt;&amp;&gt; \wa' -&gt;
+        let Act x1 h1' = theta wa' 
+        in either h0' h1' (p x0 x1 m)
+
+  Comparing both sides,
+
+    duplicate wa &lt;&amp;&gt; \wa' -&gt; wa' &lt;&amp;&gt; \(Act x2 h2) -&gt; ...
+      =
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let Act x1 h1' = theta wa'
+      in either (wa &lt;&amp;&gt; ...) h1' (p x0 x1 m)
+
+  Must hold. Since one can choose a Comonad such that the shape of
+  wa and wa' is different (for example Store Bool,), and x0, x1, m is arbitrary,
+  (p x0 x1 m) can never be Left. therefore, one can assume
+
+    p x0 x1 m = Right (q x0 x1 m)
+
+  with some (q :: x -&gt; x -&gt; m -&gt; m). It simplifies theta further:
+
+    (***)
+    theta wa = Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt; h (q x0 x1 m)
+      where x0 = pos (extract wa)
+
+  . By using (***) for the DW4LHS = DW4RHS,
+
+    duplicate wa &lt;&amp;&gt; \wa' -&gt; wa' &lt;&amp;&gt; \(Act x2 h2) -&gt; h2 (q x0 x2 m)
+    =
+    duplicate wa &lt;&amp;&gt; \wa' -&gt;
+      let Act x1 h1' = theta wa'
+          x1 = pos (extract wa')
+          h1' = wa' &lt;&amp;&gt; \(Act x2 h2) -&gt; h2 (q x1 x2 m)
+      in h1' (q x0 x1 m)
+
+  Which can be reduced to
+
+    (DW4-dir) q x0 x2 m = q x1 x2 (q x0 x1 m)
+
+  .
+
+Using simplified theta definition given as (***),
+(DW1) is transformed as below.
+
+  DW1LHS
+    = extract (theta wa)
+    = extract $ Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt; h (q x0 x1 m)
+        where x0 = pos (extract wa)
+    = wa &lt;&amp;&gt; \(Act x1 h) -&gt; h (q x0 x1 mempty)
+    
+  DW1RHS
+    = fmap extract wa
+    = wa &lt;&amp;&gt; \(Act x1 h) -&gt; h mempty
+
+  Therefore
+
+    (DW1-dir) q x0 x1 mempty = mempty
+
+  .
+
+Finally, (DW3).
+
+  DW3LHS
+    = duplicate (theta wa)
+    = duplicate $ Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt; h (q x0 x1 m)
+        where x0 = pos (extract wa)
+    = Act x0 \m -&gt; Act (act m x0) \n -&gt; &lt;&amp;&gt; \(Act x1 h) -&gt;
+        h (q x0 x1 (n &lt;&gt; m))
+
+  DW3RHS
+    = fmap theta (theta (fmap duplicate wa))
+    = fmap theta $ theta waa
+        where waa = fmap duplicate wa
+    = fmap theta $ Act x0' \m -&gt; waa &lt;&amp;&gt; \(Act x1' h') -&gt;
+        h' (q x0' x1' m)
+        where x0' = pos (extract waa)
+                  = pos (extract (fmap duplicate wa))
+                  = pos (duplicate (extract wa))
+                  = ... = x0
+    = fmap theta $ Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt;
+        let Act x1' h' = duplicate (Act x1 h)
+        in h' (q x0 x1' m)
+    = fmap theta $ Act x0 \m -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt;
+        let m' = q x0 x1 m
+        in Act (act m' x1) \n -&gt; h (n &lt;&gt; m')
+    = Act x0 \m -&gt;
+        let shifter (Act x1 h) =
+              let m' = q x0 x1 m
+              in Act (act m' x1) \n -&gt; h (n &lt;&gt; m')
+        in theta $ wa &lt;&amp;&gt; shifter
+    = Act x0 \m -&gt;
+        let shifter (Act x1 h) =
+              let m' = q x0 x1 m
+              in Act (act m' x1) \n -&gt; h (n &lt;&gt; m')
+            x1' = pos (extract (wa &lt;&amp;&gt; shifter))
+                = pos (shifter (extract wa))
+                = pos $ shifter (Act x0 _)
+                = let m' = q x0 x0 m
+                  in act m' x0
+                = act m x0
+        in Act x1' \n -&gt; wa &lt;&amp;&gt; shifter &lt;&amp;&gt; \(Act x2' h2) -&gt;
+            h2 (q x1' x2' n)
+    = Act x0 \m -&gt;
+        let x1' = act m x0
+        in Act x1' \n -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt;
+              let m' = q x0 x1 m
+                  x2' = act m' x1
+                  h2 n = h (n &lt;&gt; m')
+              in h2 (q x1' x2' n)
+    = Act x0 \m -&gt;
+        Act (act m x0) \n -&gt; wa &lt;&amp;&gt; \(Act x1 h) -&gt;
+          let m' = q x0 x1 m
+          in h (q (act m x0) (act m' x1) n &lt;&gt; m')
+
+  Comparing both sides
+
+    (DW3-dir)
+    q x0 x1 (n &lt;&gt; m) = q (act m x0) (act m' x1) n &lt;&gt; m'
+      where m' = q x0 x1 m
+
+-}</span><span>
+</span><span id="line-238"></span><span>
+</span><span id="line-239"></span><span class="hs-comment">-- Utility</span><span>
+</span><span id="line-240"></span><span>
+</span><span id="line-241"></span><span id="local-6989586621679115095"><span id="local-6989586621679115096"><span id="local-6989586621679115097"><span class="annot"><a href="DistAct.html#%3C%3C%26%3E%3E"><span class="hs-operator hs-type">(&lt;&lt;&amp;&gt;&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679115095"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115095"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115095"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115096"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115096"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115097"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679115095"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679115095"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115097"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-242"></span><span id="local-6989586621679115158"><span class="annot"><span class="annottext">f (f a)
+</span><a href="#local-6989586621679115158"><span class="hs-identifier hs-var">ffa</span></a></span></span><span> </span><span id="%3C%3C%26%3E%3E"><span class="annot"><span class="annottext">&lt;&lt;&amp;&gt;&gt; :: forall (f :: * -&gt; *) a b.
+Functor f =&gt;
+f (f a) -&gt; (a -&gt; b) -&gt; f (f b)
+</span><a href="DistAct.html#%3C%3C%26%3E%3E"><span class="hs-operator hs-var hs-var">&lt;&lt;&amp;&gt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679115159"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679115159"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f b) -&gt; f (f a) -&gt; f (f b)
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; f a -&gt; f b
+forall a b. (a -&gt; b) -&gt; f a -&gt; f b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679115159"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f (f a)
+</span><a href="#local-6989586621679115158"><span class="hs-identifier hs-var">ffa</span></a></span><span>
+</span><span id="line-243"></span><span>
+</span><span id="line-244"></span><span>
+</span><span id="line-245"></span><span class="hs-comment">{-
+
+When (Action m x) is actually a torsor
+(m is group and its action is regular (= free and transitive)),
+(Act m x) is isomorphic to the Store comonad over the state type x.
+
+-}</span><span>
+</span><span id="line-252"></span><span>
+</span><span id="line-253"></span><span class="annot"><span class="hs-comment">-- | When the action is @'Torsor' g x@, there is a comonad isomorphism to @Store x@</span></span><span>
+</span><span id="line-254"></span><span id="local-6989586621679115104"><span id="local-6989586621679115105"><span id="local-6989586621679115106"><span class="annot"><a href="DistAct.html#toStore"><span class="hs-identifier hs-type">toStore</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Torsor</span></span><span> </span><span class="annot"><a href="#local-6989586621679115104"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115105"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="annot"><a href="#local-6989586621679115104"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115105"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115106"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Store</span></span><span> </span><span class="annot"><a href="#local-6989586621679115105"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115106"><span class="hs-identifier hs-type">a</span></a></span></span></span></span><span>
+</span><span id="line-255"></span><span id="toStore"><span class="annot"><span class="annottext">toStore :: forall g x a. Torsor g x =&gt; Act g x a -&gt; Store x a
+</span><a href="DistAct.html#toStore"><span class="hs-identifier hs-var hs-var">toStore</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span id="local-6989586621679115163"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115163"><span class="hs-identifier hs-var">x0</span></a></span></span><span> </span><span id="local-6989586621679115164"><span class="annot"><span class="annottext">g -&gt; a
+</span><a href="#local-6989586621679115164"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; a) -&gt; x -&gt; Store x a
+forall s a. (s -&gt; a) -&gt; s -&gt; Store s a
+</span><span class="hs-identifier hs-var">Store.store</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679115166"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115166"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">g -&gt; a
+</span><a href="#local-6989586621679115164"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115166"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x -&gt; g
+forall m x. Torsor m x =&gt; x -&gt; x -&gt; m
+</span><a href="DistAct.html#%2F%2F"><span class="hs-operator hs-var">//</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115163"><span class="hs-identifier hs-var">x0</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115163"><span class="hs-identifier hs-var">x0</span></a></span><span>
+</span><span id="line-256"></span><span>
+</span><span id="line-257"></span><span class="hs-comment">-- | Comonad morphism from @Store x@. It is the inverse of 'toStore' if the action on @x@ is</span><span>
+</span><span id="line-258"></span><span class="hs-comment">-- @Torsor@.</span><span>
+</span><span id="line-259"></span><span id="local-6989586621679115113"><span id="local-6989586621679115114"><span id="local-6989586621679115115"><span class="annot"><a href="DistAct.html#fromStore"><span class="hs-identifier hs-type">fromStore</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Action</span></span><span> </span><span class="annot"><a href="#local-6989586621679115113"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115114"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Store</span></span><span> </span><span class="annot"><a href="#local-6989586621679115114"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115115"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Act</span></span><span> </span><span class="annot"><a href="#local-6989586621679115113"><span class="hs-identifier hs-type">g</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115114"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679115115"><span class="hs-identifier hs-type">a</span></a></span></span></span></span><span>
+</span><span id="line-260"></span><span id="fromStore"><span class="annot"><span class="annottext">fromStore :: forall g x a. Action g x =&gt; Store x a -&gt; Act g x a
+</span><a href="DistAct.html#fromStore"><span class="hs-identifier hs-var hs-var">fromStore</span></a></span></span><span> </span><span id="local-6989586621679115171"><span class="annot"><span class="annottext">Store x a
+</span><a href="#local-6989586621679115171"><span class="hs-identifier hs-var">sa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; (g -&gt; a) -&gt; Act g x a
+forall g x a. x -&gt; (g -&gt; a) -&gt; Act g x a
+</span><span class="hs-identifier hs-var">Act</span></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115172"><span class="hs-identifier hs-var">x0</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679115173"><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679115173"><span class="hs-identifier hs-var">g'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">x -&gt; a
+</span><a href="#local-6989586621679115174"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">g -&gt; x -&gt; x
+forall s x. Action s x =&gt; s -&gt; x -&gt; x
+</span><span class="hs-identifier hs-var">act</span></span><span> </span><span class="annot"><span class="annottext">g
+</span><a href="#local-6989586621679115173"><span class="hs-identifier hs-var">g'</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115172"><span class="hs-identifier hs-var">x0</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-261"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-262"></span><span>    </span><span id="local-6989586621679115172"><span class="annot"><span class="annottext">x0 :: x
+</span><a href="#local-6989586621679115172"><span class="hs-identifier hs-var hs-var">x0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Store x a -&gt; x
+forall a. StoreT x Identity a -&gt; x
+forall s (w :: * -&gt; *) a. ComonadStore s w =&gt; w a -&gt; s
+</span><span class="hs-identifier hs-var">Store.pos</span></span><span> </span><span class="annot"><span class="annottext">Store x a
+</span><a href="#local-6989586621679115171"><span class="hs-identifier hs-var">sa</span></a></span><span>
+</span><span id="line-263"></span><span>    </span><span id="local-6989586621679115174"><span class="annot"><span class="annottext">f :: x -&gt; a
+</span><a href="#local-6989586621679115174"><span class="hs-identifier hs-var hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679115183"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115183"><span class="hs-identifier hs-var">x1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; Store x a -&gt; a
+forall a. x -&gt; StoreT x Identity a -&gt; a
+forall s (w :: * -&gt; *) a. ComonadStore s w =&gt; s -&gt; w a -&gt; a
+</span><span class="hs-identifier hs-var">Store.peek</span></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679115183"><span class="hs-identifier hs-var">x1</span></a></span><span> </span><span class="annot"><span class="annottext">Store x a
+</span><a href="#local-6989586621679115171"><span class="hs-identifier hs-var">sa</span></a></span><span>
+</span><span id="line-264"></span><span>
+</span><span id="line-265"></span><span class="hs-comment">{-
+
+For such case, q can alternatively be represented using
+
+  q' :: x -&gt; x -&gt; x -&gt; x
+
+where two representations are bijectively related:
+
+  q' x x0 x1 = q x0 x1 (x // x0) `act` x1
+  q x0 x1 m = q' (act m x0) x0 x1 // x1
+
+(this being bijection follows from Torsor properties).
+
+Translating (Q1)-(Q4) in terms of q' gets us (Q1')-(Q4')
+
+(Q1') q' x0 x0 x1 = x1
+(Q2') q' x x0 x0 = x
+(Q3') q' y x0 x1 = q' y x (q' x x0 x1)
+(Q4') q' (q' x x0 x1) x1 x2 = q' x x0 x2
+
+[proof]
+
+  (Q1')
+    q x0 x1 mempty
+    = q' (act mempty x0) x0 x1 // x1
+    = q' x0 x0 x1 // x1
+    = mempty
+
+    &#8756; q' x0 x0 x1 = x1
+
+  (Q2')
+    q x0 x0 m
+    = q' (act m x0) x0 x0 // x0
+    = m
+    
+    &#8756; q' x x0 x0 = x
+
+  (Q3')
+
+    Let x = act m x0
+        y = act n x
+    
+    -- m = x // x0
+    -- n = y // x
+
+    let m' = q x0 x1 m
+          = q' x x0 x1 // x1
+    let q' x x0 x1 = x'
+    
+    -- m' = x' // x1
+
+    q x0 x1 (n &lt;&gt; m)
+    = q' (act (n &lt;&gt; m) x0) x0 x1 // x1
+    = q' (act n (act m x0)) x0 x1 // x1
+    = q' y x0 x1 // x1
+    
+    q (act m x0) (act m' x1) n &lt;&gt; m'
+    = q (act (x // x0) x0) (act (x' // x1) x1) (y // x) &lt;&gt; (x' // x1)
+    = q x x' (y // x) &lt;&gt; (x' // x1)
+    = (q' (act (y // x) x) x x' // x') &lt;&gt; (x' // x1)
+    = q' y x x' // x1
+    = q' y x (q' x x0 x1) // x1
+    
+    &#8756; q' y x0 x1 = q' y x (q' x x0 x1)
+
+  (Q4')
+
+    Let x = act m x0
+    -- m = x // x0
+
+    q x1 x2 (q x0 x1 m)
+    = q x1 x2 (q' x x0 x1 // x1)
+    = q' ((q' x x0 x1 // x1) `act` x1) x1 x2 // x2
+    = q' (q' x x0 x1) x1 x2 // x2
+    q x0 x2 m
+    = q' x x0 x2 // x2
+
+    &#8756; q' (q' x x0 x1) x1 x2 = q' x x0 x2
+
+(Q1')-(Q4') makes (X,q') an algebraic structure called heap, and it is
+known that heap is a Torsor minus the &quot;identity of group acting it&quot;.
+(note that this heap **need not be** the Torsor which gave the Act comonad structure,
+but another, unrelated Torsor which shares the set acted upon.)
+
+This is the classifying data of &quot;Store comonad distributive law natural in w.&quot;
+
+-}</span><span>
+</span><span id="line-352"></span></pre></body></html>

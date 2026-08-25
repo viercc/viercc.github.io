@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE MultiParamTypeClasses #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DeriveFunctor #-}</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html"><span class="hs-identifier">Data.Semigroup.Action.Free</span></a></span><span class="hs-special">(</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Free action of a monoid</span></span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier">Free</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#pureFree"><span class="hs-identifier">pureFree</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFree"><span class="hs-identifier">foldFree</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeR"><span class="hs-identifier">foldFreeR</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFree"><span class="hs-identifier">lowerFree</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeR"><span class="hs-identifier">lowerFreeR</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Free action of a semigroup</span></span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier">FreeSemi</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#pureFreeSemi"><span class="hs-identifier">pureFreeSemi</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeSemi"><span class="hs-identifier">foldFreeSemi</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeSemiR"><span class="hs-identifier">foldFreeSemiR</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeSemi"><span class="hs-identifier">lowerFreeSemi</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeSemiR"><span class="hs-identifier">lowerFreeSemiR</span></a></span><span>
+</span><span id="line-10"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html"><span class="hs-identifier">Data.Semigroup.Action.Class</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier">Action</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier">RightAction</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ap</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- Note on terminology: \&quot;free\&quot; here means /free/ in the free-algebra, left-adjoint-to-forgetful</span><span>
+</span><span id="line-16"></span><span class="hs-comment">-- sense (the universal action generated freely by a set of generators @x@). That is unrelated to</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- the notion of \&quot;free\&quot; (trivial stabilizers, i.e. injective orbit maps) used in</span><span>
+</span><span id="line-18"></span><span class="hs-comment">-- 'Data.Semigroup.Action.Class.Torsor'\'s documentation.</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- | The free action of a 'Monoid' @m@ on a set of generators @x@: @'Free' m x@ pairs every</span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- generator with the action accumulated on it so far.</span><span>
+</span><span id="line-22"></span><span class="hs-comment">--</span><span>
+</span><span id="line-23"></span><span class="hs-comment">-- 'act' prepends to the @m@ component, making @'Free' m x@ the free /left/ @m@-action; 'ract'</span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- appends to it, making it \(simultaneously\) the free /right/ @m@-action &#8212; much like</span><span>
+</span><span id="line-25"></span><span class="hs-comment">-- 'Data.Semigroup.Action.Regular.Regular' carries both the left and the right regular action</span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- of the same monoid at once.</span><span>
+</span><span id="line-27"></span><span class="hs-comment">--</span><span>
+</span><span id="line-28"></span><span class="hs-comment">-- Note: this is a @newtype@ around @(m, x)@ rather than using the plain tuple, since @(m, x)@</span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- already has an unrelated 'Action' instance (acting independently on each component).</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- </span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- @Free m@ has a @Monad@ instance by being the free algebra of left @m@-action.</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- This @Monad@ is exactly the Writer monad @(,) m@. Note that the monad instance *could* be</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- a free __right__ @m@-action monad switching the order of monoid value accumulation,</span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- but what provided here is the left one.</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">newtype</span><span> </span><span id="Free"><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span id="local-6989586621679066465"><span class="annot"><a href="#local-6989586621679066465"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679066466"><span class="annot"><a href="#local-6989586621679066466"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Free"><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getFree"><span class="annot"><span class="annottext">forall m x. Free m x -&gt; (m, x)
+</span><a href="Data.Semigroup.Action.Free.html#getFree"><span class="hs-identifier hs-var hs-var">getFree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679066465"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679066466"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066680"><span id="local-6989586621679066686"><span id="local-6989586621679066690"><span class="annot"><span class="annottext">Int -&gt; Free m x -&gt; ShowS
+[Free m x] -&gt; ShowS
+Free m x -&gt; String
+(Int -&gt; Free m x -&gt; ShowS)
+-&gt; (Free m x -&gt; String) -&gt; ([Free m x] -&gt; ShowS) -&gt; Show (Free m x)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall m x. (Show m, Show x) =&gt; Int -&gt; Free m x -&gt; ShowS
+forall m x. (Show m, Show x) =&gt; [Free m x] -&gt; ShowS
+forall m x. (Show m, Show x) =&gt; Free m x -&gt; String
+$cshowsPrec :: forall m x. (Show m, Show x) =&gt; Int -&gt; Free m x -&gt; ShowS
+showsPrec :: Int -&gt; Free m x -&gt; ShowS
+$cshow :: forall m x. (Show m, Show x) =&gt; Free m x -&gt; String
+show :: Free m x -&gt; String
+$cshowList :: forall m x. (Show m, Show x) =&gt; [Free m x] -&gt; ShowS
+showList :: [Free m x] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066697"><span id="local-6989586621679066701"><span id="local-6989586621679066704"><span id="local-6989586621679066714"><span class="annot"><span class="annottext">ReadPrec [Free m x]
+ReadPrec (Free m x)
+Int -&gt; ReadS (Free m x)
+ReadS [Free m x]
+(Int -&gt; ReadS (Free m x))
+-&gt; ReadS [Free m x]
+-&gt; ReadPrec (Free m x)
+-&gt; ReadPrec [Free m x]
+-&gt; Read (Free m x)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall m x. (Read m, Read x) =&gt; ReadPrec [Free m x]
+forall m x. (Read m, Read x) =&gt; ReadPrec (Free m x)
+forall m x. (Read m, Read x) =&gt; Int -&gt; ReadS (Free m x)
+forall m x. (Read m, Read x) =&gt; ReadS [Free m x]
+$creadsPrec :: forall m x. (Read m, Read x) =&gt; Int -&gt; ReadS (Free m x)
+readsPrec :: Int -&gt; ReadS (Free m x)
+$creadList :: forall m x. (Read m, Read x) =&gt; ReadS [Free m x]
+readList :: ReadS [Free m x]
+$creadPrec :: forall m x. (Read m, Read x) =&gt; ReadPrec (Free m x)
+readPrec :: ReadPrec (Free m x)
+$creadListPrec :: forall m x. (Read m, Read x) =&gt; ReadPrec [Free m x]
+readListPrec :: ReadPrec [Free m x]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066723"><span id="local-6989586621679066728"><span class="annot"><span class="annottext">Free m x -&gt; Free m x -&gt; Bool
+(Free m x -&gt; Free m x -&gt; Bool)
+-&gt; (Free m x -&gt; Free m x -&gt; Bool) -&gt; Eq (Free m x)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall m x. (Eq m, Eq x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+$c== :: forall m x. (Eq m, Eq x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+== :: Free m x -&gt; Free m x -&gt; Bool
+$c/= :: forall m x. (Eq m, Eq x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+/= :: Free m x -&gt; Free m x -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066741"><span id="local-6989586621679066746"><span id="local-6989586621679066750"><span id="local-6989586621679066754"><span id="local-6989586621679066758"><span id="local-6989586621679066762"><span id="local-6989586621679066766"><span class="annot"><span class="annottext">Eq (Free m x)
+Eq (Free m x) =&gt;
+(Free m x -&gt; Free m x -&gt; Ordering)
+-&gt; (Free m x -&gt; Free m x -&gt; Bool)
+-&gt; (Free m x -&gt; Free m x -&gt; Bool)
+-&gt; (Free m x -&gt; Free m x -&gt; Bool)
+-&gt; (Free m x -&gt; Free m x -&gt; Bool)
+-&gt; (Free m x -&gt; Free m x -&gt; Free m x)
+-&gt; (Free m x -&gt; Free m x -&gt; Free m x)
+-&gt; Ord (Free m x)
+Free m x -&gt; Free m x -&gt; Bool
+Free m x -&gt; Free m x -&gt; Ordering
+Free m x -&gt; Free m x -&gt; Free m x
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall m x. (Ord m, Ord x) =&gt; Eq (Free m x)
+forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Ordering
+forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Free m x
+$ccompare :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Ordering
+compare :: Free m x -&gt; Free m x -&gt; Ordering
+$c&lt; :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+&lt; :: Free m x -&gt; Free m x -&gt; Bool
+$c&lt;= :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+&lt;= :: Free m x -&gt; Free m x -&gt; Bool
+$c&gt; :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+&gt; :: Free m x -&gt; Free m x -&gt; Bool
+$c&gt;= :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Bool
+&gt;= :: Free m x -&gt; Free m x -&gt; Bool
+$cmax :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Free m x
+max :: Free m x -&gt; Free m x -&gt; Free m x
+$cmin :: forall m x. (Ord m, Ord x) =&gt; Free m x -&gt; Free m x -&gt; Free m x
+min :: Free m x -&gt; Free m x -&gt; Free m x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066779"><span id="local-6989586621679066781"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; Free m a -&gt; Free m b)
+-&gt; (forall a b. a -&gt; Free m b -&gt; Free m a) -&gt; Functor (Free m)
+forall a b. a -&gt; Free m b -&gt; Free m a
+forall a b. (a -&gt; b) -&gt; Free m a -&gt; Free m b
+forall m a b. a -&gt; Free m b -&gt; Free m a
+forall m a b. (a -&gt; b) -&gt; Free m a -&gt; Free m b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall m a b. (a -&gt; b) -&gt; Free m a -&gt; Free m b
+fmap :: forall a b. (a -&gt; b) -&gt; Free m a -&gt; Free m b
+$c&lt;$ :: forall m a b. a -&gt; Free m b -&gt; Free m a
+&lt;$ :: forall a b. a -&gt; Free m b -&gt; Free m a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066519"><span id="local-6989586621679066520"><span id="local-6989586621679066791"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679066519"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066519"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066519"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066520"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679066799"><span class="annot"><span class="annottext">act :: m -&gt; Free m x -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Class.html#act"><span class="hs-identifier hs-var hs-var hs-var">act</span></a></span></span><span> </span><span id="local-6989586621679066800"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066800"><span class="hs-identifier hs-var">m'</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066801"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066801"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066802"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066802"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(m, x) -&gt; Free m x
+forall m x. (m, x) -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066800"><span class="hs-identifier hs-var">m'</span></a></span><span> </span><span class="annot"><span class="annottext">m -&gt; m -&gt; m
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066801"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066802"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066529"><span id="local-6989586621679066530"><span id="local-6989586621679066809"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679066529"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066529"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066529"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066530"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679066816"><span class="annot"><span class="annottext">ract :: Free m x -&gt; m -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Class.html#ract"><span class="hs-identifier hs-var hs-var hs-var">ract</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066817"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066817"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066818"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066818"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679066819"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066819"><span class="hs-identifier hs-var">m'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(m, x) -&gt; Free m x
+forall m x. (m, x) -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066817"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">m -&gt; m -&gt; m
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066819"><span class="hs-identifier hs-var">m'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066818"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066543"><span id="local-6989586621679066826"><span id="local-6989586621679066830"><span id="local-6989586621679066833"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679066543"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066543"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679066837"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; Free m a
+</span><span class="hs-identifier hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Free m a
+forall m x. Monoid m =&gt; x -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Free.html#pureFree"><span class="hs-identifier hs-var">pureFree</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679066840"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. Free m (a -&gt; b) -&gt; Free m a -&gt; Free m b
+</span><span class="hs-operator hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Free m (a -&gt; b) -&gt; Free m a -&gt; Free m b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | Free __left__ action monad</span></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066547"><span id="local-6989586621679066846"><span id="local-6989586621679066849"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679066547"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066547"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621679066853"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. Free m a -&gt; (a -&gt; Free m b) -&gt; Free m b
+</span><span class="hs-operator hs-var hs-var hs-var">(&gt;&gt;=)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a -&gt; Free m b) -&gt; Free m a -&gt; Free m b)
+-&gt; Free m a -&gt; (a -&gt; Free m b) -&gt; Free m b
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Free m b) -&gt; Free m a -&gt; Free m b
+forall m y x. Action m y =&gt; (x -&gt; y) -&gt; Free m x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFree"><span class="hs-identifier hs-var">foldFree</span></a></span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | Embed a generator, having had the identity (i.e. nothing) act on it yet.</span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679066545"><span id="local-6989586621679066546"><span class="annot"><a href="Data.Semigroup.Action.Free.html#pureFree"><span class="hs-identifier hs-type">pureFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679066545"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066546"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066545"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066546"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-54"></span><span id="pureFree"><span class="annot"><span class="annottext">pureFree :: forall m x. Monoid m =&gt; x -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Free.html#pureFree"><span class="hs-identifier hs-var hs-var">pureFree</span></a></span></span><span> </span><span id="local-6989586621679066857"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066857"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(m, x) -&gt; Free m x
+forall m x. (m, x) -&gt; Free m x
+</span><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-var">Free</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">m
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066857"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-comment">-- | The universal morphism out of the free left action: any function @x -&gt; y@ into an</span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- existing @'Action' m y@ extends uniquely to an action-homomorphism @'Free' m x -&gt; y@.</span><span>
+</span><span id="line-58"></span><span id="local-6989586621679066566"><span id="local-6989586621679066567"><span id="local-6989586621679066568"><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFree"><span class="hs-identifier hs-type">foldFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066566"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066567"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679066568"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066567"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066566"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066568"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066567"><span class="hs-identifier hs-type">y</span></a></span></span></span></span><span>
+</span><span id="line-59"></span><span id="foldFree"><span class="annot"><span class="annottext">foldFree :: forall m y x. Action m y =&gt; (x -&gt; y) -&gt; Free m x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFree"><span class="hs-identifier hs-var hs-var">foldFree</span></a></span></span><span> </span><span id="local-6989586621679066860"><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679066860"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066861"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066861"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066862"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066862"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">m -&gt; y -&gt; y
+forall s x. Action s x =&gt; s -&gt; x -&gt; x
+</span><a href="Data.Semigroup.Action.Class.html#act"><span class="hs-identifier hs-var">act</span></a></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066861"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679066860"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066862"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | The universal morphism out of the free right action.</span></span><span>
+</span><span id="line-62"></span><span id="local-6989586621679066574"><span id="local-6989586621679066575"><span id="local-6989586621679066576"><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeR"><span class="hs-identifier hs-type">foldFreeR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066574"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066575"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679066576"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066575"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066574"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066576"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066575"><span class="hs-identifier hs-type">y</span></a></span></span></span></span><span>
+</span><span id="line-63"></span><span id="foldFreeR"><span class="annot"><span class="annottext">foldFreeR :: forall m y x. RightAction m y =&gt; (x -&gt; y) -&gt; Free m x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeR"><span class="hs-identifier hs-var hs-var">foldFreeR</span></a></span></span><span> </span><span id="local-6989586621679066865"><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679066865"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066866"><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066866"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066867"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066867"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679066865"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066867"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">y -&gt; m -&gt; y
+forall s x. RightAction s x =&gt; x -&gt; s -&gt; x
+</span><a href="Data.Semigroup.Action.Class.html#ract"><span class="hs-operator hs-var">`ract`</span></a></span><span> </span><span class="annot"><span class="annottext">m
+</span><a href="#local-6989586621679066866"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="annot"><span class="hs-comment">-- | Specialize 'foldFree' to @f = id@: interpret the free action using @x@'s own action.</span></span><span>
+</span><span id="line-66"></span><span id="local-6989586621679066580"><span id="local-6989586621679066581"><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFree"><span class="hs-identifier hs-type">lowerFree</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066580"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066581"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066580"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066581"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066581"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-67"></span><span id="lowerFree"><span class="annot"><span class="annottext">lowerFree :: forall m x. Action m x =&gt; Free m x -&gt; x
+</span><a href="Data.Semigroup.Action.Free.html#lowerFree"><span class="hs-identifier hs-var hs-var">lowerFree</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; x) -&gt; Free m x -&gt; x
+forall m y x. Action m y =&gt; (x -&gt; y) -&gt; Free m x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFree"><span class="hs-identifier hs-var">foldFree</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span class="annot"><span class="hs-comment">-- | Specialize 'foldFreeR' to @f = id@.</span></span><span>
+</span><span id="line-70"></span><span id="local-6989586621679066585"><span id="local-6989586621679066586"><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeR"><span class="hs-identifier hs-type">lowerFreeR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066585"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066586"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#Free"><span class="hs-identifier hs-type">Free</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066585"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066586"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066586"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-71"></span><span id="lowerFreeR"><span class="annot"><span class="annottext">lowerFreeR :: forall m x. RightAction m x =&gt; Free m x -&gt; x
+</span><a href="Data.Semigroup.Action.Free.html#lowerFreeR"><span class="hs-identifier hs-var hs-var">lowerFreeR</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; x) -&gt; Free m x -&gt; x
+forall m y x. RightAction m y =&gt; (x -&gt; y) -&gt; Free m x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeR"><span class="hs-identifier hs-var">foldFreeR</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="hs-comment">-- | The free action of a 'Semigroup' @s@ (not necessarily a 'Monoid') on a set of generators</span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- @x@: obtained by adjoining an identity to @s@ &#8212; @'Nothing'@, using the existing</span><span>
+</span><span id="line-75"></span><span class="hs-comment">-- @Semigroup s =&gt; Semigroup (Maybe s)@/@Monoid (Maybe s)@ instances from &quot;Data.Maybe&quot; &#8212; and</span><span>
+</span><span id="line-76"></span><span class="hs-comment">-- applying the 'Free' construction above.</span><span>
+</span><span id="line-77"></span><span class="hs-comment">--</span><span>
+</span><span id="line-78"></span><span class="hs-comment">-- Unlike 'pureFree', 'pureFreeSemi' needs no constraint on @s@ at all: that is the entire point</span><span>
+</span><span id="line-79"></span><span class="hs-comment">-- of adjoining the identity rather than requiring one already exist.</span><span>
+</span><span id="line-80"></span><span class="hs-comment">--</span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- @FreeSemi s@ has a @Monad@ instance by being the free algebra of left @s@-action.</span><span>
+</span><span id="line-82"></span><span class="hs-comment">-- This @Monad@ is exactly the Writer monad @(,) (Maybe s)@.</span><span>
+</span><span id="line-83"></span><span class="hs-comment">-- Note that the monad instance *could* be</span><span>
+</span><span id="line-84"></span><span class="hs-comment">-- a free __right__ @s@-action monad switching the order of monoid value accumulation,</span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- but what provided here is the left one.</span><span>
+</span><span id="line-86"></span><span class="hs-keyword">newtype</span><span> </span><span id="FreeSemi"><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-var">FreeSemi</span></a></span></span><span> </span><span id="local-6989586621679066589"><span class="annot"><a href="#local-6989586621679066589"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679066590"><span class="annot"><a href="#local-6989586621679066590"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FreeSemi"><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-var">FreeSemi</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getFreeSemi"><span class="annot"><span class="annottext">forall s x. FreeSemi s x -&gt; (Maybe s, x)
+</span><a href="Data.Semigroup.Action.Free.html#getFreeSemi"><span class="hs-identifier hs-var hs-var">getFreeSemi</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679066589"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679066590"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066878"><span id="local-6989586621679066883"><span id="local-6989586621679066887"><span class="annot"><span class="annottext">Int -&gt; FreeSemi s x -&gt; ShowS
+[FreeSemi s x] -&gt; ShowS
+FreeSemi s x -&gt; String
+(Int -&gt; FreeSemi s x -&gt; ShowS)
+-&gt; (FreeSemi s x -&gt; String)
+-&gt; ([FreeSemi s x] -&gt; ShowS)
+-&gt; Show (FreeSemi s x)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall s x. (Show s, Show x) =&gt; Int -&gt; FreeSemi s x -&gt; ShowS
+forall s x. (Show s, Show x) =&gt; [FreeSemi s x] -&gt; ShowS
+forall s x. (Show s, Show x) =&gt; FreeSemi s x -&gt; String
+$cshowsPrec :: forall s x. (Show s, Show x) =&gt; Int -&gt; FreeSemi s x -&gt; ShowS
+showsPrec :: Int -&gt; FreeSemi s x -&gt; ShowS
+$cshow :: forall s x. (Show s, Show x) =&gt; FreeSemi s x -&gt; String
+show :: FreeSemi s x -&gt; String
+$cshowList :: forall s x. (Show s, Show x) =&gt; [FreeSemi s x] -&gt; ShowS
+showList :: [FreeSemi s x] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066893"><span id="local-6989586621679066897"><span id="local-6989586621679066900"><span id="local-6989586621679066909"><span class="annot"><span class="annottext">ReadPrec [FreeSemi s x]
+ReadPrec (FreeSemi s x)
+Int -&gt; ReadS (FreeSemi s x)
+ReadS [FreeSemi s x]
+(Int -&gt; ReadS (FreeSemi s x))
+-&gt; ReadS [FreeSemi s x]
+-&gt; ReadPrec (FreeSemi s x)
+-&gt; ReadPrec [FreeSemi s x]
+-&gt; Read (FreeSemi s x)
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+forall s x. (Read s, Read x) =&gt; ReadPrec [FreeSemi s x]
+forall s x. (Read s, Read x) =&gt; ReadPrec (FreeSemi s x)
+forall s x. (Read s, Read x) =&gt; Int -&gt; ReadS (FreeSemi s x)
+forall s x. (Read s, Read x) =&gt; ReadS [FreeSemi s x]
+$creadsPrec :: forall s x. (Read s, Read x) =&gt; Int -&gt; ReadS (FreeSemi s x)
+readsPrec :: Int -&gt; ReadS (FreeSemi s x)
+$creadList :: forall s x. (Read s, Read x) =&gt; ReadS [FreeSemi s x]
+readList :: ReadS [FreeSemi s x]
+$creadPrec :: forall s x. (Read s, Read x) =&gt; ReadPrec (FreeSemi s x)
+readPrec :: ReadPrec (FreeSemi s x)
+$creadListPrec :: forall s x. (Read s, Read x) =&gt; ReadPrec [FreeSemi s x]
+readListPrec :: ReadPrec [FreeSemi s x]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066915"><span id="local-6989586621679066920"><span class="annot"><span class="annottext">FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+(FreeSemi s x -&gt; FreeSemi s x -&gt; Bool)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; Bool) -&gt; Eq (FreeSemi s x)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall s x. (Eq s, Eq x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$c== :: forall s x. (Eq s, Eq x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+== :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$c/= :: forall s x. (Eq s, Eq x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+/= :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066933"><span id="local-6989586621679066938"><span id="local-6989586621679066943"><span id="local-6989586621679066948"><span id="local-6989586621679066953"><span id="local-6989586621679066958"><span id="local-6989586621679066963"><span class="annot"><span class="annottext">Eq (FreeSemi s x)
+Eq (FreeSemi s x) =&gt;
+(FreeSemi s x -&gt; FreeSemi s x -&gt; Ordering)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; Bool)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; Bool)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; Bool)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; Bool)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x)
+-&gt; (FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x)
+-&gt; Ord (FreeSemi s x)
+FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+FreeSemi s x -&gt; FreeSemi s x -&gt; Ordering
+FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall s x. (Ord s, Ord x) =&gt; Eq (FreeSemi s x)
+forall s x. (Ord s, Ord x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+forall s x.
+(Ord s, Ord x) =&gt;
+FreeSemi s x -&gt; FreeSemi s x -&gt; Ordering
+forall s x.
+(Ord s, Ord x) =&gt;
+FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+$ccompare :: forall s x.
+(Ord s, Ord x) =&gt;
+FreeSemi s x -&gt; FreeSemi s x -&gt; Ordering
+compare :: FreeSemi s x -&gt; FreeSemi s x -&gt; Ordering
+$c&lt; :: forall s x. (Ord s, Ord x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+&lt; :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$c&lt;= :: forall s x. (Ord s, Ord x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+&lt;= :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$c&gt; :: forall s x. (Ord s, Ord x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+&gt; :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$c&gt;= :: forall s x. (Ord s, Ord x) =&gt; FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+&gt;= :: FreeSemi s x -&gt; FreeSemi s x -&gt; Bool
+$cmax :: forall s x.
+(Ord s, Ord x) =&gt;
+FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+max :: FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+$cmin :: forall s x.
+(Ord s, Ord x) =&gt;
+FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+min :: FreeSemi s x -&gt; FreeSemi s x -&gt; FreeSemi s x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066970"><span id="local-6989586621679066972"><span class="annot"><span class="annottext">(forall a b. (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b)
+-&gt; (forall a b. a -&gt; FreeSemi s b -&gt; FreeSemi s a)
+-&gt; Functor (FreeSemi s)
+forall a b. a -&gt; FreeSemi s b -&gt; FreeSemi s a
+forall a b. (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+forall s a b. a -&gt; FreeSemi s b -&gt; FreeSemi s a
+forall s a b. (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+$cfmap :: forall s a b. (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+fmap :: forall a b. (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+$c&lt;$ :: forall s a b. a -&gt; FreeSemi s b -&gt; FreeSemi s a
+&lt;$ :: forall a b. a -&gt; FreeSemi s b -&gt; FreeSemi s a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066619"><span id="local-6989586621679066620"><span id="local-6989586621679066979"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679066619"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066619"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066619"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066620"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-90"></span><span>  </span><span id="local-6989586621679066986"><span class="annot"><span class="annottext">act :: s -&gt; FreeSemi s x -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Class.html#act"><span class="hs-identifier hs-var hs-var hs-var">act</span></a></span></span><span> </span><span id="local-6989586621679066987"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679066987"><span class="hs-identifier hs-var">s'</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679066988"><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679066988"><span class="hs-identifier hs-var">ms</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679066989"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066989"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Maybe s, x) -&gt; FreeSemi s x
+forall s x. (Maybe s, x) -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-var">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s -&gt; Maybe s
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679066987"><span class="hs-identifier hs-var">s'</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe s -&gt; Maybe s -&gt; Maybe s
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679066988"><span class="hs-identifier hs-var">ms</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679066989"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066625"><span id="local-6989586621679066626"><span id="local-6989586621679066995"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679066625"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066625"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066625"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066626"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-93"></span><span>  </span><span id="local-6989586621679067001"><span class="annot"><span class="annottext">ract :: FreeSemi s x -&gt; s -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Class.html#ract"><span class="hs-identifier hs-var hs-var hs-var">ract</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067002"><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067002"><span class="hs-identifier hs-var">ms</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067003"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067003"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679067004"><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679067004"><span class="hs-identifier hs-var">s'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Maybe s, x) -&gt; FreeSemi s x
+forall s x. (Maybe s, x) -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-var">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067002"><span class="hs-identifier hs-var">ms</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe s -&gt; Maybe s -&gt; Maybe s
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">s -&gt; Maybe s
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">s
+</span><a href="#local-6989586621679067004"><span class="hs-identifier hs-var">s'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067003"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066628"><span id="local-6989586621679067011"><span id="local-6989586621679067015"><span id="local-6989586621679067018"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679066628"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066628"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679067020"><span class="annot"><span class="annottext">pure :: forall a. a -&gt; FreeSemi s a
+</span><span class="hs-identifier hs-var hs-var hs-var">pure</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; FreeSemi s a
+forall x s. x -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Free.html#pureFreeSemi"><span class="hs-identifier hs-var">pureFreeSemi</span></a></span><span>
+</span><span id="line-97"></span><span>  </span><span id="local-6989586621679067023"><span class="annot"><span class="annottext">&lt;*&gt; :: forall a b. FreeSemi s (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+</span><span class="hs-operator hs-var hs-var hs-var">(&lt;*&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FreeSemi s (a -&gt; b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+forall (m :: * -&gt; *) a b. Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+</span><span class="hs-identifier hs-var">ap</span></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="annot"><span class="hs-comment">-- | Free __left__ action monad</span></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679066632"><span id="local-6989586621679067029"><span id="local-6989586621679067032"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679066632"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monad</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066632"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>  </span><span id="local-6989586621679067035"><span class="annot"><span class="annottext">&gt;&gt;= :: forall a b. FreeSemi s a -&gt; (a -&gt; FreeSemi s b) -&gt; FreeSemi s b
+</span><span class="hs-operator hs-var hs-var hs-var">(&gt;&gt;=)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a -&gt; FreeSemi s b) -&gt; FreeSemi s a -&gt; FreeSemi s b)
+-&gt; FreeSemi s a -&gt; (a -&gt; FreeSemi s b) -&gt; FreeSemi s b
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; FreeSemi s b) -&gt; FreeSemi s a -&gt; FreeSemi s b
+forall s y x. Action s y =&gt; (x -&gt; y) -&gt; FreeSemi s x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeSemi"><span class="hs-identifier hs-var">foldFreeSemi</span></a></span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span class="annot"><span class="hs-comment">-- | Embed a generator, having had no semigroup element act on it yet.</span></span><span>
+</span><span id="line-104"></span><span id="local-6989586621679066630"><span id="local-6989586621679066631"><span class="annot"><a href="Data.Semigroup.Action.Free.html#pureFreeSemi"><span class="hs-identifier hs-type">pureFreeSemi</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679066630"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066631"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066630"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-105"></span><span id="pureFreeSemi"><span class="annot"><span class="annottext">pureFreeSemi :: forall x s. x -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Free.html#pureFreeSemi"><span class="hs-identifier hs-var hs-var">pureFreeSemi</span></a></span></span><span> </span><span id="local-6989586621679067036"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067036"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Maybe s, x) -&gt; FreeSemi s x
+forall s x. (Maybe s, x) -&gt; FreeSemi s x
+</span><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-var">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe s
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067036"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="annot"><span class="hs-comment">-- | The universal morphism out of the free left action.</span></span><span>
+</span><span id="line-108"></span><span id="local-6989586621679066638"><span id="local-6989586621679066639"><span id="local-6989586621679066640"><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeSemi"><span class="hs-identifier hs-type">foldFreeSemi</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066638"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066639"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679066640"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066639"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066638"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066640"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066639"><span class="hs-identifier hs-type">y</span></a></span></span></span></span><span>
+</span><span id="line-109"></span><span id="foldFreeSemi"><span class="annot"><span class="annottext">foldFreeSemi :: forall s y x. Action s y =&gt; (x -&gt; y) -&gt; FreeSemi s x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeSemi"><span class="hs-identifier hs-var hs-var">foldFreeSemi</span></a></span></span><span> </span><span id="local-6989586621679067039"><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067039"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067040"><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067040"><span class="hs-identifier hs-var">ms</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067041"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067041"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">y -&gt; (s -&gt; y) -&gt; Maybe s -&gt; y
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067039"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067041"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">s -&gt; y -&gt; y
+forall s x. Action s x =&gt; s -&gt; x -&gt; x
+</span><a href="Data.Semigroup.Action.Class.html#act"><span class="hs-operator hs-var">`act`</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067039"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067041"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067040"><span class="hs-identifier hs-var">ms</span></a></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span class="annot"><span class="hs-comment">-- | The universal morphism out of the free right action.</span></span><span>
+</span><span id="line-112"></span><span id="local-6989586621679066648"><span id="local-6989586621679066649"><span id="local-6989586621679066650"><span class="annot"><a href="Data.Semigroup.Action.Free.html#foldFreeSemiR"><span class="hs-identifier hs-type">foldFreeSemiR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066648"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066649"><span class="hs-identifier hs-type">y</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679066650"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066649"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066648"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066650"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066649"><span class="hs-identifier hs-type">y</span></a></span></span></span></span><span>
+</span><span id="line-113"></span><span id="foldFreeSemiR"><span class="annot"><span class="annottext">foldFreeSemiR :: forall s y x. RightAction s y =&gt; (x -&gt; y) -&gt; FreeSemi s x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeSemiR"><span class="hs-identifier hs-var hs-var">foldFreeSemiR</span></a></span></span><span> </span><span id="local-6989586621679067045"><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067045"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067046"><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067046"><span class="hs-identifier hs-var">ms</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067047"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067047"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">y -&gt; (s -&gt; y) -&gt; Maybe s -&gt; y
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067045"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067047"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">y -&gt; s -&gt; y
+forall s x. RightAction s x =&gt; x -&gt; s -&gt; x
+</span><a href="Data.Semigroup.Action.Class.html#ract"><span class="hs-identifier hs-var">ract</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">x -&gt; y
+</span><a href="#local-6989586621679067045"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621679067047"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe s
+</span><a href="#local-6989586621679067046"><span class="hs-identifier hs-var">ms</span></a></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="annot"><span class="hs-comment">-- | Specialize 'foldFreeSemi' to @f = id@.</span></span><span>
+</span><span id="line-116"></span><span id="local-6989586621679066654"><span id="local-6989586621679066655"><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeSemi"><span class="hs-identifier hs-type">lowerFreeSemi</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066654"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066655"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066654"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066655"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066655"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-117"></span><span id="lowerFreeSemi"><span class="annot"><span class="annottext">lowerFreeSemi :: forall s x. Action s x =&gt; FreeSemi s x -&gt; x
+</span><a href="Data.Semigroup.Action.Free.html#lowerFreeSemi"><span class="hs-identifier hs-var hs-var">lowerFreeSemi</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; x) -&gt; FreeSemi s x -&gt; x
+forall s y x. Action s y =&gt; (x -&gt; y) -&gt; FreeSemi s x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeSemi"><span class="hs-identifier hs-var">foldFreeSemi</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="annot"><span class="hs-comment">-- | Specialize 'foldFreeSemiR' to @f = id@.</span></span><span>
+</span><span id="line-120"></span><span id="local-6989586621679066658"><span id="local-6989586621679066659"><span class="annot"><a href="Data.Semigroup.Action.Free.html#lowerFreeSemiR"><span class="hs-identifier hs-type">lowerFreeSemiR</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Class.html#RightAction"><span class="hs-identifier hs-type">RightAction</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066658"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066659"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Free.html#FreeSemi"><span class="hs-identifier hs-type">FreeSemi</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066658"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679066659"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679066659"><span class="hs-identifier hs-type">x</span></a></span></span></span><span>
+</span><span id="line-121"></span><span id="lowerFreeSemiR"><span class="annot"><span class="annottext">lowerFreeSemiR :: forall s x. RightAction s x =&gt; FreeSemi s x -&gt; x
+</span><a href="Data.Semigroup.Action.Free.html#lowerFreeSemiR"><span class="hs-identifier hs-var hs-var">lowerFreeSemiR</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(x -&gt; x) -&gt; FreeSemi s x -&gt; x
+forall s y x. RightAction s y =&gt; (x -&gt; y) -&gt; FreeSemi s x -&gt; y
+</span><a href="Data.Semigroup.Action.Free.html#foldFreeSemiR"><span class="hs-identifier hs-var">foldFreeSemiR</span></a></span><span> </span><span class="annot"><span class="annottext">x -&gt; x
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-122"></span></pre></body></html>
