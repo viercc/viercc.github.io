@@ -14,8 +14,8 @@
 </span><span id="line-14"></span><span>
 </span><span id="line-15"></span><span class="hs-comment">-- Applying endomorphism</span><span>
 </span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-keyword">newtype</span><span> </span><span id="Pt"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-var">Pt</span></a></span></span><span> </span><span id="local-6989586621679067882"><span class="annot"><a href="#local-6989586621679067882"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Pt"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-var">Pt</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679067882"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-18"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067887"><span id="local-6989586621679067892"><span id="local-6989586621679067896"><span class="annot"><span class="annottext">Int -&gt; Pt a -&gt; ShowS
+</span><span id="line-17"></span><span class="hs-keyword">newtype</span><span> </span><span id="Pt"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-var">Pt</span></a></span></span><span> </span><span id="local-6989586621679067878"><span class="annot"><a href="#local-6989586621679067878"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Pt"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-var">Pt</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679067878"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067883"><span id="local-6989586621679067888"><span id="local-6989586621679067892"><span class="annot"><span class="annottext">Int -&gt; Pt a -&gt; ShowS
 [Pt a] -&gt; ShowS
 Pt a -&gt; String
 (Int -&gt; Pt a -&gt; ShowS)
@@ -31,7 +31,7 @@ $cshow :: forall a. Show a =&gt; Pt a -&gt; String
 show :: Pt a -&gt; String
 $cshowList :: forall a. Show a =&gt; [Pt a] -&gt; ShowS
 showList :: [Pt a] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067902"><span id="local-6989586621679067906"><span id="local-6989586621679067909"><span id="local-6989586621679067916"><span class="annot"><span class="annottext">ReadPrec [Pt a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067898"><span id="local-6989586621679067902"><span id="local-6989586621679067905"><span id="local-6989586621679067912"><span class="annot"><span class="annottext">ReadPrec [Pt a]
 ReadPrec (Pt a)
 Int -&gt; ReadS (Pt a)
 ReadS [Pt a]
@@ -55,7 +55,7 @@ $creadPrec :: forall a. Read a =&gt; ReadPrec (Pt a)
 readPrec :: ReadPrec (Pt a)
 $creadListPrec :: forall a. Read a =&gt; ReadPrec [Pt a]
 readListPrec :: ReadPrec [Pt a]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067924"><span id="local-6989586621679067927"><span class="annot"><span class="annottext">Pt a -&gt; Pt a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067920"><span id="local-6989586621679067923"><span class="annot"><span class="annottext">Pt a -&gt; Pt a -&gt; Bool
 (Pt a -&gt; Pt a -&gt; Bool) -&gt; (Pt a -&gt; Pt a -&gt; Bool) -&gt; Eq (Pt a)
 forall a. Eq a =&gt; Pt a -&gt; Pt a -&gt; Bool
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -63,7 +63,7 @@ $c== :: forall a. Eq a =&gt; Pt a -&gt; Pt a -&gt; Bool
 == :: Pt a -&gt; Pt a -&gt; Bool
 $c/= :: forall a. Eq a =&gt; Pt a -&gt; Pt a -&gt; Bool
 /= :: Pt a -&gt; Pt a -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067936"><span id="local-6989586621679067939"><span id="local-6989586621679067942"><span id="local-6989586621679067946"><span id="local-6989586621679067949"><span id="local-6989586621679067952"><span id="local-6989586621679067955"><span class="annot"><span class="annottext">Eq (Pt a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067932"><span id="local-6989586621679067935"><span id="local-6989586621679067938"><span id="local-6989586621679067942"><span id="local-6989586621679067945"><span id="local-6989586621679067948"><span id="local-6989586621679067951"><span class="annot"><span class="annottext">Eq (Pt a)
 Eq (Pt a) =&gt;
 (Pt a -&gt; Pt a -&gt; Ordering)
 -&gt; (Pt a -&gt; Pt a -&gt; Bool)
@@ -105,7 +105,7 @@ max :: Pt a -&gt; Pt a -&gt; Pt a
 $cmin :: forall a. Ord a =&gt; Pt a -&gt; Pt a -&gt; Pt a
 min :: Pt a -&gt; Pt a -&gt; Pt a
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067966"><span id="local-6989586621679067973"><span class="annot"><span class="annottext">(forall a. Show a =&gt; Show (Pt a)) =&gt;
+</span><span id="line-19"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679067962"><span id="local-6989586621679067969"><span class="annot"><span class="annottext">(forall a. Show a =&gt; Show (Pt a)) =&gt;
 (forall a.
  (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Pt a -&gt; ShowS)
 -&gt; (forall a.
@@ -128,7 +128,7 @@ liftShowsPrec :: forall a.
 (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Pt a -&gt; ShowS
 $cliftShowList :: forall a. (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [Pt a] -&gt; ShowS
 liftShowList :: forall a. (Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; [Pt a] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show1</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067985"><span id="local-6989586621679067992"><span id="local-6989586621679067998"><span id="local-6989586621679068004"><span class="annot"><span class="annottext">(forall a. Read a =&gt; Read (Pt a)) =&gt;
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show1</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679067981"><span id="local-6989586621679067988"><span id="local-6989586621679067994"><span id="local-6989586621679068000"><span class="annot"><span class="annottext">(forall a. Read a =&gt; Read (Pt a)) =&gt;
 (forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; Int -&gt; ReadS (Pt a))
 -&gt; (forall a. (Int -&gt; ReadS a) -&gt; ReadS [a] -&gt; ReadS [Pt a])
 -&gt; (forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec (Pt a))
@@ -156,19 +156,19 @@ $cliftReadListPrec :: forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [Pt
 liftReadListPrec :: forall a. ReadPrec a -&gt; ReadPrec [a] -&gt; ReadPrec [Pt a]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read1</span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Reflected1</span></span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span id="local-6989586621679067872"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#unPt"><span class="hs-identifier hs-type">unPt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679067872"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679067872"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679067868"><span class="annot"><a href="Data.Semigroup.Action.Pt.html#unPt"><span class="hs-identifier hs-type">unPt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679067868"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679067868"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-22"></span><span id="unPt"><span class="annot"><span class="annottext">unPt :: forall a. Pt a -&gt; a
-</span><a href="Data.Semigroup.Action.Pt.html#unPt"><span class="hs-identifier hs-var hs-var">unPt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span id="local-6989586621679068015"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679068015"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679068015"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="Data.Semigroup.Action.Pt.html#unPt"><span class="hs-identifier hs-var hs-var">unPt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span id="local-6989586621679068011"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679068011"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679068011"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679067881"><span id="local-6989586621679068021"><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Endo</span></span><span> </span><span class="annot"><a href="#local-6989586621679067881"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679067881"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-25"></span><span>  </span><span id="local-6989586621679068027"><span class="annot"><span class="annottext">act :: Endo a -&gt; Pt a -&gt; Pt a
-</span><a href="#local-6989586621679068027"><span class="hs-identifier hs-var hs-var hs-var">act</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Endo</span></span><span> </span><span id="local-6989586621679068030"><span class="annot"><span class="annottext">a -&gt; a
-</span><a href="#local-6989586621679068030"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span id="local-6989586621679068031"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679068031"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Pt a
+</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679067877"><span id="local-6989586621679068017"><span class="annot"><a href="Data.Semigroup.Action.Class.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Endo</span></span><span> </span><span class="annot"><a href="#local-6989586621679067877"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679067877"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>  </span><span id="local-6989586621679068023"><span class="annot"><span class="annottext">act :: Endo a -&gt; Pt a -&gt; Pt a
+</span><a href="#local-6989586621679068023"><span class="hs-identifier hs-var hs-var hs-var">act</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Endo</span></span><span> </span><span id="local-6989586621679068026"><span class="annot"><span class="annottext">a -&gt; a
+</span><a href="#local-6989586621679068026"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-type">Pt</span></a></span><span> </span><span id="local-6989586621679068027"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679068027"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Pt a
 forall a. a -&gt; Pt a
 </span><a href="Data.Semigroup.Action.Pt.html#Pt"><span class="hs-identifier hs-var">Pt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; a
-</span><a href="#local-6989586621679068030"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679068031"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679068026"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679068027"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-26"></span></pre></body></html>
